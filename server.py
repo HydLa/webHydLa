@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from flask import Flask, redirect, url_for, request, abort, jsonify, render_template, session
 import sys, os, time, shlex, subprocess, json
 
@@ -7,13 +5,15 @@ import sys, os, time, shlex, subprocess, json
 app = Flask(__name__,static_url_path="")
 app.secret_key = "secret_key"
 
+save_dir = "/tmp/webHydLa_" + os.getenv("USER")
+hylagi_processes = {}
+
+
 # defining redirection from '/' to '/index.html'
 @app.route('/')
 def root():
     return app.send_static_file('index.html')
 
-save_dir = "/tmp/webHydLa_" + os.getenv("USER")
-hylagi_processes = {}
 
 @app.route('/start_session', methods=['GET', 'POST'])
 def start_session():
@@ -89,7 +89,6 @@ def gen_hydat():
             return jsonify(sid=session_id, error=0, message="HyLaGI was successful (but it did not make output)")
 
 
-
 # defining hylagi killer
 @app.route('/killer', methods=['GET', 'POST'])
 def kill():
@@ -105,8 +104,6 @@ def kill():
         pass # do nothing
     session.pop('sid', None)
     return ""
-
-flask_port = 5000
         
 
 # defining error viewer
@@ -125,10 +122,10 @@ def gen_error():
     except IOError:
         abort(500)
 
-flask_port = 5000
 
-# run server if this script is running as main program (not import sentence)
-if __name__ == '__main__':
+
+def main():
+    flask_port = 5000
     app.config['SESSION_TYPE'] = 'filesystem'
     for error_count in range(100):
         try:
@@ -142,3 +139,5 @@ if __name__ == '__main__':
             continue
 
 
+if __name__ == '__main__':
+    main()
