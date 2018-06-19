@@ -182,14 +182,16 @@ function savePlotSettings()
 
 /* set default hydla code */
 var default_hydla =
-    //"// bouncing particle\n\
-    "// #hylagi -p6\n\
+"// bouncing_ball.hydla\n\
+// This is a \"Hello World\" sample code in HydLa\n\
 \n\
 INIT <=> y = 10 & y' = 0.\n\
 FALL <=> [](y'' = -10).\n\
 BOUNCE <=> [](y- = 0 => y' = -4/5 * y'-).\n\
 \n\
 INIT, FALL << BOUNCE.\n\
+\n\
+// #hylagi -p6\n\
 ";
 
 /* load saved hydla code if it exist */
