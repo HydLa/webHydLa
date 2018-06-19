@@ -1,4 +1,3 @@
-
 Plus = function(lhs, rhs)
 {
   this.toString = function(){return "(" + lhs.toString() + " + " + rhs.toString() + ")";};
@@ -7,6 +6,7 @@ Plus = function(lhs, rhs)
     return lhs.getValue(env) + rhs.getValue(env);
   };
 };
+
 
 Subtract = function(lhs, rhs)
 {
@@ -17,6 +17,7 @@ Subtract = function(lhs, rhs)
   };
 };
 
+
 Multiply = function(lhs, rhs)
 {
   this.toString = function(){return lhs.toString() + " * " + rhs.toString();};
@@ -25,6 +26,7 @@ Multiply = function(lhs, rhs)
     return lhs.getValue(env) * rhs.getValue(env);
   };
 };
+
 
 Divide = function(lhs, rhs)
 {
@@ -35,6 +37,7 @@ Divide = function(lhs, rhs)
   };
 };
 
+
 Power = function(lhs, rhs)
 {
   this.toString = function(){return lhs.toString() + " ^ " + rhs.toString();};
@@ -44,6 +47,7 @@ Power = function(lhs, rhs)
   };
 };
 
+
 Constant = function(val)
 {
   this.toString = function(){return val;};
@@ -52,6 +56,7 @@ Constant = function(val)
     return val;
   };
 };
+
 
 Variable = function(name)
 {
@@ -64,6 +69,7 @@ Variable = function(name)
   };
 };
 
+
 UnaryFunction = function(name, arg)
 {
   this.toString = function(){return name + "(" + arg + ")";};
@@ -73,6 +79,7 @@ UnaryFunction = function(name, arg)
   };
 };
 
+
 Negative = function(arg)
 {
   this.toString = function(){return "-" + arg;};
@@ -81,7 +88,6 @@ Negative = function(arg)
     return -arg.getValue(env);
   };
 };
-
 
 
 function parseValue(value_str){
