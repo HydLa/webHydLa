@@ -256,12 +256,16 @@ function sendHydLa() {
     form.append("hydla_code", editor.getValue());
     var options_value = "";
     if(phase_num.value != "")options_value += " -p " + phase_num.value;
-    else options_value += " -p10";
     if(simulation_time.value != "")options_value += " -t " + simulation_time.value;
+    if(phase_num.value == "" && simulation_time.value == "")options_value += " -p10";
     if(nd_mode_check_box.checked)options_value += " --fnd ";
     else options_value += " --fno-nd ";
     if(other_options.value != "")options_value += other_options.value;
     form.append("hylagi_option", options_value);
+    var timeout_value = "";
+    if(timeout_option.value != "")timeout_value = timeout_option.value;
+    else timeout_value = "30";
+    form.append("timeout_option", timeout_value);
     var xmlhr = new XMLHttpRequest();
     xmlhr.open("POST", "hydat.cgi");
     xmlhr.send(form);
@@ -270,7 +274,7 @@ function sendHydLa() {
 
       switch (response.error) {
       case 0:
-        Materialize.toast("Simulation was successful.", 5000);
+        Materialize.toast("Simulation was successful.", 1000);
         if(response.hydat != undefined)
         {
           response.hydat.name = browser_storage.getItem("hydla_name");
@@ -284,12 +288,12 @@ function sendHydLa() {
       default:
         if(hylagi_running)
         {
-          Materialize.toast("Error message: " + response.message, 10000, "red darken-4");
+          Materialize.toast("Error message: " + response.message, 3000, "red darken-4");
           $('ul.tabs').tabs('select_tab', 'output-area');
         }
         else
         {
-          Materialize.toast("Killed HyLaGI");
+          Materialize.toast("Killed HyLaGI", 1000);
         }
         break;
       }
