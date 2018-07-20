@@ -308,18 +308,48 @@ function plot_ready(line)
   }
 }
 
+//Polyline3: https://github.com/mrdoob/three.js/issues/13578
+function Polyline3( points ) {
+  THREE.Curve.call( this );
+
+  // points is an array of THREE.Vector3()
+
+  this.points = points;
+}
+
+Polyline3.prototype = Object.create( THREE.Curve.prototype );
+Polyline3.prototype.constructor = Polyline3;
+
+// define the getPoint function for the subClass
+Polyline3.prototype.getPoint = function ( t ) {
+
+  // t is a float between 0 and 1
+
+  var points = this.points;
+
+  var d = ( points.length - 1 ) * t;
+
+  var index1 = Math.floor( d );
+  var index2 = ( index1 < points.length - 1 ) ? index1 + 1 : index1;
+
+  var pt1 = points[ index1 ];
+  var pt2 = points[ index2 ];
+
+  var weight = d - index1;
+
+  return new THREE.Vector3().copy( pt1 ).lerp( pt2, weight );
+};
+
 var animation_line = [];
 var current_line_vec_animation = [];
-        var s_geometry;  
-        var s_material;
-        var sphere;
-      var phase_index;
-      var phase;
-      var vec;
-      var vec_animation;
-        var line_geometry;
-        var three_line;
-
+var s_geometry;  
+var s_material;
+var sphere;
+var phase_index;
+var phase;
+var vec;
+var vec_animation;
+var three_line;
 function add_plot_each(phase_index_array, axes, line, width, color, dt, parameter_condition_list, current_param_idx, current_line_vec)
 {
   try
@@ -345,6 +375,8 @@ function add_plot_each(phase_index_array, axes, line, width, color, dt, paramete
       {
         array += 1;
         // on leaves
+        
+        /*
         var line_geometry = vector3_to_geometry(current_line_vec);
         var material;
         if(!line.settings.dashed) material = new THREE.LineBasicMaterial({linewidth: width, color:color[current_param_idx]});
@@ -354,14 +386,23 @@ function add_plot_each(phase_index_array, axes, line, width, color, dt, paramete
           line_geometry.computeLineDistances();
         }
         var three_line = new THREE.Line(line_geometry, material);
+        */
+        
+        var curve = new THREE.CatmullRomCurve3(current_line_vec);
+        //var curve = new Polyline3(current_line_vec);
+        var three_line = new THREE.Mesh(
+          new THREE.TubeGeometry(curve, 200, 0.01*width, 8, false), 
+          new THREE.MeshBasicMaterial({color:color[current_param_idx]})
+        );
+        three_line.isLine = true;
         graph_scene.add(three_line);
         line.plot.push(three_line);
+
         animation_line[array] = (current_line_vec_animation);
         animation_line[array].color = (color[current_param_idx]);
         if(animation_line.maxlen < current_line_vec_animation.length){
           animation_line.maxlen = current_line_vec_animation.length;
-        } 
-        //console.log(three_line);
+        }
         s_geometry = new THREE.SphereGeometry(0.1);  
         s_material = new THREE.MeshBasicMaterial( { color:color[current_param_idx] } );
         sphere = new THREE.Mesh( s_geometry, s_material );
@@ -894,46 +935,47 @@ function update_axes(force){
   prev_range = range;
 }
 
-  var arr=0;
-  var time_prev=-100;
+var arr = 0;
+var time_prev = -100;
 function animate(){
-if(time_prev != time){
-        plot_animate = [];
-        arr = 0;
-  for (i=0; i<graph_scene.children.length-1; i++){
-    if (graph_scene.children[i].type == "Line"){
-      if(animation_line[arr] == undefined){
-        continue;
+  if(time_prev != time){
+    plot_animate = [];
+    arr = 0;
+    for (i=0; i<graph_scene.children.length-1; i++){
+      if('isLine' in graph_scene.children[i])
+      {
+        if(animation_line[arr] == undefined){
+          continue;
+        }
+        if(time>animation_line.maxlen-1){
+          time = 0;
+        }
+        if(time == 0){
+          graph_scene.children[i+1].material.color.set(
+            animation_line[arr].color
+          );
+        }
+        if(time>animation_line[arr].length-1){
+          graph_scene.children[i+1].material.color.set(
+            198,
+            198,
+            198
+          );
+          plot_animate[arr] = (graph_scene.children[i+1]);
+          arr += 1;
+          continue;
+        }
+        graph_scene.children[i+1].position.set(
+          animation_line[arr][time].x,
+          animation_line[arr][time].y,
+          animation_line[arr][time].z);
+          plot_animate[arr] = (graph_scene.children[i+1]);
+          arr += 1;
       }
-      if(time>animation_line.maxlen-1){
-        time = 0;
-      }
-      if(time == 0){
-        graph_scene.children[i+1].material.color.set(
-          animation_line[arr].color
-        );
-      }
-      if(time>animation_line[arr].length-1){
-        graph_scene.children[i+1].material.color.set(
-          198,
-          198,
-          198
-        );
-        plot_animate[arr] = (graph_scene.children[i+1]);
-        arr += 1;
-        continue;
-      }
-      graph_scene.children[i+1].position.set(
-        animation_line[arr][time].x,
-        animation_line[arr][time].y,
-        animation_line[arr][time].z);
-        plot_animate[arr] = (graph_scene.children[i+1]);
-        arr += 1;
     }
+    time_prev = time;
+    render_three_js();
   }
-      time_prev = time;
-      render_three_js();
-}
 }
 
 function animate_time(){
