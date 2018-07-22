@@ -376,22 +376,29 @@ function add_plot_each(phase_index_array, axes, line, width, color, dt, paramete
         array += 1;
         // on leaves
         
-        /*
-        var line_geometry = vector3_to_geometry(current_line_vec);
-        var material;
-        if(!line.settings.dashed) material = new THREE.LineBasicMaterial({linewidth: width, color:color[current_param_idx]});
-        else
+        var cylindersGeometry = new THREE.Geometry();
+        scaledWidth = 0.5*width/graph_camera.zoom;
+        for(var i = 0; i + 1 < current_line_vec.length; i++)
         {
-          material = new THREE.LineDashedMaterial({dashSize: 0.4, gapSize: 0.2, linewidth: width, color:color[current_param_idx]});
-          line_geometry.computeLineDistances();
+          directionVec = current_line_vec[i + 1].clone().sub(current_line_vec[i]);
+          height = directionVec.length();
+          directionVec.normalize();
+          var cylinderMesh = new THREE.Mesh(new THREE.CylinderGeometry(scaledWidth, scaledWidth, height+scaledWidth, 8, 1));
+
+          upVec = new THREE.Vector3(0, 1, 0);
+          rotationAxis = upVec.clone().cross(directionVec).normalize();
+          rotationAngle = Math.acos(upVec.dot(directionVec));
+
+          newpos = current_line_vec[i].clone().lerp(current_line_vec[i + 1], 0.5);
+          cylinderMesh.position.set(newpos.x, newpos.y, newpos.z);
+          cylinderMesh.setRotationFromAxisAngle(rotationAxis, rotationAngle);
+
+          cylinderMesh.updateMatrix();
+          cylindersGeometry.merge(cylinderMesh.geometry, cylinderMesh.matrix);
         }
-        var three_line = new THREE.Line(line_geometry, material);
-        */
-        
-        var curve = new THREE.CatmullRomCurve3(current_line_vec);
-        //var curve = new Polyline3(current_line_vec);
+
         var three_line = new THREE.Mesh(
-          new THREE.TubeGeometry(curve, 200, 0.01*width, 8, false), 
+          cylindersGeometry,
           new THREE.MeshBasicMaterial({color:color[current_param_idx]})
         );
         three_line.isLine = true;

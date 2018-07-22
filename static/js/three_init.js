@@ -26,7 +26,7 @@ function init(){
 
   graph_camera.position.set(0, 0, 100);
   graph_area = document.getElementById("graph-area");
-  graph_renderer = new THREE.WebGLRenderer();
+  graph_renderer = new THREE.WebGLRenderer({antialias: true});
 
   graph_renderer.domElement.style.position = 'absolute';
   graph_renderer.domElement.style.width = '100%';
@@ -83,9 +83,13 @@ var cnt = 0;
 var range = 0;
 var a_line = 1;
 var t_line = 0;
+var last_frame_zoom = 1;
 function render() {
   requestAnimationFrame(render);
   graph_controls.update();
+  if(last_frame_zoom != graph_camera.zoom){
+    replot_all();
+  }
   update_axes();
   if(animatable){
     animate(); // animating function
@@ -103,6 +107,7 @@ function render() {
   }else if(animatable){
     parameter_seek_setting_animate(t_line, time);
   }
+  last_frame_zoom = graph_camera.zoom;
 }
 
 
