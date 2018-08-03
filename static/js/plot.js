@@ -385,7 +385,7 @@ function add_plot_each(phase_index_array, axes, line, width, color, dt, paramete
               );
             }
           }
-          else
+          else if(!current_line_vec[i].equals(current_line_vec[i + 1]))
           {
             addCylinder(current_line_vec[i], current_line_vec[i + 1]);
           }
@@ -599,6 +599,8 @@ function phase_to_line_vectors(phase,parameter_condition_list,axis,maxDeltaT){
       env.t = new Constant(t);
       line.push(new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)));
     }
+    env.t = new Constant(end_time);
+    line.push(new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)));
   }
   return line;
 }
