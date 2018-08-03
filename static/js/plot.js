@@ -308,38 +308,6 @@ function plot_ready(line)
   }
 }
 
-//Polyline3: https://github.com/mrdoob/three.js/issues/13578
-function Polyline3( points ) {
-  THREE.Curve.call( this );
-
-  // points is an array of THREE.Vector3()
-
-  this.points = points;
-}
-
-Polyline3.prototype = Object.create( THREE.Curve.prototype );
-Polyline3.prototype.constructor = Polyline3;
-
-// define the getPoint function for the subClass
-Polyline3.prototype.getPoint = function ( t ) {
-
-  // t is a float between 0 and 1
-
-  var points = this.points;
-
-  var d = ( points.length - 1 ) * t;
-
-  var index1 = Math.floor( d );
-  var index2 = ( index1 < points.length - 1 ) ? index1 + 1 : index1;
-
-  var pt1 = points[ index1 ];
-  var pt2 = points[ index2 ];
-
-  var weight = d - index1;
-
-  return new THREE.Vector3().copy( pt1 ).lerp( pt2, weight );
-};
-
 var animation_line = [];
 var current_line_vec_animation = [];
 var s_geometry;  
@@ -378,9 +346,9 @@ function add_plot_each(phase_index_array, axes, line, width, color, dt, paramete
         
         var cylindersGeometry = new THREE.Geometry();
         scaledWidth = 0.5*width/graph_camera.zoom;
-        for(var i = 0; i + 1 < current_line_vec.length; i++)
+        var addCylinder = function(startPos, endPos)
         {
-          directionVec = current_line_vec[i + 1].clone().sub(current_line_vec[i]);
+          directionVec = endPos.clone().sub(startPos);
           height = directionVec.length();
           directionVec.normalize();
           var cylinderMesh = new THREE.Mesh(new THREE.CylinderGeometry(scaledWidth, scaledWidth, height+scaledWidth, 8, 1));
@@ -389,12 +357,37 @@ function add_plot_each(phase_index_array, axes, line, width, color, dt, paramete
           rotationAxis = upVec.clone().cross(directionVec).normalize();
           rotationAngle = Math.acos(upVec.dot(directionVec));
 
-          newpos = current_line_vec[i].clone().lerp(current_line_vec[i + 1], 0.5);
+          newpos = startPos.clone().lerp(endPos, 0.5);
           cylinderMesh.position.set(newpos.x, newpos.y, newpos.z);
           cylinderMesh.setRotationFromAxisAngle(rotationAxis, rotationAngle);
 
           cylinderMesh.updateMatrix();
           cylindersGeometry.merge(cylinderMesh.geometry, cylinderMesh.matrix);
+        };
+
+        dottedLength = 10.0/graph_camera.zoom;
+        for(var i = 0; i + 1 < current_line_vec.length; i++)
+        {
+          if('isPP' in current_line_vec[i + 1])
+          {
+            posBegin = current_line_vec[i];
+            posEnd = current_line_vec[i + 1];
+            directionVec = posEnd.clone().sub(posBegin);
+            lineLength = directionVec.length();
+            directionVec.normalize();
+            numOfDots = lineLength / dottedLength;
+            for(var j = 1; j + 1 < numOfDots; j += 2)
+            {
+              addCylinder(
+                posBegin.clone().add(directionVec.clone().multiplyScalar(j*dottedLength)),
+                posBegin.clone().add(directionVec.clone().multiplyScalar((j+1)*dottedLength))
+              );
+            }
+          }
+          else
+          {
+            addCylinder(current_line_vec[i], current_line_vec[i + 1]);
+          }
         }
 
         var three_line = new THREE.Mesh(
@@ -592,7 +585,9 @@ function phase_to_line_vectors(phase,parameter_condition_list,axis,maxDeltaT){
 
   if(phase.type=="PP"){
     env.t = phase.time.time_point;
-    line.push(new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)));
+    newPos = new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env));
+    newPos.isPP = true;
+    line.push(newPos);
   }else{
     var start_time = phase.time.start_time.getValue(env);
     var end_time = phase.time.end_time.getValue(env);
