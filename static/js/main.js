@@ -258,6 +258,7 @@ function sendHydLa() {
     if(phase_num.value != "")options_value += " -p " + phase_num.value;
     if(simulation_time.value != "")options_value += " -t " + simulation_time.value;
     if(phase_num.value == "" && simulation_time.value == "")options_value += " -p10";
+    if(html_mode_check_box.checked)options_value += " --fhtml ";
     if(nd_mode_check_box.checked)options_value += " --fnd ";
     else options_value += " --fno-nd ";
     if(other_options.value != "")options_value += other_options.value;
@@ -300,13 +301,27 @@ function sendHydLa() {
       server_response = response;
       var output = document.getElementById("output-initial");
       output.innerHTML = "";
-      if(response.stdout != undefined)
+      if(html_mode_check_box.checked)
       {
-        output.innerHTML += getEscapedStringForHTML(response.stdout);
+        if(response.stdout != undefined)
+        {
+          output.innerHTML += response.stdout;
+        }
+        if(response.stderr != undefined)
+        {
+          output.innerHTML += response.stderr;
+        }
       }
-      if(response.stderr != undefined)
+      else
       {
-        output.innerHTML += getEscapedStringForHTML(response.stderr);
+        if(response.stdout != undefined)
+        {
+          output.innerHTML += getEscapedStringForHTML(response.stdout);
+        }
+        if(response.stderr != undefined)
+        {
+          output.innerHTML += getEscapedStringForHTML(response.stderr);
+        }
       }
       stopPreloader();
       hylagi_running = false;
