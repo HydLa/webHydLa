@@ -3,9 +3,11 @@
 from flask import Flask, redirect, url_for, request, abort, jsonify, render_template, session
 import sys, os, time, shlex, subprocess, json
 
+key_file = open('secret_key')
 # setup Flask
 app = Flask(__name__,static_url_path="")
-app.secret_key = "secret_key"
+app.secret_key = key_file.read()
+key_file.close()
 
 # defining redirection from '/' to '/index.html'
 @app.route('/')
@@ -45,6 +47,9 @@ def gen_hydat():
     if "hydla_code" not in form:
        return jsonify(sid=session_id, error=2, message="No HydLa Code")
 
+    if "timeout_option" not in form:
+       return jsonify(sid=session_id, error=3, message="No TimeOut")
+
     hylagi_args = ["hylagi"]
 
     hylagi_args.extend(shlex.split(form["hylagi_option"]));
@@ -52,6 +57,8 @@ def gen_hydat():
     hylagi_args.append("-o")
     hylagi_args.append(save_file_hydat)
     hylagi_args.append(save_file_hydla)
+
+    time_out = (int(form["timeout_option"]))
 
 
     try:
@@ -67,7 +74,7 @@ def gen_hydat():
         hylagi_proc = subprocess.Popen(hylagi_args, stdout=f_stdout, stderr=f_stderr)
         hylagi_processes[session_id] = hylagi_proc
         try:
-            hylagi_retcode = hylagi_proc.wait(timeout=30)
+            hylagi_retcode = hylagi_proc.wait(timeout=time_out)
         except subprocess.TimeoutExpired:
             hylagi_proc.kill()
             return jsonify(sid=session_id, error=4, message="TimeOut")

@@ -198,7 +198,7 @@ function loadHydat(hydat)
   {
     console.log(e);
     console.log(e.stack);
-    showToast("Failed to load hydat: " + e.name + "(" + e.message + ")", 5000, "red darken-4");
+    showToast("Failed to load hydat: " + e.name + "(" + e.message + ")", 3000, "red darken-4");
   }
   clearPlot();
   initVariableSelector(hydat);
@@ -318,6 +318,7 @@ var phase;
 var vec;
 var vec_animation;
 var three_line;
+
 function add_plot_each(phase_index_array, axes, line, width, color, dt, parameter_condition_list, current_param_idx, current_line_vec)
 {
   try
@@ -480,7 +481,7 @@ function add_plot_each(phase_index_array, axes, line, width, color, dt, paramete
     console.log(ex);
     console.log(ex.stack);
     showToast("Plot failed: " + ex.name +
-                      "(" + ex.message + ")", 5000, "red darken-4");
+                      "(" + ex.message + ")", 3000, "red darken-4");
     line.plotting = false;
     checkAndStopPreloader();
   }
