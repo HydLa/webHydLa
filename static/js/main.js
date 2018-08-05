@@ -26,6 +26,9 @@ var dat_gui_parameter_folder;
 var dat_gui_variable_folder;
 var dat_gui_parameter_folder_seek;
 
+var first_script_element;
+var dynamic_script_elements = [];
+
 $(document).ready(function(){
   /* initialize materialize components */
   $('#file-dropdown-button').dropdown({
@@ -49,6 +52,8 @@ $(document).ready(function(){
   loadThemeFromWebstorage();
   loadKeyBindingFromWebstorage();
   $('select').material_select();
+
+  first_script_element = document.getElementsByTagName('script')[0];
 
   plot_settings = browser_storage.getItem('plot_settings');
   if(plot_settings == null)
@@ -258,7 +263,7 @@ function sendHydLa() {
     if(phase_num.value != "")options_value += " -p " + phase_num.value;
     if(simulation_time.value != "")options_value += " -t " + simulation_time.value;
     if(phase_num.value == "" && simulation_time.value == "")options_value += " -p10";
-    if(html_mode_check_box.checked)options_value += " --fhtml ";
+    if(html_mode_check_box.checked)options_value += " -d --fhtml ";
     if(nd_mode_check_box.checked)options_value += " --fnd ";
     else options_value += " --fno-nd ";
     if(other_options.value != "")options_value += other_options.value;
@@ -301,6 +306,11 @@ function sendHydLa() {
       server_response = response;
       var output = document.getElementById("output-initial");
       output.innerHTML = "";
+      for(var si = 0; si < dynamic_script_elements.length; si++)
+      {
+        dynamic_script_elements[si].parentNode.removeChild(dynamic_script_elements[si]);
+      }
+      dynamic_script_elements = [];
       if(html_mode_check_box.checked)
       {
         if(response.stdout != undefined)
@@ -310,6 +320,17 @@ function sendHydLa() {
         if(response.stderr != undefined)
         {
           output.innerHTML += response.stderr;
+        }
+        scriptNodes = output.getElementsByTagName("script");
+        for(var si = 0; si < scriptNodes.length; si++)
+        {
+          if(scriptNodes[si].hasAttribute("src"))
+          {
+            continue;
+          }
+          var newScript = document.createElement("script");
+          newScript.innerHTML = scriptNodes[si].innerHTML;
+          dynamic_script_elements.push(first_script_element.parentNode.insertBefore(newScript, first_script_element));
         }
       }
       else
