@@ -544,36 +544,36 @@ function saveHydla() {
 }
 
 function loadFile() {
-	console.log("loadFile()");
+	// console.log("loadFile()");
 	var i = document.createElement("input");
-	console.log("i " + i);
+	// console.log("i " + i);
 	i.type = "file";
-	console.log("i.type " + i.type);
+	// console.log("i.type " + i.type);
 	var event = document.createEvent("MouseEvents");
-	console.log("event " + event);
+	// console.log("event " + event);
 	event.initMouseEvent(
 		"click", true, false, window, 0, 0, 0, 0, 0
 		, false, false, false, false, 0, null
 	);
 	i.addEventListener("change", function(ev) {
-		console.log("i.addEventListener " + i.addEventListener);
+		// console.log("i.addEventListener " + i.addEventListener);
 		var input_file = i.files[0];
-		console.log("input_file " + input_file);
+		// console.log("input_file " + input_file);
 		var fr = new FileReader;
 		fr.readAsText(input_file);
 		var splitted_strs = input_file.name.split(".");
-		console.log("splitted_strs " + splitted_strs);
+		// console.log("splitted_strs " + splitted_strs);
 		var ext = splitted_strs[splitted_strs.length - 1].toLowerCase();
 		// HOR: 拡張子がhydatであるかどうかを確認する
 		if(ext == "hydat")
 		{
 			fr.onload = function(evt) {
-				console.log("fr.result " + fr.result);
+				// console.log("fr.result " + fr.result);
 				// ファイルの内容はfr.resultに格納されている
 				var input_hydat = JSON.parse(fr.result);
-				console.log("input_hydat " + input_hydat);
+				// console.log("input_hydat " + input_hydat);
 				// input_hydat.(name) とすることで、hydatデータから値を持って来られる
-				console.log("input_hydat.guards " + input_hydat.guards);
+				// console.log("input_hydat.guards " + input_hydat.guards);
 				loadHydat(input_hydat);
 			};
 		} 
@@ -700,7 +700,7 @@ function initVariableSelector(hydat) {
 		var line_settings = settingsForCurrentHydat.plot_line_settings;
 		for (var i in line_settings)
 		{
-			console.log("i: " + i);
+			// console.log("i: " + i);
 			// ここで軸の設定をしていると思われる
 			var line = addNewLineWithIndex(line_settings[i].x, line_settings[i].y, line_settings[i].z, i);
 			/*

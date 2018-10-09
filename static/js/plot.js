@@ -1016,47 +1016,68 @@ function animate_time(){
 
 var axis = {};
 
-
+// "guard_list" contains ["y-=0", ...]; i.e. left side of "=>"
 var guard_list;
 // HOR: needs refactoring; move to separate file
 function guard() {
 
 	// プログラム中にガードがいくつ含まれていても対応できるようにする
-	
-	// a rectangular may be better
-	var g_geometry = new THREE.CylinderGeometry(0.03,0.03,100); // 本当は、解軌道の長さ分だけ描画したい
-	var g_material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: false});
-	var guard_line = new THREE.Mesh(g_geometry, g_material);
-	
-	var guard_lhs;
-	var guard_rhs;
-	// need to adapt this to multiple guards simulaniously
-	// "guard_list" contains ["y-=0", ...]; i.e. left side of "=>"
-	var separators = ['=', ">=", "<=", '<', '>'];
+	console.log("guard_list: " + guard_list);
+	// each clause
 	for (var i in guard_list) {
-		var guard_tokens = guard_list[i].split(new RegExp(separators.join('|'), 'g'));
-		console.log("guard_tokens: " + guard_tokens);
-		// console.log(guard_tokens);
-		guard_lhs = guard_tokens[0].replace('-', '');
-		guard_rhs = guard_tokens[1];
-	}
-	
-	console.log("test: " + settingsForCurrentHydat.plot_line_settings);
 
-	// bouncing_ball_ylste3.hydlaに関しては、これがplot_line_settings[1].yでないといけない。
-	if (guard_lhs == settingsForCurrentHydat.plot_line_settings[0].y)  {
-		guard_line.rotation.set(0, 0, -Math.PI/2);
-		guard_line.position.set(0, guard_rhs, 0);
-	} 
-	else if (guard_lhs == settingsForCurrentHydat.plot_line_settings[0].x)  {
-		guard_line.rotation.set(0, 0, 0);
-		guard_line.position.set(guard_rhs, 0, 0);
-	} 
-	else if (guard_lhs == settingsForCurrentHydat.plot_line_settings[0].z)  {
-		guard_line.rotation.set(-Math.PI/2, 0, 0);
-		guard_line.position.set(0, guard_rhs, 0);
+		console.log("guard_list[" + i + "]: " + guard_list[i]);
+
+		// WALL <=> []("""x- = 0 | x- = 6""" => ...)
+		// まず、「|」と「&」と「/\」と「\/」で分割する
+		var clause_separators = ["\\\&", "\\\|", "/\\", "\\/"];
+		var guard_literal = guard_list[i].split(new RegExp(clause_separators.join('|'), 'g'));
+		// each literal
+		for (var j in guard_literal) {
+
+			console.log("guard_literal[" + j + "]: " + guard_literal[j]);
+
+			var guard_lhs;
+			var guard_rhs;
+			var literal_separators = ['=', ">=", "<=", '<', '>'];
+			var guard_tokens = guard_literal[j].split(new RegExp(literal_separators.join('|'), 'g'));
+			// console.log("guard_tokens: " + guard_tokens);
+			guard_lhs = guard_tokens[0].replace('-', '').replace('(', '');
+			guard_rhs = guard_tokens[1].replace(')', '');
+
+			console.log("guard_lhs: " + guard_lhs);
+			console.log("guard_rhs: " + guard_rhs);
+
+			// a rectangular may be better (3次元にも対応するため)
+			var g_geometry = new THREE.CylinderGeometry(0.03,0.03,100); // 本当は、解軌道の長さ分だけ描画したい
+			var g_material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: false});
+			var guard_line = new THREE.Mesh(g_geometry, g_material);
+			var line_settings = settingsForCurrentHydat.plot_line_settings;
+			for (var k in line_settings) {
+				if (guard_lhs == line_settings[k].x)  {
+					console.log("draw x-line");
+					guard_line.rotation.set(0, 0, 0);
+					guard_line.position.set(guard_rhs, 0, 0);
+				} 
+				else if (guard_lhs == line_settings[k].y)  {
+					console.log("draw y-line");
+					guard_line.rotation.set(0, 0, -Math.PI/2);
+					guard_line.position.set(0, guard_rhs, 0);
+				}
+				else if (guard_lhs == line_settings[k].z)  {
+					console.log("draw z-line");
+					guard_line.rotation.set(-Math.PI/2, 0, 0);
+					guard_line.position.set(0, guard_rhs, 0);
+				} else {
+					console.log("no match, sorry...");
+				}
+				graph_scene.add(guard_line);
+			}
+
+		}
+
+
 	}
-	graph_scene.add(guard_line);
 
 }
 // PlaneGeometry(width:Float, height:Float, 
