@@ -3,7 +3,7 @@
 from flask import Flask, redirect, url_for, request, abort, jsonify, render_template, session
 import sys, os, time, shlex, subprocess, json
 
-key_file = open('secret_key')
+key_file = open('secret_key.txt')
 # setup Flask
 app = Flask(__name__,static_url_path="")
 app.secret_key = key_file.read()

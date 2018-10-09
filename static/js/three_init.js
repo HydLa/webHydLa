@@ -9,7 +9,7 @@ var range_mode=false;
 
 window.addEventListener("DOMContentLoaded", init());
 
-function init(){
+function init() {
   graph_scene = new THREE.Scene();
 
   // PerspectiveCamera

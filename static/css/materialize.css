@@ -2124,11 +2124,11 @@
 }
 
 .shades.white {
-  background-color: #FFFFFF !important;
+  background-color: #000 !important;
 }
 
 .shades-text.text-white {
-  color: #FFFFFF !important;
+  color: #000 !important;
 }
 
 .shades.transparent {
@@ -2148,11 +2148,11 @@
 }
 
 .white {
-  background-color: #FFFFFF !important;
+  background-color: #000 !important;
 }
 
 .white-text {
-  color: #FFFFFF !important;
+  color: #000 !important;
 }
 
 .transparent {
@@ -2791,7 +2791,7 @@ video.responsive-video {
 }
 
 .breadcrumb:last-child {
-  color: #fff;
+  color: #000;
 }
 
 .parallax-container {
@@ -3053,7 +3053,7 @@ td, th {
 }
 
 .collection .collection-item {
-  background-color: #fff;
+  background-color: #000;
   line-height: 1.5rem;
   padding: 10px 20px;
   margin: 0;
@@ -3079,7 +3079,7 @@ td, th {
 .collection .collection-item.avatar i.circle {
   font-size: 18px;
   line-height: 42px;
-  color: #fff;
+  color: #000;
   background-color: #999;
   text-align: center;
 }
@@ -3108,7 +3108,7 @@ td, th {
 }
 
 .collection .collection-item.active .secondary-content {
-  color: #fff;
+  color: #000;
 }
 
 .collection a.collection-item {
@@ -3122,7 +3122,7 @@ td, th {
 }
 
 .collection.with-header .collection-header {
-  background-color: #fff;
+  background-color: #000;
   border-bottom: 1px solid #e0e0e0;
   padding: 10px 20px;
 }
@@ -3160,7 +3160,7 @@ span.badge {
 span.badge.new {
   font-weight: 300;
   font-size: 0.8rem;
-  color: #fff;
+  color: #000;
   background-color: #26a69a;
   border-radius: 2px;
 }
@@ -3602,7 +3602,7 @@ nav ul a span.badge {
 }
 
 .mdi-inverse {
-  color: #ffffff;
+  color: #000000;
 }
 
 /* Start Icons */
@@ -6699,6 +6699,7 @@ nav ul a span.badge {
 }
 
 .row .col {
+  background-color: black;
   float: left;
   box-sizing: border-box;
   padding: 0 0.75rem;
@@ -6727,6 +6728,8 @@ nav ul a span.badge {
   margin-left: auto;
   left: auto;
   right: auto;
+  color: #000000;
+  background-color: black;
 }
 
 .row .col.s4 {
@@ -7303,15 +7306,15 @@ nav ul a span.badge {
 }
 
 nav {
-  color: #fff;
-  background-color: #ee6e73;
+  color: #00f;
+  background-color: #00f;
   width: 100%;
   height: 56px;
   line-height: 56px;
 }
 
 nav a {
-  color: #fff;
+  color: #00f;
 }
 
 nav i,
@@ -7349,7 +7352,7 @@ nav .button-collapse i {
 
 nav .brand-logo {
   position: absolute;
-  color: #fff;
+  color: #000;
   display: inline-block;
   font-size: 2.1rem;
   padding: 0;
@@ -7404,7 +7407,7 @@ nav ul li.active {
 nav ul a {
   transition: background-color .3s;
   font-size: 1rem;
-  color: #fff;
+  color: #00f;
   display: block;
   padding: 0 15px;
   cursor: pointer;
@@ -7446,12 +7449,12 @@ nav .input-field label {
 }
 
 nav .input-field label i {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(0, 255, 255, 0.7);
   transition: color .3s;
 }
 
 nav .input-field label.active i {
-  color: #fff;
+  color: #00f;
 }
 
 nav .input-field label.active {
@@ -7749,13 +7752,13 @@ small {
   padding: 20px;
   margin: 0.5rem 0 1rem 0;
   border-radius: 2px;
-  background-color: #fff;
+  background-color: #00f;
 }
 
 .card {
   position: relative;
   margin: 0.5rem 0 1rem 0;
-  background-color: #fff;
+  background-color: #00f;
   transition: box-shadow .25s;
   border-radius: 2px;
 }
@@ -7820,7 +7823,7 @@ small {
 }
 
 .card .card-image .card-title {
-  color: #fff;
+  color: #00f;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -7847,7 +7850,7 @@ small {
 }
 
 .card .card-action a:not(.btn):not(.btn-large):not(.btn-floating) {
-  color: #ffab40;
+  color: #00f;
   margin-right: 20px;
   transition: color .3s ease;
   text-transform: uppercase;
@@ -7860,7 +7863,7 @@ small {
 .card .card-reveal {
   padding: 20px;
   position: absolute;
-  background-color: #fff;
+  background-color: #000;
   width: 100%;
   overflow-y: auto;
   top: 100%;
@@ -7915,11 +7918,11 @@ small {
   min-height: 48px;
   line-height: 1.5em;
   word-break: break-all;
-  background-color: #323232;
+  background-color: #00f;
   padding: 10px 25px;
   font-size: 1.1rem;
   font-weight: 300;
-  color: #fff;
+  color: #00f;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
@@ -7967,13 +7970,14 @@ small {
   overflow-x: auto;
   overflow-y: hidden;
   height: 48px;
-  background-color: #fff;
+  background-color: #000;
+  color: black;
   margin: 0 auto;
   width: 100%;
   white-space: nowrap;
 }
 
-.tabs .tab {
+.tabs {
   -webkit-box-flex: 1;
   -webkit-flex-grow: 1;
   -ms-flex-positive: 1;
@@ -7991,10 +7995,13 @@ small {
   letter-spacing: .8px;
   width: 15%;
   min-width: 80px;
+  background-color: #000;
+  color: black;
 }
 
 .tabs .tab a {
-  color: #ee6e73;
+  color: black;
+  background-color: black;
   display: block;
   width: 100%;
   height: 100%;
@@ -8004,11 +8011,12 @@ small {
 }
 
 .tabs .tab a:hover {
-  color: #f9c9cb;
+  color: #000;
+  background-color: black;
 }
 
 .tabs .tab.disabled a {
-  color: #f9c9cb;
+  color: #000;
   cursor: default;
 }
 
@@ -8016,7 +8024,7 @@ small {
   position: absolute;
   bottom: 0;
   height: 2px;
-  background-color: #f6b2b5;
+  background-color: #000;
   will-change: left, right;
 }
 
@@ -8026,7 +8034,7 @@ small {
   z-index: 2000;
   background-color: transparent;
   border-radius: 2px;
-  color: #fff;
+  color: #000;
   min-height: 36px;
   line-height: 120%;
   opacity: 0;
@@ -8068,7 +8076,7 @@ small {
 }
 
 .btn.disabled, .disabled.btn-large, .btn-floating.disabled, .btn-large.disabled, .btn:disabled, .btn-large:disabled, .btn-large:disabled, .btn-floating:disabled {
-  background-color: #DFDFDF !important;
+  background-color: #000 !important;
   box-shadow: none;
   color: #9F9F9F !important;
   cursor: default;
@@ -8090,8 +8098,8 @@ small {
 
 .btn, .btn-large {
   text-decoration: none;
-  color: #fff;
-  background-color: #26a69a;
+  color: #000;
+  background-color: #000;
   text-align: center;
   letter-spacing: .5px;
   transition: .2s ease-out;
@@ -8099,12 +8107,12 @@ small {
 }
 
 .btn:hover, .btn-large:hover {
-  background-color: #2bbbad;
+  background-color: #000;
 }
 
 .btn-floating {
   display: inline-block;
-  color: #fff;
+  color: #000;
   position: relative;
   overflow: hidden;
   z-index: 1;
@@ -8112,7 +8120,7 @@ small {
   height: 37px;
   line-height: 37px;
   padding: 0;
-  background-color: #26a69a;
+  background-color: #000;
   border-radius: 50%;
   transition: .3s;
   cursor: pointer;
@@ -8123,7 +8131,7 @@ small {
   width: inherit;
   display: inline-block;
   text-align: center;
-  color: #fff;
+  color: #000;
   font-size: 1.6rem;
   line-height: 37px;
 }
@@ -8204,7 +8212,7 @@ button.btn-floating {
 .btn-flat {
   box-shadow: none;
   background-color: transparent;
-  color: #343434;
+  color: #000;
   cursor: pointer;
 }
 
@@ -8227,7 +8235,7 @@ button.btn-floating {
 }
 
 .dropdown-content {
-  background-color: #fff;
+  background-color: #000;
   margin: 0;
   display: none;
   min-width: 100px;
@@ -8251,11 +8259,11 @@ button.btn-floating {
 }
 
 .dropdown-content li:hover, .dropdown-content li.active, .dropdown-content li.selected {
-  background-color: #eee;
+  background-color: #000;
 }
 
 .dropdown-content li.active.selected {
-  background-color: #e1e1e1;
+  background-color: #000;
 }
 
 .dropdown-content li.divider {
@@ -8265,7 +8273,7 @@ button.btn-floating {
 
 .dropdown-content li > a, .dropdown-content li > span {
   font-size: 16px;
-  color: #26a69a;
+  color: #000;
   display: block;
   line-height: 22px;
   padding: 14px 16px;
@@ -8502,7 +8510,7 @@ a.waves-effect .waves-ripple {
   min-height: 3rem;
   line-height: 3rem;
   padding: 0 1rem;
-  background-color: #fff;
+  background-color: #000;
   border-bottom: 1px solid #ddd;
 }
 
@@ -8550,7 +8558,7 @@ a.waves-effect .waves-ripple {
 
 .side-nav .collapsible-body {
   border: 0;
-  background-color: #fff;
+  background-color: #000;
 }
 
 .side-nav .collapsible-body li a {
@@ -8636,7 +8644,7 @@ a.waves-effect .waves-ripple {
 .materialbox-caption {
   position: fixed;
   display: none;
-  color: #fff;
+  color: #000;
   line-height: 50px;
   bottom: 0;
   width: 100%;
@@ -8995,7 +9003,7 @@ textarea.materialize-textarea + label:after {
 }
 
 .input-field input[type=search]:focus {
-  background-color: #fff;
+  background-color: #000;
   border: 0;
   box-shadow: none;
   color: #444;
@@ -9659,7 +9667,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 
 input[type=range] {
   /* fix for FF unable to apply focus style bug  */
-  border: 1px solid white;
+  border: 1px solid black;
   /*required for proper track sizing in FF*/
 }
 
@@ -9680,7 +9688,7 @@ input[type=range]::-moz-range-thumb {
 
 /*hide the outline behind the border*/
 input[type=range]:-moz-focusring {
-  outline: 1px solid white;
+  outline: 1px solid black;
   outline-offset: -1px;
 }
 
@@ -9779,7 +9787,7 @@ select {
   height: calc(100% + 60px);
   height: -moz-calc(100%);
   padding-bottom: 60px;
-  background-color: #fff;
+  background-color: #000;
   z-index: 999;
   overflow-y: auto;
   will-change: left;
@@ -9855,7 +9863,7 @@ select {
 
 .side-nav .collapsible-body li.active a,
 .side-nav.fixed .collapsible-body li.active a {
-  color: #fff;
+  color: #000;
 }
 
 #sidenav-overlay {
@@ -10433,7 +10441,7 @@ select {
 }
 
 .slider .slides li .caption {
-  color: #fff;
+  color: #000;
   position: absolute;
   top: 15%;
   left: 15%;
@@ -10631,7 +10639,7 @@ select {
  * The box contains all the picker contents.
  */
 .picker__box {
-  background: #ffffff;
+  background: #000;
   display: table-cell;
   vertical-align: middle;
 }
@@ -10852,7 +10860,7 @@ select {
 .picker__day--outfocus {
   display: none;
   padding: .75rem 0;
-  color: #fff;
+  color: #000;
 }
 
 .picker__day--outfocus:hover {
@@ -10873,7 +10881,7 @@ select {
   -webkit-transform: scale(0.75);
           transform: scale(0.75);
   background: #0089ec;
-  color: #ffffff;
+  color: #000;
 }
 
 .picker__day--disabled,
@@ -10909,8 +10917,8 @@ select {
 .picker__button--today,
 .picker__button--clear,
 .picker__button--close {
-  border: 1px solid #ffffff;
-  background: #ffffff;
+  border: 1px solid #000000;
+  background: #000000;
   font-size: .8em;
   padding: .66em 0;
   font-weight: bold;
@@ -10995,7 +11003,7 @@ select {
 .picker__date-display {
   text-align: center;
   background-color: #26a69a;
-  color: #fff;
+  color: #000;
   padding-bottom: 15px;
   font-weight: 300;
 }
@@ -11061,7 +11069,7 @@ select {
 }
 
 .picker__day.picker__day--today.picker__day--selected {
-  color: #fff;
+  color: #000;
 }
 
 .picker__weekday {
@@ -11075,7 +11083,7 @@ select {
   -webkit-transform: scale(0.9);
           transform: scale(0.9);
   background-color: #26a69a;
-  color: #ffffff;
+  color: #000000;
 }
 
 .picker__day--selected.picker__day--outfocus,
@@ -11136,7 +11144,7 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
   border-top: 1px solid #dddddd;
   margin-bottom: -1px;
   position: relative;
-  background: #ffffff;
+  background: #000000;
   padding: .75em 1.25em;
 }
 
@@ -11173,7 +11181,7 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
 .picker__list-item--selected:hover,
 .picker--focused .picker__list-item--selected {
   background: #0089ec;
-  color: #ffffff;
+  color: #000000;
   z-index: 10;
 }
 
@@ -11213,7 +11221,7 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
   background: #ee2200;
   border-color: #ee2200;
   cursor: pointer;
-  color: #ffffff;
+  color: #000000;
   outline: none;
 }
 
@@ -11226,7 +11234,7 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
 
 .picker--time .picker__button--clear:hover:before,
 .picker--time .picker__button--clear:focus:before {
-  color: #ffffff;
+  color: #000000;
 }
 
 /* ==========================================================================

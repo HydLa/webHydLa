@@ -9,6 +9,12 @@ html, body{
   overflow: hidden;
 }
 
+#system_name {
+  color: white;
+  display: inline;
+  padding-left: 30px;
+}
+
 #container {
   height: 100%;
   width: 100%;
@@ -22,7 +28,7 @@ html, body{
   order: 1;
   width: 100%;
   height: 50px;
-  background-color: #ff9933;
+  background-color: #2D4E87;
   padding: 5px;
 }
 
@@ -40,6 +46,7 @@ html, body{
   height: 100%;
   display: flex;
   display: -webkit-flex;
+  /*background-color: black;*/
 }
 
 #splitter>.inner {
@@ -95,7 +102,7 @@ html, body{
   position: relative;
   width: 20px;
   height: 100%;
-  background-color: #ff9933;
+  background-color: #2D4E87;
   z-index: 100;
 }
 
@@ -106,11 +113,13 @@ html, body{
   height: 100%;
   position: relative;
   z-index: 1;
+  background-color: black;
 }
 
 #result-pane>.inner {
   flex-flow: column;
   -webkit-flex-flow: column;
+  background-color: black;
 }
 
 #graph-area {
@@ -120,6 +129,7 @@ html, body{
     height: 100%;
     position: relative;
     z-index: 2;
+    background-color: black;
 }
 
 #output-area {
@@ -130,13 +140,15 @@ html, body{
     position: relative;
     overflow-y: scroll;
     overflow-x: visible;
+    background-color: black;
 }
 
 #h-separator {
   order: 1;
   width: 100%;
   height: 20px;
-  background-color: #ff9933;
+  /*background-color: #ff9933;*/
+  background-color: #2D4E87;
 }
 
 #text-area {
@@ -149,6 +161,11 @@ html, body{
 #graph-setting-area {
   order: 2;
   height: 360px;
+  background-color: black; /*HOR: white is left when we adjust the height*/
+}
+
+#sim_set {
+  color: #999;
 }
 
 #graph-axis-setting{
@@ -281,6 +298,10 @@ html, body{
     flex: 1;
     position: relative;
     z-index: 1;
+}
+
+#tab_container {
+  background-color: black;
 }
 
 #setting-area {
