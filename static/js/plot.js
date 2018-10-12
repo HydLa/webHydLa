@@ -382,9 +382,9 @@ function add_plot_each(phase_index_array, axes, line, width, color, dt, paramete
 
 				// dottedLength = 10.0/graph_camera.zoom;
 				dottedLength = 100.0/graph_camera.zoom;
-				for(var i = 0; i + 1 < current_line_vec.length; i++)
+				for (var i = 0; i + 1 < current_line_vec.length; i++)
 				{
-					if('isPP' in current_line_vec[i + 1])
+					if ('isPP' in current_line_vec[i + 1])
 					{
 						posBegin = current_line_vec[i];
 						posEnd = current_line_vec[i + 1];
@@ -406,7 +406,7 @@ function add_plot_each(phase_index_array, axes, line, width, color, dt, paramete
 					}
 				}
 
-				// #HOR: これで、解軌道を描画している。解軌道の形は、上で準備した。
+				// #HOR: これで、解軌道を描画している。解軌道の形(cylindersGeometry)は、上で準備した。
 				var three_line = new THREE.Mesh(
 					cylindersGeometry,
 					// new THREE.MeshBasicMaterial({color:color[current_param_idx]})
@@ -442,7 +442,7 @@ function add_plot_each(phase_index_array, axes, line, width, color, dt, paramete
 					console.log("a");
 				}
 
-				guard(); // HOR: guardの描画。本当はplot_linesから描かせたい
+				draw_guard_new(); // HOR: guardの描画。本当はplot_linesから描かせたい
 
 			}
 			while(true)
@@ -1013,97 +1013,7 @@ function animate_time(){
 	time++;
 }
 
-
 var axis = {};
-
-// "guard_list" contains ["y-=0", ...]; i.e. left side of "=>"
-var guard_list;
-// HOR: needs refactoring; move to separate file
-function guard() {
-
-	// プログラム中にガードがいくつ含まれていても対応できるようにする
-	console.log("guard_list: " + guard_list);
-	// each clause
-	for (var i in guard_list) {
-
-		console.log("guard_list[" + i + "]: " + guard_list[i]);
-
-		// WALL <=> []("""x- = 0 | x- = 6""" => ...)
-		// まず、「|」と「&」と「/\」と「\/」で分割する
-		var clause_separators = ["\\\&", "\\\|", "/\\", "\\/"];
-		var guard_literal = guard_list[i].split(new RegExp(clause_separators.join('|'), 'g'));
-		// each literal
-		for (var j in guard_literal) {
-
-			console.log("guard_literal[" + j + "]: " + guard_literal[j]);
-
-			var guard_lhs;
-			var guard_rhs;
-			var literal_separators = ['=', ">=", "<=", '<', '>'];
-			var guard_tokens = guard_literal[j].split(new RegExp(literal_separators.join('|'), 'g'));
-			// console.log("guard_tokens: " + guard_tokens);
-			guard_lhs = guard_tokens[0].replace('-', '').replace('(', '');
-			guard_rhs = guard_tokens[1].replace(')', '');
-
-			console.log("guard_lhs: " + guard_lhs);
-			console.log("guard_rhs: " + guard_rhs);
-
-			// a rectangular may be better (3次元にも対応するため)
-			var g_geometry = new THREE.CylinderGeometry(0.03,0.03,100); // 本当は、解軌道の長さ分だけ描画したい
-			var g_material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: false});
-			var guard_line = new THREE.Mesh(g_geometry, g_material);
-			var line_settings = settingsForCurrentHydat.plot_line_settings;
-			for (var k in line_settings) {
-				if (guard_lhs == line_settings[k].x)  {
-					console.log("draw x-line");
-					guard_line.rotation.set(0, 0, 0);
-					guard_line.position.set(guard_rhs, 0, 0);
-				} 
-				else if (guard_lhs == line_settings[k].y)  {
-					console.log("draw y-line");
-					guard_line.rotation.set(0, 0, -Math.PI/2);
-					guard_line.position.set(0, guard_rhs, 0);
-				}
-				else if (guard_lhs == line_settings[k].z)  {
-					console.log("draw z-line");
-					guard_line.rotation.set(-Math.PI/2, 0, 0);
-					guard_line.position.set(0, guard_rhs, 0);
-				} else {
-					console.log("no match, sorry...");
-				}
-				graph_scene.add(guard_line);
-			}
-
-		}
-
-
-	}
-
-}
-// PlaneGeometry(width:Float, height:Float, 
-//               widthSegments:Integer, heightSegments:Integer)
-//   width — Width along the X axis. Default is 1.
-//   height — Height along the Y axis. Default is 1.
-//   widthSegments — Optional. Default is 1. 
-//   heightSegments — Optional. Default is 1.
-
-// MeshBasicMaterial( parameters : Object )
-//   parameters - (optional) an object with one or more properties 
-//                defining the material's appearance. 
-//                Any property of the material (including any property inherited 
-//                from Material) can be passed in here.
-//                The exception is the property color, which can be passed in as 
-//                a hexadecimal string and is 0xffffff (white) by default.
-
-// Mesh( geometry : Geometry, material : Material )
-//   geometry — (optional) an instance of Geometry or BufferGeometry. 
-//              Default is a new BufferGeometry.
-//   material — (optional) a single or an array of Material.
-//              Default is a new MeshBasicMaterial
-
-// .position : Vector3
-//   A Vector3 representing the object's local position. Default is (0, 0, 0).
-
 var face_all;
 var face_a;
 function range_make_all(){
