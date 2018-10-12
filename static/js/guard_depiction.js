@@ -232,7 +232,8 @@ function parse_rm_leftlim(guard) {
 // まずはこの例だけに絞って考察する。あとで一般的なものに修正する。
 function parse_conjunction(clause) {
 	var conjunction_separators = ["\\\&"];
-	var literals = clause.split(new RegExp(conjunction_separators.join('|'), 'g'));
+	var clause_noparentheses = parse_rm_parentheses(clause);
+	var literals = clause_noparentheses.split(new RegExp(conjunction_separators.join('|'), 'g'));
 	return literals;
 }
 
