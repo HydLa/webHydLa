@@ -1,9 +1,11 @@
 /* initially written by Takafumi Horiuchi (2018.10) */
-const inf = 10, eps = 0.05;
-const splitAt = index => x => [x.slice(0, index), x.slice(index)];
+
 var guard_list; // e.g. [ y-=0, (x-=0|x-=6), y-=4&0<=x-&x-<=2, x-=2&2<=y-&y-<=4, y-=2&2<=x-&x-<=4, x-=4&0<=y-&y-<=2]
 
-function draw_guard() {
+const inf = 10, eps = 0.05;
+
+function draw_guard()
+{
 	console.log("EXECUTING draw_guard_new");
 	// all guards contained in hydla program
 	console.log("guard_list: " + guard_list);
@@ -13,23 +15,43 @@ function draw_guard() {
 	for (var cls_i in guard_list) {
 		console.log("guard_list[" + cls_i + "]: " + guard_list[cls_i]);
 
-		// cf: 4<=x-&x-<=6&(y-=2|y-=4)
+		// cf: 4<=x-&x-<=6&(y-=2|y-=4) []
 		var infix_clause = parse_rm_leftlim(guard_list[cls_i]);
 		// cf: 4<=x&x<=6&(y=2|y=4)
-		
-		//
-		//  4<=x  &  x<=6  &  (  y=2  |  y=4  )
 		var postfix_clause = shunting_yard(infix_clause);
-		//
+		// cf: 4<=x x<=6 & y=2 y=4 | &
+
+		var rectlist_stack = []; // list of list of rectangulars
+		var operators = ["&", "|"]; // order does not matter
+		var tokens_buf = postfix_clause.slice().reverse();
+		while(tokens_buf.length > 0) {
+			var tok = tokens_buf.pop();
+			if (operators.indexOf(tok) > -1) { // tok is an operator
+				var op = tok;
+				var rectlist_1 = rectlist_stack.pop(); // [...,{},...]
+				var rectlist_2 = rectlist_stack.pop(); // [...,{},...]
+				exec_operation(rectlist_1, rectlist_2, op, rectlist_stack);
+			}
+			else { // tok is an literal
+				var literal = tok;
+				var rectlist = [literal_to_rectangular(literal)]; // [{}]
+				rectlist_stack.push(rectlist); // [...,[{}]]
+			}
+		}
+
+		// rectlist_stack should contain exactly one list in its list
+		draw_rectangulars(rectlist_stack[0]);
+
+		/*
+		////////////////////////////////////////////////////////////////////
+		// 旧実装
 
 		var literals = parse_conjunction(infix_clause); // とりあえず「&」で切る
-		console.log(literals);
 		// cf: ["4<=x", "x<=6", "(y=2|y=4)"]
 
 		var rectangular_todepict = [];
 		var rectangular_totake_intersection = []; // 本当はリストのリストであるべき
 		for (var lit_i in literals) {
-			console.log("literal: " + literals[lit_i]);
 			
 			if (literals[lit_i].includes('|')) { // disjunctions(|) // union	
 				var inner_litlst = parse_disjunction(literals[lit_i]);
@@ -46,13 +68,37 @@ function draw_guard() {
 		
 		console.log("rectangular_totake_intersection");
 		console.log(rectangular_totake_intersection);
-		rectangular_todepict.push(take_intersection(rectangular_totake_intersection));
+		rectangular_todepict.push(take_intersection_multiple(rectangular_totake_intersection));
 
 		draw_rectangulars(rectangular_todepict);
+		*/
+
 	} // end of iteration of clause
 
 	return;
 } // end of draw_guard()
+
+// array arguments in javascripts are call by reference
+function exec_operation(rectlist_1, rectlist_2, op, rectlist_stack) {
+	// TODO: adapt to suit "/\" and "\/"
+	var tmp_rectlist = [];
+	if (op == "&") {
+		for (i in rectlist_1) {
+			for (j in rectlist_2) {
+				tmp_rectlist.push(take_intersection(rectlist_1[i], rectlist_2[j])); // [...,{}]
+			}
+		}
+	}
+	else if (op == "|") {
+		tmp_rectlist = rectlist_1.concat(rectlist_2);
+		// for (i in rectlist_1) tmp_rectlist.push(rectlist_1[i]);
+		// for (i in rectlist_2) tmp_rectlist.push(rectlist_2[i]);
+	}
+	else { /* oops... seems like something went wrong. */ }
+
+	rectlist_stack.push(tmp_rectlist);
+	return;
+}
 
 // convert to reverse polish notation
 // takes original string of guard as argument
@@ -108,6 +154,7 @@ function shunting_yard(infix_clause) {
 
 // e.g. "4<=x" : create rectangular of [x:4~inf, y:-inf~inf, z:-inf~int]
 function literal_to_rectangular(literal) {
+	const splitAt = index => x => [x.slice(0, index), x.slice(index)];
 	var lit_variable, lit_value;
 	var literal_separators = [">=", "<=", '=', '<', '>']; // forgetting negation "!=" ...?
 	var litsep_index, litsep_i; // need scope outsize of loop
@@ -212,6 +259,58 @@ function draw_rectangulars(rectangulars) {
 	return;
 }
 
+// returns a rectangular: {}
+function take_intersection(rect1, rect2) {
+	var rectangular_list = [rect1, rect2];
+	var num_rect = rectangular_list.length;
+	var intersected_rectangular = {};
+	var x_lefts = [];
+	var x_rights = [];
+	var y_lefts = [];
+	var y_rights = [];
+	var z_lefts = [];
+	var z_rights = [];
+	var line_settings = settingsForCurrentHydat.plot_line_settings;
+	// このline_settingsが複数ある意味が理解できていない。
+	for (var ls_i in line_settings) {
+
+		for (var i=0; i<num_rect; i++) {
+			// これの正しいシンタックスがわからない。
+			x_lefts.push(rectangular_list[i]["axis_" + line_settings[ls_i].x]["left"]);
+			x_rights.push(rectangular_list[i]["axis_" + line_settings[ls_i].x]["right"]);
+			y_lefts.push(rectangular_list[i]["axis_" + line_settings[ls_i].y]["left"]);
+			y_rights.push(rectangular_list[i]["axis_" + line_settings[ls_i].y]["right"]);
+			z_lefts.push(rectangular_list[i]["axis_" + line_settings[ls_i].z]["left"]);
+			z_rights.push(rectangular_list[i]["axis_" + line_settings[ls_i].z]["right"]);
+		}
+
+		// range of x
+		intersected_rectangular["axis_" + line_settings[ls_i].x] = {
+			"left": Math.max.apply(null, x_lefts),
+			"right": Math.min.apply(null, x_rights)
+		}
+		// range of y
+		intersected_rectangular["axis_" + line_settings[ls_i].y] = {
+			"left": Math.max.apply(null, y_lefts),
+			"right": Math.min.apply(null, y_rights)
+		}
+		// range of z
+		intersected_rectangular["axis_" + line_settings[ls_i].z] = {
+			"left": Math.max.apply(null, z_lefts),
+			"right": Math.min.apply(null, z_rights)
+		}
+
+	}
+	
+	console.log("x_lefts");
+	console.log(x_lefts);
+
+	console.log("intersected_rectangular:");
+	console.log(intersected_rectangular);
+
+	return intersected_rectangular;
+}
+
 
 //	rectangular_totake_intersection = [
 //		{"x": {"left": vall1, "right": valr1}, 'y': {"left": val, "right": val}, 'z': {"left": val, "right": val}},
@@ -219,7 +318,7 @@ function draw_rectangulars(rectangulars) {
 //		{"x": {"left": vall3, "right": valr3}, 'y': {"left": val, "right": val}, 'z': {"left": val, "right": val}},
 // 		...,
 //	]
-function take_intersection(rectangular_list) {
+function take_intersection_multiple(rectangular_list) {
 	var intersected_rectangular = {};
 	var num_rect = rectangular_list.length;
 	var x_lefts = [];
