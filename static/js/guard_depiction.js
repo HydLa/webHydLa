@@ -2,7 +2,8 @@
 
 var guard_list; // c.f: [y-=0,(x-=0|x-=6),y-=4&0<=x-&x-<=2,...]
 
-const inf = 10, eps = 0.05;
+// want to adjust "inf" according to the trajectory's maximum range of each axis
+const inf = 20, eps = 0.05;
 
 // call this function once when hydat is loaded
 function guard_depiction_setup(hydat) {
@@ -48,37 +49,6 @@ function draw_guard()
 		// rectlist_stack should contain exactly one list in its list
 		draw_rectangulars(rectlist_stack[0]);
 
-		/*
-		////////////////////////////////////////////////////////////////////
-		// 旧実装
-
-		var literals = parse_conjunction(infix_clause); // とりあえず「&」で切る
-		// cf: ["4<=x", "x<=6", "(y=2|y=4)"]
-
-		var rectangular_todepict = [];
-		var rectangular_totake_intersection = []; // 本当はリストのリストであるべき
-		for (var lit_i in literals) {
-			
-			if (literals[lit_i].includes('|')) { // disjunctions(|) // union	
-				var inner_litlst = parse_disjunction(literals[lit_i]);
-				for (i in inner_litlst) {
-					var rectangular = literal_to_rectangular(inner_litlst[i]);
-					rectangular_todepict.push(rectangular);
-				}
-			} else { // conjunctions(&) // intersection
-				var rectangular = literal_to_rectangular(literals[lit_i]);
-				rectangular_totake_intersection.push(rectangular);
-			}
-
-		} // end of iteration of literal
-		
-		console.log("rectangular_totake_intersection");
-		console.log(rectangular_totake_intersection);
-		rectangular_todepict.push(take_intersection_multiple(rectangular_totake_intersection));
-
-		draw_rectangulars(rectangular_todepict);
-		*/
-
 	} // end of iteration of clause
 
 	return;
@@ -91,7 +61,9 @@ function exec_operation(rectlist_1, rectlist_2, op, rectlist_stack) {
 	if (op == "&") {
 		for (i in rectlist_1) {
 			for (j in rectlist_2) {
-				tmp_rectlist.push(take_intersection(rectlist_1[i], rectlist_2[j])); // [...,{}]
+				var processing_rect = [rectlist_1[i], rectlist_2[j]];
+				var intersect_rect = take_intersection(processing_rect);
+				tmp_rectlist.push(intersect_rect); // [...,{}]
 			}
 		}
 	}
@@ -265,58 +237,6 @@ function draw_rectangulars(rectangulars) {
 	return;
 }
 
-// returns a rectangular: {}
-function take_intersection(rect1, rect2) {
-	var rectangular_list = [rect1, rect2];
-	var num_rect = rectangular_list.length;
-	var intersected_rectangular = {};
-	var x_lefts = [];
-	var x_rights = [];
-	var y_lefts = [];
-	var y_rights = [];
-	var z_lefts = [];
-	var z_rights = [];
-	var line_settings = settingsForCurrentHydat.plot_line_settings;
-	// このline_settingsが複数ある意味が理解できていない。
-	for (var ls_i in line_settings) {
-
-		for (var i=0; i<num_rect; i++) {
-			// これの正しいシンタックスがわからない。
-			x_lefts.push(rectangular_list[i]["axis_" + line_settings[ls_i].x]["left"]);
-			x_rights.push(rectangular_list[i]["axis_" + line_settings[ls_i].x]["right"]);
-			y_lefts.push(rectangular_list[i]["axis_" + line_settings[ls_i].y]["left"]);
-			y_rights.push(rectangular_list[i]["axis_" + line_settings[ls_i].y]["right"]);
-			z_lefts.push(rectangular_list[i]["axis_" + line_settings[ls_i].z]["left"]);
-			z_rights.push(rectangular_list[i]["axis_" + line_settings[ls_i].z]["right"]);
-		}
-
-		// range of x
-		intersected_rectangular["axis_" + line_settings[ls_i].x] = {
-			"left": Math.max.apply(null, x_lefts),
-			"right": Math.min.apply(null, x_rights)
-		}
-		// range of y
-		intersected_rectangular["axis_" + line_settings[ls_i].y] = {
-			"left": Math.max.apply(null, y_lefts),
-			"right": Math.min.apply(null, y_rights)
-		}
-		// range of z
-		intersected_rectangular["axis_" + line_settings[ls_i].z] = {
-			"left": Math.max.apply(null, z_lefts),
-			"right": Math.min.apply(null, z_rights)
-		}
-
-	}
-	
-	console.log("x_lefts");
-	console.log(x_lefts);
-
-	console.log("intersected_rectangular:");
-	console.log(intersected_rectangular);
-
-	return intersected_rectangular;
-}
-
 
 //	rectangular_totake_intersection = [
 //		{"x": {"left": vall1, "right": valr1}, 'y': {"left": val, "right": val}, 'z': {"left": val, "right": val}},
@@ -324,7 +244,8 @@ function take_intersection(rect1, rect2) {
 //		{"x": {"left": vall3, "right": valr3}, 'y': {"left": val, "right": val}, 'z': {"left": val, "right": val}},
 // 		...,
 //	]
-function take_intersection_multiple(rectangular_list) {
+// returns a rectangular: {}
+function take_intersection(rectangular_list) {
 	var intersected_rectangular = {};
 	var num_rect = rectangular_list.length;
 	var x_lefts = [];
