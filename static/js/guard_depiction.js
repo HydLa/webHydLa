@@ -1,9 +1,15 @@
 /* initially written by Takafumi Horiuchi (2018.10) */
 
-var guard_list; // e.g. [ y-=0, (x-=0|x-=6), y-=4&0<=x-&x-<=2, x-=2&2<=y-&y-<=4, y-=2&2<=x-&x-<=4, x-=4&0<=y-&y-<=2]
+var guard_list; // c.f: [y-=0,(x-=0|x-=6),y-=4&0<=x-&x-<=2,...]
 
 const inf = 10, eps = 0.05;
 
+// call this function once when hydat is loaded
+function guard_depiction_setup(hydat) {
+	guard_list = hydat.guards;
+}
+
+// TODO: modify to avoid repetition of calculation
 function draw_guard()
 {
 	console.log("EXECUTING draw_guard_new");
