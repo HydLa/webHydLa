@@ -14,13 +14,15 @@ function draw_guard() {
 		console.log("guard_list[" + cls_i + "]: " + guard_list[cls_i]);
 
 		// cf: 4<=x-&x-<=6&(y-=2|y-=4)
-		var clause = parse_rm_leftlim(guard_list[cls_i]);
-		// ここまではOK
-
-		// ここから、どのように「&」と「|」の結合を捉えるか
-
+		var infix_clause = parse_rm_leftlim(guard_list[cls_i]);
 		// cf: 4<=x&x<=6&(y=2|y=4)
-		var literals = parse_conjunction(clause); // とりあえず「&」で切る
+		
+		//
+		//  4<=x  &  x<=6  &  (  y=2  |  y=4  )
+		var postfix_clause = shunting_yard(infix_clause);
+		//
+
+		var literals = parse_conjunction(infix_clause); // とりあえず「&」で切る
 		console.log(literals);
 		// cf: ["4<=x", "x<=6", "(y=2|y=4)"]
 
@@ -28,27 +30,18 @@ function draw_guard() {
 		var rectangular_totake_intersection = []; // 本当はリストのリストであるべき
 		for (var lit_i in literals) {
 			console.log("literal: " + literals[lit_i]);
-			if (literals[lit_i].includes('|')) { // disjunctions(|) // union
-				
-				// 正しいパージングをしていないので、ある具体例にしか適用できない："(y=2|y=4)"
-				// "|"で区切る
-				// "("と")"を削除する
-				// y=2などが残るので、そのrectangularを作成する（use 既存の関数）
-				
+			
+			if (literals[lit_i].includes('|')) { // disjunctions(|) // union	
 				var inner_litlst = parse_disjunction(literals[lit_i]);
-				console.log("DISJUNCTION");
-				console.log(inner_litlst);
 				for (i in inner_litlst) {
 					var rectangular = literal_to_rectangular(inner_litlst[i]);
 					rectangular_todepict.push(rectangular);
 				}
-
-
-				// rectangular_todepict.push();
 			} else { // conjunctions(&) // intersection
 				var rectangular = literal_to_rectangular(literals[lit_i]);
 				rectangular_totake_intersection.push(rectangular);
 			}
+
 		} // end of iteration of literal
 		
 		console.log("rectangular_totake_intersection");
@@ -61,10 +54,62 @@ function draw_guard() {
 	return;
 } // end of draw_guard()
 
+// convert to reverse polish notation
+// takes original string of guard as argument
+// returns a list of tokens in postfix order
+function shunting_yard(infix_clause) {
+	// console.log("shonting_yard: " + infix_clause);
+	// e.g: y-=4&0<=x-&x-<=2
+	var tokens_infix = infix_clause.split(/(\(|\)|\&|\|)/g).filter(Boolean);
+	console.log("tokens_infix: " + tokens_infix);
+	// e.g: y=4,&,0<=x,&,x<=2
+
+	var operators = ["&", "|"]; // must be in order of priority
+	function precedence(token) {return operators.slice().reverse().indexOf(token);}
+	function peek(list) {if (list.length > 0) return list[list.length-1]; else return "none";}
+	var operand_list = [];
+	var operator_stack = [];
+	var tokens_buffer = tokens_infix.slice().reverse(); // javascript pop() takes from tail of array
+
+	// shunting yard algorithm
+	while (tokens_buffer.length > 0) {
+		var tok = tokens_buffer.pop();
+		if (operators.indexOf(tok) > -1) { // if token is &, |, ...
+			console.log("in operator with tok of: " + tok);
+			while (precedence(tok) <= precedence(peek(operator_stack))) {
+				var tok_opstk = operator_stack.pop();
+				operand_list.push(tok_opstk);
+			}
+			operator_stack.push(tok);
+		}
+		else if (tok == "(") {
+			operator_stack.push(tok);
+		}
+		else if (tok == ")") {
+			while (true) {
+				var tok_opstk = operator_stack.pop();
+				if (tok_opstk == "(") break;
+				else operand_list.push(tok_opstk);
+			}
+		}
+		else { // if token is a literal (e.g: x=0)
+			operand_list.push(tok);
+		}
+	}
+	// move the rest to list
+	while (operator_stack.length > 0) {
+		var tok_opstk = operator_stack.pop();
+		operand_list.push(tok_opstk);
+	}
+
+	console.log("tokens_postfix: " + operand_list);
+	return operand_list;
+}
+
 // e.g. "4<=x" : create rectangular of [x:4~inf, y:-inf~inf, z:-inf~int]
 function literal_to_rectangular(literal) {
 	var lit_variable, lit_value;
-	var literal_separators = [">=", "<=", '=', '<', '>'];
+	var literal_separators = [">=", "<=", '=', '<', '>']; // forgetting negation "!=" ...?
 	var litsep_index, litsep_i; // need scope outsize of loop
 	for (litsep_i=0; litsep_i<literal_separators.length; litsep_i++) {
 		litsep_index = literal.indexOf(literal_separators[litsep_i]);
