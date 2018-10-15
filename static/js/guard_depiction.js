@@ -1,37 +1,42 @@
 /* initially written by Takafumi Horiuchi (2018.10) */
 
-var guard_list; // c.f: [y-=0,(x-=0|x-=6),y-=4&0<=x-&x-<=2,...]
-
 // want to adjust "inf" according to the trajectory's maximum range of each axis
 const inf = 20, eps = 0.05;
 
-// call this function once when hydat is loaded
-function guard_depiction_setup(hydat) {
-	guard_list = hydat.guards;
+// "operators" must be in order of priority
+// "/\" and "\/" are replaced by "&" and "|" respectively
+const operators = ["&", "|"];
+
+// elements appended in guard_depiction_setup()
+var rectangulars_to_draw = [];
+
+
+// call this function in add_plot_each()
+function draw_guard() {
+	console.log("STARTING TO DRAW RECTANGULARS");
+	draw_rectangulars(rectangulars_to_draw);
+	console.log("FINISHED DRAWING RECTANGULARS");
+	return;
 }
 
-// TODO: modify to avoid repetition of calculation
-function draw_guard()
-{
-	console.log("EXECUTING draw_guard_new");
-	// all guards contained in hydla program
-	console.log("guard_list: " + guard_list);
-	// e.g. ["y-=0", "(x-=0|x-=6)", "y-=4&0<=x-&x-<=2"]
-	
-	// iterate each clause // e.g. guard_list[3]: 4<=x-&x-<=6&(y-=2|y-=4)
-	for (var cls_i in guard_list) {
-		console.log("guard_list[" + cls_i + "]: " + guard_list[cls_i]);
 
-		// cf: 4<=x-&x-<=6&(y-=2|y-=4) []
-		var infix_clause = parse_rm_leftlim(guard_list[cls_i]);
+// call this function once when hydat is loaded
+function guard_depiction_setup(hydat) {
+	// c.f: ["y-=0", "(x-=0|x-=6)", "y-=4&0<=x-&x-<=2"]
+	var guard_list = hydat.guards;
+	// iterate each clause
+	for (var cls_i in guard_list) {
+		// cf: 4<=x-/\x-<=6/\(y-=2\/y-=4)
+		var guard_noleftlim = parse_rm_leftlim(guard_list[cls_i]);
+		// cf: 4<=x/\x<=6/\(y=2\/y=4)
+		var infix_clause = parse_mv_logicalop(guard_noleftlim);
 		// cf: 4<=x&x<=6&(y=2|y=4)
 		var postfix_clause = shunting_yard(infix_clause);
-		// cf: 4<=x x<=6 & y=2 y=4 | &
-
+		// cf: [4<=x,x<=6,&,y=2,y=4,|,&]
 		var rectlist_stack = []; // list of list of rectangulars
-		var operators = ["&", "|"]; // order does not matter
-		var tokens_buf = postfix_clause.slice().reverse();
-		while(tokens_buf.length > 0) {
+		var tokens_buf = postfix_clause.slice().reverse(); // pop() pops from tail
+		// evaluate reverse-polish expression
+		while (tokens_buf.length > 0) {
 			var tok = tokens_buf.pop();
 			if (operators.indexOf(tok) > -1) { // tok is an operator
 				var op = tok;
@@ -45,18 +50,17 @@ function draw_guard()
 				rectlist_stack.push(rectlist); // [...,[{}]]
 			}
 		}
-
 		// rectlist_stack should contain exactly one list in its list
-		draw_rectangulars(rectlist_stack[0]);
+		var guard_representation = rectlist_stack[0];
+		for (i in guard_representation) {
+			rectangulars_to_draw.push(guard_representation[i]);
+		}
+	}
+}
 
-	} // end of iteration of clause
-
-	return;
-} // end of draw_guard()
 
 // array arguments in javascripts are call by reference
 function exec_operation(rectlist_1, rectlist_2, op, rectlist_stack) {
-	// TODO: adapt to suit "/\" and "\/"
 	var tmp_rectlist = [];
 	if (op == "&") {
 		for (i in rectlist_1) {
@@ -69,37 +73,30 @@ function exec_operation(rectlist_1, rectlist_2, op, rectlist_stack) {
 	}
 	else if (op == "|") {
 		tmp_rectlist = rectlist_1.concat(rectlist_2);
-		// for (i in rectlist_1) tmp_rectlist.push(rectlist_1[i]);
-		// for (i in rectlist_2) tmp_rectlist.push(rectlist_2[i]);
 	}
-	else { /* oops... seems like something went wrong. */ }
+	else { /* parse error */ }
 
 	rectlist_stack.push(tmp_rectlist);
 	return;
 }
 
+
 // convert to reverse polish notation
 // takes original string of guard as argument
 // returns a list of tokens in postfix order
 function shunting_yard(infix_clause) {
-	// console.log("shonting_yard: " + infix_clause);
-	// e.g: y-=4&0<=x-&x-<=2
-	var tokens_infix = infix_clause.split(/(\(|\)|\&|\|)/g).filter(Boolean);
-	console.log("tokens_infix: " + tokens_infix);
-	// e.g: y=4,&,0<=x,&,x<=2
-
-	var operators = ["&", "|"]; // must be in order of priority
 	function precedence(token) {return operators.slice().reverse().indexOf(token);}
 	function peek(list) {if (list.length > 0) return list[list.length-1]; else return "none";}
+	// e.g: y-=4&0<=x-&x-<=2
+	var tokens_infix = infix_clause.split(/(\(|\)|\&|\|)/g).filter(Boolean);
+	// e.g: y=4,&,0<=x,&,x<=2
 	var operand_list = [];
 	var operator_stack = [];
-	var tokens_buffer = tokens_infix.slice().reverse(); // javascript pop() takes from tail of array
-
+	var tokens_buffer = tokens_infix.slice().reverse(); // pop() takes from tail
 	// shunting yard algorithm
 	while (tokens_buffer.length > 0) {
 		var tok = tokens_buffer.pop();
-		if (operators.indexOf(tok) > -1) { // if token is &, |, ...
-			console.log("in operator with tok of: " + tok);
+		if (operators.indexOf(tok) > -1) { // if token is "&" or "|"
 			while (precedence(tok) <= precedence(peek(operator_stack))) {
 				var tok_opstk = operator_stack.pop();
 				operand_list.push(tok_opstk);
@@ -120,22 +117,23 @@ function shunting_yard(infix_clause) {
 			operand_list.push(tok);
 		}
 	}
-	// move the rest to list
+	// move the rest of stack to list
 	while (operator_stack.length > 0) {
 		var tok_opstk = operator_stack.pop();
 		operand_list.push(tok_opstk);
 	}
-
-	console.log("tokens_postfix: " + operand_list);
 	return operand_list;
 }
 
+
+// TODO: この関数を修正して、より汎用的に改良する
 // e.g. "4<=x" : create rectangular of [x:4~inf, y:-inf~inf, z:-inf~int]
 function literal_to_rectangular(literal) {
 	const splitAt = index => x => [x.slice(0, index), x.slice(index)];
 	var lit_variable, lit_value;
-	var literal_separators = [">=", "<=", '=', '<', '>']; // forgetting negation "!=" ...?
-	var litsep_index, litsep_i; // need scope outsize of loop
+	// TODO: forgetting negation "!=" ...?
+	var literal_separators = [">=", "<=", '=', '<', '>'];
+	var litsep_index, litsep_i; // need scope outside of loop
 	for (litsep_i=0; litsep_i<literal_separators.length; litsep_i++) {
 		litsep_index = literal.indexOf(literal_separators[litsep_i]);
 		if (litsep_index > -1) {
@@ -160,8 +158,8 @@ function literal_to_rectangular(literal) {
 	console.log("lit_value: " + lit_value); // 定数のみの数式が含まれる。記号計算で計算するようにすれば、変数なしの数式も扱えるようになる。
 	console.log("lit_variable: " + lit_variable);
 	console.log("comp_sign: " + comp_sign);
-
 	// このリテラルの直方体の範囲のdictionaryをrect...intersection[]にpushする
+	// TODO: このline_settingsの詳細がわからない
 	var line_settings = settingsForCurrentHydat.plot_line_settings;
 	var rectangular = {};
 	for (var ls_i in line_settings) {
@@ -208,15 +206,16 @@ function literal_to_rectangular(literal) {
 				rectangular["axis_" + line_settings[ls_i].z] = {"left": lit_value, "right": inf};
 			}
 		}
-		// rectangular_totake_intersection.push(rectangular);
+
 	} // end of line_settings
 	return rectangular;
 }
 
-function draw_rectangulars(rectangulars) {
-	for (i in rectangulars) {
 
-		// このループが何のために必要なのかが理解できていない
+function draw_rectangulars(rectangulars) {
+	// rectangulars: a list of rectangulars // [{...}, {...}, ...]
+	for (i in rectangulars) {
+		// TODO: このループが何のために必要なのかが理解できていない
 		var line_settings = settingsForCurrentHydat.plot_line_settings;
 		for (var ls_i in line_settings) {
 			var x_length = rectangulars[i]["axis_" + line_settings[ls_i].x]["right"] - rectangulars[i]["axis_" + line_settings[ls_i].x]["left"];
@@ -224,42 +223,35 @@ function draw_rectangulars(rectangulars) {
 			var y_length = rectangulars[i]["axis_" + line_settings[ls_i].y]["right"] - rectangulars[i]["axis_" + line_settings[ls_i].y]["left"];
 			var y_start = rectangulars[i]["axis_" + line_settings[ls_i].y]["left"] + y_length/2;
 			var z_length = rectangulars[i]["axis_" + line_settings[ls_i].z]["right"] - rectangulars[i]["axis_" + line_settings[ls_i].z]["left"];
-			var z_start = rectangulars[i]["axis_" + line_settings[ls_i].z]["left"] + z_length/2;
-		
+			var z_start = rectangulars[i]["axis_" + line_settings[ls_i].z]["left"] + z_length/2;		
 			var g_geometry = new THREE.BoxGeometry(x_length, y_length, z_length);
 			var g_material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true});
 			var guard_line = new THREE.Mesh(g_geometry, g_material);
 			guard_line.position.set(x_start, y_start, z_start);
 			graph_scene.add(guard_line);
 		}
-
 	}
 	return;
 }
 
 
-//	rectangular_totake_intersection = [
-//		{"x": {"left": vall1, "right": valr1}, 'y': {"left": val, "right": val}, 'z': {"left": val, "right": val}},
-//		{"x": {"left": vall2, "right": valr2}, 'y': {"left": val, "right": val}, 'z': {"left": val, "right": val}},
-//		{"x": {"left": vall3, "right": valr3}, 'y': {"left": val, "right": val}, 'z': {"left": val, "right": val}},
-// 		...,
-//	]
-// returns a rectangular: {}
 function take_intersection(rectangular_list) {
-	var intersected_rectangular = {};
+	//	rectangular_list = [
+	//	{"x": {"left": vall1, "right": valr1}, 'y': {"left": vall1, "right": valr1}, 'z': {"left": vall1, "right": valr1}},
+	//	{"x": {"left": vall2, "right": valr2}, 'y': {"left": vall2, "right": valr2}, 'z': {"left": vall2, "right": valr2}},...]
 	var num_rect = rectangular_list.length;
+	var intersected_rectangular = {};
 	var x_lefts = [];
 	var x_rights = [];
 	var y_lefts = [];
 	var y_rights = [];
 	var z_lefts = [];
 	var z_rights = [];
+	// TODO: このline_settingsが複数ある意味が理解できていない。
 	var line_settings = settingsForCurrentHydat.plot_line_settings;
-	// このline_settingsが複数ある意味が理解できていない。
 	for (var ls_i in line_settings) {
-
 		for (var i=0; i<num_rect; i++) {
-			// これの正しいシンタックスがわからない。
+			// {"axis_(x)": {"left": vall1, "right": valr1}, 'axis_(y)': {"left": vall1, "right": valr1}, 'axis_(z)': {"left": vall1, "right": valr1}}
 			x_lefts.push(rectangular_list[i]["axis_" + line_settings[ls_i].x]["left"]);
 			x_rights.push(rectangular_list[i]["axis_" + line_settings[ls_i].x]["right"]);
 			y_lefts.push(rectangular_list[i]["axis_" + line_settings[ls_i].y]["left"]);
@@ -267,7 +259,6 @@ function take_intersection(rectangular_list) {
 			z_lefts.push(rectangular_list[i]["axis_" + line_settings[ls_i].z]["left"]);
 			z_rights.push(rectangular_list[i]["axis_" + line_settings[ls_i].z]["right"]);
 		}
-
 		// range of x
 		intersected_rectangular["axis_" + line_settings[ls_i].x] = {
 			"left": Math.max.apply(null, x_lefts),
@@ -283,38 +274,18 @@ function take_intersection(rectangular_list) {
 			"left": Math.max.apply(null, z_lefts),
 			"right": Math.min.apply(null, z_rights)
 		}
-
 	}
-	
-	console.log("x_lefts");
-	console.log(x_lefts);
-
-	console.log("intersected_rectangular:");
-	console.log(intersected_rectangular);
-
-	return intersected_rectangular;
+	return intersected_rectangular; // {}
 }
+
 
 function parse_rm_leftlim(guard) {
 	return guard.replace(/-(?=[^a-zA-Z0-9])/g, '');
 }
 
-// cf: 4<=x&x<=6&(y=2|y=4)
-// まずはこの例だけに絞って考察する。あとで一般的なものに修正する。
-function parse_conjunction(clause) {
-	var conjunction_separators = ["\\\&"];
-	var clause_noparentheses = parse_rm_parentheses(clause);
-	var literals = clause_noparentheses.split(new RegExp(conjunction_separators.join('|'), 'g'));
-	return literals;
-}
 
-function parse_disjunction(clause) {
-	var clause_noparentheses = parse_rm_parentheses(clause);
-	var disjunction_separators = ["\\\|"];
-	var literals = clause_noparentheses.split(new RegExp(disjunction_separators.join('|'), 'g'));
-	return literals;
-}
-
-function parse_rm_parentheses(clause) {
-	return clause.replace(/[()]/g, '');
+function parse_mv_logicalop(guard) {
+	var and_replaced = guard.replace(/\/\\/g, '&');
+	var and_or_replaced = and_replaced.replace(/\\\//g, '|');
+	return and_or_replaced;
 }
