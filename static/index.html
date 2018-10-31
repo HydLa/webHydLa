@@ -3,9 +3,7 @@
 	
 	<head>
 		<meta charset="UTF-8">
-		<title>
-			webHydLa
-		</title>
+		<title>webHydLa</title>
 
 		<!--import Google Icon Font-->
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -37,7 +35,7 @@
 			<div id="menubar">
 
 				<!-- green "Editor Settings" button -->
-				<a class="waves-effect waves-light btn modal-trigger deep-purple darken-4" href="#modal_options">Editor Settings<i class="mdi-action-settings right"></i></a>
+				<a class="waves-effect waves-light btn modal-trigger indigo darken-4" href="#modal_options">Editor Settings<i class="mdi-action-settings right"></i></a>
 				
 				<!-- content of "Editor Settings" -->
 				<div id="modal_options" class="modal">
@@ -83,22 +81,29 @@
 					</div> <!-- end of class="row" -->
 				</div> <!-- end of id="modal_options" class="modal" -->
 
+
 				<!-- content of "Save/Load" -->
-				<a class="waves-effect waves-light btn dropdown-button deep-purple darken-4" id="file-dropdown-button" data-activates="dropdown-file">Save/Load<i class="mdi-file-attachment right"></i></a>
-				<ul id="dropdown-file" class="dropdown-content">
+				<a class="waves-effect waves-light btn dropdown-button indigo darken-4" id="file-dropdown-button" data-activates="dropdown-file">Save/Load<i class="mdi-file-attachment right"></i></a>
+				<ul id="dropdown-file" class="dropdown-content indigo darken-4">
 					<li><a onClick='loadFile();'>Load File</a></li>
 					<li><a onClick='saveHydla();'>Save HydLa</a></li>
 					<li><a onClick='saveHydat();'>Save Hydat</a></li>
 				</ul>
-				
-				<!-- content of "About" -->
-				<a class="waves-effect waves-light btn modal-trigger right deep-purple darken-4" href="#modal_about">About<i class="mdi-action-help right"></i></a>
+
+
+				<!-- content of "Help" -->
+				<a class="waves-effect waves-light btn modal-trigger right indigo darken-4" href="#modal_about">Information<i class="mdi-action-help right"></i></a>
 				<div id="modal_about" class="modal">
 					<div class="modal-content">
-						<h3>webHydLa</h3>
-						<small>Copyright (c) 2015 <a href="http://www.ueda.info.waseda.ac.jp/" target="_blank">Ueda Laboratory, Department of Computer Science and Communications Engineering, Waseda University</a></small>
+						<h3>What is webHydLa...?</h3>
 						<p>webHydLa is the IDE for <a href="http://www.ueda.info.waseda.ac.jp/hydla/" target="_blank">HydLa</a>, the language to describe hybrid systems.</p>
-						<h5>Mathematica</h5>
+						<small>Copyright (c) 2015 <a href="http://www.ueda.info.waseda.ac.jp/" target="_blank">Ueda Laboratory, Department of Computer Science and Communications Engineering, Waseda University</a></small>
+
+						<h5>adjusting graph view:</h5>
+						<p>- zoom : command + scroll<br>
+						   - rotate : command + drag</p>
+
+						<h5>solver:</h5>
 						<p>webHydLa uses Mathematica as an external constraint solver.</p>
 						<a href="http://www.wolfram.com/webmathematica/sitelink" target="_blank"><img src="webm-white.gif"/></a>
 					</div>
@@ -148,54 +153,60 @@
 											enableLiveAutocompletion: true});
 										editor.getSession().setUseWrapMode(true);
 									</script>
-									<a class="exec-button waves-effect waves-light btn-floating btn-large orange disabled-running z-depth-3" title="RUN/KILL (Shortcut: Ctrl-Enter)" onClick="onExecButtonClick();"><i class="mdi-content-send exec-icon right"></i></a>
+									<a class="exec-button waves-effect waves-light btn-floating btn-large orange accent-4 disabled-running z-depth-3" title="RUN/KILL (Shortcut: Ctrl-Enter)" onClick="onExecButtonClick();"><i class="mdi-content-send exec-icon right"></i></a>
 								</div>
 								<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
 								<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script>
 							</div>
 
-							<!-- これが、オプションを包んでいる -->
-							<div id="graph-setting-area" class="valign">
+							
+							<div id="graph-setting-area">
 								<div id="textarea">
 									<div class="inner">
+
 										<div class = "row">
-											<div class = "col s 12">
-												<h5> Simulation Settings </h5>
+
+											<div class="input-field col s2"></div>
+
+											<div class="input-field col s1">
+												<input id="phase_num" type="text" class="validate" value=7>
+												<label for="phase_num">phase</label>
 											</div>
-											<div class="col s 12">
-												<div class="input-field col s6">
-													<input id="phase_num" type="text" class="validate" value=10>
-													<label for="phase_num">Number of Phases</label>
-												</div>
-												<div class="input-field col s6">
-													<input id="simulation_time" type="text" class="validate">
-													<label for="simulation_time">Time</label>
-												</div>
+											<div class="input-field col s1">
+												<input id="simulation_time" type="text" class="validate">
+												<label for="simulation_time">time</label>
 											</div>
-											<div class="switch col s6">
-												<label>
-													Off
-													<input type="checkbox" id="nd_mode_check_box">
-													<span class="lever"></span>
-													nondeterministic mode
-												</label>
-											</div>
-											<div class="switch col s6">
-												<label>
-													Off
-													<input type="checkbox" id="html_mode_check_box">
-													<span class="lever"></span>
-													HTML output mode
-												</label>
-											</div>
-											<div class="input-field col s12">
+
+											<div class="input-field col s2">
 												<input id="other_options" type="text" class="validate">
-												<label for="other_options">Other Options</label>
+												<label for="other_options">other options</label>
 											</div>
-											<div class="input-field col s6">
-												<input id="timeout_option" type="text" class="validate" value=30>
-												<label for="timeout_option">TimeOut</label>
+
+											<div class="input-field col s1">
+												<input id="timeout_option" type="text" class="validate" value=100>
+												<label for="timeout_option">time-out</label>
 											</div>
+										
+											<div class="input-field col s1"></div>
+										
+											<div id="pad">
+												<div class="switch col s1">
+													<label>
+														<input type="checkbox" id="nd_mode_check_box">
+														<span class="lever"></span>
+														NonDet-mode
+													</label>
+												</div>
+
+												<div class="switch col s1">
+													<label>
+														<input type="checkbox" id="html_mode_check_box">
+														<span class="lever"></span>
+													HTMLoutput
+													</label>
+												</div>
+											</div>
+
 										</div>
 
 									</div>
@@ -212,27 +223,33 @@
 						<div class="inner">
 							
 							<ul class="tabs">
-								<li class="tab col s12">
-									<a class="" href="#graph-area">Graph</a>
+								<li class="tab col s12 indigo darken-4">
+									<a class="graphlog_tab" href="#graph-area">Graph</a>
 								</li>
-								<li class="tab col s12">
-									<a class="" href="#output-area">Output</a>
+								<li class="tab col s12 indigo darken-4">
+									<a class="graphlog_tab" href="#output-area">Output</a>
 								</li>
 							</ul>
+							
 							<!-- グラフのパネル -->
 							<div id="graph-area">
+								
 								<div id='dat-gui'>
 								</div>
+
 								<div id='dat-gui-bottom'>
 								</div>
+								
 								<div id = "scale_label_wrapper">
 									<canvas id="scaleLabelCanvas">
 									</canvas>
 									<canvas id="nameLabelCanvas">
 									</canvas>
 								</div>
+								
 								<div id="graph-preloader" class="hide">
 									<div class="preloader-wrapper big active">
+										<!-- wait時にクルクル回る -->
 										<div class="spinner-layer spinner-blue">
 											<div class="circle-clipper left">
 												<div class="circle"></div>
@@ -242,6 +259,7 @@
 												<div class="circle"></div>
 											</div>
 										</div>
+										<!-- wait時にクルクル回る -->
 										<div class="spinner-layer spinner-red">
 											<div class="circle-clipper left">
 												<div class="circle"></div>
@@ -251,6 +269,7 @@
 												<div class="circle"></div>
 											</div>
 										</div>
+										<!-- wait時にクルクル回る -->
 										<div class="spinner-layer spinner-yellow">
 											<div class="circle-clipper left">
 												<div class="circle"></div>
@@ -260,6 +279,7 @@
 												<div class="circle"></div>
 											</div>
 										</div>
+										<!-- wait時にクルクル回る -->
 										<div class="spinner-layer spinner-green">
 											<div class="circle-clipper left">
 												<div class="circle"></div>
@@ -272,6 +292,7 @@
 									</div>
 								</div>
 							</div>
+							
 							<!-- ログ出力のパネル -->
 							<div id="output-area" class="tab">
 								<div id="info"></div>
@@ -280,8 +301,11 @@
 										Simulation Output will be written here.
 									</p>
 								</div>
+								
 								<div id="output-preloader" class="hide">
 									<div class="preloader-wrapper big active">
+										
+										<!-- wait時にクルクル回る -->
 										<div class="spinner-layer spinner-blue">
 											<div class="circle-clipper left">
 												<div class="circle"></div>
@@ -291,6 +315,7 @@
 												<div class="circle"></div>
 											</div>
 										</div>
+										<!-- wait時にクルクル回る -->
 										<div class="spinner-layer spinner-red">
 											<div class="circle-clipper left">
 												<div class="circle"></div>
@@ -300,6 +325,7 @@
 												<div class="circle"></div>
 											</div>
 										</div>
+										<!-- wait時にクルクル回る -->
 										<div class="spinner-layer spinner-yellow">
 											<div class="circle-clipper left">
 												<div class="circle"></div>
@@ -309,6 +335,7 @@
 												<div class="circle"></div>
 											</div>
 										</div>
+										<!-- wait時にクルクル回る -->
 										<div class="spinner-layer spinner-green">
 											<div class="circle-clipper left">
 												<div class="circle"></div>
@@ -318,8 +345,10 @@
 												<div class="circle"></div>
 											</div>
 										</div>
+
 									</div>
 								</div>
+
 							</div>
 						</div>
 					</div>
