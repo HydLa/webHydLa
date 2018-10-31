@@ -780,6 +780,7 @@
 
       this.domElement.removeEventListener( 'contextmenu', contextmenu, false );
       this.domElement.removeEventListener( 'mousedown', onMouseDown, false );
+
       this.domElement.removeEventListener( 'mousewheel', onMouseWheel, false );
       this.domElement.removeEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
 

@@ -1,17 +1,39 @@
 /* ID="editor" な div をエディタにする */
 var editor = ace.edit("editor");
 
+// checks if special keys are down
+window.onkeydown = function (e) {
+  if (!e) e = window.event;
+  // metaKey is 91
+  if (e.keyCode == 91) {
+    graph_controls.enableZoom = true;
+    graph_controls.enableRotate = true;
+    graph_controls.enablePan = false;
+  }
+  console.log(e.keyCode);
+}
+window.onkeyup = function(e) {
+  if (!e) e = window.event;
+  if (e.keyCode == 91) {
+    graph_controls.enableZoom = false;
+    graph_controls.enableRotate = false;
+    graph_controls.enablePan = true;
+  }
+  console.log(e.keyCode);
+}
+
 /* 諸々の設定 */
 editor.setTheme("ace/theme/sqlserver");
 editor.getSession().setMode("ace/mode/hydla")
 editor.getSession().setTabSize(4);
 editor.getSession().setUseSoftTabs(true);
-editor.setHighlightActiveLine(true);
+editor.setHighlightActiveLine(false);
 editor.$blockScrolling = Infinity;
 editor.setOptions({
   enableBasicAutocompletion: true,
   enableSnippets: true,
-  enableLiveAutocompletion: true
+  enableLiveAutocompletion: true,
+  fontSize: "12pt",
 });
 
 /* set keybinding */
@@ -30,10 +52,11 @@ var first_script_element;
 var dynamic_script_elements = [];
 
 $(document).ready(function(){
+  editor.clearSelection();
   /* initialize materialize components */
   $('#file-dropdown-button').dropdown({
     constrain_width: true,
-    hover: true
+    hover: false,
   });
   $('.axis-dropdown-button').dropdown({
     constrain_width: false,
@@ -130,6 +153,11 @@ $(document).ready(function(){
 
   render();
 
+  // to only scroll when cmd-key is pressed
+  graph_controls.enableZoom = false;
+  graph_controls.enableRotate = false;
+  graph_controls.enablePan = true;
+
 });
 
 function time_stop()
@@ -187,15 +215,17 @@ function savePlotSettings()
 
 /* set default hydla code */
 var default_hydla =
-    //"// bouncing particle\n\
-    "// #hylagi -p6\n\
-\n\
-INIT <=> y = 10 & y' = 0.\n\
-FALL <=> [](y'' = -10).\n\
-BOUNCE <=> [](y- = 0 => y' = -4/5 * y'-).\n\
-\n\
-INIT, FALL << BOUNCE.\n\
-";
+    //"// a sample hydla code: bouncing_particle.hydla\n\
+    "// a sample hydla code: bouncing_particle.hydla\n\
+    \n\
+    INIT <=> y = 10 & y' = 0.\n\
+    FALL <=> [](y'' = -10).\n\
+    BOUNCE <=> [](y- = 0 => y' = -4/5 * y'-).\n\
+    \n\
+    INIT, FALL << BOUNCE.\n\
+    \n\
+    // #hylagi -p 10\n\
+    ";
 
 /* load saved hydla code if it exist */
 var browser_storage = localStorage;
