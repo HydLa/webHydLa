@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from flask import Flask, redirect, url_for, request, abort, jsonify, render_template, session
-import sys, os, time, shlex, subprocess, json
+import sys, os, time, shlex, subprocess, json, urllib.request, urllib.parse, shutil
 
 key_file = open('secret_key')
 # setup Flask
@@ -60,7 +60,6 @@ def gen_hydat():
 
     time_out = (int(form["timeout_option"]))
 
-
     try:
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)
@@ -71,18 +70,25 @@ def gen_hydat():
         return jsonify(sid=session_id, error=3, message="OSError")
 
     with open(save_file_stdout, "w") as f_stdout, open(save_file_stderr, "w") as f_stderr:
-        hylagi_proc = subprocess.Popen(hylagi_args, stdout=f_stdout, stderr=f_stderr)
-        hylagi_processes[session_id] = hylagi_proc
-        try:
-            hylagi_retcode = hylagi_proc.wait(timeout=time_out)
-        except subprocess.TimeoutExpired:
-            hylagi_proc.kill()
-            return jsonify(sid=session_id, error=4, message="TimeOut")
+        if shutil.which("hylagi") != None:
+            hylagi_proc = subprocess.Popen(hylagi_args, stdout=f_stdout, stderr=f_stderr)
+            hylagi_processes[session_id] = hylagi_proc
+            try:
+                hylagi_retcode = hylagi_proc.wait(timeout=time_out)
+            except subprocess.TimeoutExpired:
+                hylagi_proc.kill()
+                return jsonify(sid=session_id, error=4, message="TimeOut")
+        else:
+            # hylagiがないときは、apiサーバーに投げる
+            encoded_hydla_code = urllib.parse.urlencode(form["hydla_code"])
+            url = "http://webhydla.ueda.info.waseda.ac.jp/run_hylagi/8080?" + encoded_hydla_code
+            with urllib.request.urlopen(url) as res:
+                hydat = res.read().decode("utf-8")
+                print(hydat)
         f_stdout.flush()
         f_stderr.flush()
 
     with open(save_file_stderr, "r") as f_stderr:
-        
         try:
             with open(save_file_stdout, "r") as f_stdout:
                 if not hylagi_retcode == 0:
