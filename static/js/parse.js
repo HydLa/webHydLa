@@ -63,13 +63,139 @@ Variable = function(name)
     return env[name].getValue(env);
   };
 };
-
+/*
 UnaryFunction = function(name, arg)
 {
-  this.toString = function(){return name + "(" + arg + ")";};
+  this.toString = function(){return name.charAt(0).toLowerCase() + name.slice(1) + "(" + arg + ")";};
   this.getValue = function(env)
   {
-    return Math[name](arg.getValue(env));
+    return Math[name.charAt(0).toLowerCase() + name.slice(1)](arg.getValue(env));
+  };
+};
+*/
+Log = function(arg)
+{
+  this.toString = function(){return "log(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.log(arg.getValue(env));
+  };
+};
+
+Sin = function(arg)
+{
+  this.toString = function(){return "sin(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.sin(arg.getValue(env));
+  };
+};
+
+Cos = function(arg)
+{
+  this.toString = function(){return "cos(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.cos(arg.getValue(env));
+  };
+};
+
+Tan = function(arg)
+{
+  this.toString = function(){return "tan(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.tan(arg.getValue(env));
+  };
+};
+
+ArcSin = function(arg)
+{
+  this.toString = function(){return "asin(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.asin(arg.getValue(env));
+  };
+};
+
+ArcCos = function(arg)
+{
+  this.toString = function(){return "acos(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.acos(arg.getValue(env));
+  };
+};
+
+ArcTan = function(arg)
+{
+  this.toString = function(){return "atan(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.atan(arg.getValue(env));
+  };
+};
+
+Sinh = function(arg)
+{
+  this.toString = function(){return "sinh(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.sinh(arg.getValue(env));
+  };
+};
+
+Cosh = function(arg)
+{
+  this.toString = function(){return "cosh(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.cosh(arg.getValue(env));
+  };
+};
+
+Tanh = function(arg)
+{
+  this.toString = function(){return "tanh(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.tanh(arg.getValue(env));
+  };
+};
+
+ArcSinh = function(arg)
+{
+  this.toString = function(){return "asinh(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.asinh(arg.getValue(env));
+  };
+};
+
+ArcCosh = function(arg)
+{
+  this.toString = function(){return "acosh(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.acosh(arg.getValue(env));
+  };
+};
+
+ArcTanh = function(arg)
+{
+  this.toString = function(){return "atanh(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.atanh(arg.getValue(env));
+  };
+};
+
+Floor = function(arg)
+{
+  this.toString = function(){return "floor(" + arg + ")";};
+  this.getValue = function(env)
+  {
+    return Math.floor(arg.getValue(env));
   };
 };
 
@@ -94,9 +220,52 @@ function parseValue(value_str){
         this.symbol = function(c) { return token(chr(c)); };
         this.minus = between(symbol('-'), spaces, lazy(function() { return factor; })) ['>>='] (function(x) { return ret(new Negative(x)); });
         this.pi = string("Pi")['>>='] (function (n) {return ret(new Constant(Math.PI));}); 
-        this.unary_function = or(string("log"), string("cosh"), string("sinh"), string("cos"), string("sin"), string("tan"), string("acos"), string("asin"), string("atan"))
+        /*this.unary_function = or(string("Log"), string("Cosh"), string("Sinh"), string("Cos"), string("Sin"), string("Tan"), string("ArcCos"), string("ArcSin"), string("ArcTan"))
         ['>>='](function(name){ return symbol('[') ['>>'] (expr)
                                 ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new UnaryFunction(name.join(''), expr_str)))})});
+                                */
+        this.log = string("Log")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new Log(expr_str)))})});
+        this.sin = string("Sin")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new Sin(expr_str)))})});
+        this.cos = string("Cos")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new Cos(expr_str)))})});
+        this.tan = string("Tan")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new Tan(expr_str)))})});
+        this.asin = string("ArcSin")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new ArcSin(expr_str)))})});
+        this.acos = string("ArcCos")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new ArcCos(expr_str)))})});
+        this.atan = string("ArcTan")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new ArcTan(expr_str)))})});
+        this.sinh = string("Sinh")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new Sinh(expr_str)))})});
+        this.cosh = string("Cosh")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new Cosh(expr_str)))})});
+        this.tanh = string("Tanh")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new Tanh(expr_str)))})});
+        this.asinh = string("ArcSinh")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new ArcSinh(expr_str)))})});
+        this.acosh = string("ArcCosh")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new ArcCosh(expr_str)))})});
+        this.atanh = string("ArcTanh")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new ArcTanh(expr_str)))})});
+        this.floor = string("Floor")
+        ['>>='](function(name){ return symbol('[') ['>>'] (expr)
+                                ['>>='] (function(expr_str){ return  (symbol(']'))['>>'] (ret(new Floor(expr_str)))})});
         this.parameter = symbol('p')
         ['>>'] (symbol('['))
         ['>>'] (many1(or(letter,digit)))
@@ -125,7 +294,21 @@ function parseValue(value_str){
         ['<|>'] (inf)
         ['<|>'] (pi)
         ['<|>'] (e)
-        ['<|>'] (unary_function)
+        //['<|>'] (unary_function)
+        ['<|>'] (log)
+        ['<|>'] (sin)
+        ['<|>'] (cos)
+        ['<|>'] (tan)
+        ['<|>'] (asin)
+        ['<|>'] (acos)
+        ['<|>'] (atan)
+        ['<|>'] (sinh)
+        ['<|>'] (cosh)
+        ['<|>'] (tanh)
+        ['<|>'] (asinh)
+        ['<|>'] (acosh)
+        ['<|>'] (atanh)
+        ['<|>'] (floor)
         ['<|>'] (parameter)
         ['<|>'] (variable);
 
