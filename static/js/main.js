@@ -215,17 +215,17 @@ function savePlotSettings()
 
 /* set default hydla code */
 var default_hydla =
-    //"// a sample hydla code: bouncing_particle.hydla\n\
-    "// a sample hydla code: bouncing_particle.hydla\n\
-    \n\
-    INIT <=> y = 10 & y' = 0.\n\
-    FALL <=> [](y'' = -10).\n\
-    BOUNCE <=> [](y- = 0 => y' = -4/5 * y'-).\n\
-    \n\
-    INIT, FALL << BOUNCE.\n\
-    \n\
-    // #hylagi -p 10\n\
-    ";
+//"// a sample hydla code: bouncing_particle.hydla\n\
+"// a sample hydla code: bouncing_particle.hydla\n\
+\n\
+INIT <=> y = 10 & y' = 0.\n\
+FALL <=> [](y'' = -10).\n\
+BOUNCE <=> [](y- = 0 => y' = -4/5 * y'-).\n\
+\n\
+INIT, FALL << BOUNCE.\n\
+\n\
+// #hylagi -p 10\n\
+";
 
 /* load saved hydla code if it exist */
 var browser_storage = localStorage;
