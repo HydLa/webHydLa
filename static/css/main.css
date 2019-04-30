@@ -1,44 +1,133 @@
 html, body{
 	height: 100%;
 	width: 100%;
-	overflow-x: hidden;
-	/*overflow-x: visible;*/
 }
 
-#container {
-	height: 100%;
-	width: 100%;
-	/*display: flex;
-	display: -webkit-flex;
-	flex-flow: column;
-	-webkit-flex-flow: column;*/
-}
+
 
 #webhydla_title {
-	color: #000000;
+	display: block;
+	position: static;
 	font-family: Arial, Helvetica, sans-serif;
+	color: #000000;
 	text-align: center;
-	margin-top: -15px;
-	margin-bottom: 25px;
-	/*height: 10%;*/
+	margin: 30px;
 }
-#web_title {
-	/*color: #ff9933;*/ /*original hydla-orange*/
-	color: #ff8822;
+#webhydla_text {
+	color: #ff9933; /*hydla-orange*/
 	display: inline;
 }
 #powered_by {
 	margin-top: -20px;
 }
 
-#menubar {
-	/*order: 1;*/
+
+
+#blank_space {
+	display: block;
+	position: -webkit-sticky; /* safari対応 */
+	position: sticky;
+	top:10px;
+	/*bottom: 0;*/
+	/*z-index: 1;*/
+	padding-bottom: 50px;
+}
+#editor_window {
+	display: block;
+	position: relative;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	height: 500px;
 	width: 80%;
+}
+#menu_bar {
+	position: relative;
 	height: 50px;
 	background-color: #000;
-	margin: auto;
 	padding: 6px;
 }
+#input-pane {
+	height: 400px;
+}
+#editor-area {
+	position: relative;
+	height: 100%;
+	width: 100%;
+}
+#editor {
+	min-height: 0%;
+	height: 100%;
+}
+#simulation_settings {
+	position: relative;
+	display: inline-flex;
+	background-color: black;
+	color: white;
+	height: 50px;
+	width: 100%;
+	padding: 6px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	font-size: 16px;
+}
+.each_option {
+	padding: 10px;
+}
+/*override materialize-library*/
+.options_input {
+	background-color: #555!important;
+	border: initial!important;
+	border-bottom: initial!important;
+	border-radius: 3px!important;
+	outline: initial!important;
+	height: initial!important;
+	width: 100px!important;
+	font-size: initial!important;
+	margin: initial!important;
+	margin-left: 5px!important;
+	padding: initial!important;
+	box-shadow: initial!important;
+	box-sizing: initial!important;
+	transition: initial!important;
+}
+#run_button {
+	color: white;
+	font-weight: bold;
+	background-color: #ff9933;
+	padding-top: 10px;
+	padding-bottom: 25px;
+	height: 7px;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+	border-radius: 3px;
+}
+
+
+
+#result_pane {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	/*opacity: 0.1;*/
+	/*z-index: -1;*/
+}
+
+
+
+
+
+
+
+
+
 
 #splitter {
 	/*order: 2;
@@ -61,82 +150,33 @@ html, body{
 	-webkit-flex-flow: row;*/
 }
 
-/*エディタ*/
-#input-pane {
-	/*order: 1;*/
-	width: 80%;
-	/*height: calc(100% - 360px);*/
-	height: 60%;
-	margin: auto;
-}
 
 #left-pane {
 	position: relative;
 	/*order: 1;
 	display: flex;
-	display: -webkit-flex;*/
+	display: -webkit-flex;
 	/*transition: width 0s;*/
 	width: 100%;
 	height: 100%;
 	z-index: 1;
 }
 
-
-#editor-area {
-	position: relative;
-	height: 100%;
-	width: 100%;
-	z-index: 1;
-}
 #left-pane>.inner {
 	/*flex-flow: column;
 	-webkit-flex-flow: column;*/
 }
 
-#editor {
-	/*flex: 1;*/
-	/*adjust this*/
-	min-height: 0%;
-	height: 100%;
-}
 
-#s-separator {
-	/*order: 2;*/
-	position: relative;
-	/*width: 20px;*/
-	height: 100%;
-}
 
-#v-separator {
-	/*order: 2;*/
-	position: relative;
-	/*width: 20px;*/
-	height: 100%;
-	background-color: #ffffff;
-	z-index: 100;
-}
 
-#result-pane {
-	/*order: 3;
-	flex: 1;*/
-	margin-top: -180px;
-	width: 100%;
-	height: 100%;
-	position: relative;
-	z-index: 1;
-}
-
-#result-pane>.inner {
-	/*flex-flow: column;
-	-webkit-flex-flow: column;*/
-}
 
 #graph-area {
 	/*order: 1;
 	flex: 1;*/
 	width: 100%;
 	height: 100%;
-	position: relative;
+	position: absolute;
 	z-index: 2;
 }
 
@@ -148,13 +188,6 @@ html, body{
 	position: relative;
 	overflow-y: scroll;
 	overflow-x: visible;
-}
-
-#h-separator {
-	/*order: 1;*/
-	width: 100%;
-	height: 20px;
-	background-color: #ffffff;
 }
 
 #text-area {
