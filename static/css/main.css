@@ -1,6 +1,7 @@
 html, body{
 	height: 100%;
 	width: 100%;
+	overflow-x: hidden;
 }
 
 
@@ -25,11 +26,7 @@ html, body{
 
 #blank_space {
 	display: block;
-	position: -webkit-sticky; /* safari対応 */
-	position: sticky;
-	top:10px;
-	/*bottom: 0;*/
-	/*z-index: 1;*/
+	position: relative;
 	padding-bottom: 50px;
 }
 #editor_window {
@@ -93,9 +90,25 @@ html, body{
 	box-sizing: initial!important;
 	transition: initial!important;
 }
+.options_checkbox {
+	background-color: #555!important;
+	border: initial!important;
+	border-bottom: initial!important;
+	border-radius: 3px!important;
+	outline: initial!important;
+	height: initial!important;
+	width: 15px!important;
+	font-size: initial!important;
+	margin: initial!important;
+	margin-left: 5px!important;
+	padding: initial!important;
+	box-shadow: initial!important;
+	box-sizing: initial!important;
+	transition: initial!important;
+}
 #run_button {
 	color: white;
-	font-weight: bold;
+	/*font-weight: bold;*/
 	background-color: #ff9933;
 	padding-top: 10px;
 	padding-bottom: 25px;
@@ -129,48 +142,6 @@ html, body{
 
 
 
-#splitter {
-	/*order: 2;
-	flex: 1;*/
-	width: 100%;
-	height: 100%;
-	position: relative;
-}
-
-.inner {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	/*display: flex;
-	display: -webkit-flex;*/
-}
-
-#splitter>.inner {
-	/*flex-flow: row;
-	-webkit-flex-flow: row;*/
-}
-
-
-#left-pane {
-	position: relative;
-	/*order: 1;
-	display: flex;
-	display: -webkit-flex;
-	/*transition: width 0s;*/
-	width: 100%;
-	height: 100%;
-	z-index: 1;
-}
-
-#left-pane>.inner {
-	/*flex-flow: column;
-	-webkit-flex-flow: column;*/
-}
-
-
-
-
-
 #graph-area {
 	/*order: 1;
 	flex: 1;*/
@@ -179,7 +150,6 @@ html, body{
 	position: absolute;
 	z-index: 2;
 }
-
 #output-area {
 	/*order: 1;
 	flex: 1;*/
@@ -190,42 +160,7 @@ html, body{
 	overflow-x: visible;
 }
 
-#text-area {
-	/*order: 2;*/
-	width: 100%;
-	height: 100%;
-	transition: height 0.5s;
-}
 
-#graph-setting-area {
-	/*order: 2;*/
-	/*height: 360px;*/
-	/*height: 100px;*/
-	height: 20%;
-	width: 100%;
-
-	margin: auto;
-	padding-top: 20px;
-}
-
-#pad {
-	padding-top: 10px;
-}
-
-#graph-axis-setting{
-	height: 210px;
-	width: 100%;
-}
-
-#parameter-setting-table{
-	height: 150px;
-	width: 100%;
-}
-
-#graph-parameter-setting{
-	height: 100%;
-	width: 100%;
-}
 
 .exec-button {
 	position: absolute;
@@ -234,27 +169,7 @@ html, body{
 	z-index: 100;
 }
 
-.kill-button {
-	position: absolute;
-	bottom: 20px;
-	right: 80px;
-	z-index: 100;
-}
 
-
-#graph {
-	height: 100%;
-	width: 100%;
-}
-
-#graph-initial {
-	height: 100%;
-	width: 100%;
-	/*display: flex;
-	display: -webkit-flex;*/
-	align-items: center;
-	justify-content: center;
-}
 
 #graph-preloader {
 	position: absolute;
@@ -271,9 +186,6 @@ html, body{
 	pointer-events: none;
 }
 
-#graph_options {
-	z-index: 100;
-}
 
 #output-initial {
 	height: 100%;
@@ -301,13 +213,7 @@ html, body{
 	/* disabled element when running hyrose */
 }
 
-.dropdown-content {
-	z-index: 3;
-}
 
-.wrapper{
-	position: relative;
-}
 
 .mdi-navigation-arrow-drop-down{
 	width: 50px;
@@ -322,35 +228,6 @@ html, body{
 	box-sizing: border-box;
 }
 
-.parameter-checkbox{
-	position: absolute;
-}
-
-.parameter-switch{
-	font-size: small;
-}
-
-#plotting-mode-switch{
-	top: calc(100%-30px)px;
-	/*position: relative; */
-}
-
-#axis-area {
-	/*order: 1;
-	flex: 1;*/
-	position: relative;
-	z-index: 1;
-}
-
-#setting-area {
-	/*order: 1;
-	flex: 1;*/
-	position: relative;
-	z-index: 1;
-}
-.scroll-box {
-	overflow: auto;
-}
 
 
 #dat-gui{
@@ -364,10 +241,6 @@ html, body{
 	bottom: 1em;
 	left: 1em;
 	z-index: 3;
-}
-
-#textarea{
-	z-index: -1;
 }
 
 #scale_label_wrapper{
