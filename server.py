@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from flask import Flask, redirect, url_for, request, abort, jsonify, render_template, session
-import sys, os, time, shlex, subprocess, json, urllib.request, urllib.parse, shutil
+import sys, os, time, shlex, subprocess, json, urllib.request, urllib.parse, urllib.request, shutil
 
 key_file = open('secret_key')
 # setup Flask
@@ -53,10 +53,8 @@ def gen_hydat():
     hylagi_args = ["hylagi"]
 
     hylagi_args.extend(shlex.split(form["hylagi_option"]));
-
     hylagi_args.append("-o")
     hylagi_args.append(save_file_hydat)
-    hylagi_args.append(save_file_hydla)
 
     time_out = (int(form["timeout_option"]))
 
@@ -71,6 +69,7 @@ def gen_hydat():
 
     with open(save_file_stdout, "w") as f_stdout, open(save_file_stderr, "w") as f_stderr:
         if shutil.which("hylagi") != None:
+            hylagi_args.append(save_file_hydla)
             hylagi_proc = subprocess.Popen(hylagi_args, stdout=f_stdout, stderr=f_stderr)
             hylagi_processes[session_id] = hylagi_proc
             try:
@@ -80,11 +79,16 @@ def gen_hydat():
                 return jsonify(sid=session_id, error=4, message="TimeOut")
         else:
             # hylagiがないときは、apiサーバーに投げる
-            encoded_hydla_code = urllib.parse.urlencode(form["hydla_code"])
-            url = "http://webhydla.ueda.info.waseda.ac.jp/run_hylagi/8080?" + encoded_hydla_code
+            param_tuple = (
+                ("code", form["hydla_code"])
+                , ("args", hylagi_args)
+                , ("hydat_path", save_file_hydat)
+            )
+            encoded_param = urllib.parse.urlencode(param_tuple)
+            url = "http://webhydla.ueda.info.waseda.ac.jp:8080?" + encoded_param
             with urllib.request.urlopen(url) as res:
                 hydat = res.read().decode("utf-8")
-                print(hydat)
+                hylagi_retcode = 0
         f_stdout.flush()
         f_stderr.flush()
 
