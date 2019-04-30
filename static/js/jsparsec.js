@@ -66,6 +66,19 @@ Combinator.prototype = {
             return result;
         });
     }),
+    forward: Combinator._rjoin(function (p1, p2) {
+        return this.create(function (input) {
+            var result = p1.parse(input);
+            if (result === null) {
+                return null;
+            }
+            var result2 = p2.parse(result[1]);
+            if (result2 === null) {
+                return null;
+            }
+            return result;
+        });
+    }),
     many: function(p) { return this.many1(p) ['<|>'] (this.ret([])); },
     many1: function(p) {
         return p ['>>='] (function(x) {
