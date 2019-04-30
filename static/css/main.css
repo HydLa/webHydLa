@@ -45,6 +45,8 @@ html, body{
 	height: 50px;
 	background-color: #000;
 	padding: 6px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 }
 #input-pane {
 	height: 400px;
