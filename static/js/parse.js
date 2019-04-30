@@ -282,7 +282,7 @@ function parseValue(value_str){
           if(current_hydat.variables.indexOf(var_str) < 0)throw new Error("Parsing Error: variable " + var_str + " doesn't exist");
           return ret(new Variable(var_str));
         });
-        this.time = symbol('t') ['>>='] (function (n) {return ret(new Variable("t"));});
+        this.time = forward(symbol('t'), or(this.match(/^[^0-9a-zA-Z]$/), eof())) ['>>='] (function (n) {return ret(new Variable("t"));});
         this.e = symbol('E')['>>='] (function (n) {return ret(new Constant(Math.E));});
         // TODO: consider handling of Infinity
         this.inf = string("Infinity")['>>='] (function (n) {return ret("Infinity");}); 
