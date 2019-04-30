@@ -755,3 +755,7 @@ function showToast(message, duration, classes)
     }
   }
 }
+
+function showScrollMessage() {
+  // want to show message over the panel when the user tries to scroll on the result panel (graph)
+}

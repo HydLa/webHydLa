@@ -100,8 +100,8 @@
 						<small>Copyright (c) 2015 <a href="http://www.ueda.info.waseda.ac.jp/" target="_blank">Ueda Laboratory, Department of Computer Science and Communications Engineering, Waseda University</a></small>
 
 						<h5>adjusting graph view:</h5>
-						<p>- zoom : command + scroll<br>
-						   - rotate : command + drag</p>
+						<p>- zoom : control + scroll<br>
+						   - rotate : control + drag</p>
 
 						<h5>solver:</h5>
 						<p>webHydLa uses Mathematica as an external constraint solver.</p>
@@ -137,7 +137,7 @@
 			</div>
 
 
-			<!-- 諸設定エリア（new） -->
+			<!-- 諸設定エリア -->
 			<div id="simulation_settings">
 				<div class="each_option">Total Phases: <input id="phase_num" type="text" class="options_input" value=12></div>
 				<div class="each_option">Simulating Time: <input id="simulation_time" type="text" class="options_input" value=20></div>
@@ -166,7 +166,7 @@
 			</ul>
 				
 			<!-- グラフのパネル -->
-			<div id="graph-area">
+			<div id="graph-area" onscroll="showScrollMessage()"x>
 				
 				<div id='dat-gui'>
 				</div>

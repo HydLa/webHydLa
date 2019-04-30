@@ -63,7 +63,7 @@ html, body{
 	display: inline-flex;
 	background-color: black;
 	color: white;
-	height: 50px;
+	max-height: 100px;
 	width: 100%;
 	padding: 6px;
 	border-bottom-left-radius: 5px;
@@ -97,7 +97,8 @@ html, body{
 	border-radius: 3px!important;
 	outline: initial!important;
 	height: initial!important;
-	width: 15px!important;
+	/*width: 15px!important;*/
+	width: initial!important;
 	font-size: initial!important;
 	margin: initial!important;
 	margin-left: 5px!important;
