@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html>
-	
+
 	<head>
 		<meta charset="UTF-8">
 		<title>webHydLa</title>
-
 		<!--import Google Icon Font-->
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<!--import materialize.css-->
@@ -22,19 +21,20 @@
 		<script type="text/javascript" src="js/dat.gui.min.js"></script>
 		<script type="text/javascript" src="js/OrbitControls.js"></script>
 		
-		<!-- 全てを包んでいるもの -->
-		<div id="container">
+		<div id="webhydla_title">
+			<h1><div id="webhydla_text">web</div>HydLa</h1>
+			<div id="powered_by"><p>powered by UedaLab at Waseda</p></div>
+		</div>
+
+		<div id="blank_space">
+		<!-- ドラッグ移動できる一体 -->
+		<div id="editor_window">
 			
-			<!-- タイトル -->
-			<div id="webhydla_title">
-				<h1><div id="web_title">web</div>HydLa</h1>
-				<div id="powered_by"><p>powered by UedaLab at Waseda</p></div>
-			</div>
 
 			<!-- 画面上部のメニューバーを包んでいる -->
-			<div id="menubar">
+			<div id="menu_bar">
 
-				<!-- green "Editor Settings" button -->
+				<!-- blue "Editor Settings" button -->
 				<a class="waves-effect waves-light btn modal-trigger indigo darken-4" href="#modal_options">Editor Settings<i class="mdi-action-settings right"></i></a>
 				
 				<!-- content of "Editor Settings" -->
@@ -92,7 +92,7 @@
 
 
 				<!-- content of "Help" -->
-				<a class="waves-effect waves-light btn modal-trigger right indigo darken-4" href="#modal_about">Information<i class="mdi-action-help right"></i></a>
+				<a class="waves-effect waves-light btn modal-trigger indigo darken-4" href="#modal_about">Help<i class="mdi-action-help right"></i></a>
 				<div id="modal_about" class="modal">
 					<div class="modal-content">
 						<h3>What is webHydLa...?</h3>
@@ -100,8 +100,8 @@
 						<small>Copyright (c) 2015 <a href="http://www.ueda.info.waseda.ac.jp/" target="_blank">Ueda Laboratory, Department of Computer Science and Communications Engineering, Waseda University</a></small>
 
 						<h5>adjusting graph view:</h5>
-						<p>- zoom : command + scroll<br>
-						   - rotate : command + drag</p>
+						<p>- zoom : control + scroll<br>
+						   - rotate : control + drag</p>
 
 						<h5>solver:</h5>
 						<p>webHydLa uses Mathematica as an external constraint solver.</p>
@@ -112,258 +112,189 @@
 					</div>
 				</div>
 
-				<!-- これはなんだかわかんない、もう使われなくなっている？ -->
-				<div id="graph_options" class="modal bottom-sheet">
-					<div class="row">
-						<div class="col s12">
-							<div class="modal-content">
-							</div>
-						</div>
-						<div class="modal-footer">
-							<a href="#" class="waves-effect btn-flat modal-close">Close</a>
-						</div>
-					</div>
+			</div>
+			<!-- up 'til here is id="menu_bar" -->
+
+
+			<!-- これが、エディタを包んでいる -->
+			<div id="input-pane">
+				<div id="editor-area">
+					<div id="editor" style="z-index=1" style="width=100%"></div>
+					<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
+					<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script>
+					<script>
+						var editor = ace.edit("editor");
+						editor.$blockScrolling = Infinity;
+						editor.setOptions({
+							enableBasicAutocompletion: true,
+							enableSnippets: true,
+							enableLiveAutocompletion: true});
+						editor.getSession().setUseWrapMode(true);
+					</script>
+				</div>
+				<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
+				<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script>
+			</div>
+
+
+			<!-- 諸設定エリア -->
+			<div id="simulation_settings">
+				<div class="each_option">Total Phases: <input id="phase_num" type="text" class="options_input" value=12></div>
+				<div class="each_option">Simulating Time: <input id="simulation_time" type="text" class="options_input" value=20></div>
+				<div class="each_option">Options: <input id="other_options" type="text" class="options_input" value=""></div>
+				<div class="each_option">ND mode: <input id="nd_mode_check_box" type="checkbox" class="options_checkbox"></div>
+				<div class="each_option">HTML mode: <input id="html_mode_check_box" type="checkbox" class="options_checkbox"></div>
+				<input type="submit" value="RUN" class="exec-button disabled-running" title="RUN/KILL (Shortcut: Ctrl-Enter)" onClick="onExecButtonClick();" id="run_button">
+			</div>
+
+		</div>
+		<!-- up 'til here is id="editor_window"（＝ドラッグできる一体） -->
+		</div>
+
+
+
+		<!-- グラフのパネルを包んでいる（＋現在は、ログ出力） -->
+		<div id="result_pane">
+
+			<ul class="tabs">
+				<li class="tab col s12 indigo darken-4">
+					<a class="graphlog_tab" href="#graph-area">Graph</a>
+				</li>
+				<li class="tab col s12 indigo darken-4">
+					<a class="graphlog_tab" href="#output-area">Output</a>
+				</li>
+			</ul>
+				
+			<!-- グラフのパネル -->
+			<div id="graph-area" onscroll="showScrollMessage()"x>
+				
+				<div id='dat-gui'>
 				</div>
 
-			</div>
-			<!-- up 'til here is id="menubar" -->
-
-
-
-			<!-- エディタ、オプション、グラフパネルを包んでいる -->
-			<div id="splitter">
-				<div class="inner">
-					
-					<!-- これが、エディタとオプションを包んでいる -->
-					<div id="left-pane">
-						<div class="inner">
-							
-							<!-- これが、エディタを包んでいる -->
-							<div id="input-pane">
-								<div id="editor-area">
-									<div id="editor" style="z-index=1" style="width=100%"></div>
-									<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
-									<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script>
-									<script>
-										var editor = ace.edit("editor");
-										editor.$blockScrolling = Infinity;
-										editor.setOptions({
-											enableBasicAutocompletion: true,
-											enableSnippets: true,
-											enableLiveAutocompletion: true});
-										editor.getSession().setUseWrapMode(true);
-									</script>
-									<a class="exec-button waves-effect waves-light btn-floating btn-large orange accent-4 disabled-running z-depth-3" title="RUN/KILL (Shortcut: Ctrl-Enter)" onClick="onExecButtonClick();"><i class="mdi-content-send exec-icon right"></i></a>
-								</div>
-								<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
-								<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script>
-							</div>
-
-							
-							<div id="graph-setting-area">
-								<div id="textarea">
-									<div class="inner">
-
-										<div class = "row">
-
-											<div class="input-field col s2"></div>
-
-											<div class="input-field col s1">
-												<input id="phase_num" type="text" class="validate" value=7>
-												<label for="phase_num">phase</label>
-											</div>
-											<div class="input-field col s1">
-												<input id="simulation_time" type="text" class="validate">
-												<label for="simulation_time">time</label>
-											</div>
-
-											<div class="input-field col s2">
-												<input id="other_options" type="text" class="validate">
-												<label for="other_options">other options</label>
-											</div>
-
-											<div class="input-field col s1">
-												<input id="timeout_option" type="text" class="validate" value=100>
-												<label for="timeout_option">time-out</label>
-											</div>
-										
-											<div class="input-field col s1"></div>
-										
-											<div id="pad">
-												<div class="switch col s1">
-													<label>
-														<input type="checkbox" id="nd_mode_check_box">
-														<span class="lever"></span>
-														NonDet-mode
-													</label>
-												</div>
-
-												<div class="switch col s1">
-													<label>
-														<input type="checkbox" id="html_mode_check_box">
-														<span class="lever"></span>
-													HTMLoutput
-													</label>
-												</div>
-											</div>
-
-										</div>
-
-									</div>
-								</div>
+				<div id='dat-gui-bottom'>
+				</div>
+				
+				<div id = "scale_label_wrapper">
+					<canvas id="scaleLabelCanvas">
+					</canvas>
+					<canvas id="nameLabelCanvas">
+					</canvas>
+				</div>
+				
+				<div id="graph-preloader" class="hide">
+					<div class="preloader-wrapper big active">
+						<!-- wait時にクルクル回る -->
+						<div class="spinner-layer spinner-blue">
+							<div class="circle-clipper left">
+								<div class="circle"></div>
+							</div><div class="gap-patch">
+								<div class="circle"></div>
+							</div><div class="circle-clipper right">
+								<div class="circle"></div>
 							</div>
 						</div>
-
-					</div>
-
-
-
-					<!-- グラフのパネルを包んでいる -->
-					<div id="result-pane">
-						<div class="inner">
-							
-							<ul class="tabs">
-								<li class="tab col s12 indigo darken-4">
-									<a class="graphlog_tab" href="#graph-area">Graph</a>
-								</li>
-								<li class="tab col s12 indigo darken-4">
-									<a class="graphlog_tab" href="#output-area">Output</a>
-								</li>
-							</ul>
-							
-							<!-- グラフのパネル -->
-							<div id="graph-area">
-								
-								<div id='dat-gui'>
-								</div>
-
-								<div id='dat-gui-bottom'>
-								</div>
-								
-								<div id = "scale_label_wrapper">
-									<canvas id="scaleLabelCanvas">
-									</canvas>
-									<canvas id="nameLabelCanvas">
-									</canvas>
-								</div>
-								
-								<div id="graph-preloader" class="hide">
-									<div class="preloader-wrapper big active">
-										<!-- wait時にクルクル回る -->
-										<div class="spinner-layer spinner-blue">
-											<div class="circle-clipper left">
-												<div class="circle"></div>
-											</div><div class="gap-patch">
-												<div class="circle"></div>
-											</div><div class="circle-clipper right">
-												<div class="circle"></div>
-											</div>
-										</div>
-										<!-- wait時にクルクル回る -->
-										<div class="spinner-layer spinner-red">
-											<div class="circle-clipper left">
-												<div class="circle"></div>
-											</div><div class="gap-patch">
-												<div class="circle"></div>
-											</div><div class="circle-clipper right">
-												<div class="circle"></div>
-											</div>
-										</div>
-										<!-- wait時にクルクル回る -->
-										<div class="spinner-layer spinner-yellow">
-											<div class="circle-clipper left">
-												<div class="circle"></div>
-											</div><div class="gap-patch">
-												<div class="circle"></div>
-											</div><div class="circle-clipper right">
-												<div class="circle"></div>
-											</div>
-										</div>
-										<!-- wait時にクルクル回る -->
-										<div class="spinner-layer spinner-green">
-											<div class="circle-clipper left">
-												<div class="circle"></div>
-											</div><div class="gap-patch">
-												<div class="circle"></div>
-											</div><div class="circle-clipper right">
-												<div class="circle"></div>
-											</div>
-										</div>
-									</div>
-								</div>
+						<!-- wait時にクルクル回る -->
+						<div class="spinner-layer spinner-red">
+							<div class="circle-clipper left">
+								<div class="circle"></div>
+							</div><div class="gap-patch">
+								<div class="circle"></div>
+							</div><div class="circle-clipper right">
+								<div class="circle"></div>
 							</div>
-							
-							<!-- ログ出力のパネル -->
-							<div id="output-area" class="tab">
-								<div id="info"></div>
-								<div id="output-initial">
-									<p>
-										Simulation Output will be written here.
-									</p>
-								</div>
-								
-								<div id="output-preloader" class="hide">
-									<div class="preloader-wrapper big active">
-										
-										<!-- wait時にクルクル回る -->
-										<div class="spinner-layer spinner-blue">
-											<div class="circle-clipper left">
-												<div class="circle"></div>
-											</div><div class="gap-patch">
-												<div class="circle"></div>
-											</div><div class="circle-clipper right">
-												<div class="circle"></div>
-											</div>
-										</div>
-										<!-- wait時にクルクル回る -->
-										<div class="spinner-layer spinner-red">
-											<div class="circle-clipper left">
-												<div class="circle"></div>
-											</div><div class="gap-patch">
-												<div class="circle"></div>
-											</div><div class="circle-clipper right">
-												<div class="circle"></div>
-											</div>
-										</div>
-										<!-- wait時にクルクル回る -->
-										<div class="spinner-layer spinner-yellow">
-											<div class="circle-clipper left">
-												<div class="circle"></div>
-											</div><div class="gap-patch">
-												<div class="circle"></div>
-											</div><div class="circle-clipper right">
-												<div class="circle"></div>
-											</div>
-										</div>
-										<!-- wait時にクルクル回る -->
-										<div class="spinner-layer spinner-green">
-											<div class="circle-clipper left">
-												<div class="circle"></div>
-											</div><div class="gap-patch">
-												<div class="circle"></div>
-											</div><div class="circle-clipper right">
-												<div class="circle"></div>
-											</div>
-										</div>
-
-									</div>
-								</div>
-
+						</div>
+						<!-- wait時にクルクル回る -->
+						<div class="spinner-layer spinner-yellow">
+							<div class="circle-clipper left">
+								<div class="circle"></div>
+							</div><div class="gap-patch">
+								<div class="circle"></div>
+							</div><div class="circle-clipper right">
+								<div class="circle"></div>
+							</div>
+						</div>
+						<!-- wait時にクルクル回る -->
+						<div class="spinner-layer spinner-green">
+							<div class="circle-clipper left">
+								<div class="circle"></div>
+							</div><div class="gap-patch">
+								<div class="circle"></div>
+							</div><div class="circle-clipper right">
+								<div class="circle"></div>
 							</div>
 						</div>
 					</div>
 				</div>
-				<!-- end of class="inner"-->
-
 			</div>
-			<!-- end of id="splitter" -->
+			<!-- id="graph-area" -->
+				
+			<!-- ログ出力のパネル -->
+			<div id="output-area" class="tab">
+				<div id="info"></div>
+				<div id="output-initial">
+					<p>Simulation Output will be written here.</p>
+				</div>
+				
+				<div id="output-preloader" class="hide">
+					<div class="preloader-wrapper big active">
+						
+						<!-- wait時にクルクル回る -->
+						<div class="spinner-layer spinner-blue">
+							<div class="circle-clipper left">
+								<div class="circle"></div>
+							</div><div class="gap-patch">
+								<div class="circle"></div>
+							</div><div class="circle-clipper right">
+								<div class="circle"></div>
+							</div>
+						</div>
+						<!-- wait時にクルクル回る -->
+						<div class="spinner-layer spinner-red">
+							<div class="circle-clipper left">
+								<div class="circle"></div>
+							</div><div class="gap-patch">
+								<div class="circle"></div>
+							</div><div class="circle-clipper right">
+								<div class="circle"></div>
+							</div>
+						</div>
+						<!-- wait時にクルクル回る -->
+						<div class="spinner-layer spinner-yellow">
+							<div class="circle-clipper left">
+								<div class="circle"></div>
+							</div><div class="gap-patch">
+								<div class="circle"></div>
+							</div><div class="circle-clipper right">
+								<div class="circle"></div>
+							</div>
+						</div>
+						<!-- wait時にクルクル回る -->
+						<div class="spinner-layer spinner-green">
+							<div class="circle-clipper left">
+								<div class="circle"></div>
+							</div><div class="gap-patch">
+								<div class="circle"></div>
+							</div><div class="circle-clipper right">
+								<div class="circle"></div>
+							</div>
+						</div>
 
-			<script src="js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
-			<script src="js/plot.js" type="text/javascript" charset="utf-8"></script>
-			<script src="js/parse.js" type="text/javascript" charset="utf-8"></script>
-			<script src="js/graph_axis.js" type="text/javascript" charset="utf-8"></script>
-			<script type="text/javascript" src="js/three_init.js"></script>
-			<script src="js/main.js" type="text/javascript" charset="utf-8"></script>
+					</div>
+				</div>
+			</div>
+			<!-- id="output-area" -->
+			
+		</div>
+		<!-- result-pane -->
+
+
+		<script src="js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/plot.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/parse.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/graph_axis.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" src="js/three_init.js"></script>
+		<script src="js/main.js" type="text/javascript" charset="utf-8"></script>
+	
 	</body>
 
 </html>
