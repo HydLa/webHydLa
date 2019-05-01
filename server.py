@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from flask import Flask, redirect, url_for, request, abort, jsonify, render_template, session
-import sys, os, time, shlex, subprocess, json, urllib.request, urllib.parse, urllib.request, shutil
+import sys, os, time, shlex, subprocess, json, urllib.request, urllib.parse, shutil
 
 key_file = open('secret_key')
 # setup Flask
@@ -86,9 +86,27 @@ def gen_hydat():
             )
             encoded_param = urllib.parse.urlencode(param_tuple)
             url = "http://webhydla.ueda.info.waseda.ac.jp:8080?" + encoded_param
-            with urllib.request.urlopen(url) as res:
-                hydat = res.read().decode("utf-8")
-                hylagi_retcode = 0
+            try:
+                res = urllib.request.urlopen(url, timeout=time_out)
+            except OSError:
+                return jsonify(sid=session_id, error=4, message="Timeout")
+            except urllib.error.HTTPError:
+                return jsonify(sid=session_id, error=5, message="Internal server error")
+            response_json_encoded = res.read().decode("utf-8")
+            res.close()
+            response_json = json.loads(response_json_encoded)
+            response_stdout = response_json["stdout"]
+            response_stderr = response_json["stderr"]
+            response_hydat = response_json["hydat"]
+            hylagi_retcode = int(response_json["retcode"])
+
+            try:
+                f_stdout.write(response_stdout)
+                f_stderr.write(response_stderr)
+                with open(save_file_hydat, "w") as f_hydat:
+                    f_hydat.write(response_hydat)
+            except IOError:
+                return jsonify(sid=session_id, error=3, message="OSError")
         f_stdout.flush()
         f_stderr.flush()
 
