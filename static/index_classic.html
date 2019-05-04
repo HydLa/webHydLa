@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>
+      webHydLa
+    </title>
+
+    <link type="text/css" rel="stylesheet" href="./css/materialize.min.css" media="screen,projection">
+    <link type="text/css" rel="stylesheet" href="./css/main_classic.css">
+  </head>
+  <body>
+    <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+    <script type="text/javascript" src="js/jsparsec.js"></script>
+    <script type="text/javascript" src="three.min.js"></script>
+    <script type="text/javascript" src="js/dat.gui.min.js"></script>
+    <script type="text/javascript" src="js/OrbitControls.js"></script>
+    <div id="container">
+      <div id="menubar">
+        <a class="waves-effect waves-light btn modal-trigger" href="#modal_options">Editor Settings<i class="mdi-action-settings right"></i></a>
+        <div id="modal_options" class="modal">
+          <div class="row">
+            <div class="modal-content">
+              <div class="col s12">
+                <h4>Editor Settings</h4>
+                <form>
+                  <p class="range-field">
+                    <label for="editor_font_size">Editor Font Size</label>
+                    <input type="range" id="editor_font_size" min="1" max="100" value="12" onChange='editor.setOption("fontSize", this.value + "pt");'>
+                  </p>
+                </form>
+              </div>
+              <div class="col s6">
+                <h6>theme<h6>
+                  <div class="input-field">
+                    <select id="theme_selector" name = "theme_selector" onChange='editor.setTheme("ace/theme/" + this.value);saveThemeToWebstorage();'>
+                      <option value="monokai" selected="true">Dark</option>
+                      <option value="sqlserver">Bright</option>
+                    </select>
+                    <label>Materialize Select</label>
+                  </div>
+              </div>
+              <div class="col s6">
+                <h6>key binding<h6>
+                  <div class="input-field">
+                    <select id="key_binding_selector" name = "key_binding_selector" onChange='editor.setKeyboardHandler(this.value);saveKeyBindingToWebstorage();'>
+                      <option value="ace/keyboard/emacs">Emacs</option>
+                      <option value="ace/keyboard/vim">Vim</option>
+                      <option value="" selected="true">Windows</option>
+                    </select>
+                  </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <a href="#" class="waves-effect btn-flat modal-close">Close</a>
+            </div>
+          </div>
+        </div>
+        <a class="waves-effect waves-light btn dropdown-button" id="file-dropdown-button" data-activates="dropdown-file">Save/Load<i class="mdi-file-attachment right"></i></a>
+        <ul id="dropdown-file" class="dropdown-content">
+          <li><a onClick='loadFile();'>Load File</a></li>
+          <li><a onClick='saveHydla();'>Save HydLa</a></li>
+          <li><a onClick='saveHydat();'>Save Hydat</a></li>
+        </ul>
+        <a class="waves-effect waves-light btn modal-trigger right" href="#modal_about">About<i class="mdi-action-help right"></i></a>
+        <div id="modal_about" class="modal">
+          <div class="modal-content">
+            <h3>webHydLa</h3>
+            <small>Copyright (c) 2015 <a href="http://www.ueda.info.waseda.ac.jp/" target="_blank">Ueda Laboratory, Department of Computer Science and Communications Engineering, Waseda University</a></small>
+            <p>webHydLa is the IDE for <a href="http://www.ueda.info.waseda.ac.jp/hydla/" target="_blank">HydLa</a>, the language to describe hybrid systems.</p>
+
+            <h5>Mathematica</h5>
+            <p>webHydLa uses Mathematica as an external constraint solver.</p>
+            <a href="http://www.wolfram.com/webmathematica/sitelink" target="_blank"><img src="webm-white.gif"/></a>
+          </div>
+          <div class="modal-footer">
+            <a href="#" class="waves-effect btn-flat modal-close">Close</a>
+          </div>
+        </div>
+
+        <div id="graph_options" class="modal bottom-sheet">
+          <div class="row">
+            <div class="col s12">
+              <div class="modal-content">
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <a href="#" class="waves-effect btn-flat modal-close">Close</a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div id="splitter">
+        <div class="inner">
+          <div id="left-pane">
+            <div class="inner">
+              <div id="input-pane">
+                <div id="editor-area">
+                  <div id="editor" style="z-index=1" style="width=100%"></div>
+                  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
+                  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script>
+                  <script>
+                   var editor = ace.edit("editor");
+                   editor.$blockScrolling = Infinity;
+                   editor.setOptions({
+                     enableBasicAutocompletion: true,
+                                           enableSnippets: true,
+                                           enableLiveAutocompletion: true
+                   });
+                   editor.getSession().setUseWrapMode(true);
+                   /*$('#init').click(function(e) {
+                      editor.insert('INIT <=> x =  & y = .');
+                      });
+                      $('#constraint').click(function(e) {
+                      editor.insert(' <=> []( => ).');
+                      });*/
+                  </script>
+                  <a class="exec-button waves-effect waves-light btn-floating btn-large red disabled-running z-depth-3" title="RUN/KILL (Shortcut: Ctrl-Enter)" onClick="onExecButtonClick();"><i class="mdi-content-send exec-icon right"></i></a>
+                </div>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script>
+              </div>
+
+              <div id="graph-setting-area" class="valign">
+                <div id="h-separator" class="valign-wrapper">
+                </div>
+                <div id="textarea">
+                  <div class="inner">
+                    <div class = "row">
+                      <div class = "col s 12">
+                        <h5> Simulation Settings </h5>
+                      </div>
+                      <div class="col s 12">
+                        <div class="input-field col s6">
+                          <input id="phase_num" type="text" class="validate" value=10>
+                          <label for="phase_num">Number of Phases</label>
+                        </div>
+                        <div class="input-field col s6">
+                          <input id="simulation_time" type="text" class="validate">
+                          <label for="simulation_time">Time</label>
+                        </div>
+                      </div>
+                      <div class="switch col s6">
+                        <label>
+                          Off
+                          <input type="checkbox" id="nd_mode_check_box">
+                          <span class="lever"></span>
+                          nondeterministic mode
+                        </label>
+                      </div>
+                      <div class="switch col s6">
+                        <label>
+                          Off
+                          <input type="checkbox" id="html_mode_check_box">
+                          <span class="lever"></span>
+                          HTML output mode
+                        </label>
+                      </div>
+                      <div class="input-field col s12">
+                        <input id="other_options" type="text" class="validate">
+                        <label for="other_options">Other Options</label>
+                      </div>
+                      <div class="input-field col s6">
+                        <input id="timeout_option" type="text" class="validate" value=30>
+                        <label for="timeout_option">TimeOut</label>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+
+          <div id="v-separator" class="valign-wrapper">
+            <a onClick='toggleInputPane()'>
+              <i id="v-toggle-icon" class="valign mdi-navigation-chevron-left"></i>
+            </a>
+          </div>
+
+          <div id="result-pane">
+            <div class="inner">
+              <ul class="tabs">
+                <li class="tab col s3">
+                  <a class="" href="#graph-area">Graph</a>
+                </li>
+                <li class="tab col s3">
+                  <a class="" href="#output-area">Output</a>
+                </li>
+              </ul>
+              <div id="graph-area">
+                <div id='dat-gui'>
+                </div>
+                <div id='dat-gui-bottom'>
+                </div>
+                <div id = "scale_label_wrapper">
+                  <canvas id="scaleLabelCanvas">
+                  </canvas>
+                  <canvas id="nameLabelCanvas">
+                  </canvas>
+                </div>
+                <div id="graph-preloader" class="hide">
+                  <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                    <div class="spinner-layer spinner-red">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                    <div class="spinner-layer spinner-yellow">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                    <div class="spinner-layer spinner-green">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="output-area" class="tab">
+                <div id="info"></div>
+                <div id="output-initial">
+                  <p>
+                    Simulation Output will be written here.
+                  </p>
+                </div>
+                <div id="output-preloader" class="hide">
+                  <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                    <div class="spinner-layer spinner-red">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                    <div class="spinner-layer spinner-yellow">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                    <div class="spinner-layer spinner-green">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <script src="js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+      <script src="js/plot.js" type="text/javascript" charset="utf-8"></script>
+      <script src="js/parse.js" type="text/javascript" charset="utf-8"></script>
+      <script src="js/graph_axis.js" type="text/javascript" charset="utf-8"></script>
+      <script type="text/javascript" src="js/three_init.js"></script>
+      <script src="js/main.js" type="text/javascript" charset="utf-8"></script>
+  </body>
+</html>

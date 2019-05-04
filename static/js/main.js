@@ -5,8 +5,8 @@ var editor = ace.edit("editor");
 window.onkeydown = function (e) {
   if (!e) e = window.event;
   // metaKey is 91
-  // if (e.keyCode == 91) {
-  if (e.keyCode == 17) {
+  if (e.keyCode == 91) {
+  // if (e.keyCode == 17) {
     graph_controls.enableZoom = true;
     graph_controls.enableRotate = true;
     graph_controls.enablePan = false;
@@ -15,8 +15,8 @@ window.onkeydown = function (e) {
 }
 window.onkeyup = function(e) {
   if (!e) e = window.event;
-  // if (e.keyCode == 91) {
-  if (e.keyCode == 17) {
+  if (e.keyCode == 91) {
+  // if (e.keyCode == 17) {
     graph_controls.enableZoom = false;
     graph_controls.enableRotate = false;
     graph_controls.enablePan = true;
