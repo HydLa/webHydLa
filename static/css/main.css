@@ -176,40 +176,25 @@ html, body{
 
 #graph-preloader {
 	position: absolute;
-	top: 0;
-	bottom: 0;
-	right: 0;
-	left: 0;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translateY(-50%) translateX(-50%);
+  	transform: translateY(-50%) translateX(-50%);
 	z-index: 100;
-	/*display: flex;
-	display: -webkit-flex;*/
-	/*これはグラフのズームインアウトに関わっている*/
-	align-items: center;
-	justify-content: center;
-	pointer-events: none;
 }
 
 
 #output-initial {
-	height: 100%;
-	width: 100%;
-	/*display: flex;
-	display: -webkit-flex;*/
-	align-items: center;
-	justify-content: center;
+	padding-left: 20px;
 }
 
 #output-preloader {
 	position: absolute;
-	top: 0;
-	bottom: 0;
-	right: 0;
-	left: 0;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translateY(-50%) translateX(-50%);
+  	transform: translateY(-50%) translateX(-50%);
 	z-index: 100;
-	/*display: flex;
-	display: -webkit-flex;*/
-	align-items: center;
-	justify-content: center;
 }
 
 #disabled-running {
