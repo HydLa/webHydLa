@@ -1,27 +1,51 @@
+// ロード時の処理
+$(document).ready( function(){
+  // スクロール動作でのズームをオフにする
+  graph_controls.enableZoom = false;
+  graph_controls.enableRotate = false;
+  graph_controls.enablePan = true;
+});
+
+// カーソルがgraph-areaの中にあるか否かを追跡する変数
+var in_graph_area;
+$('#graph-area').hover( () => {
+  in_graph_area=true;}, 
+function() {
+  in_graph_area=false;
+  $('#scroll-message-pane').css("opacity","0");
+});
+$("body").scroll(function() {
+  if (in_graph_area == true) {
+    $('#scroll-message-pane').css("opacity","0.5");
+    setTimeout(function() {
+      $('#scroll-message-pane').css("opacity","0");
+    }, 1000);
+  }
+});
+
+
 /* ID="editor" な div をエディタにする */
 var editor = ace.edit("editor");
 
 // checks if special keys are down
 window.onkeydown = function (e) {
   if (!e) e = window.event;
-  // metaKey is 91
-  // if (e.keyCode == 91) {
-  if (e.keyCode == 17) {
-    graph_controls.enableZoom = true;
+  // スクロール動作でのズームをオンにする
+  if (e.keyCode == 91 | e.keyCode == 16 | e.keyCode == 17) {
+    graph_controls.enableZoom   = true;
     graph_controls.enableRotate = true;
-    graph_controls.enablePan = false;
+    graph_controls.enablePan    = false;
+    $('#scroll-message-pane').css("opacity","0");
   }
-  console.log(e.keyCode);
 }
 window.onkeyup = function(e) {
   if (!e) e = window.event;
-  // if (e.keyCode == 91) {
-  if (e.keyCode == 17) {
-    graph_controls.enableZoom = false;
+  // スクロール動作でのズームをオフにする
+  if (e.keyCode == 91 | e.keyCode == 16 | e.keyCode == 17) {
+    graph_controls.enableZoom   = false;
     graph_controls.enableRotate = false;
-    graph_controls.enablePan = true;
+    graph_controls.enablePan    = true;
   }
-  console.log(e.keyCode);
 }
 
 /* 諸々の設定 */

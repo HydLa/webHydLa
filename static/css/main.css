@@ -5,6 +5,19 @@ html, body{
 }
 
 
+#top_area {
+	position: relative;
+}
+#classic_ui {
+	position: absolute;
+	padding-right: 25px;
+	top: -15px;
+	right: 0px;
+	text-decoration: none;
+}
+#classic_ui:hover {
+	text-decoration: underline;
+}
 
 #webhydla_title {
 	display: block;
@@ -21,7 +34,6 @@ html, body{
 #powered_by {
 	margin-top: -20px;
 }
-
 
 
 #blank_space {
@@ -138,24 +150,38 @@ html, body{
 
 
 
-
-
-
-
-
+#scroll-message-pane {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 999;
+	pointer-events: none;
+	background-color: black;
+	opacity: 0;
+	transition: opacity 2s ease-in-out;
+	-moz-transition: opacity 0.5s linear;
+	-webkit-transition: opacity 0.5s linear;
+}
+#scroll-message {
+	color: white;
+	font-size: 28px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translateY(-50%) translateX(-50%);
+  	transform: translateY(-50%) translateX(-50%);
+}
 
 
 #graph-area {
-	/*order: 1;
-	flex: 1;*/
 	width: 100%;
 	height: 100%;
 	position: absolute;
 	z-index: 2;
 }
 #output-area {
-	/*order: 1;
-	flex: 1;*/
 	width: 100%;
 	height: 100%;
 	position: relative;
@@ -176,40 +202,25 @@ html, body{
 
 #graph-preloader {
 	position: absolute;
-	top: 0;
-	bottom: 0;
-	right: 0;
-	left: 0;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translateY(-50%) translateX(-50%);
+  	transform: translateY(-50%) translateX(-50%);
 	z-index: 100;
-	/*display: flex;
-	display: -webkit-flex;*/
-	/*これはグラフのズームインアウトに関わっている*/
-	align-items: center;
-	justify-content: center;
-	pointer-events: none;
 }
 
 
 #output-initial {
-	height: 100%;
-	width: 100%;
-	/*display: flex;
-	display: -webkit-flex;*/
-	align-items: center;
-	justify-content: center;
+	padding-left: 20px;
 }
 
 #output-preloader {
 	position: absolute;
-	top: 0;
-	bottom: 0;
-	right: 0;
-	left: 0;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translateY(-50%) translateX(-50%);
+  	transform: translateY(-50%) translateX(-50%);
 	z-index: 100;
-	/*display: flex;
-	display: -webkit-flex;*/
-	align-items: center;
-	justify-content: center;
 }
 
 #disabled-running {
