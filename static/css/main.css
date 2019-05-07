@@ -5,6 +5,19 @@ html, body{
 }
 
 
+#top_area {
+	position: relative;
+}
+#classic_ui {
+	position: absolute;
+	padding-right: 25px;
+	top: -15px;
+	right: 0px;
+	text-decoration: none;
+}
+#classic_ui:hover {
+	text-decoration: underline;
+}
 
 #webhydla_title {
 	display: block;
@@ -21,7 +34,6 @@ html, body{
 #powered_by {
 	margin-top: -20px;
 }
-
 
 
 #blank_space {
