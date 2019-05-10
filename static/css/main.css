@@ -156,11 +156,6 @@ html, body{
 	height: 100%;
 	z-index: 999;
 	pointer-events: none;
-	background-color: black;
-	opacity: 0;
-	transition: opacity 2s ease-in-out;
-	-moz-transition: opacity 0.5s linear;
-	-webkit-transition: opacity 0.5s linear;
 }
 #scroll-message {
 	color: white;
@@ -172,6 +167,15 @@ html, body{
 	left: 50%;
 	-webkit-transform: translateY(-50%) translateX(-50%);
   	transform: translateY(-50%) translateX(-50%);
+
+  	background-color: black;
+  	border-radius: 30px;
+  	padding: 20px;
+  	/*padding: 10px;*/
+	opacity: 0;
+	transition: opacity 2s ease-in-out;
+	-moz-transition: opacity 0.5s linear;
+	-webkit-transition: opacity 0.5s linear;
 }
 
 

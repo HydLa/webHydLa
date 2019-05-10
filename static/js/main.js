@@ -1,9 +1,13 @@
+var classic_ui;
+// TODO: classic ui に変更した時に、ズーム機能を元に戻す。
+
 // ロード時の処理
 $(document).ready( function(){
   // スクロール動作でのズームをオフにする
   graph_controls.enableZoom = false;
   graph_controls.enableRotate = false;
   graph_controls.enablePan = true;
+  classic_ui = false;
 });
 
 // カーソルがgraph-areaの中にあるか否かを追跡する変数
@@ -12,17 +16,24 @@ $('#graph-area').hover( () => {
   in_graph_area=true;}, 
 function() {
   in_graph_area=false;
-  $('#scroll-message-pane').css("opacity","0");
+  $('#scroll-message').css("opacity","0");
 });
 $("body").scroll(function() {
-  if (in_graph_area == true) {
-    $('#scroll-message-pane').css("opacity","0.5");
+  if ((!classic_ui) & in_graph_area == true) {
+    $('#scroll-message').css("opacity","0.65");
     setTimeout(function() {
-      $('#scroll-message-pane').css("opacity","0");
-    }, 1000);
+      $('#scroll-message').css("opacity","0");
+    }, 1500);
   }
 });
 
+function useClassicUI() {
+  graph_controls.enableZoom   = true;
+  graph_controls.enableRotate = true;
+  graph_controls.enablePan    = false;
+  classic_ui = true;
+  alert("called useClassicUI");
+}
 
 /* ID="editor" な div をエディタにする */
 var editor = ace.edit("editor");
@@ -31,7 +42,7 @@ var editor = ace.edit("editor");
 window.onkeydown = function (e) {
   if (!e) e = window.event;
   // スクロール動作でのズームをオンにする
-  if (e.keyCode == 91 | e.keyCode == 16 | e.keyCode == 17) {
+  if ((!classic_ui) & (e.keyCode == 91 | e.keyCode == 16 | e.keyCode == 17)) {
     graph_controls.enableZoom   = true;
     graph_controls.enableRotate = true;
     graph_controls.enablePan    = false;
@@ -41,7 +52,7 @@ window.onkeydown = function (e) {
 window.onkeyup = function(e) {
   if (!e) e = window.event;
   // スクロール動作でのズームをオフにする
-  if (e.keyCode == 91 | e.keyCode == 16 | e.keyCode == 17) {
+  if ((!classic_ui) & (e.keyCode == 91 | e.keyCode == 16 | e.keyCode == 17)) {
     graph_controls.enableZoom   = false;
     graph_controls.enableRotate = false;
     graph_controls.enablePan    = true;
