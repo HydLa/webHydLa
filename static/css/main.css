@@ -2,6 +2,7 @@ html, body{
 	height: 100%;
 	width: 100%;
 	overflow-x: hidden;
+	overflow-y: hidden;
 }
 
 
@@ -95,7 +96,7 @@ html, body{
 	border-radius: 3px!important;
 	outline: initial!important;
 	height: initial!important;
-	width: 100px!important;
+	width: 40px!important;
 	font-size: initial!important;
 	margin: initial!important;
 	margin-left: 5px!important;
@@ -103,6 +104,9 @@ html, body{
 	box-shadow: initial!important;
 	box-sizing: initial!important;
 	transition: initial!important;
+}
+#other_options {
+	width: 120px!important;
 }
 .options_checkbox {
 	background-color: #555!important;
@@ -156,11 +160,6 @@ html, body{
 	height: 100%;
 	z-index: 999;
 	pointer-events: none;
-	background-color: black;
-	opacity: 0;
-	transition: opacity 2s ease-in-out;
-	-moz-transition: opacity 0.5s linear;
-	-webkit-transition: opacity 0.5s linear;
 }
 #scroll-message {
 	color: white;
@@ -172,6 +171,15 @@ html, body{
 	left: 50%;
 	-webkit-transform: translateY(-50%) translateX(-50%);
   	transform: translateY(-50%) translateX(-50%);
+
+  	background-color: black;
+  	border-radius: 30px;
+  	padding: 20px;
+  	/*padding: 10px;*/
+	opacity: 0;
+	transition: opacity 2s ease-in-out;
+	-moz-transition: opacity 0.5s linear;
+	-webkit-transition: opacity 0.5s linear;
 }
 
 
