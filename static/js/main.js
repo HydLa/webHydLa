@@ -332,9 +332,9 @@ function sendHydLa() {
     if(other_options.value != "")options_value += other_options.value;
     form.append("hylagi_option", options_value);
     var timeout_value = "";
-    // if(timeout_option.value != "")timeout_value = timeout_option.value;
-    // else timeout_value = "30";
-    // form.append("timeout_option", timeout_value);
+    if(timeout_option.value != "")timeout_value = timeout_option.value;
+    else timeout_value = "30";
+    form.append("timeout_option", timeout_value);
     var xmlhr = new XMLHttpRequest();
     xmlhr.open("POST", "hydat.cgi");
     xmlhr.send(form);
