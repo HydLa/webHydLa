@@ -27,8 +27,8 @@ $("body").scroll(function() {
 function useClassicUI() {
   classic_ui = true;
   graph_controls.enableZoom   = true;
-  graph_controls.enableRotate = true;
-  graph_controls.enablePan    = false;
+  graph_controls.enableRotate = false;
+  graph_controls.enablePan    = true;
 }
 
 /* ID="editor" な div をエディタにする */
@@ -40,8 +40,8 @@ window.onkeydown = function (e) {
   // スクロール動作でのズームをオンにする
   if ((!classic_ui) & (e.keyCode == 91 | e.keyCode == 16 | e.keyCode == 17)) {
     graph_controls.enableZoom   = true;
-    graph_controls.enableRotate = true;
-    graph_controls.enablePan    = false;
+    graph_controls.enableRotate = false;
+    graph_controls.enablePan    = true;
     $('#scroll-message-pane').css("opacity","0");
   }
 }
