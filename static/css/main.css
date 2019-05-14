@@ -95,7 +95,7 @@ html, body{
 	border-radius: 3px!important;
 	outline: initial!important;
 	height: initial!important;
-	width: 100px!important;
+	width: 40px!important;
 	font-size: initial!important;
 	margin: initial!important;
 	margin-left: 5px!important;
@@ -103,6 +103,9 @@ html, body{
 	box-shadow: initial!important;
 	box-sizing: initial!important;
 	transition: initial!important;
+}
+#other_options {
+	width: 120px!important;
 }
 .options_checkbox {
 	background-color: #555!important;
