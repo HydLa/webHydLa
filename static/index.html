@@ -26,6 +26,10 @@
 			<div id="classic_ui">
 				<a href="./index_classic.html" onclick="useClassicUI()">switch to classic UI</a>
 			</div>
+			<!-- origianl-UIと2019年版-UIでのスクロール操作の区別をするための変数の設定 -->
+			<script type="text/javascript">
+				var classic_ui = false;
+			</script>
 			<!-- TODO: classic-UIに移動したときに、スクロールなどの操作が元の様に戻るように修正する -->
 
 			<div id="webhydla_title">
@@ -149,6 +153,7 @@
 						<div class="each_option">Total Phases: <input id="phase_num" type="text" class="options_input" value=12></div>
 						<div class="each_option">Simulating Time: <input id="simulation_time" type="text" class="options_input" value=20></div>
 						<div class="each_option">Options: <input id="other_options" type="text" class="options_input" value=""></div>
+						<!-- nd_mode_check_box はmain.jsの中でデフォルトで"checked"になっている -->
 						<div class="each_option">ND mode: <input id="nd_mode_check_box" type="checkbox" class="options_checkbox"></div>
 						<div class="each_option">HTML mode: <input id="html_mode_check_box" type="checkbox" class="options_checkbox"></div>
 						<input type="submit" value="RUN" class="exec-button disabled-running" title="RUN/KILL (Shortcut: Ctrl-Enter)" onClick="onExecButtonClick();" id="run_button">

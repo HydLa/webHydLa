@@ -1,13 +1,10 @@
-var classic_ui;
-// TODO: classic ui に変更した時に、ズーム機能を元に戻す。
-
 // ロード時の処理
 $(document).ready( function(){
+  if (classic_ui == true) return;
   // スクロール動作でのズームをオフにする
   graph_controls.enableZoom = false;
   graph_controls.enableRotate = false;
   graph_controls.enablePan = true;
-  classic_ui = false;
 });
 
 // カーソルがgraph-areaの中にあるか否かを追跡する変数
@@ -28,11 +25,10 @@ $("body").scroll(function() {
 });
 
 function useClassicUI() {
+  classic_ui = true;
   graph_controls.enableZoom   = true;
   graph_controls.enableRotate = true;
   graph_controls.enablePan    = false;
-  classic_ui = true;
-  alert("called useClassicUI");
 }
 
 /* ID="editor" な div をエディタにする */
