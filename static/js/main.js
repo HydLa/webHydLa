@@ -1,6 +1,6 @@
 // ロード時の処理
-$(document).ready( function(){
-  if (classic_ui == true) return;
+$(document).ready(function(){
+  if (classic_ui == true) {return;}
   // スクロール動作でのズームをオフにする
   graph_controls.enableZoom = false;
   graph_controls.enableRotate = false;
