@@ -1,46 +1,3 @@
-var in_graph_area;
-$('#graph-area').hover(
-  () => { in_graph_area = true; },
-  function() { in_graph_area = false; $('#scroll-message').css("opacity","0"); }
-);
-
-var timeout;
-$("body").scroll(function() {
-  clearTimeout(timeout);
-  if (in_graph_area == true) {
-    $('#scroll-message').css("opacity","0.65");
-    timeout = setTimeout(function(){$('#scroll-message').css("opacity","0");}, 1150);
-  }
-});
-
-const key_shift  = 16;
-const key_ctr    = 17;
-const key_alt    = 18;
-const key_meta_l = 91;
-
-window.onkeydown = function (e) {
-  if (!e) e = window.event;
-  if (e.keyCode==key_shift|e.keyCode==key_ctr|e.keyCode==key_alt|e.keyCode==key_meta_l) {
-    enableZoom(); $('#scroll-message').css("opacity","0");
-  }
-}
-window.onkeyup = function(e) {
-  if (!e) e = window.event;
-  if (e.keyCode==key_shift|e.keyCode==key_ctr|e.keyCode==key_alt|e.keyCode==key_meta_l) {
-    disableZoom();
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
 /* ID="editor" な div をエディタにする */
 var editor = ace.edit("editor");
 
@@ -73,16 +30,6 @@ var dat_gui_parameter_folder_seek;
 var first_script_element;
 var dynamic_script_elements = [];
 
-
-
-
-
-
-
-
-function enableZoom()     { graph_controls.enableZoom = true;  }
-function disableZoom()    { graph_controls.enableZoom = false; }
-function initScrollZoom() { disableZoom(); }
 
 $(document).ready(function(){
   
@@ -785,6 +732,51 @@ function showToast(message, duration, classes)
   }
 }
 
-function showScrollMessage() {
-  // want to show message over the panel when the user tries to scroll on the result panel (graph)
+// below are functions added for new UI
+
+var in_graph_area;
+$('#graph-area').hover(
+  () => { in_graph_area = true; },
+  function() { in_graph_area = false; $('#scroll-message').css("opacity","0"); }
+);
+
+var timeout;
+$("body").scroll(function() {
+  clearTimeout(timeout);
+  if (in_graph_area == true) {
+    $('#scroll-message').css("opacity","0.65");
+    timeout = setTimeout(function(){$('#scroll-message').css("opacity","0");}, 1150);
+  }
+});
+
+const key_shift  = 16;
+const key_ctr    = 17;
+const key_alt    = 18;
+const key_meta_l = 91;
+
+window.onkeydown = function (e) {
+  if (!e) e = window.event;
+  if (e.keyCode==key_shift|e.keyCode==key_ctr|e.keyCode==key_alt|e.keyCode==key_meta_l) {
+    enableZoom(); $('#scroll-message').css("opacity","0");
+  }
+}
+window.onkeyup = function(e) {
+  if (!e) e = window.event;
+  if (e.keyCode==key_shift|e.keyCode==key_ctr|e.keyCode==key_alt|e.keyCode==key_meta_l) {
+    disableZoom();
+  }
+}
+
+function enableZoom() {
+  if (classic_ui) return;
+  graph_controls.enableZoom = true;
+  $('body').css("overflow-y","hidden");
+}
+function disableZoom() {
+  if (classic_ui) return;
+  graph_controls.enableZoom = false;
+  $('body').css("overflow-y","visible");
+}
+function initScrollZoom() { 
+  disableZoom();
 }
