@@ -55,6 +55,13 @@ window.onkeyup = function(e) {
   }
 }
 
+
+
+
+
+
+
+
 /* 諸々の設定 */
 editor.setTheme("ace/theme/sqlserver");
 editor.getSession().setMode("ace/mode/hydla")
