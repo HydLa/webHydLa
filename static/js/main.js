@@ -1,59 +1,5 @@
-// ロード時の処理
-$(document).ready(function(){
-  if (classic_ui == true) {return;}
-  // スクロール動作でのズームをオフにする
-  graph_controls.enableZoom = false;
-  graph_controls.enableRotate = false;
-  graph_controls.enablePan = true;
-});
-
-// カーソルがgraph-areaの中にあるか否かを追跡する変数
-var in_graph_area;
-$('#graph-area').hover( () => {
-  in_graph_area=true;}, 
-function() {
-  in_graph_area=false;
-  $('#scroll-message').css("opacity","0");
-});
-$("body").scroll(function() {
-  if ((!classic_ui) & in_graph_area == true) {
-    $('#scroll-message').css("opacity","0.65");
-    setTimeout(function() {
-      $('#scroll-message').css("opacity","0");
-    }, 1500);
-  }
-});
-
-function useClassicUI() {
-  classic_ui = true;
-  graph_controls.enableZoom   = true;
-  graph_controls.enableRotate = false;
-  graph_controls.enablePan    = true;
-}
-
 /* ID="editor" な div をエディタにする */
 var editor = ace.edit("editor");
-
-// checks if special keys are down
-window.onkeydown = function (e) {
-  if (!e) e = window.event;
-  // スクロール動作でのズームをオンにする
-  if ((!classic_ui) & (e.keyCode == 91 | e.keyCode == 16 | e.keyCode == 17)) {
-    graph_controls.enableZoom   = true;
-    graph_controls.enableRotate = false;
-    graph_controls.enablePan    = true;
-    $('#scroll-message-pane').css("opacity","0");
-  }
-}
-window.onkeyup = function(e) {
-  if (!e) e = window.event;
-  // スクロール動作でのズームをオフにする
-  if ((!classic_ui) & (e.keyCode == 91 | e.keyCode == 16 | e.keyCode == 17)) {
-    graph_controls.enableZoom   = false;
-    graph_controls.enableRotate = false;
-    graph_controls.enablePan    = true;
-  }
-}
 
 /* 諸々の設定 */
 editor.setTheme("ace/theme/sqlserver");
@@ -84,7 +30,11 @@ var dat_gui_parameter_folder_seek;
 var first_script_element;
 var dynamic_script_elements = [];
 
+
 $(document).ready(function(){
+  
+  initScrollZoom();
+
   editor.clearSelection();
   /* initialize materialize components */
   $('#file-dropdown-button').dropdown({
@@ -185,11 +135,6 @@ $(document).ready(function(){
   time_stop();
 
   render();
-
-  // to only scroll when cmd-key is pressed
-  graph_controls.enableZoom = false;
-  graph_controls.enableRotate = false;
-  graph_controls.enablePan = true;
 
 });
 
@@ -787,6 +732,51 @@ function showToast(message, duration, classes)
   }
 }
 
-function showScrollMessage() {
-  // want to show message over the panel when the user tries to scroll on the result panel (graph)
+// below are functions added for new UI
+
+var in_graph_area;
+$('#graph-area').hover(
+  () => { in_graph_area = true; },
+  function() { in_graph_area = false; $('#scroll-message').css("opacity","0"); }
+);
+
+var timeout;
+$("body").scroll(function() {
+  clearTimeout(timeout);
+  if (in_graph_area == true) {
+    $('#scroll-message').css("opacity","0.65");
+    timeout = setTimeout(function(){$('#scroll-message').css("opacity","0");}, 1150);
+  }
+});
+
+const key_shift  = 16;
+const key_ctr    = 17;
+const key_alt    = 18;
+const key_meta_l = 91;
+
+window.onkeydown = function (e) {
+  if (!e) e = window.event;
+  if (e.keyCode==key_shift|e.keyCode==key_ctr|e.keyCode==key_alt|e.keyCode==key_meta_l) {
+    enableZoom(); $('#scroll-message').css("opacity","0");
+  }
+}
+window.onkeyup = function(e) {
+  if (!e) e = window.event;
+  if (e.keyCode==key_shift|e.keyCode==key_ctr|e.keyCode==key_alt|e.keyCode==key_meta_l) {
+    disableZoom();
+  }
+}
+
+function enableZoom() {
+  if (classic_ui) return;
+  graph_controls.enableZoom = true;
+  $('body').css("overflow-y","hidden");
+}
+function disableZoom() {
+  if (classic_ui) return;
+  graph_controls.enableZoom = false;
+  $('body').css("overflow-y","visible");
+}
+function initScrollZoom() { 
+  disableZoom();
 }
