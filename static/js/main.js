@@ -236,6 +236,7 @@ function updateExecIcon()
 {
   if(hylagi_running)
   {
+    document.getElementById('run_button').value="KILL"; // for new UI
     var elist = document.getElementsByClassName("exec-icon");
     for (var i = 0; i < elist.length; ++i) {
       elist[i].classList.remove("mdi-content-send");
@@ -244,6 +245,7 @@ function updateExecIcon()
   }
   else
   {
+    document.getElementById('run_button').value="RUN"; // for new UI
     var elist = document.getElementsByClassName("exec-icon");
     for (var i = 0; i < elist.length; ++i) {
       elist[i].classList.add("mdi-content-send");
