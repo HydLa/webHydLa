@@ -203,6 +203,14 @@ function parseValue(value_str) {
   var isdigit = function (c) { return "0" <= c && c <= "9"; };
   var isalnum = function (c) { return isalpha(c) || isdigit(c); };
 
+  /*
+   * <expression> ::= <term> { +<term> | -<term> }
+   * <term> ::= <term2> { *<term2> | /<term2> }
+   * <term2> ::= <factor> { ^<factor> }
+   * <factor> ::= (<expression>) | Func[<expression>] | <negative>
+   * <negative> ::= { - } <leaf>
+   * <leaf> ::= "Infinity" | parameter | constant | variable | number
+   */
 
   var number = function (s, i) {
     var n = 0;
