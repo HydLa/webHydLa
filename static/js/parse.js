@@ -200,13 +200,12 @@ class Negative {
 
 function parseValue(value_str) {
   var isalpha = function (c) { return ("A" <= c && c <= "Z") || ("a" <= c && c <= "z"); };
-  var isdigit = function (c) { return "0" <= c && c < "9"; };
+  var isdigit = function (c) { return "0" <= c && c <= "9"; };
   var isalnum = function (c) { return isalpha(c) || isdigit(c); };
 
 
   var number = function (s, i) {
     var n = 0;
-    // console.log("number", i);
     while (isdigit(s[i[0]])) {
       n = n * 10 + (s[i[0]] - "0")
       i[0]++;
@@ -220,8 +219,9 @@ function parseValue(value_str) {
       p += s[i[0]];
       i[0]++;
     }
-    p += s[i[0]];
+    p += s[i[0]]; // p[x,0,1]
     i[0]++;
+    p = p.replace(/,/g, ", "); // p[x, 0, 1]
     return new Variable(p);
   }
 
@@ -396,7 +396,8 @@ function parseValue(value_str) {
     return lhs;
   }
 
-  return expression(value_str, [0]);
+  var s = value_str.replace(/\s+/g, "");
+  return expression(s, [0]);
 };
 
 /*
@@ -422,4 +423,5 @@ console.log(parseValue("Sin[0]").getValue());
 console.log(parseValue("Cos[0]").getValue());
 console.log(parseValue("Tan[0]").getValue());
 console.log(parseValue("Floor[E]").getValue());
+console.log(parseValue("(t * (-1250) + 125 * p[v, 0, 1] + 613 * (20 * p[ht, 0, 1] + p[v, 0, 1] ^ 2) ^ (1\/2))*(t*(-250)+25*p[v, 0, 1]+97*(20*p[ht, 0, 1]+p[v, 0, 1]^2)^(1\/2))*(-1)\/62500"));
 */
