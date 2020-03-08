@@ -236,7 +236,7 @@ function parseValue(value_str) {
   var variable = function (s, i) {
     var v = s[i[0]];
     i[0]++;
-    while (isalnum(s[i[0]])) {
+    while (isalnum(s[i[0]]) || s[i[0]] == "'") {
       v += s[i[0]];
       i[0]++;
     }
