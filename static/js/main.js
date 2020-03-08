@@ -6,12 +6,13 @@ editor.setTheme("ace/theme/sqlserver");
 editor.getSession().setMode("ace/mode/hydla")
 editor.getSession().setTabSize(4);
 editor.getSession().setUseSoftTabs(true);
-editor.setHighlightActiveLine(true);
+editor.setHighlightActiveLine(false);
 editor.$blockScrolling = Infinity;
 editor.setOptions({
   enableBasicAutocompletion: true,
   enableSnippets: true,
-  enableLiveAutocompletion: true
+  enableLiveAutocompletion: true,
+  fontSize: "12pt",
 });
 
 /* set keybinding */
@@ -29,11 +30,16 @@ var dat_gui_parameter_folder_seek;
 var first_script_element;
 var dynamic_script_elements = [];
 
+
 $(document).ready(function(){
+  
+  initScrollZoom();
+
+  editor.clearSelection();
   /* initialize materialize components */
   $('#file-dropdown-button').dropdown({
     constrain_width: true,
-    hover: true
+    hover: false,
   });
   $('.axis-dropdown-button').dropdown({
     constrain_width: false,
@@ -187,14 +193,16 @@ function savePlotSettings()
 
 /* set default hydla code */
 var default_hydla =
-    //"// bouncing particle\n\
-    "// #hylagi -p6\n\
+//"// a sample hydla code: bouncing_particle.hydla\n\
+"// a sample hydla code: bouncing_particle.hydla\n\
 \n\
 INIT <=> y = 10 & y' = 0.\n\
 FALL <=> [](y'' = -10).\n\
 BOUNCE <=> [](y- = 0 => y' = -4/5 * y'-).\n\
 \n\
 INIT, FALL << BOUNCE.\n\
+\n\
+// #hylagi -p 10\n\
 ";
 
 /* load saved hydla code if it exist */
@@ -228,6 +236,7 @@ function updateExecIcon()
 {
   if(hylagi_running)
   {
+    document.getElementById('run_button').value="KILL"; // for new UI
     var elist = document.getElementsByClassName("exec-icon");
     for (var i = 0; i < elist.length; ++i) {
       elist[i].classList.remove("mdi-content-send");
@@ -236,6 +245,7 @@ function updateExecIcon()
   }
   else
   {
+    document.getElementById('run_button').value="RUN"; // for new UI
     var elist = document.getElementsByClassName("exec-icon");
     for (var i = 0; i < elist.length; ++i) {
       elist[i].classList.add("mdi-content-send");
@@ -722,4 +732,53 @@ function showToast(message, duration, classes)
       toast_container.removeChild(toast_container.children[i]);
     }
   }
+}
+
+// below are functions added for new UI
+
+var in_graph_area;
+$('#graph-area').hover(
+  () => { in_graph_area = true; },
+  function() { in_graph_area = false; $('#scroll-message').css("opacity","0"); }
+);
+
+var timeout;
+$("body").scroll(function() {
+  clearTimeout(timeout);
+  if (in_graph_area == true) {
+    $('#scroll-message').css("opacity","0.65");
+    timeout = setTimeout(function(){$('#scroll-message').css("opacity","0");}, 1150);
+  }
+});
+
+const key_shift  = 16;
+const key_ctr    = 17;
+const key_alt    = 18;
+const key_meta_l = 91;
+
+window.onkeydown = function (e) {
+  if (!e) e = window.event;
+  if (e.keyCode==key_shift|e.keyCode==key_ctr|e.keyCode==key_alt|e.keyCode==key_meta_l) {
+    enableZoom(); $('#scroll-message').css("opacity","0");
+  }
+}
+window.onkeyup = function(e) {
+  if (!e) e = window.event;
+  if (e.keyCode==key_shift|e.keyCode==key_ctr|e.keyCode==key_alt|e.keyCode==key_meta_l) {
+    disableZoom();
+  }
+}
+
+function enableZoom() {
+  if (classic_ui) return;
+  graph_controls.enableZoom = true;
+  $('body').css("overflow-y","hidden");
+}
+function disableZoom() {
+  if (classic_ui) return;
+  graph_controls.enableZoom = false;
+  $('body').css("overflow-y","visible");
+}
+function initScrollZoom() { 
+  disableZoom();
 }

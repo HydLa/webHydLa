@@ -15,8 +15,8 @@ function init(){
   // PerspectiveCamera
   // graph_camera = new THREE.PerspectiveCamera(75, 600 / 400, 1, 1000);
 
-  var width = 10;
-  var height = 10;
+  var width = 50;
+  var height = 50;
   // OrthographicCamera
   var left   = width / -2;
   var right  = width / 2;

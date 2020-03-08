@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from flask import Flask, redirect, url_for, request, abort, jsonify, render_template, session
-import sys, os, time, shlex, subprocess, json
+import sys, os, time, shlex, subprocess, json, urllib.request, urllib.parse, shutil
 
 key_file = open('secret_key')
 # setup Flask
@@ -53,13 +53,10 @@ def gen_hydat():
     hylagi_args = ["hylagi"]
 
     hylagi_args.extend(shlex.split(form["hylagi_option"]));
-
     hylagi_args.append("-o")
     hylagi_args.append(save_file_hydat)
-    hylagi_args.append(save_file_hydla)
 
     time_out = (int(form["timeout_option"]))
-
 
     try:
         if not os.path.isdir(save_dir):
@@ -71,18 +68,49 @@ def gen_hydat():
         return jsonify(sid=session_id, error=3, message="OSError")
 
     with open(save_file_stdout, "w") as f_stdout, open(save_file_stderr, "w") as f_stderr:
-        hylagi_proc = subprocess.Popen(hylagi_args, stdout=f_stdout, stderr=f_stderr)
-        hylagi_processes[session_id] = hylagi_proc
-        try:
-            hylagi_retcode = hylagi_proc.wait(timeout=time_out)
-        except subprocess.TimeoutExpired:
-            hylagi_proc.kill()
-            return jsonify(sid=session_id, error=4, message="TimeOut")
+        if shutil.which("hylagi") != None:
+            hylagi_args.append(save_file_hydla)
+            hylagi_proc = subprocess.Popen(hylagi_args, stdout=f_stdout, stderr=f_stderr)
+            hylagi_processes[session_id] = hylagi_proc
+            try:
+                hylagi_retcode = hylagi_proc.wait(timeout=time_out)
+            except subprocess.TimeoutExpired:
+                hylagi_proc.kill()
+                return jsonify(sid=session_id, error=4, message="TimeOut")
+        else:
+            # hylagiがないときは、apiサーバーに投げる
+            param_tuple = (
+                ("code", form["hydla_code"])
+                , ("args", hylagi_args)
+                , ("hydat_path", save_file_hydat)
+            )
+            encoded_param = urllib.parse.urlencode(param_tuple)
+            url = "http://webhydla.ueda.info.waseda.ac.jp:8080?" + encoded_param
+            try:
+                res = urllib.request.urlopen(url, timeout=time_out)
+            except OSError:
+                return jsonify(sid=session_id, error=4, message="Timeout")
+            except urllib.error.HTTPError:
+                return jsonify(sid=session_id, error=5, message="Internal server error")
+            response_json_encoded = res.read().decode("utf-8")
+            res.close()
+            response_json = json.loads(response_json_encoded)
+            response_stdout = response_json["stdout"]
+            response_stderr = response_json["stderr"]
+            response_hydat = response_json["hydat"]
+            hylagi_retcode = int(response_json["retcode"])
+
+            try:
+                f_stdout.write(response_stdout)
+                f_stderr.write(response_stderr)
+                with open(save_file_hydat, "w") as f_hydat:
+                    f_hydat.write(response_hydat)
+            except IOError:
+                return jsonify(sid=session_id, error=3, message="OSError")
         f_stdout.flush()
         f_stderr.flush()
 
     with open(save_file_stderr, "r") as f_stderr:
-        
         try:
             with open(save_file_stdout, "r") as f_stdout:
                 if not hylagi_retcode == 0:

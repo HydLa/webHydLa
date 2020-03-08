@@ -1,335 +1,340 @@
-*{
-  margin: 0px;
-  padding: 0px;
-}
-
 html, body{
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
+	height: 100%;
+	width: 100%;
+	overflow-x: hidden;
 }
 
-#container {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  display: -webkit-flex;
-  flex-flow: column;
-  -webkit-flex-flow: column;
+
+#top_area {
+	position: relative;
+}
+#classic_ui {
+	position: absolute;
+	padding-right: 25px;
+	top: -15px;
+	right: 0px;
+	text-decoration: none;
+}
+#classic_ui:hover {
+	text-decoration: underline;
 }
 
-#menubar {
-  order: 1;
-  width: 100%;
-  height: 50px;
-  background-color: #ff9933;
-  padding: 5px;
+#webhydla_title {
+	display: block;
+	position: static;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #000000;
+	text-align: center;
+	margin: 30px;
+}
+#webhydla_text {
+	color: #ff9933; /*hydla-orange*/
+	display: inline;
+}
+#powered_by {
+	margin-top: -20px;
 }
 
-#splitter {
-  order: 2;
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
 
-.inner {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  display: -webkit-flex;
+#blank_space {
+	display: block;
+	position: relative;
+	padding-bottom: 50px;
 }
-
-#splitter>.inner {
-  flex-flow: row;
-  -webkit-flex-flow: row;
+#editor_window {
+	display: block;
+	position: relative;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	height: 500px;
+	width: 80%;
 }
-
+#menu_bar {
+	position: relative;
+	height: 50px;
+	background-color: #000;
+	padding: 6px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
 #input-pane {
-  order: 1;
-  width: 100%;
-  height: calc(100% - 360px);
+	height: 400px;
 }
-
-#left-pane {
-  position: relative;
-  order: 1;
-  display: flex;
-  display: -webkit-flex;
-  width: 520px;
-  height: 100%;
-  transition: width 0s;
-  position: relative;
-  z-index: 1;
-}
-
-
 #editor-area {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  z-index: 1;
+	position: relative;
+	height: 100%;
+	width: 100%;
 }
-#left-pane>.inner {
-  flex-flow: column;
-  -webkit-flex-flow: column;
-}
-
 #editor {
-  flex: 1;
-  min-height: 0%;
-  height: 100%;
+	min-height: 0%;
+	height: 100%;
+}
+#simulation_settings {
+	position: relative;
+	display: inline-flex;
+	background-color: black;
+	color: white;
+	max-height: 100px;
+	width: 100%;
+	padding: 6px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	font-size: 16px;
+}
+.each_option {
+	padding: 10px;
+}
+/*override materialize-library*/
+.options_input {
+	background-color: #555!important;
+	border: initial!important;
+	border-bottom: initial!important;
+	border-radius: 3px!important;
+	outline: initial!important;
+	height: initial!important;
+	width: 40px!important;
+	font-size: initial!important;
+	margin: initial!important;
+	margin-left: 5px!important;
+	padding: initial!important;
+	box-shadow: initial!important;
+	box-sizing: initial!important;
+	transition: initial!important;
+}
+#other_options {
+	width: 120px!important;
+}
+.options_checkbox {
+	background-color: #555!important;
+	border: initial!important;
+	border-bottom: initial!important;
+	border-radius: 3px!important;
+	outline: initial!important;
+	height: initial!important;
+	/*width: 15px!important;*/
+	width: initial!important;
+	font-size: initial!important;
+	margin: initial!important;
+	margin-left: 5px!important;
+	padding: initial!important;
+	box-shadow: initial!important;
+	box-sizing: initial!important;
+	transition: initial!important;
+}
+#run_button {
+	color: white;
+	/*font-weight: bold;*/
+	background-color: #ff9933;
+	padding-top: 10px;
+	padding-bottom: 25px;
+	height: 7px;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+	border-radius: 3px;
 }
 
-#s-separator {
-  order: 2;
-  position: relative;
-  width: 20px;
-  height: 100%;
+
+
+#result_pane {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	/*opacity: 0.1;*/
+	/*z-index: -1;*/
 }
 
-#v-separator {
-  order: 2;
-  position: relative;
-  width: 20px;
-  height: 100%;
-  background-color: #ff9933;
-  z-index: 100;
+
+
+#scroll-message-pane {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 999;
+	pointer-events: none;
+}
+#scroll-message {
+	color: white;
+	font-size: 28px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translateY(-50%) translateX(-50%);
+  	transform: translateY(-50%) translateX(-50%);
+
+  	background-color: black;
+  	border-radius: 30px;
+  	padding: 20px;
+  	/*padding: 10px;*/
+	opacity: 0;
+	transition: opacity 2s ease-in-out;
+	-moz-transition: opacity 0.5s linear;
+	-webkit-transition: opacity 0.5s linear;
 }
 
-#result-pane {
-  order: 3;
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  z-index: 1;
-}
-
-#result-pane>.inner {
-  flex-flow: column;
-  -webkit-flex-flow: column;
-}
 
 #graph-area {
-    order: 1;
-    flex: 1;
-    width: 100%;
-    height: 100%;
-    position: relative;
-    z-index: 2;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	z-index: 2;
 }
-
 #output-area {
-    order: 1;
-    flex: 1;
-    width: 100%;
-    height: 100%;
-    position: relative;
-    overflow-y: scroll;
-    overflow-x: visible;
+	width: 100%;
+	height: 100%;
+	position: relative;
+	overflow-y: scroll;
+	overflow-x: visible;
 }
 
-#h-separator {
-  order: 1;
-  width: 100%;
-  height: 20px;
-  background-color: #ff9933;
-}
 
-#text-area {
-  order: 2;
-  width: 100%;
-  height: 100%;
-  transition: height 0.5s;
-}
-
-#graph-setting-area {
-  order: 2;
-  height: 360px;
-}
-
-#graph-axis-setting{
-    height: 210px;
-    width: 100%;
-}
-
-#parameter-setting-table{
-    height: 150px;
-    width: 100%;
-}
-
-#graph-parameter-setting{
-    height: 100%;
-    width: 100%;
-}
 
 .exec-button {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  z-index: 100;
-}
-
-.kill-button {
-  position: absolute;
-  bottom: 20px;
-  right: 80px;
-  z-index: 100;
+	position: absolute;
+	bottom: 20px;
+	right: 20px;
+	z-index: 100;
 }
 
 
-#graph {
-  height: 100%;
-  width: 100%;
-}
-
-#graph-initial {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  display: -webkit-flex;
-  align-items: center;
-  justify-content: center;
-}
 
 #graph-preloader {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  z-index: 100;
-  display: flex;
-  display: -webkit-flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translateY(-50%) translateX(-50%);
+  	transform: translateY(-50%) translateX(-50%);
+	z-index: 100;
 }
 
-#graph_options {
-  z-index: 100;
-}
 
 #output-initial {
-  height: 100%;
-  width: 100%;
-  /*
-  display: flex;
-  display: -webkit-flex;
-  */
-  align-items: center;
-  justify-content: center;
+	padding-left: 20px;
 }
 
 #output-preloader {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  z-index: 100;
-  display: flex;
-  display: -webkit-flex;
-  align-items: center;
-  justify-content: center;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translateY(-50%) translateX(-50%);
+  	transform: translateY(-50%) translateX(-50%);
+	z-index: 100;
 }
 
 #disabled-running {
-  /* disabled element when running hyrose */
+	/* disabled element when running hyrose */
 }
 
-.dropdown-content {
-  z-index: 3;
-}
 
-.wrapper{
-    position: relative;
-}
 
 .mdi-navigation-arrow-drop-down{
-    width: 50px;
-    position: absolute;
-    right: 0px;
-    bottom: 0px;
-    padding: 10px;
-
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -o-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    box-sizing: border-box;
+	width: 50px;
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	padding: 10px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
-.parameter-checkbox{
-    position: absolute;
-}
-
-.parameter-switch{
-    font-size: small;
-}
-
-#plotting-mode-switch{
-    top: calc(100%-30px)px;
-    /* position: relative; */
-}
-
-#axis-area {
-    order: 1;
-    flex: 1;
-    position: relative;
-    z-index: 1;
-}
-
-#setting-area {
-    order: 1;
-    flex: 1;
-    position: relative;
-    z-index: 1;
-}
-.scroll-box {
-    overflow: auto;
-}
 
 
 #dat-gui{
-  position:absolute;
-  top: 1em;
-  left: 1em;
-  z-index: 3;
+	position: absolute;
+	top: 1em;
+	left: 1em;
+	z-index: 3;
 }
 #dat-gui-bottom{
-  position:absolute;
-  bottom: 1em;
-  left: 1em;
-  z-index: 3;
-}
-
-#textarea{
-  z-index: -1;
+	position: absolute;
+	bottom: 1em;
+	left: 1em;
+	z-index: 3;
 }
 
 #scale_label_wrapper{
-  position:absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
+	position:absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 2;
+	pointer-events: none;
 }
 
 #scaleLabelCanvas{
-  position:absolute;
-  top: 0px;
-  z-index: 1;
-  pointer-events: none;
+	position:absolute;
+	top: 0px;
+	z-index: 1;
+	pointer-events: none;
 }
 
 
 #nameLabelCanvas{
-  position:absolute;
-  top: 0px;
-  z-index: 2;
-  pointer-events: none;
+	position:absolute;
+	top: 0px;
+	z-index: 2;
+	pointer-events: none;
+}
+
+
+/*over-ride materialize.css*/
+.tabs .tab a {
+  color: #fff !important;
+}
+.tabs .tab a:hover {
+  color: #ffb74d !important;
+}
+.tabs .tab.disabled a {
+  color: #fff !important;
+}
+.tabs .indicator {
+  background-color: #ffb74d !important;
+}
+
+.btn:hover {
+	box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.2);
+}
+
+
+.dropdown-content {
+  background-color: #fff;
+  margin: 0;
+  display: none;
+  min-width: 100px;
+  max-height: 650px;
+  overflow-y: auto;
+  opacity: 0;
+  position: absolute;
+  z-index: 999;
+  will-change: width, height;
+}
+
+.dropdown-content li {
+  clear: both;
+  color: rgba(0, 0, 0, 0.87);
+  cursor: pointer;
+  min-height: 50px;
+  line-height: 1.5rem;
+  width: 100%;
+  text-align: left;
+  text-transform: none;
+}
+
+.dropdown-content li:hover, .dropdown-content li.active, .dropdown-content li.selected {
+  background-color: inherit!important;
+  box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.2);
+}
+.dropdown-content li > a, .dropdown-content li > span {
+  color: white;
 }
