@@ -37,16 +37,15 @@ editor.commands.addCommand({
   readOnly: true
 });
 
-var dat_gui_parameter_folder;
-var dat_gui_variable_folder;
-var dat_gui_parameter_folder_seek;
+export let dat_gui_parameter_folder:dat.GUI;
+export let dat_gui_variable_folder:dat.GUI;
+export let dat_gui_parameter_folder_seek:dat.GUI;
 
-var first_script_element;
-var dynamic_script_elements = [];
+let first_script_element:HTMLScriptElement;
+let dynamic_script_elements:HTMLScriptElement[] = [];
 
-let plot_settings: PlotSettings;
-
-let graph = new Graph();
+export let plot_settings: PlotSettings;
+export let graph = new Graph();
 
 $(document).ready(function(){
   
@@ -193,7 +192,7 @@ function update2DMode()
   }
 }
 
-function fixLayoutOfDatGUI()
+export function fixLayoutOfDatGUI()
 {
   // to avoid layout collapsion of dat gui
   var dg_c_inputs = $('.dg .c input[type=text]'); 

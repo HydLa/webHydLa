@@ -6,7 +6,9 @@ class PlotSettings{
   twoDimensional:boolean;
   autoRotate:boolean;
   animate:boolean;
-  seek:number;
+  seek: number;
+  parameter_condition: { [key: string]: ParameterCondition };
+  parameter_condition_seek: ParameterConditionSeek;
   constructor(obj: any) {
     this.plotInterval = obj?.plotInterval ?? 0.1;
     this.backgroundColor = obj?.backgroundColor ?? "#000000";
@@ -19,5 +21,34 @@ class PlotSettings{
   }
   static parseJSON(json: string) {
     return new PlotSettings(JSON.parse(json));
+  }
+}
+
+class ParameterCondition{
+  fixed: boolean;
+  range: boolean;
+  value: number;
+  min_value: number;
+  max_value: number;
+
+  constructor(min_par_value: number, max_par_value: number) {
+    this.fixed = true;
+    this.range = false;
+    this.value = (min_par_value + max_par_value) / 2;
+    this.min_value = min_par_value;
+    this.max_value = max_par_value;
+  }
+}
+
+class ParameterConditionSeek{
+  stop: boolean;
+  value: number;
+  min_value: number;
+  max_value: number;
+  constructor(min_par_value: number, max_par_value: number) {
+    this.stop = false;
+    this.value = (min_par_value + max_par_value) / 2;
+    this.min_value = min_par_value;
+    this.max_value = max_par_value;
   }
 }
