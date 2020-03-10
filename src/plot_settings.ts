@@ -1,11 +1,11 @@
-class PlotSettings{
-  plotInterval:number;
-  backgroundColor:string;
-  lineWidth:number;
-  scaleLabelVisible:boolean;
-  twoDimensional:boolean;
-  autoRotate:boolean;
-  animate:boolean;
+class PlotSettings {
+  plotInterval: number;
+  backgroundColor: string;
+  lineWidth: number;
+  scaleLabelVisible: boolean;
+  twoDimensional: boolean;
+  autoRotate: boolean;
+  animate: boolean;
   seek: number;
   parameter_condition: { [key: string]: ParameterCondition };
   parameter_condition_seek: ParameterConditionSeek;
@@ -24,7 +24,7 @@ class PlotSettings{
   }
 }
 
-class ParameterCondition{
+class ParameterCondition {
   fixed: boolean;
   range: boolean;
   value: number;
@@ -40,7 +40,7 @@ class ParameterCondition{
   }
 }
 
-class ParameterConditionSeek{
+class ParameterConditionSeek {
   stop: boolean;
   value: number;
   min_value: number;

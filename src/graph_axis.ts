@@ -96,7 +96,7 @@ function parameter_seek_setting_animate(line_len, time_line) {
   var max_par_value = line_len;
   var step = 1;
 
-  plot_settings.parameter_condition_seek = new ParameterConditionSeek(min_par_value,max_par_value);
+  plot_settings.parameter_condition_seek = new ParameterConditionSeek(min_par_value, max_par_value);
 
   var parameter_item_seek =
     dat_gui_parameter_folder_seek.add(plot_settings.parameter_condition_seek, 'value', min_par_value, max_par_value);

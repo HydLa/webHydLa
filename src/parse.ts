@@ -2,13 +2,13 @@ abstract class Construct {
   abstract toString(): string;
   abstract getValue(env: { [key: string]: Construct }): number;
 
-  static parse(value_str:string) {
+  static parse(value_str: string) {
     const isAlpha = (c: string) => /^[A-Za-z]$/.test(c);
-    const isDigit = (c:string) => /^[0-9]$/.test(c);
+    const isDigit = (c: string) => /^[0-9]$/.test(c);
     const isAlDig = (c: string) => isAlpha(c) || isDigit(c);
-    
+
     let index = 0;
-  
+
     /*
      * <expression> ::= <term> { +<term> | -<term> }
      * <term> ::= <term2> { *<term2> | /<term2> }
@@ -17,8 +17,8 @@ abstract class Construct {
      * <negative> ::= { - } <leaf>
      * <leaf> ::= "Infinity" | parameter | constant | variable | number
      */
-  
-    const number = (s:string) => {
+
+    const number = (s: string) => {
       let n = 0;
       while (isDigit(s[index])) {
         n = n * 10 + parseInt(s[index], 10);
@@ -26,8 +26,8 @@ abstract class Construct {
       }
       return new Constant(n);
     };
-  
-    const parameter = (s:string) => {
+
+    const parameter = (s: string) => {
       let p = "";
       while (s[index] != "]") {
         p += s[index];
@@ -38,8 +38,8 @@ abstract class Construct {
       p = p.replace(/,/g, ", "); // p[x, 0, 1]
       return new Variable(p);
     }
-  
-    const variable = (s:string) => {
+
+    const variable = (s: string) => {
       var v = s[index];
       index++;
       while (isAlDig(s[index]) || s[index] == "'") {
@@ -48,9 +48,9 @@ abstract class Construct {
       }
       return new Variable(v);
     }
-  
-    const leaf = (s:string) => {
-      let ret:Construct;
+
+    const leaf = (s: string) => {
+      let ret: Construct;
       // console.log("leaf", i);
       if (s.substring(index, index + 8) == "Infinity") {
         index += 8;
@@ -73,9 +73,9 @@ abstract class Construct {
       }
       return ret;
     }
-  
-    const negative = (s:string) => {
-      let ret:Construct;
+
+    const negative = (s: string) => {
+      let ret: Construct;
       // console.log("negative", i);
       if (s[index] == "-") {
         index++; // "-"
@@ -85,9 +85,9 @@ abstract class Construct {
       }
       return ret;
     }
-  
-    const factor = (s:string) => {
-      let ret:Construct;
+
+    const factor = (s: string) => {
+      let ret: Construct;
       // console.log("factor", i);
       if (s[index] == "(") {
         index++; // "("
@@ -154,8 +154,8 @@ abstract class Construct {
       }
       return ret;
     }
-  
-    const term2 = (s:string) => {
+
+    const term2 = (s: string) => {
       // console.log("term", i);
       let lhs = factor(s);
       while (true) {
@@ -169,8 +169,8 @@ abstract class Construct {
       }
       return lhs;
     }
-  
-    var term = (s:string) => {
+
+    var term = (s: string) => {
       // console.log("term", i);
       var lhs = term2(s);
       while (true) {
@@ -188,8 +188,8 @@ abstract class Construct {
       }
       return lhs;
     };
-  
-    const expression = (s:string) => {
+
+    const expression = (s: string) => {
       // console.log("expression", i);
       var lhs = term(s);
       while (true) {
@@ -207,7 +207,7 @@ abstract class Construct {
       }
       return lhs;
     }
-  
+
     var s = value_str.replace(/\s+/g, "");
     return expression(s);
   }
