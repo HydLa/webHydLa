@@ -1,3 +1,5 @@
+import ace from "ace-builds";
+
 /* ID="editor" な div をエディタにする */
 var editor = ace.edit("editor");
 
@@ -7,7 +9,7 @@ editor.getSession().setMode("ace/mode/hydla")
 editor.getSession().setTabSize(4);
 editor.getSession().setUseSoftTabs(true);
 editor.setHighlightActiveLine(false);
-editor.$blockScrolling = Infinity;
+// editor.$blockScrolling = Infinity;
 editor.setOptions({
   enableBasicAutocompletion: true,
   enableSnippets: true,

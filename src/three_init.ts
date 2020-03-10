@@ -1,3 +1,7 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import $ from 'jquery';
+
 var graph_scene;
 var graph_camera;
 var graph_area;
@@ -7,7 +11,7 @@ var time=0;
 var animatable=true;
 var range_mode=false;
 
-window.addEventListener("DOMContentLoaded", init());
+window.addEventListener("DOMContentLoaded", init);
 
 function init(){
   graph_scene = new THREE.Scene();
@@ -41,7 +45,7 @@ function init(){
 
   graph_scene.add(directionalLight);
 
-  graph_controls = new THREE.OrbitControls(graph_camera, graph_renderer.domElement);
+  graph_controls = new OrbitControls(graph_camera, graph_renderer.domElement);
 }
 
 function resizeGraphRenderer(){

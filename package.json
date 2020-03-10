@@ -1,0 +1,37 @@
+{
+  "name": "webHydLa",
+  "version": "1.0.0",
+  "description": "a web interface of HydLa",
+  "main": "server.py",
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HydLa/webHydLa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HydLa/webHydLa/issues"
+  },
+  "homepage": "https://github.com/HydLa/webHydLa#readme",
+  "devDependencies": {
+    "@types/jquery": "^3.3.33",
+    "@types/node": "^13.9.0",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "ace-builds": "^1.4.8",
+    "dat.gui": "^0.7.6",
+    "jquery": "^3.4.1",
+    "materialize-css": "^1.0.0",
+    "three": "^0.114.0"
+  }
+}
