@@ -3,10 +3,17 @@ import $ from 'jquery';
 import Materialize from "materialize-css";
 import "ace-builds/src-noconflict/theme-sqlserver"
 import "ace-builds/src-noconflict/theme-monokai"
+import "ace-builds/src-noconflict/theme-github"
+import "ace-builds/src-noconflict/theme-clouds"
+import "ace-builds/src-noconflict/keybinding-emacs"
+import "ace-builds/src-noconflict/keybinding-vim"
 import * as dat from "dat.gui";
+import { Graph } from "./three_init";
+
+const html_mode_check_box = <HTMLInputElement>document.getElementById("html_mode_check_box")
 
 /* ID="editor" な div をエディタにする */
-var editor = ace.edit("editor");
+let editor = ace.edit("editor");
 
 /* 諸々の設定 */
 editor.setTheme("ace/theme/sqlserver");
@@ -37,7 +44,9 @@ var dat_gui_parameter_folder_seek;
 var first_script_element;
 var dynamic_script_elements = [];
 
-let plot_settings;
+let plot_settings: PlotSettings;
+
+let graph = new Graph();
 
 $(document).ready(function(){
   
@@ -146,37 +155,41 @@ $(document).ready(function(){
   update2DMode();
   time_stop();
 
-  render();
+  graph.render();
+});
+
+$(window).resize(function() {
+  graph.resizeGraphRenderer();
 });
 
 function time_stop()
 {
-  animatable = !plot_settings.animate;
+  graph.animatable = !plot_settings.animate;
 }
 
 function seek()
 {
   //if(plot_settings.animate)
   {
-    time=plot_settings.seek;
+    graph.time=plot_settings.seek;
     animate();
   }
 }
 
 function updateRotate()
 {
-  graph_controls.autoRotate = plot_settings.autoRotate;
+  graph.controls.autoRotate = plot_settings.autoRotate;
 }
 
 function update2DMode()
 {
-  graph_controls.enableRotate = !plot_settings.twoDimensional;
+  graph.controls.enableRotate = !plot_settings.twoDimensional;
   if(plot_settings.twoDimensional)
   {
-    graph_camera.position.copy(graph_controls.position0.clone());
-    graph_controls.target.set(0, 0, 0);
-    graph_camera.updateMatrix(); // make sure camera's local matrix is updated
-    graph_camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+    graph.camera.position.copy(graph.controls_position0.clone());
+    graph.controls.target.set(0, 0, 0);
+    graph.camera.updateMatrix(); // make sure camera's local matrix is updated
+    graph.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
   }
 }
 
@@ -227,8 +240,6 @@ if (saved_hydla) {
   editor.setValue(default_hydla);
 }
 
-var server_response;
-
 var hylagi_running = false;
 
 function onExecButtonClick()
@@ -245,9 +256,10 @@ function onExecButtonClick()
 
 function updateExecIcon()
 {
+  let run_button = <HTMLInputElement>document.getElementById('run_button');
   if(hylagi_running)
   {
-    document.getElementById('run_button').value="KILL"; // for new UI
+    run_button.value="KILL"; // for new UI
     var elist = document.getElementsByClassName("exec-icon");
     for (var i = 0; i < elist.length; ++i) {
       elist[i].classList.remove("mdi-content-send");
@@ -256,7 +268,7 @@ function updateExecIcon()
   }
   else
   {
-    document.getElementById('run_button').value="RUN"; // for new UI
+    run_button.value="RUN"; // for new UI
     var elist = document.getElementsByClassName("exec-icon");
     for (var i = 0; i < elist.length; ++i) {
       elist[i].classList.add("mdi-content-send");
@@ -281,8 +293,13 @@ function sendHydLa() {
     var form = new FormData();
     form.append("hydla_code", editor.getValue());
     var options_value = "";
-    if(phase_num.value != "")options_value += " -p " + phase_num.value;
-    if(simulation_time.value != "")options_value += " -t " + simulation_time.value;
+    let phase_num = <HTMLInputElement>document.getElementById("phase_num");
+    let simulation_time = <HTMLInputElement>document.getElementById("simulation_time");
+    let nd_mode_check_box = <HTMLInputElement>document.getElementById("nd_mode_check_box");
+    let other_options = <HTMLInputElement>document.getElementById("other_options");
+    let timeout_option = <HTMLInputElement>document.getElementById("timeout_option");
+    if(phase_num.value != "") options_value += " -p " + phase_num.value;
+    if(simulation_time.value != "") options_value += " -t " + simulation_time.value;
     if(phase_num.value == "" && simulation_time.value == "")options_value += " -p10";
     if(html_mode_check_box.checked)options_value += " -d --fhtml ";
     if(nd_mode_check_box.checked)options_value += " --fnd ";
@@ -301,7 +318,7 @@ function sendHydLa() {
 
       switch (response.error) {
       case 0:
-        Materialize.toast("Simulation was successful.", 1000);
+        Materialize.toast({ html: "Simulation was successful.", displayLength:1000});
         if(response.hydat != undefined)
         {
           response.hydat.name = browser_storage.getItem("hydla_name");
@@ -309,22 +326,26 @@ function sendHydLa() {
         }
         else
         {
-          $('ul.tabs').tabs('select_tab', 'output-area');
+          $('ul.tabs').tabs('select', 'output-area');
         }
         break;
       default:
         if(hylagi_running)
         {
-          Materialize.toast("Error message: " + response.message, 3000, "red darken-4");
-          $('ul.tabs').tabs('select_tab', 'output-area');
+          Materialize.toast({
+            html: "Error message: " + response.message,
+            displayLength: 3000,
+            classes: "red darken-4"
+          });
+          $('ul.tabs').tabs('select', 'output-area');
         }
         else
         {
-          Materialize.toast("Killed HyLaGI", 1000);
+          Materialize.toast({ html: "Killed HyLaGI", displayLength: 1000 });
         }
         break;
       }
-      server_response = response;
+      let server_response = response;
       var output = document.getElementById("output-initial");
       output.innerHTML = "";
       for(var si = 0; si < dynamic_script_elements.length; si++)
@@ -342,7 +363,7 @@ function sendHydLa() {
         {
           output.innerHTML += response.stderr;
         }
-        scriptNodes = output.getElementsByTagName("script");
+        let scriptNodes = output.getElementsByTagName("script");
         for(var si = 0; si < scriptNodes.length; si++)
         {
           if(scriptNodes[si].hasAttribute("src"))
@@ -386,19 +407,18 @@ function killHyLaGI() {
   updateExecIcon();
 }
 
-
-function getErrorMessage(sid) {
-  var form = document.createElement("form");
-  form.action = "error.cgi";
-  form.method = "post";
-  var id = document.createElement("input");
-  id.type = "hidden";
-  id.name = "sid";
-  id.value = sid;
-  document.getElementById("graph").contentDocument.body.appendChild(form);
-  form.appendChild(id);
-  form.submit();
-}
+// function getErrorMessage(sid) {
+//   var form = document.createElement("form");
+//   form.action = "error.cgi";
+//   form.method = "post";
+//   var id = document.createElement("input");
+//   id.type = "hidden";
+//   id.name = "sid";
+//   id.value = sid;
+//   // document.getElementById("graph").contentDocument.body.appendChild(form); // ???
+//   form.appendChild(id);
+//   form.submit();
+// }
 
 /* function to start preloader */
 function startPreloader() {
@@ -414,16 +434,16 @@ function stopPreloader() {
 
 
 /* function to enable/disable input field */
-function connecttext(elemID, ischeckded) {
-  var elm = document.getElementById(elemID);
-  if (ischeckded == true) {
-    elm.disabled = false;
-    elm.classList.remove("hide");
-  } else {
-    elm.disabled = true;
-    elm.classList.add("hide");
-  }
-}
+// function connecttext(elemID, ischeckded) {
+//   var elm = document.getElementById(elemID);
+//   if (ischeckded == true) {
+//     elm.disabled = false;
+//     elm.classList.remove("hide");
+//   } else {
+//     elm.disabled = true;
+//     elm.classList.add("hide");
+//   }
+// }
 
 
 var resizeLoopCount;
@@ -437,7 +457,7 @@ function startResizingGraphArea()
 function resizeGraphArea()
 {
   resizeLoopCount++;
-  resizeGraphRenderer();
+  graph.resizeGraphRenderer();
   //TODO: do this without timer
   if(resizeLoopCount < 80)    setTimeout("resizeGraphArea()", 10);
 }
@@ -562,24 +582,23 @@ function loadFile() {
     "click", true, false, window, 0, 0, 0, 0, 0
     , false, false, false, false, 0, null
   );
-  i.addEventListener("change", function(ev) {
+  i.addEventListener("change", (_)=>{
     var input_file = i.files[0];
-    var fr = new FileReader;
+    var fr = new FileReader();
     fr.readAsText(input_file);
     var splitted_strs = input_file.name.split(".");
     var ext = splitted_strs[splitted_strs.length - 1].toLowerCase();
     if(ext == "hydat")
     {
-      fr.onload = function(evt) {
-        var input_hydat = JSON.parse(fr.result);
-        loadHydat(input_hydat);
+      fr.onload = (_)=>{
+        loadHydat(JSON.parse(<string>fr.result));
       };
     } 
     else
     {
       browser_storage.setItem("hydla_name", input_file.name);      
-      fr.onload = function(evt) {
-        editor.setValue(fr.result);
+      fr.onload = (_)=>{
+        editor.setValue(<string>fr.result);
       };
     }
   }, false);
@@ -608,7 +627,7 @@ function saveHydlaToWebstorage() {
   autosave_event_enabled = false;
   autosave_changed = false;
   browser_storage.setItem("hydla", editor.getValue());
-  Materialize.toast("Saved", 1000);
+  Materialize.toast({ html: "Saved", displayLength: 1000 });
   setTimeout(function() {
     if (autosave_changed) {
       saveHydlaToWebstorage();
@@ -618,8 +637,8 @@ function saveHydlaToWebstorage() {
   }, 5000);
 }
 
-autosave_event_enabled = true;
-autosave_changed = false;
+let autosave_event_enabled = true;
+let autosave_changed = false;
 editor.on("change", function(e) {
   if (autosave_event_enabled) {
     saveHydlaToWebstorage();
@@ -628,31 +647,34 @@ editor.on("change", function(e) {
   }
 });
 
+let key_binding_selector = <HTMLSelectElement>document.getElementById("key_binding_selector");
+
 /* function to save editor into Web Storage */
 function saveKeyBindingToWebstorage() {
-  var bind_selector = document.getElementById("key_binding_selector").value;
+  var bind_selector = key_binding_selector.value;
   browser_storage.setItem("key_binding", bind_selector);
 }
 
 function loadKeyBindingFromWebstorage() {
   var key_binding_setting = browser_storage.getItem("key_binding");
-  var selector = document.getElementById("key_binding_selector");
   if(key_binding_setting != undefined)
   {
-    selector.value = browser_storage.getItem("key_binding");
+    key_binding_selector.value = browser_storage.getItem("key_binding");
   }
   else
   {
-    selector.value = selector.options[selector.selectedIndex].value;
-    browser_storage.setItem("key_binding", selector.value);
+    key_binding_selector.value = key_binding_selector.options[key_binding_selector.selectedIndex].value;
+    browser_storage.setItem("key_binding", key_binding_selector.value);
   }
-  if(selector.value == "") editor.setKeyboardHandler(null);
-  else editor.setKeyboardHandler(selector.value);
+  if(key_binding_selector.value == "") editor.setKeyboardHandler(null);
+  else editor.setKeyboardHandler(key_binding_selector.value);
 }
+
+let theme_selector = <HTMLSelectElement>document.getElementById("theme_selector");
 
 /* function to save theme into Web Storage */
 function saveThemeToWebstorage() {
-  var theme = document.getElementById("theme_selector").value;
+  var theme = theme_selector.value;
   browser_storage.setItem("theme", theme);
 }
 
@@ -660,7 +682,7 @@ function loadThemeFromWebstorage() {
   var theme_setting = browser_storage.getItem("theme");
   if(theme_setting != undefined)
   {
-    document.getElementById("theme_selector").value = browser_storage.getItem("theme");
+    theme_selector.value = browser_storage.getItem("theme");
   }else
   {
     browser_storage.setItem("theme", theme_selector.value);
@@ -668,11 +690,8 @@ function loadThemeFromWebstorage() {
   editor.setTheme("ace/theme/" + theme_selector.value);
 }
 
-
+let settingsForCurrentHydat = {};
 var plot_lines = {};
-var settingsForCurrentHydat = {};
-
-
 /* function to update variable selector for graph */
 function initVariableSelector(hydat) {
   for(var i in plot_lines)
@@ -684,10 +703,10 @@ function initVariableSelector(hydat) {
 
   //var guard_list ={x:["x", "xSWON"]};
 
-  settingsForCurrentHydat = browser_storage.getItem(hydat.name);
-  if(settingsForCurrentHydat != null)
+  let stringForCurrentHydat = browser_storage.getItem(hydat.name);
+  if(stringForCurrentHydat != null)
   {
-    settingsForCurrentHydat = JSON.parse(settingsForCurrentHydat);
+    settingsForCurrentHydat = JSON.parse(stringForCurrentHydat);
     var line_settings = settingsForCurrentHydat.plot_line_settings;
     for(var i in line_settings)
     {
@@ -767,18 +786,19 @@ const key_ctr    = 17;
 const key_alt    = 18;
 const key_meta_l = 91;
 
-window.onkeydown = function (e) {
-  if (!e) e = window.event;
-  if (e.keyCode==key_shift|e.keyCode==key_ctr|e.keyCode==key_alt|e.keyCode==key_meta_l) {
-    enableZoom(); $('#scroll-message').css("opacity","0");
+document.addEventListener("keydown", (e) => {
+  if (!e) return;
+  if (e.keyCode === key_shift || e.keyCode === key_ctr || e.keyCode === key_alt || e.keyCode === key_meta_l) {
+    enableZoom(); $('#scroll-message').css("opacity", "0");
   }
-}
-window.onkeyup = function(e) {
-  if (!e) e = window.event;
-  if (e.keyCode==key_shift|e.keyCode==key_ctr|e.keyCode==key_alt|e.keyCode==key_meta_l) {
+});
+
+document.addEventListener("keyup", (e) => {
+  if (!e) return;
+  if (e.keyCode === key_shift || e.keyCode === key_ctr || e.keyCode === key_alt || e.keyCode === key_meta_l) {
     disableZoom();
   }
-}
+});
 
 function enableZoom() {
   if (classic_ui) return;

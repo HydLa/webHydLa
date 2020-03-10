@@ -6,48 +6,47 @@ function parameter_setting(pars) {
   }
   dat_gui_parameter_items = [];
   plot_settings.parameter_condition = {};
-  for(var key in pars){
-    !function(key_copy){
-      if(pars[key].unique_value != undefined)return;
-      plot_settings.parameter_condition[key] = {};
+  for (let key in pars) {
+    let key_copy = key;
+    if(pars[key].unique_value != undefined)return;
+    plot_settings.parameter_condition[key] = {};
 
-      var lower = pars[key].lower_bounds[0].value.getValue();
-      var upper = pars[key].upper_bounds[0].value.getValue();
-      var min_par_value = parseFloat(lower);
-      var max_par_value = parseFloat(upper);
-      var step = (upper - lower)/100;
-      
-      plot_settings.parameter_condition[key].fixed = true;
-      plot_settings.parameter_condition[key].range = false;
-      plot_settings.parameter_condition[key].value = (min_par_value + max_par_value) / 2;
-      plot_settings.parameter_condition[key].min_value = min_par_value;
-      plot_settings.parameter_condition[key].max_value = max_par_value;
-      var parameter_item =
-          dat_gui_parameter_folder.add(plot_settings.parameter_condition[key], 'value', min_par_value, max_par_value).name(key);
-      parameter_item.onChange(function(value){replot_all()});
-      parameter_item.step(step);
+    let lower = pars[key].lower_bounds[0].value.getValue();
+    let upper = pars[key].upper_bounds[0].value.getValue();
+    let min_par_value = parseFloat(lower);
+    let max_par_value = parseFloat(upper);
+    let step = (upper - lower)/100;
+    
+    plot_settings.parameter_condition[key].fixed = true;
+    plot_settings.parameter_condition[key].range = false;
+    plot_settings.parameter_condition[key].value = (min_par_value + max_par_value) / 2;
+    plot_settings.parameter_condition[key].min_value = min_par_value;
+    plot_settings.parameter_condition[key].max_value = max_par_value;
+    let parameter_item =
+        dat_gui_parameter_folder.add(plot_settings.parameter_condition[key], 'value', min_par_value, max_par_value).name(key);
+    parameter_item.onChange(function(value){replot_all()});
+    parameter_item.step(step);
 
-      var mode_item = dat_gui_parameter_folder.add(plot_settings.parameter_condition[key], 'fixed');
-      var mode_item_range = dat_gui_parameter_folder.add(plot_settings.parameter_condition[key], 'range');
-      dat_gui_parameter_items.push(mode_item);
-      dat_gui_parameter_items.push(mode_item_range);
-      dat_gui_parameter_items.push(parameter_item);
-      
-      mode_item.onChange(function(value){
-        if(!plot_settings.parameter_condition[key_copy].fixed)
-        {
-          parameter_item.min(1).max(100).step(1).setValue(5);
-        }
-        else
-        {
-          parameter_item.min(min_par_value).max(max_par_value).step(step).setValue((min_par_value + max_par_value)/2);
-        }
-        replot_all();
-      });
-      mode_item_range.onChange(function(value){
-        range_mode = plot_settings.parameter_condition[key_copy].range
-      });
-    }(key);
+    let mode_item = dat_gui_parameter_folder.add(plot_settings.parameter_condition[key], 'fixed');
+    let mode_item_range = dat_gui_parameter_folder.add(plot_settings.parameter_condition[key], 'range');
+    dat_gui_parameter_items.push(mode_item);
+    dat_gui_parameter_items.push(mode_item_range);
+    dat_gui_parameter_items.push(parameter_item);
+    
+    mode_item.onChange(function(value){
+      if(!plot_settings.parameter_condition[key_copy].fixed)
+      {
+        parameter_item.min(1).max(100).step(1).setValue(5);
+      }
+      else
+      {
+        parameter_item.min(min_par_value).max(max_par_value).step(step).setValue((min_par_value + max_par_value)/2);
+      }
+      replot_all();
+    });
+    mode_item_range.onChange(function(value){
+      range_mode = plot_settings.parameter_condition[key_copy].range
+    });
   }
   if(Object.keys(pars).length > 0)dat_gui_parameter_folder.open();
   else dat_gui_parameter_folder.close();
@@ -187,15 +186,8 @@ function addNewLine(x_name:string, y_name:string, z_name:string){
   return line;
 }
 
-interface Line{
-  index: number;
-  name: string;
-  folder: dat.GUI;
-}
-
 function addNewLineWithIndex(x_name:string, y_name:string, z_name:string, index:number) {
-
-  var new_line:Line;
+  var new_line:PlotLine;
   if(x_name == undefined)x_name = "";
   if(y_name == undefined)y_name = "";
   if(z_name == undefined)z_name = "";
@@ -218,10 +210,10 @@ function addNewLineWithIndex(x_name:string, y_name:string, z_name:string, index:
 
 
 function addNewLineWithIndexGuard(x_name, y_name, z_name, index) {
-  if(new_guard!=undefined){
-    new_guard.index = 1 + index;
-    delete plot_lines[new_guard.index];
-  }
+  // if(new_guard!=undefined){
+  //   new_guard.index = 1 + index;
+  //   delete plot_lines[new_guard.index];
+  // }
   var new_guard = {};
   if(x_name == undefined)x_name = "";
   if(y_name == undefined)y_name = "";
@@ -242,6 +234,3 @@ function addNewLineWithIndexGuard(x_name, y_name, z_name, index) {
   plot_lines[new_guard.index] = new_guard;
   //return new_line;
 }
-
-
-
