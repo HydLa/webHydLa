@@ -800,14 +800,20 @@ document.addEventListener("keyup", (e) => {
   }
 });
 
+function isClassicUI(){
+  let elem = <HTMLInputElement>document.getElementById("classic_ui_flag");
+  return elem.value === "true"
+}
+
+
 function enableZoom() {
-  if (classic_ui) return;
-  graph_controls.enableZoom = true;
+  if (isClassicUI()) return;
+  graph.controls.enableZoom = true;
   $('body').css("overflow-y","hidden");
 }
 function disableZoom() {
-  if (classic_ui) return;
-  graph_controls.enableZoom = false;
+  if (isClassicUI()) return;
+  graph.controls.enableZoom = false;
   $('body').css("overflow-y","visible");
 }
 function initScrollZoom() { 
