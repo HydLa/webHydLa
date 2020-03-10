@@ -9,6 +9,7 @@ import "ace-builds/src-noconflict/keybinding-emacs"
 import "ace-builds/src-noconflict/keybinding-vim"
 import * as dat from "dat.gui";
 import { Graph } from "./three_init";
+import { plot_lines } from "./plot_line";
 
 const html_mode_check_box = <HTMLInputElement>document.getElementById("html_mode_check_box")
 
@@ -690,15 +691,11 @@ function loadThemeFromWebstorage() {
 }
 
 let settingsForCurrentHydat = {};
-var plot_lines = {};
 /* function to update variable selector for graph */
 function initVariableSelector(hydat) {
-  for(var i in plot_lines)
-  {
-    dat_gui_variable_folder.removeFolder(plot_lines[i].folder.name);
-  }
+  plot_lines.removeAllFolders();
 
-  plot_lines = {};
+  plot_lines.reset();
 
   //var guard_list ={x:["x", "xSWON"]};
 
@@ -709,7 +706,7 @@ function initVariableSelector(hydat) {
     var line_settings = settingsForCurrentHydat.plot_line_settings;
     for(var i in line_settings)
     {
-      var line = addNewLineWithIndex(line_settings[i].x, line_settings[i].y, line_settings[i].z, i);
+      let line = plot_lines.addNewLineWithIndex(line_settings[i].x, line_settings[i].y, line_settings[i].z, i);
       /*for(key in guard_list){
         if(line_settings[i].x == key){
           for(var l in guard_list.x){
@@ -722,10 +719,10 @@ function initVariableSelector(hydat) {
     replot_all();
   }
 
-  if(Object.keys(plot_lines).length == 0)
+  if(plot_lines.getLength() == 0)
   {
     settingsForCurrentHydat = {plot_line_settings: {}};
-    var first_line = addNewLine("t", current_hydat != undefined?current_hydat.variables[0]:"", "0");
+    let first_line = plot_lines.addNewLine("t", current_hydat != undefined?current_hydat.variables[0]:"", "0");
     first_line.color_angle = 0;
     replot(first_line);
     first_line.folder.open();
@@ -735,28 +732,16 @@ function initVariableSelector(hydat) {
 }
 
 //TODO: implement this in more elegant way
-setTimeout("resizeGraphRenderer()", 200);
+setTimeout(()=>{graph.resizeGraphRenderer()}, 200);
 
-dat.GUI.prototype.removeFolder = function(name) {
-  var folder = this.__folders[name];
-  if (!folder) {
-    return;
-  }
-  folder.close();
-  this.__ul.removeChild(folder.domElement.parentNode);
-  delete this.__folders[name];
-  this.onResize();
-}
-
-function showToast(message, duration, classes)
+function showToast(message:string, duration:number, classes:string)
 {
-  Materialize.toast(message, duration, classes);
-  var toast_container = document.getElementById("toast-container");
-  var i;
-  var MAX_CHILDREN_NUM = 5;
+  Materialize.toast({ html: message, displayLength: duration, classes: classes });
+  let toast_container = document.getElementById("toast-container");
+  const MAX_CHILDREN_NUM = 5;
   if(toast_container.children.length > MAX_CHILDREN_NUM)
   {
-    for(i = 0; i < toast_container.children.length - MAX_CHILDREN_NUM; i++)
+    for(let i = 0; i < toast_container.children.length - MAX_CHILDREN_NUM; i++)
     {
       toast_container.removeChild(toast_container.children[i]);
     }

@@ -1,3 +1,6 @@
+import { plot_lines, PlotLine } from "./plot_line";
+import { graph } from "./main";
+
 function HydatException(message)
 {
   this.name = "HydatException";
@@ -228,12 +231,12 @@ var plotting_mode_switch = document.getElementById("plotting-mode-switch");
 function replot_all()
 {
   var table = document.getElementById("graph_axis_table");
-  for(var i in plot_lines)
+  for(let i in plot_lines.map)
   {
-    plot_lines[i].color_angle = i/Object.keys(plot_lines).length * 360;
-    replot(plot_lines[i]);
+    plot_lines.map[i].color_angle = parseInt(i)/plot_lines.getLength() * 360;
+    replot(plot_lines.map[i]);
   }
-  time=0;
+  graph.time=0;
 }
 
 var plot_animate = [];
@@ -291,7 +294,7 @@ function add_plot(line){
 }
 
 
-function plot_ready(line)
+function plot_ready(line:PlotLine)
 {
   var plot_information = line.plot_information;
   if(plot_information.line.plotting)
@@ -644,13 +647,7 @@ function check_parameter_condition(parameter_maps,parameter_condition_list){
 function checkAndStopPreloader()
 {
   var table = document.getElementById("graph_axis_table");
-  for(var i in plot_lines)
-  {
-    if(plot_lines[i].plotting || plot_lines[i].ready != undefined)
-    {
-      return;
-    }
-  }
+  if (!plot_lines.isAllReady()) return;
   var current_time = new Date().getTime();
   if(PlotStartTime == undefined || current_time - PlotStartTime >= 1000)
   {
