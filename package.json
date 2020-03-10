@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/HydLa/webHydLa#readme",
   "devDependencies": {
+    "@types/dat.gui": "^0.7.5",
     "@types/jquery": "^3.3.33",
+    "@types/materialize-css": "^1.0.7",
     "@types/node": "^13.9.0",
     "ts-loader": "^6.2.1",
     "typescript": "^3.8.3",

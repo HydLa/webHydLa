@@ -897,7 +897,7 @@ var xAxisColor = "#FF8080";
 var yAxisColor = "#80FF80";
 var zAxisColor = "#8080FF";
 
-function update_axes(force){
+function update_axes(force:boolean){
   var range = getRangeOfFrustum(graph_camera);
   var xrange = {min:range.xmin, max: range.xmax};
   var yrange = {min:range.ymin, max: range.ymax};

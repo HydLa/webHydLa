@@ -1,4 +1,4 @@
-dat_gui_parameter_items = [];
+let dat_gui_parameter_items = [];
 function parameter_setting(pars) {
   for(var i = 0; i < dat_gui_parameter_items.length; i++)
   {
@@ -56,7 +56,7 @@ function parameter_setting(pars) {
 
 
 
-dat_gui_parameter_items_seek = [];
+let dat_gui_parameter_items_seek = [];
 function parameter_seek_setting(line_len) {
   for(var i = 0; i < dat_gui_parameter_items_seek.length; i++)
   {
@@ -180,16 +180,22 @@ function removeLine(line)
 
 var plotLineIndex = 0;
 
-function addNewLine(x_name, y_name, z_name){
+function addNewLine(x_name:string, y_name:string, z_name:string){
   while(plot_lines[plotLineIndex]){++plotLineIndex;}
   var line = addNewLineWithIndex(x_name, y_name, z_name, plotLineIndex);
   ++plotLineIndex;
   return line;
 }
 
-function addNewLineWithIndex(x_name, y_name, z_name, index) {
+interface Line{
+  index: number;
+  name: string;
+  folder: dat.GUI;
+}
 
-  var new_line = {};
+function addNewLineWithIndex(x_name:string, y_name:string, z_name:string, index:number) {
+
+  var new_line:Line;
   if(x_name == undefined)x_name = "";
   if(y_name == undefined)y_name = "";
   if(z_name == undefined)z_name = "";

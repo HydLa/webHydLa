@@ -94,7 +94,7 @@ function render() {
   if(last_frame_zoom != graph_camera.zoom){
     replot_all();
   }
-  update_axes();
+  update_axes(false);
   if(animatable){
     animate(); // animating function
     animate_time();

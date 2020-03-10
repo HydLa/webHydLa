@@ -1,4 +1,9 @@
-import ace from "ace-builds";
+import * as ace from "ace-builds";
+import $ from 'jquery';
+import Materialize from "materialize-css";
+import "ace-builds/src-noconflict/theme-sqlserver"
+import "ace-builds/src-noconflict/theme-monokai"
+import * as dat from "dat.gui";
 
 /* ID="editor" な div をエディタにする */
 var editor = ace.edit("editor");
@@ -21,8 +26,8 @@ editor.setOptions({
 editor.commands.addCommand({
   name: "runHyLaGI",
   bindKey: {win: "Ctrl-Enter", mac: "Command-Enter"},
-  exec: function(editor) { sendHydla(); },
-  readonly: true
+  exec: function(editor) { sendHydLa(); },
+  readOnly: true
 });
 
 var dat_gui_parameter_folder;
@@ -32,6 +37,7 @@ var dat_gui_parameter_folder_seek;
 var first_script_element;
 var dynamic_script_elements = [];
 
+let plot_settings;
 
 $(document).ready(function(){
   
@@ -40,14 +46,14 @@ $(document).ready(function(){
   editor.clearSelection();
   /* initialize materialize components */
   $('#file-dropdown-button').dropdown({
-    constrain_width: true,
+    constrainWidth: true,
     hover: false,
   });
   $('.axis-dropdown-button').dropdown({
-    constrain_width: false,
+    constrainWidth: false,
     hover: false
   });
-  $('.modal-trigger').leanModal();
+  $('.modal-trigger').modal();
   $('ui.tabs').tabs();
 
   $("fix_button").on('change', function(){
@@ -59,42 +65,45 @@ $(document).ready(function(){
 
   loadThemeFromWebstorage();
   loadKeyBindingFromWebstorage();
-  $('select').material_select();
+  $('select').formSelect();
 
   first_script_element = document.getElementsByTagName('script')[0];
 
-  plot_settings = browser_storage.getItem('plot_settings');
-  if(plot_settings == null)
-  {
-    plot_settings = {};
-  }
-  else
-  {
-    plot_settings = JSON.parse(plot_settings);
-  }
-
-  if(plot_settings.plotInterval == undefined)plot_settings.plotInterval = 0.1;
-  if(plot_settings.backgroundColor == undefined)plot_settings.backgroundColor = "#000000";
-  if(plot_settings.lineWidth == undefined)plot_settings.lineWidth = 1;
-  if(plot_settings.scaleLabelVisible == undefined)plot_settings.scaleLabelVisible = true;
-  if(plot_settings.twoDimensional == undefined)plot_settings.twoDimensional = false;
-  if(plot_settings.autoRotate == undefined)plot_settings.autoRotate = false;
-  if(plot_settings.animate == undefined)plot_settings.animate = false;
-  if(plot_settings.seek == undefined)plot_settings.seek = 0;
-
+  plot_settings = PlotSettings.parseJSON(browser_storage.getItem('plot_settings'));
   var add_line_obj = {add: function(){var line = addNewLine("","",""); line.folder.open();} };
-  var controler;
-  dat_gui = new dat.GUI({autoPlace: false, load: localStorage});
-  dat_gui_animate = new dat.GUI({autoPlace: false, load: localStorage});
-  dat_gui.add(plot_settings, 'plotInterval', 0.01, 1).step(0.001).name('plot interval').onChange(function(value){replot_all();savePlotSettings();});
-  dat_gui.add(plot_settings, 'lineWidth', 1, 10).step(1).name('line width')
-    .onChange(function(value){replot_all();savePlotSettings();});
-  dat_gui.add(plot_settings, 'scaleLabelVisible').name("show scale label").onChange(function(value){update_axes(true);savePlotSettings();});
-  dat_gui.add(plot_settings, 'twoDimensional').name("XY-mode").onChange(function(value){update2DMode();savePlotSettings();});
-  dat_gui.add(plot_settings, 'autoRotate').name("auto rotate").onChange(function(value){updateRotate(); savePlotSettings();});
-  dat_gui.addColor(plot_settings, 'backgroundColor').name('background')
-    .onChange(function(value){setBackgroundColor(value);savePlotSettings();/*render_three_js();i*/});
-  dat_gui_animate.add(plot_settings, 'animate').name("stop").onChange(function(value){time_stop();savePlotSettings();});
+  // var controler;
+  let dat_gui = new dat.GUI({autoPlace: false, load: localStorage});
+  let dat_gui_animate = new dat.GUI({autoPlace: false, load: localStorage});
+  dat_gui
+    .add(plot_settings, 'plotInterval', 0.01, 1)
+    .step(0.001)
+    .name('plot interval')
+    .onChange((_) => { replot_all(); savePlotSettings(); });
+  dat_gui
+    .add(plot_settings, 'lineWidth', 1, 10)
+    .step(1)
+    .name('line width')
+    .onChange((_)=>{replot_all();savePlotSettings();});
+  dat_gui
+    .add(plot_settings, 'scaleLabelVisible')
+    .name("show scale label")
+    .onChange((_)=>{ update_axes(true); savePlotSettings(); });
+  dat_gui
+    .add(plot_settings, 'twoDimensional')
+    .name("XY-mode")
+    .onChange((_)=>{ update2DMode(); savePlotSettings(); });
+  dat_gui
+    .add(plot_settings, 'autoRotate')
+    .name("auto rotate")
+    .onChange((_)=>{ updateRotate(); savePlotSettings(); });
+  dat_gui
+    .addColor(plot_settings, 'backgroundColor')
+    .name('background')
+    .onChange((value)=>{setBackgroundColor(value);savePlotSettings();/*render_three_js();i*/});
+  dat_gui_animate
+    .add(plot_settings, 'animate')
+    .name("stop")
+    .onChange((_)=>{ time_stop(); savePlotSettings(); });
   //dat_gui_animate.add(plot_settings, 'seek', 0, 1000).step(1).name('seek').onChange(function(value){seek();savePlotSettings();});
     
   dat_gui.domElement.style['z-index'] = 2;
@@ -118,7 +127,8 @@ $(document).ready(function(){
   dat_container_b.style.height = height_area;
   dat_container_b.appendChild(dat_gui_animate.domElement);
 
-  document.getElementById("nd_mode_check_box").checked = true;
+  let nd_mode_check_box = <HTMLInputElement>document.getElementById("nd_mode_check_box")
+  nd_mode_check_box.checked = true;
 
   fixLayoutOfDatGUI();
 
@@ -137,7 +147,6 @@ $(document).ready(function(){
   time_stop();
 
   render();
-
 });
 
 function time_stop()

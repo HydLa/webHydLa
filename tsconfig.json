@@ -3,12 +3,11 @@
     "target": "es2017",
     "module": "es2015",
     "moduleResolution": "node",
+    "types": ["node"],
+    "lib": ["DOM"],
     "sourceMap": true,
     "declaration": false,
     "strict": false,
-    // "noImplicitAny": true,
-    // "noImplicitThis": true,
-    // "alwaysStrict": true,
     "esModuleInterop": true,
     "experimentalDecorators": true
   }

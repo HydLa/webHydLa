@@ -1,3 +1,5 @@
+const webpack = require("webpack");
+
 module.exports = { 
   entry: `./src/main.ts`,
   output: {
@@ -18,6 +20,15 @@ module.exports = {
   },
   // import 文で .ts ファイルを解決するため
   resolve: {
-    extensions: [".ts"]
-  }
+    alias: {
+      jquery: `${__dirname}/node_modules/jquery`
+    },
+    extensions: [".ts", ".js"]
+  },
+  plugins: [
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery"
+    })
+  ]
 };
