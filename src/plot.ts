@@ -1,5 +1,6 @@
 import { plot_lines, PlotLine } from "./plot_line";
-import { graph } from "./main";
+import { graph, plot_settings } from "./main";
+import THREE from "three";
 
 function HydatException(message) {
   this.name = "HydatException";
@@ -15,19 +16,19 @@ function translate(hydat) {
 
 function translate_phase(phase) {
   if (phase.type == "PP") {
-    phase.time.time_point = parseValue(phase.time.time_point);
+    phase.time.time_point = Construct.parse(phase.time.time_point);
   } else {
-    phase.time.start_time = parseValue(phase.time.start_time);
+    phase.time.start_time = Construct.parse(phase.time.start_time);
     if (phase.time.end_time == undefined || phase.time.end_time == "Infinity") {
       phase.time.end_time = new Plus(new Constant(2), phase.time.start_time);
     }
     else {
-      phase.time.end_time = parseValue(phase.time.end_time);
+      phase.time.end_time = Construct.parse(phase.time.end_time);
     }
   }
   for (var key in phase.variable_map) {
     if (phase.variable_map[key].unique_value == undefined) throw new HydatException("webHydLa doesn't support ununique value in variable maps for " + key);
-    phase.variable_map[key] = parseValue(phase.variable_map[key].unique_value, phase.variable_map);
+    phase.variable_map[key] = Construct.parse(phase.variable_map[key].unique_value, phase.variable_map);
   }
 
   for (var i = 0; i < phase.parameter_maps.length; i++) {
@@ -44,13 +45,13 @@ function translate_parameter_map(parameter_map) {
   for (var key in parameter_map) {
     if (parameter_map[key].unique_value == undefined) {
       for (var i = 0; i < parameter_map[key].lower_bounds.length; i++) {
-        parameter_map[key].lower_bounds[i].value = parseValue(parameter_map[key].lower_bounds[i].value);
+        parameter_map[key].lower_bounds[i].value = Construct.parse(parameter_map[key].lower_bounds[i].value);
       }
       for (var i = 0; i < parameter_map[key].upper_bounds.length; i++) {
-        parameter_map[key].upper_bounds[i].value = parseValue(parameter_map[key].upper_bounds[i].value);
+        parameter_map[key].upper_bounds[i].value = Construct.parse(parameter_map[key].upper_bounds[i].value);
       }
     } else {
-      parameter_map[key].unique_value = parseValue(parameter_map[key].unique_value);
+      parameter_map[key].unique_value = Construct.parse(parameter_map[key].unique_value);
     }
   }
 }
@@ -241,9 +242,9 @@ function add_plot(line) {
   }
   try {
     axes = {
-      x: parseValue(line.settings.x),
-      y: parseValue(line.settings.y),
-      z: parseValue(line.settings.z)
+      x: Construct.parse(line.settings.x),
+      y: Construct.parse(line.settings.y),
+      z: Construct.parse(line.settings.z)
     };
     updateFolder(line, true);
   } catch (e) {
