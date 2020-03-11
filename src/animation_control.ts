@@ -11,6 +11,8 @@ export class AnimationControl{
   static time: number = 0;
   static time_prev: number = -100;
 
+  static plot_animate;
+
   static add_plot(line: PlotLine) {
     var axes;
     if (line.settings.x == "" ||
@@ -133,7 +135,7 @@ export class AnimationControl{
           let sphere = new THREE.Mesh(s_geometry, s_material);
           sphere.position.set(0, 0, 0);
           GraphControl.scene.add(sphere);
-          plot_animate[PlotControl.array] = (sphere);
+          AnimationControl.plot_animate[PlotControl.array] = (sphere);
           current_line_vec = [];
           PlotControl.current_line_vec_animation = [];
           phase_index_array.pop();
@@ -239,7 +241,7 @@ export class AnimationControl{
 
   static animate() {
     if (this.time_prev !== this.time) {
-      plot_animate = [];
+      AnimationControl.plot_animate = [];
       let arr = 0;
       for (let i = 0; i < GraphControl.scene.children.length - 1; i++) {
         if ('isLine' in GraphControl.scene.children[i]) {
@@ -260,19 +262,19 @@ export class AnimationControl{
               198,
               198
             );
-            plot_animate[arr] = (GraphControl.scene.children[i + 1]);
+            AnimationControl.plot_animate[arr] = (GraphControl.scene.children[i + 1]);
             arr++;
             continue;
           }
-          this.scene.children[i + 1].position.set(
+          GraphControl.scene.children[i + 1].position.set(
             AnimationControl.animation_line[arr][this.time].x,
             AnimationControl.animation_line[arr][this.time].y,
             AnimationControl.animation_line[arr][this.time].z);
-          plot_animate[arr] = (GraphControl.scene.children[i + 1]);
+          AnimationControl.plot_animate[arr] = (GraphControl.scene.children[i + 1]);
           arr += 1;
         }
       }
-      GraphControl.time_prev = this.time;
+      this.time_prev = this.time;
       GraphControl.render_three_js();
     }
   }

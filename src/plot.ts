@@ -20,7 +20,6 @@ function modifyNameLabel(name) {
 var plotting_mode_switch = document.getElementById("plotting-mode-switch");
 
 
-var plot_animate = [];
 
 // function replot(line) {
 //   remove_plot(line);
