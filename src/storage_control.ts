@@ -1,3 +1,5 @@
+import { PlotSettings } from "./plot_settings";
+
 const storage = localStorage;
 
 const theme_selector = <HTMLSelectElement>document.getElementById("theme_selector");
@@ -47,5 +49,25 @@ export class StorageControl{
   /* function to save HydLa code into Web Storage */
   static saveHydla(hydla:string) {
     storage.setItem("hydla", hydla);
+  }
+
+  static loadHydla() {
+    return storage.getItem("hydla");
+  }
+
+  static saveHydat() {
+    
+  }
+
+  static loadHydat() {
+    return storage.getItem("hydla");
+  }
+
+  static savePlotSettings(plot_settings:PlotSettings) {
+    storage.setItem("plot_settings", JSON.stringify(plot_settings));
+  }
+
+  static loadPlotSettings() {
+    return PlotSettings.parseJSON(storage.getItem("plot_settings"));
   }
 }

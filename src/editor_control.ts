@@ -24,7 +24,7 @@ export class EditorControl {
   editor: ace.Ace.Editor;
   autosave_event_enabled = true;
   autosave_changed = false;
-  constructor() {
+  constructor(saved_hydla:string) {
     /* ID="editor" な div をエディタにする */
     this.editor = ace.edit("editor");
 
@@ -51,8 +51,6 @@ export class EditorControl {
     });
 
     /* load saved hydla code if it exist */
-    var saved_hydla = browser_storage.getItem("hydla");
-    var saved_hydat = browser_storage.getItem("hydat");
     if (saved_hydla) {
       this.editor.setValue(saved_hydla);
     } else {

@@ -23,7 +23,7 @@ class HydatException extends Error {
   }
 }
 
-class Hydat {
+export class Hydat {
   name: string;
   first_phases: HydatPhase[];
   parameters: { [key: string]: HydatParameter };

@@ -6,7 +6,7 @@ import { PlotSettings } from "./plot_settings";
 import { DOMControl } from "./dom_control";
 import { EditorControl } from "./editor_control";
 import { StorageControl } from "./storage_control";
-
+import { Hydat } from "./hydat";
 
 export class CommonData {
   plot_settings: PlotSettings;
@@ -20,13 +20,16 @@ export class CommonData {
   editor_control: EditorControl;
 
   constructor() {
-    this.editor_control = new EditorControl();
-
     NewUI.init(this.graph.controls);
     DOMControl.init(this.graph, this.editor_control);
     StorageControl.init();
 
-    this.plot_settings = PlotSettings.parseJSON(browser_storage.getItem('plot_settings'));
+    const saved_hydla = StorageControl.loadHydla();
+    const saved_hydat = StorageControl.loadHydat();
+
+    this.editor_control = new EditorControl(saved_hydla);
+
+    this.plot_settings = StorageControl.loadPlotSettings();
     // var controler;
     this.dat_gui_control = new DatGUIControl();
 
@@ -54,10 +57,6 @@ export class CommonData {
   fixLayoutOfDatGUI() {
     this.dat_gui_control.fixLayout();
   }
-  savePlotSettings() {
-    browser_storage.setItem("plot_settings", JSON.stringify(plot_settings));
-  }
-
 
   /* function to update variable selector for graph */
   initVariableSelector(hydat) {
@@ -82,7 +81,7 @@ export class CommonData {
         }*/
         if (line.settings.x != "" || line.settings.y != "" || line.settings.z != "") line.folder.open();
       }
-      this.plot_lines.replotAll();
+      this.graph.replotAll();
     }
 
     if (this.plot_lines.getLength() == 0) {
