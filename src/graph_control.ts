@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { PlotLineMapControl } from './plot_line_map_control';
+import { DatGUIControl } from './dat_gui_control';
 
 export class GraphControl {
   static scene: THREE.Scene;
@@ -96,10 +97,10 @@ export class GraphControl {
     }
     update_axes(false);
     if (this.animatable) {
-      animate(); // animating function
+      GraphControl.animate(); // animating function
       animate_time();
     } else {
-      animate();
+      GraphControl.animate();
     }
     if (animation_line.length != this.a_line) {
       if (range_mode) { range_make_all(); }
@@ -107,9 +108,9 @@ export class GraphControl {
     }
     if (animation_line.maxlen != this.t_line) {
       this.t_line = animation_line.maxlen;
-      parameter_seek_setting(this.t_line);
+      DatGUIControl.parameter_seek_setting(this.t_line);
     } else if (this.animatable) {
-      parameter_seek_setting_animate(this.t_line, this.time);
+      DatGUIControl.parameter_seek_setting_animate(this.t_line, this.time);
     }
     this.last_frame_zoom = this.camera.zoom;
   }
@@ -153,8 +154,8 @@ export class GraphControl {
           arr += 1;
         }
       }
-      time_prev = this.time;
-      render_three_js();
+      GraphControl.time_prev = this.time;
+      GraphControl.render_three_js();
     }
   }
 
