@@ -1,6 +1,6 @@
 import Materialize from "materialize-css";
 import $ from 'jquery';
-import { Graph } from "./graph";
+import { Graph } from "./graph_control";
 import { EditorControl } from "./editor_control";
 
 export class DOMControl {

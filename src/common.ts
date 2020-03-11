@@ -1,4 +1,4 @@
-import { Graph } from "./graph";
+import { Graph } from "./graph_control";
 import { PlotLineMap } from "./plot_line_map";
 import { DatGUIControl } from "./dat_gui_control";
 import { NewUI } from "./new_ui";

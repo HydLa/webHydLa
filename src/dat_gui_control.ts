@@ -2,14 +2,14 @@ import * as dat from "dat.gui";
 export let range_mode: boolean;
 
 export class DatGUIControl{
-  parameter_folder: dat.GUI;
-  variable_folder: dat.GUI;
-  parameter_folder_seek: dat.GUI;
+  static parameter_folder: dat.GUI;
+  static variable_folder: dat.GUI;
+  static parameter_folder_seek: dat.GUI;
 
-  parameter_items: dat.GUIController[] = [];
-  parameter_items_seek = [];
+  static parameter_items: dat.GUIController[] = [];
+  static parameter_items_seek = [];
 
-  constructor() {
+  static init() {
     var add_line_obj = { add: function () { var line = addNewLine("", "", ""); line.folder.open(); } };
     let dat_gui = new dat.GUI({ autoPlace: false, load: localStorage });
     let dat_gui_animate = new dat.GUI({ autoPlace: false, load: localStorage });
@@ -93,7 +93,7 @@ export class DatGUIControl{
     this.fixLayout();
   }
 
-  parameter_setting(pars:{[key: string]: HydatParameter}) {
+  static parameter_setting(pars:{[key: string]: HydatParameter}) {
     for (let item of this.parameter_items) {
       this.parameter_folder.remove(item);
     }
@@ -140,7 +140,7 @@ export class DatGUIControl{
     else this.parameter_folder.close();
     this.fixLayout();
   }
-  parameter_seek_setting(line_len:number) {
+  static parameter_seek_setting(line_len:number) {
     for (let item of this.parameter_items_seek) {
       this.parameter_folder_seek.remove(item);
     }
@@ -170,7 +170,7 @@ export class DatGUIControl{
     //else this.parameter_folder_seek.close();
     this.fixLayout();
   }
-  parameter_seek_setting_animate(line_len, time_line) {
+  static parameter_seek_setting_animate(line_len, time_line) {
     for (let item of this.parameter_items_seek) {
       this.parameter_folder_seek.remove(item);
     }
@@ -197,7 +197,7 @@ export class DatGUIControl{
     //else this.parameter_folder_seek.close();
     this.fixLayout();
   }
-  fixLayout() {
+  static fixLayout() {
     // to avoid layout collapsion of dat gui
     let dg_c_inputs = $('.dg .c input[type=text]');
     for (let input of dg_c_inputs) {
