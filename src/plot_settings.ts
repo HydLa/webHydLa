@@ -1,3 +1,22 @@
+import { StorageControl } from "./storage_control";
+import { PlotControl } from "./plot_control";
+
+export class PlotSettingsControl{
+  static plot_settings: PlotSettings;
+  static init() {
+    this.plot_settings = StorageControl.loadPlotSettings();
+    if (this.plot_settings.backgroundColor !== undefined) {
+      PlotControl.setBackgroundColor(this.plot_settings.backgroundColor);
+    }
+  }
+  static parseJSON(json: string) {
+    return new PlotSettings(JSON.parse(json));
+  }
+  static saveToWebStorage() {
+    StorageControl.savePlotSettings(this.plot_settings);
+  }
+}
+
 export class PlotSettings {
   plotInterval: number;
   backgroundColor: string;
@@ -18,9 +37,6 @@ export class PlotSettings {
     this.autoRotate = obj?.autoRotate ?? false;
     this.animate = obj?.animate ?? false;
     this.seek = obj?.seek ?? 0;
-  }
-  static parseJSON(json: string) {
-    return new PlotSettings(JSON.parse(json));
   }
 }
 

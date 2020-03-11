@@ -1,7 +1,7 @@
 import { GraphControl } from "./graph_control";
 import { DatGUIControl } from "./dat_gui_control";
 import { NewUI } from "./new_ui";
-import { PlotSettings } from "./plot_settings";
+import { PlotSettingsControl } from "./plot_settings";
 import { DOMControl } from "./dom_control";
 import { EditorControl } from "./editor_control";
 import { StorageControl } from "./storage_control";
@@ -10,7 +10,6 @@ import { PlotLineMapControl } from "./plot_line_map_control";
 import { PlotControl } from "./plot_control";
 
 export class CommonData {
-  plot_settings: PlotSettings;
   current_hydat:Hydat;
   settingsForCurrentHydat = {};
 
@@ -26,16 +25,11 @@ export class CommonData {
 
     EditorControl.init(saved_hydla);
 
-    this.plot_settings = StorageControl.loadPlotSettings();
-    // var controler;
-    DatGUIControl.init();
+    PlotSettingsControl.init();
+    DatGUIControl.init(PlotSettingsControl.plot_settings);
 
     if (saved_hydat) {
       this.loadHydat(JSON.parse(saved_hydat));
-    }
-
-    if (this.plot_settings.backgroundColor !== undefined) {
-      setBackgroundColor(this.plot_settings.backgroundColor);
     }
 
     this.graph.update2DMode(this.plot_settings.twoDimensional);

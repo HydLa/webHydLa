@@ -1,4 +1,4 @@
-import { PlotSettings } from "./plot_settings";
+import { PlotSettings, PlotSettingsControl } from "./plot_settings";
 
 const storage = localStorage;
 
@@ -68,6 +68,6 @@ export class StorageControl{
   }
 
   static loadPlotSettings() {
-    return PlotSettings.parseJSON(storage.getItem("plot_settings"));
+    return PlotSettingsControl.parseJSON(storage.getItem("plot_settings"));
   }
 }

@@ -503,7 +503,7 @@ export class PlotControl {
     sub(ranges.z, PlotControl.axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
   }
 
-  static setBackgroundColor(color: THREE.Color) {
+  static setBackgroundColor(color: string) {
     let color_val = parseInt("0x" + color.substr(1));
     const b = color_val % 256;
     color_val /= 256;
