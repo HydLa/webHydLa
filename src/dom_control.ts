@@ -1,13 +1,13 @@
 import Materialize from "materialize-css";
 import $ from 'jquery';
-import { Graph } from "./graph_control";
+import { GraphControl } from "./graph_control";
 import { EditorControl } from "./editor_control";
 
 export class DOMControl {
-  static init(graph:Graph, editor:EditorControl) {
+  static init() {
     $('select').formSelect();
     $(window).resize(function () {
-      graph.resizeGraphRenderer();
+      GraphControl.resizeGraphRenderer();
     });
 
     /* initialize materialize components */
@@ -23,10 +23,10 @@ export class DOMControl {
     $('ui.tabs').tabs();
 
     $("fix_button").on('change', function () {
-      graph.replotAll();
+      GraphControl.replotAll();
     });
     $("step_button").on('change', function () {
-      graph.replotAll();
+      GraphControl.replotAll();
     });
 
     /* function to close/open input-pane */
@@ -52,8 +52,8 @@ export class DOMControl {
             const diff = e.pageX - initial_x;
             $("#left-pane").width(initial_width + diff);
             $("#editor").width(initial_editor + diff);
-            graph.resizeGraphArea();
-            editor.resize();
+            GraphControl.resizeGraphArea();
+            EditorControl.resize();
           })
           .mouseup((e) => {
             dragging = false;
@@ -82,7 +82,7 @@ export class DOMControl {
             var diff = e.pageY - initial_y;
             $("#input-pane").height(initial_height + diff);
             $("#editor").height(initial_height + diff);
-            editor.resize();
+            EditorControl.resize();
           })
           .mouseup((e) => {
             dragging = false;

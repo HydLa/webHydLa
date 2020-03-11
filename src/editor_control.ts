@@ -7,24 +7,22 @@ import "ace-builds/src-noconflict/keybinding-emacs"
 import "ace-builds/src-noconflict/keybinding-vim"
 
 /* set default hydla code */
-const default_hydla =
-  //"// a sample hydla code: bouncing_particle.hydla\n\
-  "// a sample hydla code: bouncing_particle.hydla\n\
-\n\
-INIT <=> y = 10 & y' = 0.\n\
-FALL <=> [](y'' = -10).\n\
-BOUNCE <=> [](y- = 0 => y' = -4/5 * y'-).\n\
-\n\
-INIT, FALL << BOUNCE.\n\
-\n\
-// #hylagi -p 10\n\
-";
+const default_hydla = `// a sample hydla code: bouncing_particle.hydla
+
+INIT <=> y = 10 & y' = 0.
+FALL <=> [](y'' = -10).
+BOUNCE <=> [](y- = 0 => y' = -4/5 * y'-).
+
+INIT, FALL << BOUNCE.
+
+// #hylagi -p 10
+`;
 
 export class EditorControl {
-  editor: ace.Ace.Editor;
-  autosave_event_enabled = true;
-  autosave_changed = false;
-  constructor(saved_hydla:string) {
+  static editor: ace.Ace.Editor;
+  static autosave_event_enabled = true;
+  static autosave_changed = false;
+  static init(saved_hydla:string) {
     /* ID="editor" な div をエディタにする */
     this.editor = ace.edit("editor");
 
@@ -70,7 +68,7 @@ export class EditorControl {
   }
 
   /* function to save HydLa file */
-  saveHydla() {
+  static saveHydla() {
     var blob = new Blob([this.editor.getValue()])
     var object = window.URL.createObjectURL(blob);
     var d = new Date();
@@ -86,7 +84,7 @@ export class EditorControl {
     a.dispatchEvent(event);
   }
 
-  loadFile() {
+  static loadFile() {
     var i = document.createElement("input");
     i.type = "file";
     var event = document.createEvent("MouseEvents");
@@ -116,7 +114,7 @@ export class EditorControl {
   }
 
   /* function to save Hydat file */
-  saveHydat() {
+  static saveHydat() {
     var blob = new Blob([JSON.stringify(current_hydat)]);
     var object = window.URL.createObjectURL(blob);
     var d = new Date();
@@ -133,7 +131,7 @@ export class EditorControl {
   }
 
   /* function to save HydLa code into Web Storage */
-  saveHydlaToWebstorage() {
+  static saveHydlaToWebstorage() {
     this.autosave_event_enabled = false;
     this.autosave_changed = false;
     storage.saveHydla(this.editor.getValue());
@@ -149,15 +147,15 @@ export class EditorControl {
     }, 5000);
   }
 
-  setKeyBinding(binding:string|null) {
+  static setKeyBinding(binding:string|null) {
     this.editor.setKeyboardHandler(binding);
   }
 
-  setTheme(theme:string) {
+  static setTheme(theme:string) {
     this.editor.setTheme("ace/theme/" + theme)
   }
 
-  resize() {
+  static resize() {
     this.editor.resize();
   }
 }

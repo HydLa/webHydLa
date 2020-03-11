@@ -1,4 +1,4 @@
-import { Graph } from "./graph_control";
+import { GraphControl } from "./graph_control";
 import { PlotLineMap } from "./plot_line_map";
 import { DatGUIControl } from "./dat_gui_control";
 import { NewUI } from "./new_ui";
@@ -10,28 +10,24 @@ import { Hydat } from "./hydat";
 
 export class CommonData {
   plot_settings: PlotSettings;
-  graph = new Graph();
   plot_lines = new PlotLineMap();
-  dat_gui_control: DatGUIControl;
 
   current_hydat:Hydat;
   settingsForCurrentHydat = {};
 
-  editor_control: EditorControl;
-
   constructor() {
-    NewUI.init(this.graph.controls);
-    DOMControl.init(this.graph, this.editor_control);
+    NewUI.init(GraphControl.controls);
+    DOMControl.init();
     StorageControl.init();
 
     const saved_hydla = StorageControl.loadHydla();
     const saved_hydat = StorageControl.loadHydat();
 
-    this.editor_control = new EditorControl(saved_hydla);
+    EditorControl.init(saved_hydla);
 
     this.plot_settings = StorageControl.loadPlotSettings();
     // var controler;
-    this.dat_gui_control = new DatGUIControl();
+    DatGUIControl.init();
 
     if (saved_hydat) {
       this.loadHydat(JSON.parse(saved_hydat));

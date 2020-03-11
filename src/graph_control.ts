@@ -1,26 +1,26 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-export class Graph {
-  scene: THREE.Scene;
-  camera: THREE.OrthographicCamera;
-  elem: HTMLElement;
-  controls: OrbitControls;
-  renderer: THREE.WebGLRenderer;
-  time: number = 0;
-  time_prev: number = -100;
-  animatable: boolean = true;
-  rangemode: boolean = false;
+export class GraphControl {
+  static scene: THREE.Scene;
+  static camera: THREE.OrthographicCamera;
+  static elem: HTMLElement;
+  static controls: OrbitControls;
+  static renderer: THREE.WebGLRenderer;
+  static time: number = 0;
+  static time_prev: number = -100;
+  static animatable: boolean = true;
+  static rangemode: boolean = false;
 
-  controls_position0: THREE.Vector3;
+  static controls_position0: THREE.Vector3;
 
-  a_line = 1;
-  t_line = 0;
-  last_frame_zoom = 1;
+  static a_line = 1;
+  static t_line = 0;
+  static last_frame_zoom = 1;
 
-  resizeLoopCount: number = 0;
+  static resizeLoopCount: number = 0;
 
-  constructor() {
+  static init() {
     this.scene = new THREE.Scene();
 
     // PerspectiveCamera
@@ -57,7 +57,7 @@ export class Graph {
     setTimeout(() => { this.resizeGraphRenderer() }, 200);
   }
 
-  resizeGraphRenderer() {
+  static resizeGraphRenderer() {
     if (this.elem.clientWidth > 0 && this.elem.clientHeight > 0) {
       this.renderer.setSize(this.elem.clientWidth, this.elem.clientHeight);
       // this.camera.aspect = this.elem.clientWidth / this.elem.clientHeight;
@@ -87,7 +87,7 @@ export class Graph {
     }
   }
 
-  render() {
+  static render() {
     requestAnimationFrame(() => { this.render() });
     this.controls.update();
     if (this.last_frame_zoom != this.camera.zoom) {
@@ -113,11 +113,11 @@ export class Graph {
     this.last_frame_zoom = this.camera.zoom;
   }
 
-  render_three_js() {
+  static render_three_js() {
     this.renderer.render(this.scene, this.camera);
   }
 
-  animate() {
+  static animate() {
     if (this.time_prev !== this.time) {
       plot_animate = [];
       let arr = 0;
@@ -157,11 +157,11 @@ export class Graph {
     }
   }
 
-  animateTime() {
+  static animateTime() {
     this.time++;
   }
 
-  toScreenPosition(pos: THREE.Vector3) {
+  static toScreenPosition(pos: THREE.Vector3) {
     const widthHalf = 0.5 * this.renderer.context.canvas.width;
     const heightHalf = 0.5 * this.renderer.context.canvas.height;
 
@@ -173,11 +173,11 @@ export class Graph {
     };
   }
 
-  updateRotate(autoRotate: boolean) {
+  static updateRotate(autoRotate: boolean) {
     this.controls.autoRotate = autoRotate;
   }
 
-  update2DMode(twoDimensional: boolean) {
+  static update2DMode(twoDimensional: boolean) {
     this.controls.enableRotate = !twoDimensional;
     if (twoDimensional) {
       this.camera.position.copy(this.controls_position0.clone());
@@ -187,12 +187,12 @@ export class Graph {
     }
   }
 
-  startResizingGraphArea() {
+  static startResizingGraphArea() {
     this.resizeLoopCount = 0;
     setTimeout(() => { this.resizeGraphArea();}, 10);
   }
 
-  resizeGraphArea() {
+  static resizeGraphArea() {
     this.resizeLoopCount++;
     this.resizeGraphRenderer();
     //TODO: do this without timer
@@ -216,13 +216,13 @@ export class Graph {
     return grid_obj;
   };
 
-  clearPlot() {
+  static clearPlot() {
     this.scene = new THREE.Scene();
     // TODO: 複数のプロットが存在するときの描画範囲について考える
     // TODO: 設定を変更した時に動的に変更が反映されるようにする
   }
 
-  updateAxisScaleLabel(ranges: ComparableTriplet<Range>) {
+  static updateAxisScaleLabel(ranges: ComparableTriplet<Range>) {
     var canvas = <HTMLCanvasElement>document.getElementById('scaleLabelCanvas');
     if (!canvas || !canvas.getContext) {
       return false;
@@ -252,7 +252,7 @@ export class Graph {
     sub(ranges.z, axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
   }
 
-  replotAll() {
+  static replotAll() {
     plot_lines.replot();
     this.time = 0;
   }
