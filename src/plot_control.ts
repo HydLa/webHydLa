@@ -28,37 +28,6 @@ export class PlotControl {
   static init(plot_settings:PlotSettings) {
     this.plot_settings = plot_settings;
   }
-  static add_plot(line: PlotLine) {
-    var axes;
-    if (line.settings.x == "" ||
-      line.settings.y == "" ||
-      line.settings.z == "") {
-      return;
-    }
-    try {
-      axes = {
-        x: Construct.parse(line.settings.x),
-        y: Construct.parse(line.settings.y),
-        z: Construct.parse(line.settings.z)
-      };
-      line.updateFolder(true);
-    } catch (e) {
-      console.log(e);
-      console.log(e.stack);
-      line.updateFolder(false);
-      return;
-    }
-    var dt = PlotControl.plot_settings.plotInterval;
-    var phase = current_hydat.first_phases[0];
-    var parameter_condition_list = PlotControl.divideParameter(current_hydat.parameters);
-    var color = getColors(parameter_condition_list.length, line.color_angle);
-    line.plot_information = { phase_index_array: [{ phase: phase, index: 0 }], axes: axes, line: line, width: PlotControl.plot_settings.lineWidth, color: color, dt: dt, parameter_condition_list: parameter_condition_list };
-    startPreloader();
-    PlotControl.array = -1;
-    animation_line = [];
-    animation_line.maxlen = 0;
-    if (line.plot_ready == undefined) requestAnimationFrame(function () { line.plotReady() });
-  }
   static divideParameter(parameter_map:{ [key: string]: HydatParameter }) {
     var now_parameter_condition_list = [{}];
   
