@@ -1,29 +1,31 @@
 import { plot_settings, dat_gui_parameter_folder, fixLayoutOfDatGUI, dat_gui_parameter_folder_seek, graph } from "./main";
+import { plot_lines } from "./plot_line";
 
 export let range_mode: boolean;
 
 let dat_gui_parameter_items: dat.GUIController[] = [];
-function parameter_setting(pars) {
+function parameter_setting(pars:{[key: string]: HydatParameter}) {
   for (var i = 0; i < dat_gui_parameter_items.length; i++) {
     dat_gui_parameter_folder.remove(dat_gui_parameter_items[i]);
   }
   dat_gui_parameter_items = [];
   plot_settings.parameter_condition = {};
   for (let key in pars) {
+    const par = pars[key];
     let key_copy = key;
-    if (pars[key].unique_value != undefined) return;
+    if (par instanceof HydatParameterPoint) return;
 
-    let lower = pars[key].lower_bounds[0].value.getValue();
-    let upper = pars[key].upper_bounds[0].value.getValue();
-    let min_par_value = parseFloat(lower);
-    let max_par_value = parseFloat(upper);
+    let lower = par.lower_bounds[0].value.getValue({});
+    let upper = par.upper_bounds[0].value.getValue({});
+    let min_par_value = lower;
+    let max_par_value = upper;
     let step = (upper - lower) / 100;
 
     plot_settings.parameter_condition[key] = new ParameterCondition(min_par_value, max_par_value);
 
     let parameter_item =
       dat_gui_parameter_folder.add(plot_settings.parameter_condition[key], 'value', min_par_value, max_par_value).name(key);
-    parameter_item.onChange(function (value) { replot_all() });
+    parameter_item.onChange((_) => { plot_lines.replotAll(); });
     parameter_item.step(step);
 
     let mode_item = dat_gui_parameter_folder.add(plot_settings.parameter_condition[key], 'fixed');
@@ -39,7 +41,7 @@ function parameter_setting(pars) {
       else {
         parameter_item.min(min_par_value).max(max_par_value).step(step).setValue((min_par_value + max_par_value) / 2);
       }
-      replot_all();
+      plot_lines.replotAll();
     });
     mode_item_range.onChange((_) => {
       range_mode = plot_settings.parameter_condition[key_copy].range
@@ -49,8 +51,6 @@ function parameter_setting(pars) {
   else dat_gui_parameter_folder.close();
   fixLayoutOfDatGUI();
 }
-
-
 
 let dat_gui_parameter_items_seek = [];
 function parameter_seek_setting(line_len) {

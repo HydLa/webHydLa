@@ -7,9 +7,7 @@ import "ace-builds/src-noconflict/theme-github"
 import "ace-builds/src-noconflict/theme-clouds"
 import "ace-builds/src-noconflict/keybinding-emacs"
 import "ace-builds/src-noconflict/keybinding-vim"
-import * as dat from "dat.gui";
-import { Graph } from "./three_init";
-import { plot_lines } from "./plot_line";
+import { CommonData } from "./common";
 
 const html_mode_check_box = <HTMLInputElement>document.getElementById("html_mode_check_box")
 
@@ -38,153 +36,17 @@ editor.commands.addCommand({
   readOnly: true
 });
 
-export let dat_gui_parameter_folder: dat.GUI;
-export let dat_gui_variable_folder: dat.GUI;
-export let dat_gui_parameter_folder_seek: dat.GUI;
-
 let first_script_element: HTMLScriptElement;
 let dynamic_script_elements: HTMLScriptElement[] = [];
 
-export let plot_settings: PlotSettings;
-export let graph = new Graph();
-
-$(document).ready(function () {
-
-  initScrollZoom();
-
-  editor.clearSelection();
-  /* initialize materialize components */
-  $('#file-dropdown-button').dropdown({
-    constrainWidth: true,
-    hover: false,
-  });
-  $('.axis-dropdown-button').dropdown({
-    constrainWidth: false,
-    hover: false
-  });
-  $('.modal-trigger').modal();
-  $('ui.tabs').tabs();
-
-  $("fix_button").on('change', function () {
-    replot_all();
-  });
-  $("step_button").on('change', function () {
-    replot_all();
-  });
-
-  loadThemeFromWebstorage();
-  loadKeyBindingFromWebstorage();
-  $('select').formSelect();
-
-  first_script_element = document.getElementsByTagName('script')[0];
-
-  plot_settings = PlotSettings.parseJSON(browser_storage.getItem('plot_settings'));
-  var add_line_obj = { add: function () { var line = addNewLine("", "", ""); line.folder.open(); } };
-  // var controler;
-  let dat_gui = new dat.GUI({ autoPlace: false, load: localStorage });
-  let dat_gui_animate = new dat.GUI({ autoPlace: false, load: localStorage });
-  dat_gui
-    .add(plot_settings, 'plotInterval', 0.01, 1)
-    .step(0.001)
-    .name('plot interval')
-    .onChange((_) => { replot_all(); savePlotSettings(); });
-  dat_gui
-    .add(plot_settings, 'lineWidth', 1, 10)
-    .step(1)
-    .name('line width')
-    .onChange((_) => { replot_all(); savePlotSettings(); });
-  dat_gui
-    .add(plot_settings, 'scaleLabelVisible')
-    .name("show scale label")
-    .onChange((_) => { update_axes(true); savePlotSettings(); });
-  dat_gui
-    .add(plot_settings, 'twoDimensional')
-    .name("XY-mode")
-    .onChange((_) => { update2DMode(); savePlotSettings(); });
-  dat_gui
-    .add(plot_settings, 'autoRotate')
-    .name("auto rotate")
-    .onChange((_) => { updateRotate(); savePlotSettings(); });
-  dat_gui
-    .addColor(plot_settings, 'backgroundColor')
-    .name('background')
-    .onChange((value) => { setBackgroundColor(value); savePlotSettings();/*render_three_js();i*/ });
-  dat_gui_animate
-    .add(plot_settings, 'animate')
-    .name("stop")
-    .onChange((_) => { time_stop(); savePlotSettings(); });
-  //dat_gui_animate.add(plot_settings, 'seek', 0, 1000).step(1).name('seek').onChange(function(value){seek();savePlotSettings();});
-
-  dat_gui.domElement.style['z-index'] = 2;
-  dat_gui_animate.domElement.style['z-index'] = 3;
-  dat_gui_animate.domElement.style['position'] = 'absolute';
-  dat_gui_animate.domElement.style['bottom'] = '50px';
-  //dat_gui_animate.domElement.style['margin'] = '0 auto';
-
-  var height_area = $("#graph-area").css("height");
-  //var width_area = $("#graph-area").css("width");
-
-  dat_gui_parameter_folder = dat_gui.addFolder('parameters');
-  dat_gui_parameter_folder_seek = dat_gui_animate.addFolder('seek');
-  dat_gui.add(add_line_obj, 'add').name("add new line");
-  dat_gui_variable_folder = dat_gui.addFolder('variables');
-
-  var dat_container = document.getElementById('dat-gui');
-  dat_container.appendChild(dat_gui.domElement);
-
-  var dat_container_b = document.getElementById('dat-gui-bottom');
-  dat_container_b.style.height = height_area;
-  dat_container_b.appendChild(dat_gui_animate.domElement);
-
-  let nd_mode_check_box = <HTMLInputElement>document.getElementById("nd_mode_check_box")
-  nd_mode_check_box.checked = true;
-
-  fixLayoutOfDatGUI();
-
-  if (saved_hydat) {
-    loadHydat(JSON.parse(saved_hydat));
-  }
-
-
-  if (plot_settings.backgroundColor != undefined) {
-    setBackgroundColor(plot_settings.backgroundColor);
-  }
-
-  update2DMode();
-  time_stop();
-
-  graph.render();
-});
+// $(document).ready(function () {
+let common = new CommonData();
+// });
 
 $(window).resize(function () {
-  graph.resizeGraphRenderer();
+  common.graph.resizeGraphRenderer();
 });
 
-function time_stop() {
-  graph.animatable = !plot_settings.animate;
-}
-
-function seek() {
-  //if(plot_settings.animate)
-  {
-    graph.time = plot_settings.seek;
-    animate();
-  }
-}
-
-function updateRotate() {
-  graph.controls.autoRotate = plot_settings.autoRotate;
-}
-
-function update2DMode() {
-  graph.controls.enableRotate = !plot_settings.twoDimensional;
-  if (plot_settings.twoDimensional) {
-    graph.camera.position.copy(graph.controls_position0.clone());
-    graph.controls.target.set(0, 0, 0);
-    graph.camera.updateMatrix(); // make sure camera's local matrix is updated
-    graph.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
-  }
-}
 
 export function fixLayoutOfDatGUI() {
   // to avoid layout collapsion of dat gui

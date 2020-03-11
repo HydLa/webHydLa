@@ -72,36 +72,46 @@ class HydatPhaseRaw {
   children: HydatPhaseRaw[];
 }
 
-abstract class HydatParameter {
-  static translate_map(parameter_map: { [key: string]: HydatParameterRaw }) {
-    let map:{[key:string]:HydatParameter} = {};
-    for (var key in parameter_map) {
-      const p = parameter_map[key];
-      if (parameter_map[key].unique_value === undefined) {
-        map[key] = new HydatParameterInterval(p.lower_bounds,p.upper_bounds);
-      } else {
-        map[key] = new HydatParameterPoint(p.unique_value);
-      }
+// abstract class HydatParameter {
+//   static translate_map(parameter_map: { [key: string]: HydatParameterRaw }) {
+//     let map:{[key:string]:HydatParameter} = {};
+//     for (var key in parameter_map) {
+//       const p = parameter_map[key];
+//       if (parameter_map[key].unique_value === undefined) {
+//         map[key] = new HydatParameterInterval(p.lower_bounds,p.upper_bounds);
+//       } else {
+//         map[key] = new HydatParameterPoint(p.unique_value);
+//       }
+//     }
+//     return map;
+//   }
+// }
+function translate_parameter_map(parameter_map: { [key: string]: HydatParameterRaw }) {
+  let map:{[key:string]:HydatParameter} = {};
+  for (var key in parameter_map) {
+    const p = parameter_map[key];
+    if (parameter_map[key].unique_value === undefined) {
+      map[key] = new HydatParameterInterval(p.lower_bounds,p.upper_bounds);
+    } else {
+      map[key] = new HydatParameterPoint(p.unique_value);
     }
-    return map;
   }
+  return map;
 }
 
-class HydatParameterPoint extends HydatParameter{
+type HydatParameter = HydatParameterPoint | HydatParameterInterval;
+class HydatParameterPoint{
   unique_value: Construct;
 
   constructor(unique_value:string) {
-    super();
     this.unique_value = Construct.parse(unique_value);
   }
 }
-
-class HydatParameterInterval extends HydatParameter {
+class HydatParameterInterval{
   lower_bounds: { value: Construct }[];
   upper_bounds: { value: Construct }[];
   
   constructor(lower_bounds:{value:string}[],upper_bounds:{value:string}[]) {
-    super();
     this.lower_bounds = [];
     this.upper_bounds = [];
     for (let lb of lower_bounds) {

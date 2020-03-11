@@ -169,4 +169,18 @@ export class Graph{
       y: - (pos.y * heightHalf) + heightHalf
     };
   }
+
+  updateRotate(autoRotate:boolean) {
+    this.controls.autoRotate = autoRotate;
+  }
+
+  update2DMode(twoDimensional:boolean) {
+    this.controls.enableRotate = !twoDimensional;
+    if (twoDimensional) {
+      this.camera.position.copy(this.controls_position0.clone());
+      this.controls.target.set(0, 0, 0);
+      this.camera.updateMatrix(); // make sure camera's local matrix is updated
+      this.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+    }
+  }
 }

@@ -194,5 +194,3 @@ export class PlotLineMap {
     graph.time = 0;
   }
 }
-
-export let plot_lines = new PlotLineMap();
