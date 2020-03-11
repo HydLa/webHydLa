@@ -8,6 +8,7 @@ export class Graph{
   controls: OrbitControls;
   renderer: THREE.WebGLRenderer;
   time: number = 0;
+  time_prev: number = -100;
   animatable: boolean = true;
   rangemode: boolean = false;
 
@@ -111,5 +112,61 @@ export class Graph{
   render_three_js()
   {
     this.renderer.render(this.scene, this.camera);
+  }
+
+  animate() {
+    if (this.time_prev !== this.time) {
+      plot_animate = [];
+      let arr = 0;
+      for (let i = 0; i < this.scene.children.length - 1; i++) {
+        if ('isLine' in this.scene.children[i]) {
+          if (animation_line[arr] === undefined) {
+            continue;
+          }
+          if (this.time > animation_line.maxlen - 1) {
+            this.time = 0;
+          }
+          if (this.time == 0) {
+            this.scene.children[i + 1].material.color.set(
+              animation_line[arr].color
+            );
+          }
+          if (this.time > animation_line[arr].length - 1) {
+            this.scene.children[i + 1].material.color.set(
+              198,
+              198,
+              198
+            );
+            plot_animate[arr] = (this.scene.children[i + 1]);
+            arr++;
+            continue;
+          }
+          this.scene.children[i + 1].position.set(
+            animation_line[arr][this.time].x,
+            animation_line[arr][this.time].y,
+            animation_line[arr][this.time].z);
+          plot_animate[arr] = (this.scene.children[i + 1]);
+          arr += 1;
+        }
+      }
+      time_prev = this.time;
+      render_three_js();
+    }
+  }
+
+  animateTime() {
+    this.time++;
+  }
+
+  toScreenPosition(pos: THREE.Vector3) {
+    const widthHalf = 0.5 * this.renderer.context.canvas.width;
+    const heightHalf = 0.5 * this.renderer.context.canvas.height;
+  
+    pos.project(this.camera);
+  
+    return {
+      x: (pos.x * widthHalf) + widthHalf,
+      y: - (pos.y * heightHalf) + heightHalf
+    };
   }
 }

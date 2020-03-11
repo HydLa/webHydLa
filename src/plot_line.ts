@@ -1,4 +1,4 @@
-import { dat_gui_variable_folder, fixLayoutOfDatGUI } from "./main";
+import { dat_gui_variable_folder, fixLayoutOfDatGUI, graph } from "./main";
 
 export class PlotLine {
   index: number;
@@ -19,12 +19,13 @@ export class PlotLine {
   last_edited_input: HTMLInputElement;
   plotting: boolean;
   plot_ready: number;
+  plot_information: PlotInformation;
 
   constructor(x_name: string, y_name: string, z_name: string, index: number) {
     this.index = index;
     this.name = "plot" + this.index;
     this.folder = dat_gui_variable_folder.addFolder(this.name);
-    this.settings = { x: x_name, y: y_name, z: z_name, remove: () => { removeLine(this) }, dashed: false };
+    this.settings = { x: x_name, y: y_name, z: z_name, remove: () => { plot_lines.removeLine(this) }, dashed: false };
     this.x_item = this.folder.add(this.settings, "x");
     this.x_item.onChange(this.getUpdateFunction(this.x_item));
     this.y_item = this.folder.add(this.settings, "y");
@@ -66,10 +67,65 @@ export class PlotLine {
       elm.style.backgroundColor = "#A00000";
     }
   }
+
   removeFolder() {
     this.folder.close();
     dat_gui_variable_folder.removeFolder(this.folder);
   }
+
+  replot() {
+    remove_plot(this);
+    remove_mesh(plot_animate);
+    add_plot(this);
+    if (this.settings.x != "" && this.settings.y != "" && this.settings.z != "") {
+      if (this.remain === undefined) {
+        settingsForCurrentHydat.plot_line_settings[this.index] = this.settings;
+        browser_storage.setItem(current_hydat.name, JSON.stringify(settingsForCurrentHydat));
+      }
+    }
+  }
+
+  add_plot() {
+    var axes;
+    if (this.settings.x == "" ||
+      this.settings.y == "" ||
+      this.settings.z == "") {
+      return;
+    }
+    try {
+      axes = {
+        x: Construct.parse(this.settings.x),
+        y: Construct.parse(this.settings.y),
+        z: Construct.parse(this.settings.z)
+      };
+      this.updateFolder(true);
+    } catch (e) {
+      console.log(e);
+      console.log(e.stack);
+      this.updateFolder(false);
+      return;
+    }
+    var dt = plot_settings.plotInterval;
+    var phase = current_hydat.first_phases[0];
+    var parameter_condition_list = divideParameter(current_hydat.parameters);
+    var color = getColors(parameter_condition_list.length, this.color_angle);
+    this.plot_information = { phase_index_array: [{ phase: phase, index: 0 }], axes: axes, line: this, width: plot_settings.lineWidth, color: color, dt: dt, parameter_condition_list: parameter_condition_list };
+    startPreloader();
+    array = -1;
+    animation_line = [];
+    animation_line.maxlen = 0;
+    if (this.plot_ready == undefined) requestAnimationFrame(function () { plot_ready(this) });
+  }
+}
+
+class PlotInformation{
+  phase_index_array: { phase, index: number }[];
+  axes;
+  line: PlotLine;
+  width: number;
+  color;
+  dt: number;
+  parameter_condition_list;
 }
 
 export class PlotLineMap {
@@ -127,6 +183,15 @@ export class PlotLineMap {
       }
     }
     return true;
+  }
+
+  replotAll() {
+    // var table = document.getElementById("graph_axis_table");
+    for (let i in plot_lines.map) {
+      plot_lines.map[i].color_angle = parseInt(i) / plot_lines.getLength() * 360;
+      plot_lines.map[i].replot();
+    }
+    graph.time = 0;
   }
 }
 

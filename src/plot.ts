@@ -56,12 +56,12 @@ function translate_parameter_map(parameter_map) {
   }
 }
 
-function makeAxis(range, delta, color) {
+function makeAxis(range:Range, delta: number, color: THREE.Color) {
   var geometry = new THREE.Geometry();
-  var material = new THREE.LineBasicMaterial({ vertexColors: THREE.VertexColors })
-  var i;
-  var start = Math.floor(range.min / delta) * delta;
-  var end = range.max;
+  var material = new THREE.LineBasicMaterial({ vertexColors: true })
+  // var i;
+  // var start = Math.floor(range.min / delta) * delta;
+  // var end = range.max;
   // for(i=start; i<=end; i+=delta){
   //   geometry.vertices.push(new THREE.Vector3(-1,0,i), new THREE.Vector3(1,0,i));
   //   geometry.colors.push(color,color);
@@ -85,13 +85,13 @@ function apply_parameter_to_expr(expr, parameter_value_list) {
 
 
 function clearPlot() {
-  graph_scene = new THREE.Scene();
+  graph.scene = new THREE.Scene();
   // TODO: 複数のプロットが存在するときの描画範囲について考える
   // TODO: 設定を変更した時に動的に変更が反映されるようにする
 }
 
-function updateAxisScaleLabel(xrange, yrange, zrange) {
-  var canvas = document.getElementById('scaleLabelCanvas');
+function updateAxisScaleLabel(ranges:ComparableTriplet<Range>) {
+  var canvas = <HTMLCanvasElement>document.getElementById('scaleLabelCanvas');
   if (!canvas || !canvas.getContext) {
     return false;
   }
@@ -101,64 +101,35 @@ function updateAxisScaleLabel(xrange, yrange, zrange) {
   if (!plot_settings.scaleLabelVisible) return;
   ctx.font = "20px 'Arial'";
 
-  var scale_interval = calculateScaleInterval(xrange);
-  var fixed = calculateNumberOfDigits(scale_interval);
-  ctx.fillStyle = xAxisColor;
-  var start = Math.floor(xrange.min / scale_interval) * scale_interval;
+  const sub = (range:Range,axisColor:string,embedFunc:(arg:number)=>THREE.Vector3) => {
+    let scale_interval = calculateScaleInterval(range);
+    let fixed = calculateNumberOfDigits(scale_interval);
+    ctx.fillStyle = axisColor;
+    let start = Math.floor(range.min / scale_interval) * scale_interval;
 
-  for (var i = 0; start + i * scale_interval <= xrange.max; i++) {
-    var current = start + i * scale_interval;
-    var pos = toScreenPosition(new THREE.Vector3(current, 0, 0), graph_camera);
-    ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
-  }
-  scale_interval = calculateScaleInterval(yrange);
-  fixed = calculateNumberOfDigits(scale_interval);
-  ctx.fillStyle = yAxisColor;
-  start = Math.floor(yrange.min / scale_interval) * scale_interval;
-  for (var i = 0; start + i * scale_interval <= yrange.max; i++) {
-    var current = start + i * scale_interval
-    var pos = toScreenPosition(new THREE.Vector3(0, current, 0), graph_camera);
-    ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
+    for (let i = 0; start + i * scale_interval <= range.max; i++) {
+      const current = start + i * scale_interval;
+      const vec = embedFunc(current);
+      const pos = graph.toScreenPosition(vec);
+      ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
+    }
   }
 
-  scale_interval = calculateScaleInterval(zrange);
-  fixed = calculateNumberOfDigits(scale_interval);
-  ctx.fillStyle = zAxisColor;
-  start = Math.floor(zrange.min / scale_interval) * scale_interval;
-  for (var i = 0; start + i * scale_interval <= zrange.max; i++) {
-    var current = start + i * scale_interval
-    var pos = toScreenPosition(new THREE.Vector3(0, 0, current), graph_camera);
-    ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
-  }
+  sub(ranges.x, axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
+  sub(ranges.y, axisColors.y, (arg) => new THREE.Vector3(0, arg, 0));
+  sub(ranges.z, axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
 }
 
 function calculateNumberOfDigits(interval) {
-  var num = Math.floor(Math.log(interval) / Math.log(10));
+  let num = Math.floor(Math.log(interval) / Math.log(10));
   num = num > 0 ? 0 : -num;
   num = Math.max(num, 0);
   num = Math.min(num, 20);
   return num;
 }
 
-function toScreenPosition(pos, camera) {
-
-  var widthHalf = 0.5 * graph_renderer.context.canvas.width;
-  var heightHalf = 0.5 * graph_renderer.context.canvas.height;
-
-  pos.project(camera);
-
-  pos.x = (pos.x * widthHalf) + widthHalf;
-  pos.y = - (pos.y * heightHalf) + heightHalf;
-
-  return {
-    x: pos.x,
-    y: pos.y
-  };
-}
-
-function calculateScaleInterval(range) {
-  var width = range.max - range.min;
-  var log = Math.log(width) / Math.log(10);
+function calculateScaleInterval(range:Range) {
+  var log = Math.log(range.getInterval()) / Math.log(10);
   var floor = Math.floor(log);
   var fractional_part = log - floor;
   var scale_interval = Math.pow(10, floor) / 5;
@@ -207,63 +178,25 @@ function modifyNameLabel(name) {
 
 var plotting_mode_switch = document.getElementById("plotting-mode-switch");
 
-function replot_all() {
-  var table = document.getElementById("graph_axis_table");
-  for (let i in plot_lines.map) {
-    plot_lines.map[i].color_angle = parseInt(i) / plot_lines.getLength() * 360;
-    replot(plot_lines.map[i]);
-  }
-  graph.time = 0;
-}
 
 var plot_animate = [];
 
-function replot(line) {
-  remove_plot(line);
-  remove_mesh(plot_animate);
-  add_plot(line);
-  if (line.settings.x != "" && line.settings.y != "" && line.settings.z != "") {
-    if (line.remain == undefined) {
-      settingsForCurrentHydat.plot_line_settings[line.index] = line.settings;
-      browser_storage.setItem(current_hydat.name, JSON.stringify(settingsForCurrentHydat));
-    }
-  }
-}
+// function replot(line) {
+//   remove_plot(line);
+//   remove_mesh(plot_animate);
+//   add_plot(line);
+//   if (line.settings.x != "" && line.settings.y != "" && line.settings.z != "") {
+//     if (line.remain == undefined) {
+//       settingsForCurrentHydat.plot_line_settings[line.index] = line.settings;
+//       browser_storage.setItem(current_hydat.name, JSON.stringify(settingsForCurrentHydat));
+//     }
+//   }
+// }
 
 var PlotStartTime;
 var array = -1;
 
-function add_plot(line) {
-  var axes;
-  if (line.settings.x == "" ||
-    line.settings.y == "" ||
-    line.settings.z == "") {
-    return;
-  }
-  try {
-    axes = {
-      x: Construct.parse(line.settings.x),
-      y: Construct.parse(line.settings.y),
-      z: Construct.parse(line.settings.z)
-    };
-    updateFolder(line, true);
-  } catch (e) {
-    console.log(e);
-    console.log(e.stack);
-    updateFolder(line, false);
-    return;
-  }
-  var dt = parseFloat(plot_settings.plotInterval);
-  var phase = current_hydat.first_phases[0];
-  var parameter_condition_list = divideParameter(current_hydat.parameters);
-  var color = getColors(parameter_condition_list.length, line.color_angle);
-  line.plot_information = { phase_index_array: [{ phase: phase, index: 0 }], axes: axes, line: line, width: plot_settings.lineWidth, color: color, dt: dt, parameter_condition_list: parameter_condition_list };
-  startPreloader();
-  array = -1;
-  animation_line = [];
-  animation_line.maxlen = 0;
-  if (line.plot_ready == undefined) requestAnimationFrame(function () { plot_ready(line) });
-}
+
 
 
 function plot_ready(line: PlotLine) {
@@ -288,10 +221,8 @@ var sphere;
 var phase_index;
 var phase;
 var vec;
-var vec_animation;
-var three_line;
 
-function add_plot_each(phase_index_array, axes, line, width, color, dt, parameter_condition_list, current_param_idx, current_line_vec) {
+function add_plot_each(phase_index_array, axes, line: PlotLine, width, color, dt, parameter_condition_list, current_param_idx, current_line_vec) {
   try {
     while (true) {
       if (line.plot_ready) {
@@ -306,41 +237,42 @@ function add_plot_each(phase_index_array, axes, line, width, color, dt, paramete
       phase = phase_index.phase;
       vec = phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, dt);
       current_line_vec = current_line_vec.concat(vec);
-      vec_animation = phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, 0.01);
+      let vec_animation = phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, 0.01);
       current_line_vec_animation = current_line_vec_animation.concat(vec_animation);
       if (phase.children.length == 0) {
         array += 1;
         // on leaves
 
         var cylindersGeometry = new THREE.Geometry();
-        scaledWidth = 0.5 * width / graph_camera.zoom;
-        var addCylinder = function (startPos, endPos) {
-          directionVec = endPos.clone().sub(startPos);
-          height = directionVec.length();
+        let scaledWidth = 0.5 * width / graph.camera.zoom;
+        var addCylinder = function (startPos:THREE.Vector3, endPos:THREE.Vector3) {
+          let directionVec = endPos.clone().sub(startPos);
+          const height = directionVec.length();
           directionVec.normalize();
-          var cylinderMesh = new THREE.Mesh(new THREE.CylinderGeometry(scaledWidth, scaledWidth, height + scaledWidth, 8, 1));
+          let cylinderMesh = new THREE.Mesh(new THREE.CylinderGeometry(scaledWidth, scaledWidth, height + scaledWidth, 8, 1));
 
-          upVec = new THREE.Vector3(0, 1, 0);
-          rotationAxis = upVec.clone().cross(directionVec).normalize();
-          rotationAngle = Math.acos(upVec.dot(directionVec));
+          const upVec = new THREE.Vector3(0, 1, 0);
+          const rotationAxis = upVec.clone().cross(directionVec).normalize();
+          const rotationAngle = Math.acos(upVec.dot(directionVec));
 
-          newpos = startPos.clone().lerp(endPos, 0.5);
+          const newpos = startPos.clone().lerp(endPos, 0.5);
           cylinderMesh.position.set(newpos.x, newpos.y, newpos.z);
           cylinderMesh.setRotationFromAxisAngle(rotationAxis, rotationAngle);
 
           cylinderMesh.updateMatrix();
-          cylindersGeometry.merge(cylinderMesh.geometry, cylinderMesh.matrix);
+          const geometry = cylinderMesh.geometry instanceof THREE.Geometry ? cylinderMesh.geometry : new THREE.Geometry().fromBufferGeometry(cylinderMesh.geometry);
+          cylindersGeometry.merge(geometry, cylinderMesh.matrix);
         };
 
-        dottedLength = 10.0 / graph_camera.zoom;
+        const dottedLength = 10.0 / graph.camera.zoom;
         for (var i = 0; i + 1 < current_line_vec.length; i++) {
           if ('isPP' in current_line_vec[i + 1]) {
-            posBegin = current_line_vec[i];
-            posEnd = current_line_vec[i + 1];
-            directionVec = posEnd.clone().sub(posBegin);
-            lineLength = directionVec.length();
+            const posBegin = current_line_vec[i];
+            const posEnd = current_line_vec[i + 1];
+            let directionVec = posEnd.clone().sub(posBegin);
+            const lineLength = directionVec.length();
             directionVec.normalize();
-            numOfDots = lineLength / dottedLength;
+            const numOfDots = lineLength / dottedLength;
             for (var j = 1; j + 1 < numOfDots; j += 2) {
               addCylinder(
                 posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength)),
@@ -353,12 +285,12 @@ function add_plot_each(phase_index_array, axes, line, width, color, dt, paramete
           }
         }
 
-        var three_line = new THREE.Mesh(
+        let three_line = new THREE.Mesh(
           cylindersGeometry,
           new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
         );
         three_line.isLine = true;
-        graph_scene.add(three_line);
+        graph.scene.add(three_line);
         line.plot.push(three_line);
 
         animation_line[array] = (current_line_vec_animation);
@@ -370,7 +302,7 @@ function add_plot_each(phase_index_array, axes, line, width, color, dt, paramete
         s_material = new THREE.MeshBasicMaterial({ color: color[current_param_idx] });
         sphere = new THREE.Mesh(s_geometry, s_material);
         sphere.position.set(0, 0, 0);
-        graph_scene.add(sphere);
+        graph.scene.add(sphere);
         plot_animate[array] = (sphere);
         current_line_vec = [];
         current_line_vec_animation = [];
@@ -447,17 +379,17 @@ function divideParameter(parameter_map) {
 
   var now_parameter_condition_list = [{}];
 
-  for (parameter_name in parameter_map) {
+  for (let parameter_name in parameter_map) {
     var setting = plot_settings.parameter_condition[parameter_name];
     if (setting.fixed) {
       for (var i = 0; i < now_parameter_condition_list.length; i++) {
         var parameter_value = setting.value;
-        now_parameter_condition_list[i][parameter_name] = new Constant(parseFloat(parameter_value));
+        now_parameter_condition_list[i][parameter_name] = new Constant(parameter_value);
       }
     } else {
       var lb = setting.min_value;
       var ub = setting.max_value;
-      var div = parseInt(setting.value);
+      var div = Math.floor(setting.value);
       var next_parameter_condition_list = [];
       var deltaP;
       if (div == 1) { deltaP = ub - lb; }
@@ -465,7 +397,7 @@ function divideParameter(parameter_map) {
       for (var i = 0; i < now_parameter_condition_list.length; i++) {
         for (var j = 0; j < div; j++) {
           var parameter_value = lb + j * deltaP;
-          tmp_obj = $.extend(true, {}, now_parameter_condition_list[i]);  // deep copy
+          let tmp_obj = $.extend(true, {}, now_parameter_condition_list[i]);  // deep copy
           tmp_obj[parameter_name] = new Constant(parameter_value);
           next_parameter_condition_list.push(tmp_obj);
         }
@@ -664,12 +596,34 @@ function expandTwoPlanesOfFrustum(plane1, plane2) {
   return;
 }
 
-function getRangeOfFrustum(camera) {
-  var xmin, ymin, zmin;
-  xmin = ymin = zmin = Number.MAX_VALUE;
-  var xmax, ymax, zmax;
-  xmax = ymax = zmax = Number.MIN_VALUE;
+class Range{
+  min: number;
+  max: number;
+  constructor(min: number, max: number) {
+    this.min = min;
+    this.max = max;
+  }
 
+  getInterval() {
+    return this.max - this.min;
+  }
+
+  equals(r:Range) {
+    return this.min === r.min && this.max === r.max;
+  }
+
+  static getEmpty() {
+    return new Range(Number.MAX_VALUE, Number.MIN_VALUE);
+  }
+}
+
+function getRangesOfFrustum(camera: THREE.OrthographicCamera):ComparableTriplet<Range> {
+  let ranges = new ComparableTriplet<Range>(
+    Range.getEmpty(),
+    Range.getEmpty(),
+    Range.getEmpty()
+  );
+  
   // Near Plane dimensions
   var hNear = (camera.top - camera.bottom) / camera.zoom;
   var wNear = (camera.right - camera.left) / camera.zoom;
@@ -679,7 +633,7 @@ function getRangeOfFrustum(camera) {
   var wFar = wNear;
 
   var p = camera.position.clone();
-  var l = graph_controls.target.clone();
+  var l = graph.controls.target.clone();
   var u = new THREE.Vector3(0, 1, 0);
 
   var d = new THREE.Vector3();
@@ -758,48 +712,53 @@ function getRangeOfFrustum(camera) {
   fbl.subVectors(fc, uTmp.multiplyScalar(hFar / 2));
   fbl.add(rTmp.multiplyScalar(wFar / 2));
 
-  graph_camera.updateMatrix(); // make sure camera's local matrix is updated
-  graph_camera.updateMatrixWorld(); // make sure camera's world matrix is updated
-  graph_camera.matrixWorldInverse.getInverse(graph_camera.matrixWorld);
+  graph.camera.updateMatrix(); // make sure camera's local matrix is updated
+  graph.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+  graph.camera.matrixWorldInverse.getInverse(graph.camera.matrixWorld);
 
   var frustum = new THREE.Frustum();
   var expansion_rate = 1.2; // to absorb the error caused by floating point arithmetic
-  frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(graph_camera.projectionMatrix, graph_camera.matrixWorldInverse));
+  frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(graph.camera.projectionMatrix, graph.camera.matrixWorldInverse));
   frustum = expandFrustum(frustum);
-  var intercepts = new Array(4);
-  // top surface
-  intercepts[0] = calculate_intercept(ntr, ftr, ftl, ntl, frustum);
-  // right surface
-  intercepts[1] = calculate_intercept(ntr, nbr, fbr, ftr, frustum);
-  // bottom surface
-  intercepts[2] = calculate_intercept(nbr, nbl, fbl, fbr, frustum);
-  // left surface
-  intercepts[3] = calculate_intercept(ntl, nbl, fbl, ftl, frustum);
-  // near surface 
-  intercepts[4] = calculate_intercept(ntl, ntr, nbr, nbl, frustum);
-  // far surface 
-  intercepts[5] = calculate_intercept(ftl, ftr, fbr, fbl, frustum);
+  let intercepts = [
+    // top surface
+    calculate_intercept(ntr, ftr, ftl, ntl, frustum),
+    // right surface
+    calculate_intercept(ntr, nbr, fbr, ftr, frustum),
+    // bottom surface
+    calculate_intercept(nbr, nbl, fbl, fbr, frustum),
+    // left surface
+    calculate_intercept(ntl, nbl, fbl, ftl, frustum),
+    // near surface 
+    calculate_intercept(ntl, ntr, nbr, nbl, frustum),
+    // far surface 
+    calculate_intercept(ftl, ftr, fbr, fbl, frustum)
+  ];
 
-
-  var i;
-  var epsilon = 0.00000001;
+  var epsilon = 1e-8;
   var visible_x = Math.abs(d.y) + Math.abs(d.z) > epsilon,
     visible_y = Math.abs(d.z) + Math.abs(d.x) > epsilon,
     visible_z = Math.abs(d.x) + Math.abs(d.y) > epsilon;
-  for (i = 0; i < intercepts.length; i++) {
-    if (visible_x && !isNaN(intercepts[i].x)) xmin = Math.min(xmin, intercepts[i].x);
-    if (visible_y && !isNaN(intercepts[i].y)) ymin = Math.min(ymin, intercepts[i].y);
-    if (visible_z && !isNaN(intercepts[i].z)) zmin = Math.min(zmin, intercepts[i].z);
-    if (visible_x && !isNaN(intercepts[i].x)) xmax = Math.max(xmax, intercepts[i].x);
-    if (visible_y && !isNaN(intercepts[i].y)) ymax = Math.max(ymax, intercepts[i].y);
-    if (visible_z && !isNaN(intercepts[i].z)) zmax = Math.max(zmax, intercepts[i].z);
+  for (let ic of intercepts) {
+    if (visible_x && !isNaN(ic.x)) {
+      ranges.x.min = Math.min(ranges.x.min, ic.x);
+      ranges.x.max = Math.max(ranges.x.max, ic.x);
+    }
+    if (visible_y && !isNaN(ic.y)) {
+      ranges.y.min = Math.min(ranges.y.min, ic.y);
+      ranges.y.max = Math.max(ranges.y.max, ic.y);
+    }
+    if (visible_z && !isNaN(ic.z)) {
+      ranges.z.min = Math.min(ranges.z.min, ic.z);
+      ranges.z.max = Math.max(ranges.z.max, ic.z);
+    }
   }
-  return { xmin: xmin, ymin: ymin, zmin: zmin, xmax: xmax, ymax: ymax, zmax: zmax };
+  return ranges;
 }
 
 /// calculate cross point of the plane and three axes(x, y, z).
 /// The plane is defined by point_a, point_b, point_c and point_d.(The forth parameter is required to determine the range of the plane.)
-function calculate_intercept(point_a, point_b, point_c, point_d, frustum) {
+function calculate_intercept(point_a:THREE.Vector3, point_b:THREE.Vector3, point_c:THREE.Vector3, point_d:THREE.Vector3, frustum:THREE.Frustum) {
   var ab_vec = new THREE.Vector3().subVectors(point_b, point_a);
   var ac_vec = new THREE.Vector3().subVectors(point_c, point_a);
   var cross_product = ab_vec.clone().cross(ac_vec);
@@ -820,103 +779,81 @@ function calculate_intercept(point_a, point_b, point_c, point_d, frustum) {
   return ret;
 }
 
-var xAxisLine, yAxisLine, zAxisLine, prev_range;
+var xAxisLine, yAxisLine, zAxisLine;
 
-var xAxisColorBase = { r: 1.0, g: 0.3, b: 0.3 };
-var yAxisColorBase = { r: 0.3, g: 1.0, b: 0.3 };
-var zAxisColorBase = { r: 0.3, g: 0.3, b: 1.0 };
-var xAxisColor = "#FF8080";
-var yAxisColor = "#80FF80";
-var zAxisColor = "#8080FF";
+class Triplet<T>{
+  x: T;
+  y: T;
+  z: T;
+  constructor(x: T, y: T, z: T) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+}
+
+class ComparableTriplet<T extends { equals(t: T): boolean; }> extends Triplet<T>{
+  equals(t: ComparableTriplet<T>) {
+    return this.x.equals(t.x) && this.y.equals(t.y) && this.z.equals(t.z);
+  }
+}
+
+class RGB{
+  r: number;
+  g: number;
+  b: number;
+
+  constructor(r: number, g: number, b: number) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+  }
+
+  equals(rgb: RGB) {
+    return this.r === rgb.r && this.g === rgb.g && this.b === rgb.b;
+  }
+}
+
+const axisColorBases = new ComparableTriplet<RGB>(
+  new RGB(1.0, 0.3, 0.3),
+  new RGB(0.3, 1.0, 0.3),
+  new RGB(0.3, 0.3, 1.0)
+);
+
+let axisColors = new Triplet<string>("#FF8080","#80FF80","#8080FF")
+
+let prev_ranges: ComparableTriplet<Range>;
 
 function update_axes(force: boolean) {
-  var range = getRangeOfFrustum(graph_camera);
-  var xrange = { min: range.xmin, max: range.xmax };
-  var yrange = { min: range.ymin, max: range.ymax };
-  var zrange = { min: range.zmin, max: range.zmax };
-  if (force == true || prev_range == undefined
-    || range.xmin != prev_range.xmin
-    || range.xmax != prev_range.xmax
-    || range.ymin != prev_range.ymin
-    || range.ymax != prev_range.ymax
-    || range.zmin != prev_range.zmin
-    || range.zmax != prev_range.zmax) {
+  var ranges = getRangesOfFrustum(graph.camera);
+  if (force === true || prev_ranges === undefined || !ranges.equals(prev_ranges)) {
     var margin_rate = 1.1;
 
     var max_interval_px = 200; // 50 px
-    var min_visible_ticks = Math.floor(Math.max(graph_area.clientWidth, graph_area.clientHeight) / max_interval_px);
-    var min_visible_range = Math.min(xrange.max - xrange.min, yrange.max - yrange.min);
-    min_visible_range = Math.min(min_visible_range, zrange.max - zrange.min);
+    const min_visible_ticks = Math.floor(Math.max(graph.elem.clientWidth, graph.elem.clientHeight) / max_interval_px);
+    const min_visible_range = Math.min(ranges.x.getInterval(),ranges.y.getInterval(),ranges.z.getInterval());
     var max_interval = min_visible_range / min_visible_ticks;
 
     if (xAxisLine !== undefined) {
-      graph_scene.remove(xAxisLine);
-      graph_scene.remove(yAxisLine);
-      graph_scene.remove(zAxisLine);
+      graph.scene.remove(xAxisLine);
+      graph.scene.remove(yAxisLine);
+      graph.scene.remove(zAxisLine);
     }
     var interval = Math.pow(10, Math.floor(Math.log(max_interval) / Math.log(10)));
     interval = 1;
-    xAxisLine = makeAxis(xrange, interval, new THREE.Color(xAxisColor));
-    yAxisLine = makeAxis(yrange, interval, new THREE.Color(yAxisColor));
-    zAxisLine = makeAxis(zrange, interval, new THREE.Color(zAxisColor));
+    xAxisLine = makeAxis(ranges.x, interval, new THREE.Color(axisColors.x));
+    yAxisLine = makeAxis(ranges.y, interval, new THREE.Color(axisColors.y));
+    zAxisLine = makeAxis(ranges.z, interval, new THREE.Color(axisColors.z));
     xAxisLine.rotation.set(0, Math.PI / 2, Math.PI / 2);
     yAxisLine.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
-    graph_scene.add(xAxisLine);
-    graph_scene.add(yAxisLine);
-    graph_scene.add(zAxisLine);
-    render_three_js();
+    graph.scene.add(xAxisLine);
+    graph.scene.add(yAxisLine);
+    graph.scene.add(zAxisLine);
+    graph.render_three_js();
   }
-  updateAxisScaleLabel(xrange, yrange, zrange);
-  prev_range = range;
+  updateAxisScaleLabel(ranges);
+  prev_ranges = ranges;
 }
-
-var arr = 0;
-var time_prev = -100;
-function animate() {
-  if (time_prev != time) {
-    plot_animate = [];
-    arr = 0;
-    for (i = 0; i < graph_scene.children.length - 1; i++) {
-      if ('isLine' in graph_scene.children[i]) {
-        if (animation_line[arr] == undefined) {
-          continue;
-        }
-        if (time > animation_line.maxlen - 1) {
-          time = 0;
-        }
-        if (time == 0) {
-          graph_scene.children[i + 1].material.color.set(
-            animation_line[arr].color
-          );
-        }
-        if (time > animation_line[arr].length - 1) {
-          graph_scene.children[i + 1].material.color.set(
-            198,
-            198,
-            198
-          );
-          plot_animate[arr] = (graph_scene.children[i + 1]);
-          arr += 1;
-          continue;
-        }
-        graph_scene.children[i + 1].position.set(
-          animation_line[arr][time].x,
-          animation_line[arr][time].y,
-          animation_line[arr][time].z);
-        plot_animate[arr] = (graph_scene.children[i + 1]);
-        arr += 1;
-      }
-    }
-    time_prev = time;
-    render_three_js();
-  }
-}
-
-function animate_time() {
-  time++;
-}
-
-
 
 function guard() {
   g_geometry = new THREE.PlaneGeometry(100, 100, 100, 100);
