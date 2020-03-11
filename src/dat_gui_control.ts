@@ -19,7 +19,7 @@ export class DatGUIControl{
       .step(0.001)
       .name('plot interval')
       .onChange((_) => {
-        replot_all();
+        GraphControl.replotAll();
         savePlotSettings();
       });
     dat_gui
@@ -27,7 +27,7 @@ export class DatGUIControl{
       .step(1)
       .name('line width')
       .onChange((_) => {
-        replot_all();
+        GraphControl.replotAll();
         savePlotSettings();
       });
     dat_gui
@@ -156,7 +156,7 @@ export class DatGUIControl{
   
     var parameter_item_seek =
       this.parameter_folder_seek.add(plot_settings.parameter_condition_seek, 'value', min_par_value, max_par_value);
-    parameter_item_seek.onChange(function (value) {/*replot_all();*/graph.time = plot_settings.parameter_condition_seek.value; animate(); });
+    parameter_item_seek.onChange(function (value) {/*GraphControl.replotAll();*/graph.time = plot_settings.parameter_condition_seek.value; animate(); });
     parameter_item_seek.step(step);
   
     //var mode_item_seek = this.parameter_folder_seek.add(plot_settings.parameter_condition_seek, 'stop');
@@ -165,7 +165,7 @@ export class DatGUIControl{
   
     /*mode_item_seek.onChange(function(value){
         parameter_item_seek.min(min_par_value).max(max_par_value).step(step).setValue((min_par_value + max_par_value)/2);
-      replot_all();
+      GraphControl.replotAll();
     });*/
     this.parameter_folder_seek.open();
     //else this.parameter_folder_seek.close();
@@ -186,7 +186,7 @@ export class DatGUIControl{
   
     var parameter_item_seek =
       this.parameter_folder_seek.add(plot_settings.parameter_condition_seek, 'value', min_par_value, max_par_value);
-    parameter_item_seek.onChange(function (value) {/*replot_all();*/graph.time = plot_settings.parameter_condition_seek.value; animate(); });
+    parameter_item_seek.onChange(function (value) {/*GraphControl.replotAll();*/graph.time = plot_settings.parameter_condition_seek.value; animate(); });
     parameter_item_seek.step(step);
   
     //var mode_item_seek = this.parameter_folder_seek.add(plot_settings.parameter_condition_seek, 'stop');

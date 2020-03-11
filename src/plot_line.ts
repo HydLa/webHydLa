@@ -1,4 +1,6 @@
 import { PlotLineMapControl } from "./plot_line_map_control";
+import { DatGUIControl } from "./dat_gui_control";
+import { GraphControl } from "./graph_control";
 
 export class PlotLine {
   index: number;
@@ -26,7 +28,7 @@ export class PlotLine {
   constructor(x_name: string, y_name: string, z_name: string, index: number) {
     this.index = index;
     this.name = "plot" + this.index;
-    this.folder = dat_gui_variable_folder.addFolder(this.name);
+    this.folder = DatGUIControl.variable_folder.addFolder(this.name);
     this.settings = { x: x_name, y: y_name, z: z_name, remove: () => { PlotLineMapControl.removeLine(this) }, dashed: false };
     this.x_item = this.folder.add(this.settings, "x");
     this.x_item.onChange(this.getUpdateFunction(this.x_item));
@@ -46,7 +48,7 @@ export class PlotLine {
       if (prev === undefined || val != prev) {
         try {
           Construct.parse(val);
-          replot_all();
+          GraphControl.replotAll();
         }
         catch (e) {
           this.updateFolder(false);

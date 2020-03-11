@@ -91,8 +91,8 @@ export class GraphControl {
   static render() {
     requestAnimationFrame(() => { this.render() });
     this.controls.update();
-    if (this.last_frame_zoom != this.camera.zoom) {
-      replot_all();
+    if (this.last_frame_zoom !== this.camera.zoom) {
+      GraphControl.replotAll();
     }
     update_axes(false);
     if (this.animatable) {
