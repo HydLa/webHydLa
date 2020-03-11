@@ -251,6 +251,165 @@ export class PlotControl {
     updateAxisScaleLabel(ranges);
     PlotControl.prev_ranges = ranges;
   }
+  static getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet<Range> {
+    let ranges = new ComparableTriplet<Range>(
+      Range.getEmpty(),
+      Range.getEmpty(),
+      Range.getEmpty()
+    );
+  
+    // Near Plane dimensions
+    var hNear = (camera.top - camera.bottom) / camera.zoom;
+    var wNear = (camera.right - camera.left) / camera.zoom;
+  
+    // Far Plane dimensions
+    var hFar = hNear;
+    var wFar = wNear;
+  
+    var p = camera.position.clone();
+    var l = GraphControl.controls.target.clone();
+    var u = new THREE.Vector3(0, 1, 0);
+  
+    var d = new THREE.Vector3();
+    d.subVectors(l, p);
+    d.normalize();
+  
+    var cross_d = u.clone();
+    cross_d.cross(d);
+    var rotate_axis = cross_d.clone();
+    rotate_axis.normalize();
+    var dot = u.dot(d);
+    u.applyAxisAngle(rotate_axis, Math.acos(dot) - Math.PI / 2);
+  
+    var r = new THREE.Vector3();
+    r.crossVectors(u, d);
+    r.normalize();
+  
+    // Near Plane center
+    var dTmp = d.clone();
+    var nc = new THREE.Vector3();
+    nc.addVectors(p, dTmp.multiplyScalar(camera.near));
+  
+    // Near Plane vertices
+    var uTmp = u.clone();
+    var rTmp = r.clone();
+    var ntr = new THREE.Vector3();
+    ntr.addVectors(nc, uTmp.multiplyScalar(hNear / 2));
+    ntr.sub(rTmp.multiplyScalar(wNear / 2));
+  
+    uTmp.copy(u);
+    rTmp.copy(r);
+    var ntl = new THREE.Vector3();
+    ntl.addVectors(nc, uTmp.multiplyScalar(hNear / 2));
+    ntl.add(rTmp.multiplyScalar(wNear / 2));
+  
+    var nbr = new THREE.Vector3();
+    uTmp.copy(u);
+    rTmp.copy(r);
+    nbr.subVectors(nc, uTmp.multiplyScalar(hNear / 2));
+    nbr.sub(rTmp.multiplyScalar(wNear / 2));
+  
+    uTmp.copy(u);
+    rTmp.copy(r);
+    var nbl = new THREE.Vector3();
+    nbl.subVectors(nc, uTmp.multiplyScalar(hNear / 2));
+    nbl.add(rTmp.multiplyScalar(wNear / 2));
+  
+  
+    // Far Plane center
+    dTmp.copy(d);
+    var fc = new THREE.Vector3();
+    fc.addVectors(p, dTmp.multiplyScalar(camera.far));
+  
+    // Far Plane vertices
+    uTmp.copy(u);
+    rTmp.copy(r);
+    var ftr = new THREE.Vector3();
+    ftr.addVectors(fc, uTmp.multiplyScalar(hFar / 2));
+    ftr.sub(rTmp.multiplyScalar(wFar / 2));
+  
+    uTmp.copy(u);
+    rTmp.copy(r);
+    var ftl = new THREE.Vector3();
+    ftl.addVectors(fc, uTmp.multiplyScalar(hFar / 2));
+    ftl.add(rTmp.multiplyScalar(wFar / 2));
+  
+    uTmp.copy(u);
+    rTmp.copy(r);
+    var fbr = new THREE.Vector3();
+    fbr.subVectors(fc, uTmp.multiplyScalar(hFar / 2));
+    fbr.sub(rTmp.multiplyScalar(wFar / 2));
+  
+    uTmp.copy(u);
+    rTmp.copy(r);
+    var fbl = new THREE.Vector3();
+    fbl.subVectors(fc, uTmp.multiplyScalar(hFar / 2));
+    fbl.add(rTmp.multiplyScalar(wFar / 2));
+  
+    GraphControl.camera.updateMatrix(); // make sure camera's local matrix is updated
+    GraphControl.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+    GraphControl.camera.matrixWorldInverse.getInverse(GraphControl.camera.matrixWorld);
+  
+    var frustum = new THREE.Frustum();
+    var expansion_rate = 1.2; // to absorb the error caused by floating point arithmetic
+    frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(GraphControl.camera.projectionMatrix, GraphControl.camera.matrixWorldInverse));
+    frustum = expandFrustum(frustum);
+    
+    /// calculate cross point of the plane and three axes(x, y, z).
+    /// The plane is defined by point_a, point_b, point_c and point_d.(The forth parameter is required to determine the range of the plane.)
+    const calculate_intercept = (point_a: THREE.Vector3, point_b: THREE.Vector3, point_c: THREE.Vector3, point_d: THREE.Vector3, frustum: THREE.Frustum) => {
+      var ab_vec = new THREE.Vector3().subVectors(point_b, point_a);
+      var ac_vec = new THREE.Vector3().subVectors(point_c, point_a);
+      var cross_product = ab_vec.clone().cross(ac_vec);
+      var ret = new THREE.Vector3();
+      var sum = cross_product.x * point_a.x + cross_product.y * point_a.y + cross_product.z * point_a.z;
+      if (cross_product.x == 0) ret.x = 0;
+      else ret.x = sum / cross_product.x;
+      if (cross_product.y == 0) ret.y = 0;
+      else ret.y = sum / cross_product.y;
+      if (cross_product.z == 0) ret.z = 0;
+      else ret.z = sum / cross_product.z;
+    
+      if (!frustum.containsPoint(new THREE.Vector3(ret.x, 0, 0))) ret.x = Number.NaN;
+      if (!frustum.containsPoint(new THREE.Vector3(0, ret.y, 0))) ret.y = Number.NaN;
+      if (!frustum.containsPoint(new THREE.Vector3(0, 0, ret.z))) ret.z = Number.NaN;
+      return ret;
+    };
+    let intercepts = [
+      // top surface
+      calculate_intercept(ntr, ftr, ftl, ntl, frustum),
+      // right surface
+      calculate_intercept(ntr, nbr, fbr, ftr, frustum),
+      // bottom surface
+      calculate_intercept(nbr, nbl, fbl, fbr, frustum),
+      // left surface
+      calculate_intercept(ntl, nbl, fbl, ftl, frustum),
+      // near surface 
+      calculate_intercept(ntl, ntr, nbr, nbl, frustum),
+      // far surface 
+      calculate_intercept(ftl, ftr, fbr, fbl, frustum)
+    ];
+  
+    var epsilon = 1e-8;
+    var visible_x = Math.abs(d.y) + Math.abs(d.z) > epsilon,
+      visible_y = Math.abs(d.z) + Math.abs(d.x) > epsilon,
+      visible_z = Math.abs(d.x) + Math.abs(d.y) > epsilon;
+    for (let ic of intercepts) {
+      if (visible_x && !isNaN(ic.x)) {
+        ranges.x.min = Math.min(ranges.x.min, ic.x);
+        ranges.x.max = Math.max(ranges.x.max, ic.x);
+      }
+      if (visible_y && !isNaN(ic.y)) {
+        ranges.y.min = Math.min(ranges.y.min, ic.y);
+        ranges.y.max = Math.max(ranges.y.max, ic.y);
+      }
+      if (visible_z && !isNaN(ic.z)) {
+        ranges.z.min = Math.min(ranges.z.min, ic.z);
+        ranges.z.max = Math.max(ranges.z.max, ic.z);
+      }
+    }
+    return ranges;
+  }
   static makeAxis(range: Range, delta: number, color: THREE.Color) {
     var geometry = new THREE.Geometry();
     var material = new THREE.LineBasicMaterial({ vertexColors: true })
@@ -280,6 +439,23 @@ export class PlotControl {
     ctx.font = "20px 'Arial'";
 
     const sub = (range: Range, axisColor: string, embedFunc: (arg: number) => THREE.Vector3) => {
+      const calculateScaleInterval = (range: Range) => {
+        var log = Math.log(range.getInterval()) / Math.log(10);
+        var floor = Math.floor(log);
+        var fractional_part = log - floor;
+        var scale_interval = Math.pow(10, floor) / 5;
+        var log10_5 = 0.69;
+        if (fractional_part > log10_5) scale_interval *= 5;
+        if (scale_interval <= 0) return Number.MAX_VALUE;
+        return scale_interval;
+      }
+      const calculateNumberOfDigits = (interval) => {
+        let num = Math.floor(Math.log(interval) / Math.log(10));
+        num = num > 0 ? 0 : -num;
+        num = Math.max(num, 0);
+        num = Math.min(num, 20);
+        return num;
+      }
       let scale_interval = calculateScaleInterval(range);
       let fixed = calculateNumberOfDigits(scale_interval);
       ctx.fillStyle = axisColor;
@@ -309,8 +485,8 @@ export class PlotControl {
 
     this.axisColors = axisColorBases.map((base) =>
       "#" + ("00" + Math.floor(base.r * brightness).toString(16)).slice(-2)
-          + ("00" + Math.floor(base.g * brightness).toString(16)).slice(-2)
-          + ("00" + Math.floor(base.b * brightness).toString(16)).slice(-2)
+      + ("00" + Math.floor(base.g * brightness).toString(16)).slice(-2)
+      + ("00" + Math.floor(base.b * brightness).toString(16)).slice(-2)
     );
     GraphControl.renderer.setClearColor(color);
     PlotControl.update_axes(true);
