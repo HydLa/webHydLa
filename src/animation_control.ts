@@ -3,8 +3,9 @@ import { PlotControl } from "./plot_control";
 import { DOMControl } from "./dom_control";
 import THREE from "three";
 import { GraphControl } from "./graph_control";
+import { HydatParameter, HydatParameterInterval } from "./hydat";
 
-export class AnimationControl{
+export class AnimationControl {
   static maxlen: number;
   static animation_line = [];
 
@@ -39,7 +40,7 @@ export class AnimationControl{
     const getColors = (colorNum: number, colorAngle: number) => {
       var angle = 360 / colorNum;
       var angle_start = Math.floor(colorAngle);
-      var retColors:number[] = [];
+      var retColors: number[] = [];
       for (var i = 0; i < colorNum; i++) {
         retColors.push(RGB.fromHue((Math.floor(angle * i) + angle_start) % 360).asHex24());
       }
@@ -204,6 +205,34 @@ export class AnimationControl{
       line.plotting = false;
       PlotControl.checkAndStopPreloader();
     }
+  }
+
+
+  static check_parameter_condition(parameter_maps:{ [key: string]: HydatParameter }[], parameter_condition_list) {
+    let epsilon = 0.0001;
+    for (let map of parameter_maps) {
+      let included = true;
+      for (let key in map) {
+        let p = map[key];
+        let c = parameter_condition_list[key];
+        if (c === undefined) continue;
+        if (p instanceof HydatParameterInterval) {
+          const lb = p.lower_bounds[0].value.getValue(parameter_condition_list);
+          const ub = p.upper_bounds[0].value.getValue(parameter_condition_list);
+          if (!(lb <= c.getValue(parameter_condition_list) + epsilon
+            && ub >= c.getValue(parameter_condition_list) - epsilon)) {
+            included = false;
+          }
+        } else if (!(p.unique_value.getValue(parameter_condition_list) <= c.getValue(parameter_condition_list) + epsilon
+          && p.unique_value.getValue(parameter_condition_list) >= c.getValue(parameter_condition_list) - epsilon)) {
+          included = false;
+        }
+      }
+      if (included) {
+        return true;
+      }
+    }
+    return false;
   }
 
   static range_make_all() {

@@ -111,7 +111,7 @@ class HydatParameterPoint{
     this.unique_value = Construct.parse(unique_value);
   }
 }
-class HydatParameterInterval{
+export class HydatParameterInterval{
   lower_bounds: { value: Construct }[];
   upper_bounds: { value: Construct }[];
   

@@ -17,10 +17,6 @@ function modifyNameLabel(name) {
   ctx.fillText(text, 0, canvas.height - 50);
 }
 
-var plotting_mode_switch = document.getElementById("plotting-mode-switch");
-
-
-
 // function replot(line) {
 //   remove_plot(line);
 //   remove_mesh(plot_animate);
@@ -34,39 +30,15 @@ var plotting_mode_switch = document.getElementById("plotting-mode-switch");
 // }
 
 
-function vector3_to_geometry(vector3_list) {
-  var geometry = new THREE.Geometry();
-  for (var i = 0; i < vector3_list.length; i++) {
-    geometry.vertices.push(vector3_list[i]);
-  }
-  return geometry;
-}
+// function vector3_to_geometry(vector3_list:THREE.Vector3[]) {
+//   let geometry = new THREE.Geometry();
+//   for (let vec of vector3_list) {
+//     geometry.vertices.push(vec);
+//   }
+//   return geometry;
+// }
 
 
-function check_parameter_condition(parameter_maps, parameter_condition_list) {
-  var epsilon = 0.0001;
-  for (var i = 0; i < parameter_maps.length; i++) {
-    var included = true;
-    for (var key in parameter_maps[i]) {
-      if (parameter_condition_list[key] === undefined) continue;
-      if (typeof parameter_maps[i][key].unique_value === 'undefined') {
-        var lb = parameter_maps[i][key].lower_bounds[0].value.getValue(parameter_condition_list);
-        var ub = parameter_maps[i][key].upper_bounds[0].value.getValue(parameter_condition_list);
-        if (!(lb <= parameter_condition_list[key].getValue(parameter_condition_list) + epsilon
-          && ub >= parameter_condition_list[key].getValue(parameter_condition_list) - epsilon)) {
-          included = false;
-        }
-      } else if (!(parameter_maps[i][key].unique_value.getValue(parameter_condition_list) <= parameter_condition_list[key].getValue(parameter_condition_list) + epsilon
-        && parameter_maps[i][key].unique_value.getValue(parameter_condition_list) >= parameter_condition_list[key].getValue(parameter_condition_list) - epsilon)) {
-        included = false;
-      }
-    }
-    if (included) {
-      return true;
-    }
-  }
-  return false;
-}
 
 
 function remove_plot(line) {
