@@ -5,6 +5,7 @@ import { DatGUIControl } from './dat_gui_control';
 import { PlotControl } from './plot_control';
 import { PlotLine } from './plot_line';
 import { RGB } from './plot_utils';
+import { AnimationControl } from './animation_control';
 
 export class GraphControl {
   static scene: THREE.Scene;
@@ -12,8 +13,6 @@ export class GraphControl {
   static elem: HTMLElement;
   static controls: OrbitControls;
   static renderer: THREE.WebGLRenderer;
-  static time: number = 0;
-  static time_prev: number = -100;
   static animatable: boolean = true;
   static rangemode: boolean = false;
 
@@ -94,47 +93,6 @@ export class GraphControl {
     }
   }
 
-  static add_plot(line: PlotLine) {
-    var axes;
-    if (line.settings.x == "" ||
-      line.settings.y == "" ||
-      line.settings.z == "") {
-      return;
-    }
-    try {
-      axes = {
-        x: Construct.parse(line.settings.x),
-        y: Construct.parse(line.settings.y),
-        z: Construct.parse(line.settings.z)
-      };
-      line.updateFolder(true);
-    } catch (e) {
-      console.log(e);
-      console.log(e.stack);
-      line.updateFolder(false);
-      return;
-    }
-    var dt = PlotControl.plot_settings.plotInterval;
-    var phase = current_hydat.first_phases[0];
-    var parameter_condition_list = PlotControl.divideParameter(current_hydat.parameters);
-    const getColors = (colorNum: number, colorAngle: number) => {
-      var angle = 360 / colorNum;
-      var angle_start = Math.floor(colorAngle);
-      var retColors:number[] = [];
-      for (var i = 0; i < colorNum; i++) {
-        retColors.push(RGB.fromHue((Math.floor(angle * i) + angle_start) % 360).asHex24());
-      }
-      return retColors;
-    };
-    let color = getColors(parameter_condition_list.length, line.color_angle);
-    line.plot_information = { phase_index_array: [{ phase: phase, index: 0 }], axes: axes, line: line, width: PlotControl.plot_settings.lineWidth, color: color, dt: dt, parameter_condition_list: parameter_condition_list };
-    startPreloader();
-    PlotControl.array = -1;
-    animation_line = [];
-    animation_line.maxlen = 0;
-    if (line.plot_ready == undefined) requestAnimationFrame(function () { line.plotReady() });
-  }
-
   static render() {
     requestAnimationFrame(() => { this.render() });
     this.controls.update();
@@ -148,12 +106,12 @@ export class GraphControl {
     } else {
       GraphControl.animate();
     }
-    if (animation_line.length != this.a_line) {
+    if (AnimationControl.getLength() !== this.a_line) {
       if (range_mode) { GraphControl.range_make_all(); }
-      this.a_line = animation_line.length;
+      this.a_line = AnimationControl.getLength();
     }
-    if (animation_line.maxlen != this.t_line) {
-      this.t_line = animation_line.maxlen;
+    if (AnimationControl.maxlen !== this.t_line) {
+      this.t_line = AnimationControl.maxlen;
       DatGUIControl.parameter_seek_setting(this.t_line);
     } else if (this.animatable) {
       DatGUIControl.parameter_seek_setting_animate(this.t_line, this.time);
@@ -161,81 +119,8 @@ export class GraphControl {
     this.last_frame_zoom = this.camera.zoom;
   }
 
-  static range_make_all() {
-    if (GraphControl.face_a != undefined) {
-      remove_mesh(GraphControl.face_a);
-    }
-    GraphControl.face_a = [];
-    if (animation_line.length != 0) {
-      for (let j = 0; j < animation_line.length - 1; j++) {
-        var face_geometry = new THREE.Geometry();
-        var time_r = 0;
-        for (let i = 0; i < animation_line.maxlen; i++) {
-          if (animation_line[j][time_r] == undefined) {
-            break;
-          } else if (animation_line[j + 1][time_r] == undefined) {
-            break;
-          } else {
-            face_geometry.vertices.push(new THREE.Vector3(animation_line[j][time_r].x, animation_line[j][time_r].y, animation_line[j][time_r].z));
-            face_geometry.vertices.push(new THREE.Vector3(animation_line[j + 1][time_r].x, animation_line[j + 1][time_r].y, animation_line[j + 1][time_r].z));
-          }
-          time_r++;
-        }
-        for (let k = 0; k < face_geometry.vertices.length - 2; k++) {
-          face_geometry.faces.push(new THREE.Face3(k, (k + 1), (k + 2)));
-        }
-        face_geometry.computeFaceNormals();
-        face_geometry.computeVertexNormals();
-        let face_all = new THREE.Mesh(face_geometry, new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: true, transparent: true, side: THREE.DoubleSide, opacity: 0.5 }));
-        GraphControl.scene.add(face_all);
-        GraphControl.face_a.push(face_all);
-      }
-      GraphControl.render_three_js();
-    }
-  }
-
   static render_three_js() {
     this.renderer.render(this.scene, this.camera);
-  }
-
-  static animate() {
-    if (this.time_prev !== this.time) {
-      plot_animate = [];
-      let arr = 0;
-      for (let i = 0; i < this.scene.children.length - 1; i++) {
-        if ('isLine' in this.scene.children[i]) {
-          if (animation_line[arr] === undefined) {
-            continue;
-          }
-          if (this.time > animation_line.maxlen - 1) {
-            this.time = 0;
-          }
-          if (this.time == 0) {
-            this.scene.children[i + 1].material.color.set(
-              animation_line[arr].color
-            );
-          }
-          if (this.time > animation_line[arr].length - 1) {
-            this.scene.children[i + 1].material.color.set(
-              198,
-              198,
-              198
-            );
-            plot_animate[arr] = (this.scene.children[i + 1]);
-            arr++;
-            continue;
-          }
-          this.scene.children[i + 1].position.set(
-            animation_line[arr][this.time].x,
-            animation_line[arr][this.time].y,
-            animation_line[arr][this.time].z);
-          plot_animate[arr] = (this.scene.children[i + 1]);
-          arr += 1;
-        }
-      }
-      GraphControl.time_prev = this.time;
-      GraphControl.render_three_js();
-    }
   }
 
   static animateTime() {

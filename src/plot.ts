@@ -35,9 +35,6 @@ var plot_animate = [];
 // }
 
 
-var animation_line = [];
-
-
 function vector3_to_geometry(vector3_list) {
   var geometry = new THREE.Geometry();
   for (var i = 0; i < vector3_list.length; i++) {
