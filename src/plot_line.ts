@@ -80,9 +80,7 @@ export class PlotLine {
   }
 
   replot() {
-    AnimationControl.remove_plot(this);
-    remove_mesh(plot_animate);
-    AnimationControl.add_plot(this);
+    AnimationControl.reset(this);
     if (this.settings.x != "" && this.settings.y != "" && this.settings.z != "") {
       if (this.remain === undefined) {
         settingsForCurrentHydat.plot_line_settings[this.index] = this.settings;

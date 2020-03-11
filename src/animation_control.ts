@@ -207,7 +207,7 @@ export class AnimationControl {
     }
   }
 
-  static remove_plot(line:PlotLine) {
+  static remove_plot(line: PlotLine) {
     if (line.plot !== undefined) {
       for (var i = 0; i < line.plot.length; i++) {
         GraphControl.scene.remove(line.plot[i]);
@@ -217,7 +217,23 @@ export class AnimationControl {
     line.plot = [];
   }
 
-  static check_parameter_condition(parameter_maps:{ [key: string]: HydatParameter }[], parameter_condition_list) {
+  static remove_mesh(line:THREE.Mesh[]) {
+    if (line != undefined) {
+      for (var i = 0; i < line.length; i++) {
+        GraphControl.scene.remove(line[i]);
+        delete line[i];
+      }
+    }
+    line.length = 0;
+  }
+
+  static reset(line: PlotLine) {
+    AnimationControl.remove_plot(line);
+    AnimationControl.remove_mesh(AnimationControl.plot_animate);
+    AnimationControl.add_plot(line);
+  }
+
+  static check_parameter_condition(parameter_maps: { [key: string]: HydatParameter }[], parameter_condition_list) {
     let epsilon = 0.0001;
     for (let map of parameter_maps) {
       let included = true;
@@ -246,7 +262,7 @@ export class AnimationControl {
 
   static range_make_all() {
     if (GraphControl.face_a != undefined) {
-      remove_mesh(GraphControl.face_a);
+      AnimationControl.remove_mesh(GraphControl.face_a);
     }
     GraphControl.face_a = [];
     if (AnimationControl.animation_line.length != 0) {

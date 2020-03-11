@@ -42,18 +42,6 @@ function modifyNameLabel(name) {
 
 
 
-function remove_mesh(line) {
-  if (line != undefined) {
-    for (var i = 0; i < line.length; i++) {
-      graph_scene.remove(line[i]);
-      delete line[i];
-    }
-  }
-  line.length = 0;
-}
-
-
-
 function toUnitVector(vector) {
   var unit_vector;
   var length = Math.sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
