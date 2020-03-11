@@ -23,6 +23,8 @@ export class GraphControl {
 
   static resizeLoopCount: number = 0;
 
+  static face_a:THREE.Mesh[];
+
   static init() {
     this.scene = new THREE.Scene();
 
@@ -104,7 +106,7 @@ export class GraphControl {
       GraphControl.animate();
     }
     if (animation_line.length != this.a_line) {
-      if (range_mode) { range_make_all(); }
+      if (range_mode) { GraphControl.range_make_all(); }
       this.a_line = animation_line.length;
     }
     if (animation_line.maxlen != this.t_line) {
@@ -114,6 +116,39 @@ export class GraphControl {
       DatGUIControl.parameter_seek_setting_animate(this.t_line, this.time);
     }
     this.last_frame_zoom = this.camera.zoom;
+  }
+
+  static range_make_all() {
+    if (GraphControl.face_a != undefined) {
+      remove_mesh(GraphControl.face_a);
+    }
+    GraphControl.face_a = [];
+    if (animation_line.length != 0) {
+      for (let j = 0; j < animation_line.length - 1; j++) {
+        var face_geometry = new THREE.Geometry();
+        var time_r = 0;
+        for (let i = 0; i < animation_line.maxlen; i++) {
+          if (animation_line[j][time_r] == undefined) {
+            break;
+          } else if (animation_line[j + 1][time_r] == undefined) {
+            break;
+          } else {
+            face_geometry.vertices.push(new THREE.Vector3(animation_line[j][time_r].x, animation_line[j][time_r].y, animation_line[j][time_r].z));
+            face_geometry.vertices.push(new THREE.Vector3(animation_line[j + 1][time_r].x, animation_line[j + 1][time_r].y, animation_line[j + 1][time_r].z));
+          }
+          time_r++;
+        }
+        for (let k = 0; k < face_geometry.vertices.length - 2; k++) {
+          face_geometry.faces.push(new THREE.Face3(k, (k + 1), (k + 2)));
+        }
+        face_geometry.computeFaceNormals();
+        face_geometry.computeVertexNormals();
+        let face_all = new THREE.Mesh(face_geometry, new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: true, transparent: true, side: THREE.DoubleSide, opacity: 0.5 }));
+        GraphControl.scene.add(face_all);
+        GraphControl.face_a.push(face_all);
+      }
+      GraphControl.render_three_js();
+    }
   }
 
   static render_three_js() {

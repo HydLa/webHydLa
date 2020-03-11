@@ -202,43 +202,6 @@ function guard() {
 }
 
 
-var face_all;
-var face_a;
-function range_make_all() {
-  if (face_a != undefined) {
-    remove_mesh(face_a);
-  }
-  face_a = [];
-  var arr_face = 0;
-  if (animation_line.length != 0) {
-    for (let j = 0; j < animation_line.length - 1; j++) {
-      var face_geometry = new THREE.Geometry();
-      var time_r = 0;
-      for (let i = 0; i < animation_line.maxlen; i++) {
-        if (animation_line[j][time_r] == undefined) {
-          break;
-        } else if (animation_line[j + 1][time_r] == undefined) {
-          break;
-        } else {
-          face_geometry.vertices.push(new THREE.Vector3(animation_line[j][time_r].x, animation_line[j][time_r].y, animation_line[j][time_r].z));
-          face_geometry.vertices.push(new THREE.Vector3(animation_line[j + 1][time_r].x, animation_line[j + 1][time_r].y, animation_line[j + 1][time_r].z));
-        }
-        time_r++;
-      }
-      for (let k = 0; k < face_geometry.vertices.length - 2; k++) {
-        face_geometry.faces.push(new THREE.Face3(k, (k + 1), (k + 2)));
-      }
-      face_geometry.computeFaceNormals();
-      face_geometry.computeVertexNormals();
-      face_all = new THREE.Mesh(face_geometry, new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: true, transparent: true, side: THREE.DoubleSide, opacity: 0.5 }));
-      graph.scene.add(face_all);
-      face_a[arr_face] = (face_all);
-      arr_face++;
-    }
-    render_three_js();
-  }
-}
-
 
 
 // }
