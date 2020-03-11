@@ -57,12 +57,12 @@ export class PlotLineMap {
     return true;
   }
 
-  replotAll() {
+  /** @deprecated */ 
+  replot() {
     // var table = document.getElementById("graph_axis_table");
     for (let i in this.map) {
       this.map[i].color_angle = parseInt(i) / this.getLength() * 360;
       this.map[i].replot();
     }
-    graph.time = 0;
   }
 }

@@ -1,9 +1,9 @@
 import { Graph } from "./graph";
 import { PlotLineMap } from "./plot_line_map";
 import { DatGUIControl } from "./dat_gui_control";
-import Materialize from "materialize-css";
 import { NewUI } from "./new_ui";
 import { PlotSettings } from "./plot_settings";
+import { DOMControl } from "./dom_control";
 
 const key_binding_selector = <HTMLSelectElement>document.getElementById("key_binding_selector");
 const theme_selector = <HTMLSelectElement>document.getElementById("theme_selector");
@@ -18,35 +18,14 @@ export class CommonData {
   current_hydat:Hydat;
   settingsForCurrentHydat = {};
 
-  new_ui: NewUI;
-
   constructor() {
     this.browser_storage = localStorage;
 
-    this.new_ui = new NewUI(this.graph.controls);
-
-    /* initialize materialize components */
-    $('#file-dropdown-button').dropdown({
-      constrainWidth: true,
-      hover: false,
-    });
-    $('.axis-dropdown-button').dropdown({
-      constrainWidth: false,
-      hover: false
-    });
-    $('.modal-trigger').modal();
-    $('ui.tabs').tabs();
-
-    $("fix_button").on('change', function () {
-      replot_all();
-    });
-    $("step_button").on('change', function () {
-      replot_all();
-    });
+    NewUI.init(this.graph.controls);
+    DOMControl.init();
 
     loadThemeFromWebstorage();
     loadKeyBindingFromWebstorage();
-    $('select').formSelect();
 
     this.plot_settings = PlotSettings.parseJSON(browser_storage.getItem('plot_settings'));
     // var controler;
@@ -167,16 +146,5 @@ export class CommonData {
     this.graph.clearPlot();
     this.initVariableSelector(hydat);
     update_axes(true);
-  }
-
-  showToast(message: string, duration: number, classes: string) {
-    Materialize.toast({ html: message, displayLength: duration, classes: classes });
-    let toast_container = document.getElementById("toast-container");
-    const MAX_CHILDREN_NUM = 5;
-    if (toast_container.children.length > MAX_CHILDREN_NUM) {
-      for (let i = 0; i < toast_container.children.length - MAX_CHILDREN_NUM; i++) {
-        toast_container.removeChild(toast_container.children[i]);
-      }
-    }
   }
 }

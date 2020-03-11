@@ -150,4 +150,8 @@ export class EditorControl {
       }
     }, 5000);
   }
+
+  resize() {
+    this.editor.resize();
+  }
 }

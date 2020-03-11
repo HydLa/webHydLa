@@ -8,10 +8,7 @@ const key_alt = 18;
 const key_meta_l = 91;
 
 export class NewUI{
-  controls: OrbitControls;
-  constructor(controls: OrbitControls) {
-    this.controls = controls;
-
+  static init(controls: OrbitControls) {
     let in_graph_area: boolean;
     $('#graph-area').hover(
       () => { in_graph_area = true; },
@@ -30,38 +27,38 @@ export class NewUI{
     document.addEventListener("keydown", (e) => {
       if (!e) return;
       if (e.keyCode === key_shift || e.keyCode === key_ctr || e.keyCode === key_alt || e.keyCode === key_meta_l) {
-        this.enableZoom(); $('#scroll-message').css("opacity", "0");
+        this.enableZoom(controls); $('#scroll-message').css("opacity", "0");
       }
     });
 
     document.addEventListener("keyup", (e) => {
       if (!e) return;
       if (e.keyCode === key_shift || e.keyCode === key_ctr || e.keyCode === key_alt || e.keyCode === key_meta_l) {
-        this.disableZoom();
+        this.disableZoom(controls);
       }
     });
 
-    this.initScrollZoom();
+    this.initScrollZoom(controls);
   }
 
-  isClassicUI() {
+  static isClassicUI() {
     const elem = <HTMLInputElement>document.getElementById("classic_ui_flag");
     return elem.value === "true"
   }
   
-  enableZoom() {
+  static enableZoom(controls: OrbitControls) {
     if (this.isClassicUI()) return;
-    this.controls.enableZoom = true;
+    controls.enableZoom = true;
     $('body').css("overflow-y", "hidden");
   }
 
-  disableZoom() {
+  static disableZoom(controls: OrbitControls) {
     if (this.isClassicUI()) return;
-    this.controls.enableZoom = false;
+    controls.enableZoom = false;
     $('body').css("overflow-y", "visible");
   }
   
-  initScrollZoom() {
-    this.disableZoom();
+  static initScrollZoom(controls: OrbitControls) {
+    this.disableZoom(controls);
   }
 }

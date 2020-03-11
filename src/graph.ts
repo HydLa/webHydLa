@@ -52,6 +52,9 @@ export class Graph {
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls_position0 = this.controls.object.position.clone();
+
+    //TODO: implement this in more elegant way
+    setTimeout(() => { this.resizeGraphRenderer() }, 200);
   }
 
   resizeGraphRenderer() {
@@ -247,5 +250,10 @@ export class Graph {
     sub(ranges.x, axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
     sub(ranges.y, axisColors.y, (arg) => new THREE.Vector3(0, arg, 0));
     sub(ranges.z, axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
+  }
+
+  replotAll() {
+    plot_lines.replot();
+    this.time = 0;
   }
 }
