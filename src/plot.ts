@@ -1,21 +1,6 @@
 import { PlotLineMapControl } from "./plot_line_map_control";
 import { GraphControl } from "./graph_control";
 
-function modifyNameLabel(name) {
-  var text = "";
-  if (!(name == undefined || name == null)) {
-    text = name;
-  }
-  var canvas = document.getElementById('nameLabelCanvas');
-  if (!canvas || !canvas.getContext) {
-    return false;
-  }
-  var ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.font = "20px 'Arial'";
-  ctx.fillStyle = "#FFFFFF";
-  ctx.fillText(text, 0, canvas.height - 50);
-}
 
 // function replot(line) {
 //   remove_plot(line);
@@ -38,36 +23,20 @@ function modifyNameLabel(name) {
 //   return geometry;
 // }
 
+// function toUnitVector(vector:THREE.Vector3) {
+//   let length = Math.sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
+//   return new THREE.Vector3(vector.x / length, vector.y / length, vector.z / length);
+// }
 
-
-
-
-function toUnitVector(vector) {
-  var unit_vector;
-  var length = Math.sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
-  unit_vector.x = vector.x / length;
-  unit_vector.y = vector.y / length;
-  unit_vector.z = vector.z / length;
-  return unit_vector;
-}
-
-
-
-
-function guard() {
-  const g_geometry = new THREE.PlaneGeometry(100, 100, 100, 100);
-  const g_material = new THREE.MeshBasicMaterial({
-    color: 0x0000ff
-    , wireframe: true
-  });
-  let guard = new THREE.Mesh(g_geometry, g_material);
-  guard.position.set(0, 0, 0);
-  //guard.rotation.set(0, Math.PI/2, Math.PI/2);//y
-  guard.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
-  graph.scene.add(guard);
-}
-
-
-
-
+// function guard() {
+//   const g_geometry = new THREE.PlaneGeometry(100, 100, 100, 100);
+//   const g_material = new THREE.MeshBasicMaterial({
+//     color: 0x0000ff
+//     , wireframe: true
+//   });
+//   let guard = new THREE.Mesh(g_geometry, g_material);
+//   guard.position.set(0, 0, 0);
+//   //guard.rotation.set(0, Math.PI/2, Math.PI/2);//y
+//   guard.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
+//   GraphControl.scene.add(guard);
 // }

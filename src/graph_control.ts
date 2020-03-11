@@ -89,8 +89,24 @@ export class GraphControl {
 
       $('#nameLabelCanvas').attr('width', w);
       $('#nameLabelCanvas').attr('height', h);
-      modifyNameLabel(current_hydat.name);
+      GraphControl.modifyNameLabel(current_hydat.name);
     }
+  }
+
+  static modifyNameLabel(name:string) {
+    var text = "";
+    if (!(name == undefined || name == null)) {
+      text = name;
+    }
+    var canvas = <HTMLCanvasElement>document.getElementById('nameLabelCanvas');
+    if (!canvas || !canvas.getContext) {
+      return false;
+    }
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = "20px 'Arial'";
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillText(text, 0, canvas.height - 50);
   }
 
   static render() {
