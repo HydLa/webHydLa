@@ -1,5 +1,3 @@
-import { dat_gui_variable_folder, fixLayoutOfDatGUI, graph } from "./main";
-
 export class PlotLine {
   index: number;
   name: string;
@@ -187,9 +185,9 @@ export class PlotLineMap {
 
   replotAll() {
     // var table = document.getElementById("graph_axis_table");
-    for (let i in plot_lines.map) {
-      plot_lines.map[i].color_angle = parseInt(i) / plot_lines.getLength() * 360;
-      plot_lines.map[i].replot();
+    for (let i in this.map) {
+      this.map[i].color_angle = parseInt(i) / this.getLength() * 360;
+      this.map[i].replot();
     }
     graph.time = 0;
   }

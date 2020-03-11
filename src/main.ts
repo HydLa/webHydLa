@@ -48,22 +48,10 @@ $(window).resize(function () {
 });
 
 
-export function fixLayoutOfDatGUI() {
-  // to avoid layout collapsion of dat gui
-  var dg_c_inputs = $('.dg .c input[type=text]');
-  for (var i = 0; i < dg_c_inputs.length; i++) {
-    dg_c_inputs[i].style.height = '100%';
-  }
 
-  var selectors = $('.selector');
-  for (var i = 0; i < selectors.length; i++) {
-    selectors[i].style.width = '100%';
-  }
-}
 
-function savePlotSettings() {
-  browser_storage.setItem("plot_settings", JSON.stringify(plot_settings));
-}
+
+
 
 
 /* set default hydla code */
