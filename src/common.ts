@@ -37,14 +37,6 @@ export class CommonData {
 
     this.graph.render();
   }
-  time_stop() {
-    this.graph.animatable = !this.plot_settings.animate;
-  }
-  seek() {
-    //if(plot_settings.animate)
-    this.graph.time = this.plot_settings.seek;
-    this.graph.animate();
-  }
   
   loadHydat(hydat:HydatRaw) {
     try {

@@ -1,5 +1,6 @@
 import { StorageControl } from "./storage_control";
 import { PlotControl } from "./plot_control";
+import { GraphControl } from "./graph_control";
 
 export class PlotSettingsControl{
   static plot_settings: PlotSettings;
@@ -14,6 +15,14 @@ export class PlotSettingsControl{
   }
   static saveToWebStorage() {
     StorageControl.savePlotSettings(this.plot_settings);
+  }
+  static time_stop() {
+    GraphControl.animatable = !this.plot_settings.animate;
+  }
+  static seek() {
+    //if(plot_settings.animate)
+    GraphControl.time = this.plot_settings.seek;
+    GraphControl.animate();
   }
 }
 
