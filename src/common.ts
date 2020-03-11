@@ -1,5 +1,4 @@
 import { GraphControl } from "./graph_control";
-import { PlotLineMap } from "./plot_line_map";
 import { DatGUIControl } from "./dat_gui_control";
 import { NewUI } from "./new_ui";
 import { PlotSettings } from "./plot_settings";
@@ -7,15 +6,15 @@ import { DOMControl } from "./dom_control";
 import { EditorControl } from "./editor_control";
 import { StorageControl } from "./storage_control";
 import { Hydat } from "./hydat";
+import { PlotLineMapControl } from "./plot_line_map_control";
 
 export class CommonData {
   plot_settings: PlotSettings;
-  plot_lines = new PlotLineMap();
-
   current_hydat:Hydat;
   settingsForCurrentHydat = {};
 
   constructor() {
+    PlotLineMapControl.init();
     NewUI.init(GraphControl.controls);
     DOMControl.init();
     StorageControl.init();

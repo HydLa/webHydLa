@@ -1,16 +1,17 @@
 import { PlotLine } from "./plot_line";
 
-export class PlotLineMap {
-  map: { [key: number]: PlotLine } = {};
-  plotLineIndex = 0;
-  reset() {
+export class PlotLineMapControl {
+  static map: { [key: number]: PlotLine } = {};
+  static plotLineIndex = 0;
+  static init() { /* nop */ }
+  static reset() {
     this.map = {};
     this.plotLineIndex = 0;
   }
-  getLength() {
+  static getLength() {
     return Object.keys(this.map).length;
   }
-  removeLine(line: PlotLine) {
+  static removeLine(line: PlotLine) {
     if (this.getLength() <= 1) {
       return;
     }
@@ -20,13 +21,13 @@ export class PlotLineMap {
     browser_storage.setItem(current_hydat.name, JSON.stringify(settingsForCurrentHydat));
     delete this.map[line.index];
   }
-  addNewLine(x_name: string, y_name: string, z_name: string) {
+  static addNewLine(x_name: string, y_name: string, z_name: string) {
     while (this.map[this.plotLineIndex]) { ++this.plotLineIndex; }
     const line = this.addNewLineWithIndex(x_name, y_name, z_name, this.plotLineIndex);
     ++this.plotLineIndex;
     return line;
   }
-  addNewLineWithIndex(x_name: string, y_name: string, z_name: string, index: number) {
+  static addNewLineWithIndex(x_name: string, y_name: string, z_name: string, index: number) {
     const line = new PlotLine(x_name, y_name, z_name, index);
     fixLayoutOfDatGUI();
     this.map[index] = line;
@@ -42,13 +43,13 @@ export class PlotLineMap {
   //   this.map[new_guard.index] = new_guard;
   //   //return new_line;
   // }
-  removeAllFolders() {
+  static removeAllFolders() {
     for (let i in this.map) {
       this.map[i].removeFolder();
     }
   }
 
-  isAllReady() {
+  static isAllReady() {
     for (let i in this.map) {
       if (this.map[i].plotting || this.map[i].plot_ready !== undefined) {
         return false;
@@ -58,7 +59,7 @@ export class PlotLineMap {
   }
 
   /** @deprecated */ 
-  replot() {
+  static replot() {
     // var table = document.getElementById("graph_axis_table");
     for (let i in this.map) {
       this.map[i].color_angle = parseInt(i) / this.getLength() * 360;
