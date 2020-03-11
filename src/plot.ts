@@ -41,15 +41,7 @@ function modifyNameLabel(name) {
 
 
 
-function remove_plot(line) {
-  if (line.plot != undefined) {
-    for (var i = 0; i < line.plot.length; i++) {
-      graph_scene.remove(line.plot[i]);
-    }
-    delete line.plot[i];
-  }
-  line.plot = [];
-}
+
 function remove_mesh(line) {
   if (line != undefined) {
     for (var i = 0; i < line.length; i++) {

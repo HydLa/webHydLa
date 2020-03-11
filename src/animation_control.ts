@@ -207,6 +207,15 @@ export class AnimationControl {
     }
   }
 
+  static remove_plot(line:PlotLine) {
+    if (line.plot !== undefined) {
+      for (var i = 0; i < line.plot.length; i++) {
+        GraphControl.scene.remove(line.plot[i]);
+      }
+      delete line.plot[i];
+    }
+    line.plot = [];
+  }
 
   static check_parameter_condition(parameter_maps:{ [key: string]: HydatParameter }[], parameter_condition_list) {
     let epsilon = 0.0001;

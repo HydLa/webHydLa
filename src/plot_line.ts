@@ -2,6 +2,7 @@ import { PlotLineMapControl } from "./plot_line_map_control";
 import { DatGUIControl } from "./dat_gui_control";
 import { GraphControl } from "./graph_control";
 import { PlotControl } from "./plot_control";
+import { AnimationControl } from "./animation_control";
 
 export class PlotLine {
   index: number;
@@ -79,9 +80,9 @@ export class PlotLine {
   }
 
   replot() {
-    remove_plot(this);
+    AnimationControl.remove_plot(this);
     remove_mesh(plot_animate);
-    this.add_plot();
+    AnimationControl.add_plot(this);
     if (this.settings.x != "" && this.settings.y != "" && this.settings.z != "") {
       if (this.remain === undefined) {
         settingsForCurrentHydat.plot_line_settings[this.index] = this.settings;
