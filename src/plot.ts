@@ -76,15 +76,14 @@ function calculateScaleInterval(range:Range) {
 }
 
 
-var current_hydat;
+var current_hydat:Hydat;
 
-function loadHydat(hydat) {
+function loadHydat(hydat:HydatRaw) {
   try {
     browser_storage.setItem("hydat", JSON.stringify(hydat));
-    current_hydat = hydat;
-    translate(hydat);
+    current_hydat = new Hydat(hydat);
     parameter_setting(current_hydat.parameters);
-    modifyNameLabel(hydat.name);
+    modifyNameLabel(current_hydat.name);
   }
   catch (e) {
     console.log(e);
