@@ -38,40 +38,6 @@ var plot_animate = [];
 var animation_line = [];
 
 
-
-function divideParameter(parameter_map) {
-
-  var now_parameter_condition_list = [{}];
-
-  for (let parameter_name in parameter_map) {
-    var setting = plot_settings.parameter_condition[parameter_name];
-    if (setting.fixed) {
-      for (var i = 0; i < now_parameter_condition_list.length; i++) {
-        var parameter_value = setting.value;
-        now_parameter_condition_list[i][parameter_name] = new Constant(parameter_value);
-      }
-    } else {
-      var lb = setting.min_value;
-      var ub = setting.max_value;
-      var div = Math.floor(setting.value);
-      var next_parameter_condition_list = [];
-      var deltaP;
-      if (div == 1) { deltaP = ub - lb; }
-      else { deltaP = (ub - lb) / (div - 1); }
-      for (var i = 0; i < now_parameter_condition_list.length; i++) {
-        for (var j = 0; j < div; j++) {
-          var parameter_value = lb + j * deltaP;
-          let tmp_obj = $.extend(true, {}, now_parameter_condition_list[i]);  // deep copy
-          tmp_obj[parameter_name] = new Constant(parameter_value);
-          next_parameter_condition_list.push(tmp_obj);
-        }
-      }
-      now_parameter_condition_list = next_parameter_condition_list;
-    }
-  }
-  return now_parameter_condition_list;
-}
-
 function getColors(colorNum, colorAngle) {
   var angle = 360 / colorNum;
   var angle_start = Math.floor(colorAngle);

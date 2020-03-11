@@ -100,7 +100,7 @@ class HydatPhaseRaw {
 //   }
 // }
 
-type HydatParameter = HydatParameterPoint | HydatParameterInterval;
+export type HydatParameter = HydatParameterPoint | HydatParameterInterval;
 class HydatParameterPoint{
   unique_value: Construct;
 

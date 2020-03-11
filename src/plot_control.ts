@@ -6,6 +6,8 @@ import { DOMControl } from "./dom_control";
 import * as THREE from 'three';
 import { Triplet, RGB, ComparableTriplet, Range } from "./plot_utils";
 import { Object3D } from "three";
+import { HydatParameter } from "./hydat";
+import { PlotSettings } from "./plot_settings";
 
 const axisColorBases = new Triplet<RGB>(
   new RGB(1.0, 0.3, 0.3),
@@ -21,9 +23,10 @@ export class PlotControl {
   static axisColors = new Triplet<string>("#FF8080", "#80FF80", "#8080FF")
   static prev_ranges: ComparableTriplet<Range>;
   static axisLines: Triplet<THREE.Object3D>;
+  static plot_settings: PlotSettings;
 
-  static init() {
-
+  static init(plot_settings:PlotSettings) {
+    this.plot_settings = plot_settings;
   }
   static add_plot(line: PlotLine) {
     var axes;
@@ -45,17 +48,49 @@ export class PlotControl {
       line.updateFolder(false);
       return;
     }
-    var dt = plot_settings.plotInterval;
+    var dt = PlotControl.plot_settings.plotInterval;
     var phase = current_hydat.first_phases[0];
-    var parameter_condition_list = divideParameter(current_hydat.parameters);
+    var parameter_condition_list = PlotControl.divideParameter(current_hydat.parameters);
     var color = getColors(parameter_condition_list.length, line.color_angle);
-    line.plot_information = { phase_index_array: [{ phase: phase, index: 0 }], axes: axes, line: line, width: plot_settings.lineWidth, color: color, dt: dt, parameter_condition_list: parameter_condition_list };
+    line.plot_information = { phase_index_array: [{ phase: phase, index: 0 }], axes: axes, line: line, width: PlotControl.plot_settings.lineWidth, color: color, dt: dt, parameter_condition_list: parameter_condition_list };
     startPreloader();
     PlotControl.array = -1;
     animation_line = [];
     animation_line.maxlen = 0;
     if (line.plot_ready == undefined) requestAnimationFrame(function () { line.plotReady() });
   }
+  static divideParameter(parameter_map:{ [key: string]: HydatParameter }) {
+    var now_parameter_condition_list = [{}];
+  
+    for (let parameter_name in parameter_map) {
+      var setting = PlotControl.plot_settings.parameter_condition[parameter_name];
+      if (setting.fixed) {
+        for (var i = 0; i < now_parameter_condition_list.length; i++) {
+          var parameter_value = setting.value;
+          now_parameter_condition_list[i][parameter_name] = new Constant(parameter_value);
+        }
+      } else {
+        var lb = setting.min_value;
+        var ub = setting.max_value;
+        var div = Math.floor(setting.value);
+        var next_parameter_condition_list = [];
+        var deltaP;
+        if (div == 1) { deltaP = ub - lb; }
+        else { deltaP = (ub - lb) / (div - 1); }
+        for (var i = 0; i < now_parameter_condition_list.length; i++) {
+          for (var j = 0; j < div; j++) {
+            var parameter_value = lb + j * deltaP;
+            let tmp_obj = $.extend(true, {}, now_parameter_condition_list[i]);  // deep copy
+            tmp_obj[parameter_name] = new Constant(parameter_value);
+            next_parameter_condition_list.push(tmp_obj);
+          }
+        }
+        now_parameter_condition_list = next_parameter_condition_list;
+      }
+    }
+    return now_parameter_condition_list;
+  }
+
   static add_plot_each(phase_index_array, axes, line: PlotLine, width, color, dt, parameter_condition_list, current_param_idx, current_line_vec) {
     try {
       while (true) {
@@ -219,7 +254,7 @@ export class PlotControl {
     stopPreloader();
   }
   static update_axes(force: boolean) {
-    var ranges = getRangesOfFrustum(GraphControl.camera);
+    var ranges = PlotControl.getRangesOfFrustum(GraphControl.camera);
     if (force === true || PlotControl.prev_ranges === undefined || !ranges.equals(PlotControl.prev_ranges)) {
       var margin_rate = 1.1;
 
@@ -248,7 +283,7 @@ export class PlotControl {
       GraphControl.scene.add(PlotControl.axisLines.z);
       GraphControl.render_three_js();
     }
-    updateAxisScaleLabel(ranges);
+    PlotControl.updateAxisScaleLabel(ranges);
     PlotControl.prev_ranges = ranges;
   }
   static getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet<Range> {
@@ -464,7 +499,7 @@ export class PlotControl {
 
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (!plot_settings.scaleLabelVisible) return;
+    if (!PlotControl.plot_settings.scaleLabelVisible) return;
     ctx.font = "20px 'Arial'";
 
     const sub = (range: Range, axisColor: string, embedFunc: (arg: number) => THREE.Vector3) => {

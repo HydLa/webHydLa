@@ -18,7 +18,6 @@ export class CommonData {
     NewUI.init(GraphControl.controls);
     DOMControl.init();
     StorageControl.init();
-    PlotControl.init();
 
     const saved_hydla = StorageControl.loadHydla();
     const saved_hydat = StorageControl.loadHydat();
@@ -27,6 +26,7 @@ export class CommonData {
 
     PlotSettingsControl.init();
     DatGUIControl.init(PlotSettingsControl.plot_settings);
+    PlotControl.init(PlotSettingsControl.plot_settings);
 
     if (saved_hydat) {
       this.loadHydat(JSON.parse(saved_hydat));
