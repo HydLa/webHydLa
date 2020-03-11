@@ -201,23 +201,6 @@ export class GraphControl {
     if (this.resizeLoopCount < 80) setTimeout(() => { this.resizeGraphArea(); }, 10);
   }
 
-  static makeAxis(range: Range, delta: number, color: THREE.Color) {
-    var geometry = new THREE.Geometry();
-    var material = new THREE.LineBasicMaterial({ vertexColors: true })
-    // var i;
-    // var start = Math.floor(range.min / delta) * delta;
-    // var end = range.max;
-    // for(i=start; i<=end; i+=delta){
-    //   geometry.vertices.push(new THREE.Vector3(-1,0,i), new THREE.Vector3(1,0,i));
-    //   geometry.colors.push(color,color);
-    // }
-    geometry.vertices.push(new THREE.Vector3(0, 0, range.min), new THREE.Vector3(0, 0, range.max));
-    geometry.colors.push(color, color);
-    var grid_obj = new THREE.Object3D();
-    grid_obj.add(new THREE.LineSegments(geometry, material));
-    return grid_obj;
-  };
-
   static clearPlot() {
     this.scene = new THREE.Scene();
     // TODO: 複数のプロットが存在するときの描画範囲について考える

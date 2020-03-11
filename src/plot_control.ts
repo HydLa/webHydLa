@@ -3,10 +3,25 @@ import { GraphControl } from "./graph_control";
 import { PlotLineMapControl } from "./plot_line_map_control";
 import { DOMControl } from "./dom_control";
 
+import * as THREE from 'three';
+import { Triplet, RGB, ComparableTriplet, Range } from "./plot_utils";
+import { Object3D } from "three";
+
+const axisColorBases = new Triplet<RGB>(
+  new RGB(1.0, 0.3, 0.3),
+  new RGB(0.3, 1.0, 0.3),
+  new RGB(0.3, 0.3, 1.0)
+);
+
 export class PlotControl{
   static array = -1;
   static current_line_vec_animation = [];
   static PlotStartTime: number;
+
+  static axisColors = new Triplet<string>("#FF8080", "#80FF80", "#8080FF")
+  static prev_ranges: ComparableTriplet<Range>;
+  static axisLines:Triplet<THREE.Object3D>;
+
   static init() {
     
   }
@@ -200,7 +215,56 @@ export class PlotControl{
       DOMControl.showToast("Plot finished.", 1000, "blue");
     }
     PlotControl.PlotStartTime = undefined;
-    graph.renderer.render(graph.scene, graph.camera);
+    GraphControl.renderer.render(GraphControl.scene, GraphControl.camera);
     stopPreloader();
   }
+  static update_axes(force: boolean) {
+    var ranges = getRangesOfFrustum(GraphControl.camera);
+    if (force === true || PlotControl.prev_ranges === undefined || !ranges.equals(PlotControl.prev_ranges)) {
+      var margin_rate = 1.1;
+  
+      var max_interval_px = 200; // 50 px
+      const min_visible_ticks = Math.floor(Math.max(GraphControl.elem.clientWidth, GraphControl.elem.clientHeight) / max_interval_px);
+      const min_visible_range = Math.min(ranges.x.getInterval(), ranges.y.getInterval(), ranges.z.getInterval());
+      var max_interval = min_visible_range / min_visible_ticks;
+  
+      if (PlotControl.axisLines !== undefined) {
+        GraphControl.scene.remove(PlotControl.axisLines.x);
+        GraphControl.scene.remove(PlotControl.axisLines.y);
+        GraphControl.scene.remove(PlotControl.axisLines.z);
+      }
+      var interval = Math.pow(10, Math.floor(Math.log(max_interval) / Math.log(10)));
+      interval = 1;
+      PlotControl.axisLines = new Triplet<Object3D>(
+        PlotControl.makeAxis(ranges.x, interval, new THREE.Color(PlotControl.axisColors.x)),
+        PlotControl.makeAxis(ranges.y, interval, new THREE.Color(PlotControl.axisColors.y)),
+        PlotControl.makeAxis(ranges.z, interval, new THREE.Color(PlotControl.axisColors.z))
+      ); ;
+      ;
+      PlotControl.axisLines.x.rotation.set(0, Math.PI / 2, Math.PI / 2);
+      PlotControl.axisLines.y.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
+      GraphControl.scene.add(PlotControl.axisLines.x);
+      GraphControl.scene.add(PlotControl.axisLines.y);
+      GraphControl.scene.add(PlotControl.axisLines.z);
+      GraphControl.render_three_js();
+    }
+    updateAxisScaleLabel(ranges);
+    PlotControl.prev_ranges = ranges;
+  }
+  static makeAxis(range: Range, delta: number, color: THREE.Color) {
+    var geometry = new THREE.Geometry();
+    var material = new THREE.LineBasicMaterial({ vertexColors: true })
+    // var i;
+    // var start = Math.floor(range.min / delta) * delta;
+    // var end = range.max;
+    // for(i=start; i<=end; i+=delta){
+    //   geometry.vertices.push(new THREE.Vector3(-1,0,i), new THREE.Vector3(1,0,i));
+    //   geometry.colors.push(color,color);
+    // }
+    geometry.vertices.push(new THREE.Vector3(0, 0, range.min), new THREE.Vector3(0, 0, range.max));
+    geometry.colors.push(color, color);
+    var grid_obj = new THREE.Object3D();
+    grid_obj.add(new THREE.LineSegments(geometry, material));
+    return grid_obj;
+  };
 }

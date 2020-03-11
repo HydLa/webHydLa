@@ -1,4 +1,5 @@
 import { PlotLineMapControl } from "./plot_line_map_control";
+import { GraphControl } from "./graph_control";
 
 
 function calculateNumberOfDigits(interval) {
@@ -270,26 +271,6 @@ function expandTwoPlanesOfFrustum(plane1, plane2) {
   return;
 }
 
-class Range {
-  min: number;
-  max: number;
-  constructor(min: number, max: number) {
-    this.min = min;
-    this.max = max;
-  }
-
-  getInterval() {
-    return this.max - this.min;
-  }
-
-  equals(r: Range) {
-    return this.min === r.min && this.max === r.max;
-  }
-
-  static getEmpty() {
-    return new Range(Number.MAX_VALUE, Number.MIN_VALUE);
-  }
-}
 
 function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet<Range> {
   let ranges = new ComparableTriplet<Range>(
@@ -453,81 +434,7 @@ function calculate_intercept(point_a: THREE.Vector3, point_b: THREE.Vector3, poi
   return ret;
 }
 
-var xAxisLine, yAxisLine, zAxisLine;
 
-class Triplet<T>{
-  x: T;
-  y: T;
-  z: T;
-  constructor(x: T, y: T, z: T) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-  }
-}
-
-class ComparableTriplet<T extends { equals(t: T): boolean; }> extends Triplet<T>{
-  equals(t: ComparableTriplet<T>) {
-    return this.x.equals(t.x) && this.y.equals(t.y) && this.z.equals(t.z);
-  }
-}
-
-class RGB {
-  r: number;
-  g: number;
-  b: number;
-
-  constructor(r: number, g: number, b: number) {
-    this.r = r;
-    this.g = g;
-    this.b = b;
-  }
-
-  equals(rgb: RGB) {
-    return this.r === rgb.r && this.g === rgb.g && this.b === rgb.b;
-  }
-}
-
-const axisColorBases = new Triplet<RGB>(
-  new RGB(1.0, 0.3, 0.3),
-  new RGB(0.3, 1.0, 0.3),
-  new RGB(0.3, 0.3, 1.0)
-);
-
-let axisColors = new Triplet<string>("#FF8080", "#80FF80", "#8080FF")
-
-let prev_ranges: ComparableTriplet<Range>;
-
-function update_axes(force: boolean) {
-  var ranges = getRangesOfFrustum(graph.camera);
-  if (force === true || prev_ranges === undefined || !ranges.equals(prev_ranges)) {
-    var margin_rate = 1.1;
-
-    var max_interval_px = 200; // 50 px
-    const min_visible_ticks = Math.floor(Math.max(graph.elem.clientWidth, graph.elem.clientHeight) / max_interval_px);
-    const min_visible_range = Math.min(ranges.x.getInterval(), ranges.y.getInterval(), ranges.z.getInterval());
-    var max_interval = min_visible_range / min_visible_ticks;
-
-    if (xAxisLine !== undefined) {
-      graph.scene.remove(xAxisLine);
-      graph.scene.remove(yAxisLine);
-      graph.scene.remove(zAxisLine);
-    }
-    var interval = Math.pow(10, Math.floor(Math.log(max_interval) / Math.log(10)));
-    interval = 1;
-    xAxisLine = makeAxis(ranges.x, interval, new THREE.Color(axisColors.x));
-    yAxisLine = makeAxis(ranges.y, interval, new THREE.Color(axisColors.y));
-    zAxisLine = makeAxis(ranges.z, interval, new THREE.Color(axisColors.z));
-    xAxisLine.rotation.set(0, Math.PI / 2, Math.PI / 2);
-    yAxisLine.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
-    graph.scene.add(xAxisLine);
-    graph.scene.add(yAxisLine);
-    graph.scene.add(zAxisLine);
-    graph.render_three_js();
-  }
-  updateAxisScaleLabel(ranges);
-  prev_ranges = ranges;
-}
 
 function guard() {
   const g_geometry = new THREE.PlaneGeometry(100, 100, 100, 100);

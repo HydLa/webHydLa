@@ -6,6 +6,7 @@ import "ace-builds/src-noconflict/theme-clouds"
 import "ace-builds/src-noconflict/keybinding-emacs"
 import "ace-builds/src-noconflict/keybinding-vim"
 import { DOMControl } from "./dom_control";
+import { StorageControl } from "./storage_control";
 
 /* set default hydla code */
 const default_hydla = `// a sample hydla code: bouncing_particle.hydla
@@ -135,7 +136,7 @@ export class EditorControl {
   static saveHydlaToWebstorage() {
     this.autosave_event_enabled = false;
     this.autosave_changed = false;
-    storage.saveHydla(this.editor.getValue());
+    StorageControl.saveHydla(this.editor.getValue());
     DOMControl.showToast("Saved", 1000, "");
 
     let that = this;
