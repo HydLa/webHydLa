@@ -76,7 +76,7 @@ export class HyLaGIController {
 
         switch (response.error) {
           case 0:
-            Materialize.toast({ html: "Simulation was successful.", displayLength: 1000 });
+            DOMControl.showToast("Simulation was successful.", 1000, "");
             if (response.hydat != undefined) {
               response.hydat.name = browser_storage.getItem("hydla_name");
               loadHydat(response.hydat);
@@ -87,19 +87,19 @@ export class HyLaGIController {
             break;
           default:
             if (that.running) {
-              Materialize.toast({
-                html: "Error message: " + response.message,
-                displayLength: 3000,
-                classes: "red darken-4"
-              });
+              DOMControl.showToast(
+                "Error message: " + response.message,
+                3000,
+                "red darken-4"
+              );
               $('ul.tabs').tabs('select', 'output-area');
             }
             else {
-              Materialize.toast({ html: "Killed HyLaGI", displayLength: 1000 });
+              DOMControl.showToast("Killed HyLaGI", 1000, "");
             }
             break;
         }
-        let server_response = response;
+        // let server_response = response;
         var output = document.getElementById("output-initial");
         output.innerHTML = "";
         for (let elem of that.dynamic_script_elements) {
