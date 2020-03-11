@@ -4,28 +4,27 @@ import { DatGUIControl } from "./dat_gui_control";
 import { NewUI } from "./new_ui";
 import { PlotSettings } from "./plot_settings";
 import { DOMControl } from "./dom_control";
+import { EditorControl } from "./editor_control";
+import { StorageControl } from "./storage_control";
 
-const key_binding_selector = <HTMLSelectElement>document.getElementById("key_binding_selector");
-const theme_selector = <HTMLSelectElement>document.getElementById("theme_selector");
 
 export class CommonData {
   plot_settings: PlotSettings;
   graph = new Graph();
   plot_lines = new PlotLineMap();
   dat_gui_control: DatGUIControl;
-  browser_storage: Storage;
 
   current_hydat:Hydat;
   settingsForCurrentHydat = {};
 
+  editor_control: EditorControl;
+
   constructor() {
-    this.browser_storage = localStorage;
+    this.editor_control = new EditorControl();
 
     NewUI.init(this.graph.controls);
-    DOMControl.init();
-
-    loadThemeFromWebstorage();
-    loadKeyBindingFromWebstorage();
+    DOMControl.init(this.graph, this.editor_control);
+    StorageControl.init();
 
     this.plot_settings = PlotSettings.parseJSON(browser_storage.getItem('plot_settings'));
     // var controler;
@@ -59,40 +58,6 @@ export class CommonData {
     browser_storage.setItem("plot_settings", JSON.stringify(plot_settings));
   }
 
-  /* function to save editor into Web Storage */
-  saveKeyBindingToWebstorage() {
-    var bind_selector = key_binding_selector.value;
-    browser_storage.setItem("key_binding", bind_selector);
-  }
-
-  loadKeyBindingFromWebstorage() {
-    var key_binding_setting = browser_storage.getItem("key_binding");
-    if (key_binding_setting != undefined) {
-      key_binding_selector.value = browser_storage.getItem("key_binding");
-    }
-    else {
-      key_binding_selector.value = key_binding_selector.options[key_binding_selector.selectedIndex].value;
-      browser_storage.setItem("key_binding", key_binding_selector.value);
-    }
-    if (key_binding_selector.value == "") editor.setKeyboardHandler(null);
-    else editor.setKeyboardHandler(key_binding_selector.value);
-  }
-
-  /* function to save theme into Web Storage */
-  saveThemeToWebstorage() {
-    var theme = theme_selector.value;
-    browser_storage.setItem("theme", theme);
-  }
-
-  loadThemeFromWebstorage() {
-    var theme_setting = browser_storage.getItem("theme");
-    if (theme_setting != undefined) {
-      theme_selector.value = browser_storage.getItem("theme");
-    } else {
-      browser_storage.setItem("theme", theme_selector.value);
-    }
-    editor.setTheme("ace/theme/" + theme_selector.value);
-  }
 
   /* function to update variable selector for graph */
   initVariableSelector(hydat) {

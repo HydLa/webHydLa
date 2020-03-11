@@ -138,8 +138,8 @@ export class EditorControl {
   saveHydlaToWebstorage() {
     this.autosave_event_enabled = false;
     this.autosave_changed = false;
-    browser_storage.setItem("hydla", this.editor.getValue());
-    Materialize.toast({ html: "Saved", displayLength: 1000 });
+    storage.saveHydla(this.editor.getValue());
+    showToast("Saved", 1000, "");
 
     let that = this;
     setTimeout(function () {
@@ -149,6 +149,14 @@ export class EditorControl {
         that.autosave_event_enabled = true;
       }
     }, 5000);
+  }
+
+  setKeyBinding(binding:string|null) {
+    this.editor.setKeyboardHandler(binding);
+  }
+
+  setTheme(theme:string) {
+    this.editor.setTheme("ace/theme/" + theme)
   }
 
   resize() {
