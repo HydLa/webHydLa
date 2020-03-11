@@ -38,49 +38,6 @@ var plot_animate = [];
 var animation_line = [];
 
 
-function getColors(colorNum:number, colorAngle:number) {
-  var angle = 360 / colorNum;
-  var angle_start = Math.floor(colorAngle);
-  var retColors = [];
-  for (var i = 0; i < colorNum; i++) {
-    retColors.push(hue2rgb((Math.floor(angle * i) + angle_start) % 360));
-  }
-  return retColors;
-}
-
-
-
-
-
-function phase_to_line_vectors(phase, parameter_condition_list, axis, maxDeltaT) {
-  var line = [];
-  var t;
-  if (phase.simulation_state != "SIMULATED" && phase.simulation_state != "TIME_LIMIT" && phase.simulation_state != "STEP_LIMIT") return line;
-
-  var env = {};
-  $.extend(env, parameter_condition_list, phase.variable_map);
-
-  if (phase.type == "PP") {
-    env.t = phase.time.time_point;
-    newPos = new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env));
-    newPos.isPP = true;
-    line.push(newPos);
-  } else {
-    var start_time = phase.time.start_time.getValue(env);
-    var end_time = phase.time.end_time.getValue(env);
-    if (!Number.isFinite(start_time) || !Number.isFinite(end_time)) throw new HydatException("invalid time interval: from" + phase.time.start_time + " to " + phase.time.end_time);
-    var MIN_STEP = 10; // Minimum step of plotting one IP
-    var delta_t = Math.min(maxDeltaT, (end_time - start_time) / MIN_STEP);
-    for (t = start_time; t < end_time; t = t + delta_t) {
-      env.t = new Constant(t);
-      line.push(new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)));
-    }
-    env.t = new Constant(end_time);
-    line.push(new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)));
-  }
-  return line;
-}
-
 function vector3_to_geometry(vector3_list) {
   var geometry = new THREE.Geometry();
   for (var i = 0; i < vector3_list.length; i++) {

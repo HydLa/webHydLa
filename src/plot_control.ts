@@ -6,7 +6,7 @@ import { DOMControl } from "./dom_control";
 import * as THREE from 'three';
 import { Triplet, RGB, ComparableTriplet, Range } from "./plot_utils";
 import { Object3D } from "three";
-import { HydatParameter } from "./hydat";
+import { HydatParameter, HydatPhase, HydatTimePP } from "./hydat";
 import { PlotSettings } from "./plot_settings";
 
 const axisColorBases = new Triplet<RGB>(
@@ -73,16 +73,16 @@ export class PlotControl {
         // phase_index_array is used to implement dfs without function call.
         let phase_index = phase_index_array[phase_index_array.length - 1];
         let phase = phase_index.phase;
-        let vec = phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, dt);
+        let vec = PlotControl.phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, dt);
         current_line_vec = current_line_vec.concat(vec);
-        let vec_animation = phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, 0.01);
+        let vec_animation = PlotControl.phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, 0.01);
         PlotControl.current_line_vec_animation = PlotControl.current_line_vec_animation.concat(vec_animation);
         if (phase.children.length == 0) {
           PlotControl.array += 1;
           // on leaves
 
           var cylindersGeometry = new THREE.Geometry();
-          let scaledWidth = 0.5 * width / graph.camera.zoom;
+          let scaledWidth = 0.5 * width / GraphControl.camera.zoom;
           var addCylinder = function (startPos: THREE.Vector3, endPos: THREE.Vector3) {
             let directionVec = endPos.clone().sub(startPos);
             const height = directionVec.length();
@@ -211,6 +211,35 @@ export class PlotControl {
       PlotControl.checkAndStopPreloader();
     }
   }
+  static phase_to_line_vectors(phase:HydatPhase, parameter_condition_list, axis, maxDeltaT) {
+    var line:THREE.Vector3[] = [];
+    var t;
+    if (phase.simulation_state != "SIMULATED" && phase.simulation_state != "TIME_LIMIT" && phase.simulation_state != "STEP_LIMIT") return line;
+  
+    let env:{t?:Construct} = {};
+    $.extend(env, parameter_condition_list, phase.variable_map);
+  
+    if (phase.time instanceof HydatTimePP) {
+      env.t = phase.time.time_point;
+      let newPos = new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env));
+      newPos.isPP = true;
+      line.push(newPos);
+    } else {
+      var start_time = phase.time.start_time.getValue(env);
+      var end_time = phase.time.end_time.getValue(env);
+      if (!Number.isFinite(start_time) || !Number.isFinite(end_time)) throw new HydatException("invalid time interval: from" + phase.time.start_time + " to " + phase.time.end_time);
+      var MIN_STEP = 10; // Minimum step of plotting one IP
+      var delta_t = Math.min(maxDeltaT, (end_time - start_time) / MIN_STEP);
+      for (t = start_time; t < end_time; t = t + delta_t) {
+        env.t = new Constant(t);
+        line.push(new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)));
+      }
+      env.t = new Constant(end_time);
+      line.push(new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)));
+    }
+    return line;
+  }
+
   static checkAndStopPreloader() {
     // var table = document.getElementById("graph_axis_table");
     if (!PlotLineMapControl.isAllReady()) return;

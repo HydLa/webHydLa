@@ -44,14 +44,16 @@ class HydatRaw{
   parameters: { [key: string]: HydatParameterRaw };
 }
 
-class HydatPhase {
+export class HydatPhase {
   type: "PP" | "IP";
   time: HydatTime;
   variable_map: {[key:string]:Construct};
   parameter_maps: { [key: string]: HydatParameter }[];
   children: HydatPhase[];
+  simulation_state: string;
 
   constructor(phase: HydatPhaseRaw) {
+    this.simulation_state = phase.simulation_state;
     if (phase.time instanceof HydatTimePPRaw) { // phase.type === "PP"
       this.time = new HydatTimePP(phase.time.time_point);
     } else {
@@ -83,6 +85,7 @@ class HydatPhaseRaw {
   variable_map:{[key:string]:HydatVariableRaw};
   parameter_maps: { [key: string]: HydatParameterRaw }[];
   children: HydatPhaseRaw[];
+  simulation_state: string;
 }
 
 // abstract class HydatParameter {
@@ -136,7 +139,7 @@ class HydatParameterRaw{
 
 type HydatTime = HydatTimePP | HydatTimeIP;
 
-class HydatTimePP{
+export class HydatTimePP{
   time_point: Construct;
   constructor(time_point:string) {
     this.time_point = Construct.parse(time_point);
