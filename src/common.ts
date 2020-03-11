@@ -1,8 +1,9 @@
-import { Graph } from "./three_init";
-import { PlotLineMap } from "./plot_line";
-import { DatGUIControl } from "./graph_axis";
+import { Graph } from "./graph";
+import { PlotLineMap } from "./plot_line_map";
+import { DatGUIControl } from "./dat_gui_control";
 import Materialize from "materialize-css";
 import { NewUI } from "./new_ui";
+import { PlotSettings } from "./plot_settings";
 
 const key_binding_selector = <HTMLSelectElement>document.getElementById("key_binding_selector");
 const theme_selector = <HTMLSelectElement>document.getElementById("theme_selector");

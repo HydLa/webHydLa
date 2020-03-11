@@ -1,4 +1,4 @@
-class PlotSettings {
+export class PlotSettings {
   plotInterval: number;
   backgroundColor: string;
   lineWidth: number;

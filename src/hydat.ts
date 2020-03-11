@@ -1,3 +1,16 @@
+const translate_parameter_map = (parameter_map: { [key: string]: HydatParameterRaw }) => {
+  let map:{[key:string]:HydatParameter} = {};
+  for (var key in parameter_map) {
+    const p = parameter_map[key];
+    if (parameter_map[key].unique_value === undefined) {
+      map[key] = new HydatParameterInterval(p.lower_bounds,p.upper_bounds);
+    } else {
+      map[key] = new HydatParameterPoint(p.unique_value);
+    }
+  }
+  return map;
+}
+
 class HydatException extends Error {
   constructor(message) {
     super();
@@ -21,7 +34,7 @@ class Hydat {
     for (let ph of hydat.first_phases) {
       this.first_phases.push(new HydatPhase(ph));
     }
-    this.parameters = HydatParameter.translate_map(hydat.parameters);
+    this.parameters = translate_parameter_map(hydat.parameters);
   }
 }
 
@@ -54,7 +67,7 @@ class HydatPhase {
 
     this.parameter_maps = [];
     for (let map of phase.parameter_maps) {
-      this.parameter_maps.push(HydatParameter.translate_map(map));
+      this.parameter_maps.push(translate_parameter_map(map));
     }
 
     this.children = [];
@@ -86,18 +99,6 @@ class HydatPhaseRaw {
 //     return map;
 //   }
 // }
-function translate_parameter_map(parameter_map: { [key: string]: HydatParameterRaw }) {
-  let map:{[key:string]:HydatParameter} = {};
-  for (var key in parameter_map) {
-    const p = parameter_map[key];
-    if (parameter_map[key].unique_value === undefined) {
-      map[key] = new HydatParameterInterval(p.lower_bounds,p.upper_bounds);
-    } else {
-      map[key] = new HydatParameterPoint(p.unique_value);
-    }
-  }
-  return map;
-}
 
 type HydatParameter = HydatParameterPoint | HydatParameterInterval;
 class HydatParameterPoint{
