@@ -1,6 +1,7 @@
 import { PlotLine } from "./plot_line";
 import { GraphControl } from "./graph_control";
 import { PlotLineMapControl } from "./plot_line_map_control";
+import { DOMControl } from "./dom_control";
 
 export class PlotControl{
   static array = -1;
@@ -185,7 +186,7 @@ export class PlotControl{
     catch (ex) {
       console.log(ex);
       console.log(ex.stack);
-      showToast("Plot failed: " + ex.name +
+      DOMControl.showToast("Plot failed: " + ex.name +
         "(" + ex.message + ")", 3000, "red darken-4");
       line.plotting = false;
       PlotControl.checkAndStopPreloader();
@@ -196,7 +197,7 @@ export class PlotControl{
     if (!PlotLineMapControl.isAllReady()) return;
     var current_time = new Date().getTime();
     if (PlotControl.PlotStartTime === undefined || current_time - PlotControl.PlotStartTime >= 1000) {
-      showToast("Plot finished.", 1000, "blue");
+      DOMControl.showToast("Plot finished.", 1000, "blue");
     }
     PlotControl.PlotStartTime = undefined;
     graph.renderer.render(graph.scene, graph.camera);

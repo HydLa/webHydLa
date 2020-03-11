@@ -62,7 +62,7 @@ export class CommonData {
     catch (e) {
       console.log(e);
       console.log(e.stack);
-      showToast("Failed to load hydat: " + e.name + "(" + e.message + ")", 3000, "red darken-4");
+      DOMControl.showToast("Failed to load hydat: " + e.name + "(" + e.message + ")", 3000, "red darken-4");
     }
     this.graph.clearPlot();
     this.initVariableSelector(hydat);

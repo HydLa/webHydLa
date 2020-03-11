@@ -5,6 +5,7 @@ import "ace-builds/src-noconflict/theme-github"
 import "ace-builds/src-noconflict/theme-clouds"
 import "ace-builds/src-noconflict/keybinding-emacs"
 import "ace-builds/src-noconflict/keybinding-vim"
+import { DOMControl } from "./dom_control";
 
 /* set default hydla code */
 const default_hydla = `// a sample hydla code: bouncing_particle.hydla
@@ -135,7 +136,7 @@ export class EditorControl {
     this.autosave_event_enabled = false;
     this.autosave_changed = false;
     storage.saveHydla(this.editor.getValue());
-    showToast("Saved", 1000, "");
+    DOMControl.showToast("Saved", 1000, "");
 
     let that = this;
     setTimeout(function () {
