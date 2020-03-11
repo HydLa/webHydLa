@@ -7,6 +7,7 @@ import { EditorControl } from "./editor_control";
 import { StorageControl } from "./storage_control";
 import { Hydat } from "./hydat";
 import { PlotLineMapControl } from "./plot_line_map_control";
+import { PlotControl } from "./plot_control";
 
 export class CommonData {
   plot_settings: PlotSettings;
@@ -18,6 +19,7 @@ export class CommonData {
     NewUI.init(GraphControl.controls);
     DOMControl.init();
     StorageControl.init();
+    PlotControl.init();
 
     const saved_hydla = StorageControl.loadHydla();
     const saved_hydat = StorageControl.loadHydat();

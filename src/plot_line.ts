@@ -1,6 +1,7 @@
 import { PlotLineMapControl } from "./plot_line_map_control";
 import { DatGUIControl } from "./dat_gui_control";
 import { GraphControl } from "./graph_control";
+import { PlotControl } from "./plot_control";
 
 export class PlotLine {
   index: number;
@@ -89,38 +90,6 @@ export class PlotLine {
     }
   }
 
-  add_plot() {
-    var axes;
-    if (this.settings.x == "" ||
-      this.settings.y == "" ||
-      this.settings.z == "") {
-      return;
-    }
-    try {
-      axes = {
-        x: Construct.parse(this.settings.x),
-        y: Construct.parse(this.settings.y),
-        z: Construct.parse(this.settings.z)
-      };
-      this.updateFolder(true);
-    } catch (e) {
-      console.log(e);
-      console.log(e.stack);
-      this.updateFolder(false);
-      return;
-    }
-    var dt = plot_settings.plotInterval;
-    var phase = current_hydat.first_phases[0];
-    var parameter_condition_list = divideParameter(current_hydat.parameters);
-    var color = getColors(parameter_condition_list.length, this.color_angle);
-    this.plot_information = { phase_index_array: [{ phase: phase, index: 0 }], axes: axes, line: this, width: plot_settings.lineWidth, color: color, dt: dt, parameter_condition_list: parameter_condition_list };
-    startPreloader();
-    array = -1;
-    animation_line = [];
-    animation_line.maxlen = 0;
-    if (this.plot_ready == undefined) requestAnimationFrame(function () { plot_ready(this) });
-  }
-
   plotReady() {
     var plot_information = this.plot_information;
     if (plot_information.line.plotting) {
@@ -131,8 +100,8 @@ export class PlotLine {
       this.plotting = true;
       this.plot_ready = undefined;
       this.last_plot_time = new Date().getTime();
-      if (PlotStartTime == undefined) PlotStartTime = new Date().getTime();
-      add_plot_each(plot_information.phase_index_array, plot_information.axes, plot_information.line, plot_information.width, plot_information.color, plot_information.dt, plot_information.parameter_condition_list, 0, []);
+      if (PlotControl.PlotStartTime === undefined) PlotControl.PlotStartTime = new Date().getTime();
+      PlotControl.add_plot_each(plot_information.phase_index_array, plot_information.axes, plot_information.line, plot_information.width, plot_information.color, plot_information.dt, plot_information.parameter_condition_list, 0, []);
     }
   }
 }
