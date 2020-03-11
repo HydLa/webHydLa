@@ -7,6 +7,9 @@ export class Triplet<T>{
     this.y = y;
     this.z = z;
   }
+  map<U>(f: (t:T) => U) {
+    return new Triplet<U>(f(this.x), f(this.y), f(this.z));
+  }
 }
 
 export class ComparableTriplet<T extends { equals(t: T): boolean; }> extends Triplet<T>{

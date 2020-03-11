@@ -489,9 +489,4 @@ function range_make_all() {
 
 
 
-function calculateColorWithBrightness(base, brightness) {
-  return "#" + ("00" + Math.floor(base.r * brightness).toString(16)).slice(-2)
-    + ("00" + Math.floor(base.g * brightness).toString(16)).slice(-2)
-    + ("00" + Math.floor(base.b * brightness).toString(16)).slice(-2);
-}
 // }

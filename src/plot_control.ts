@@ -98,7 +98,7 @@ export class PlotControl {
             cylindersGeometry.merge(geometry, cylinderMesh.matrix);
           };
 
-          const dottedLength = 10.0 / graph.camera.zoom;
+          const dottedLength = 10.0 / GraphControl.camera.zoom;
           for (var i = 0; i + 1 < current_line_vec.length; i++) {
             if ('isPP' in current_line_vec[i + 1]) {
               const posBegin = current_line_vec[i];
@@ -268,15 +268,20 @@ export class PlotControl {
     return grid_obj;
   }
 
-  static setBackgroundColor(color:THREE.Color) {
-    var color_val = parseInt("0x" + color.substr(1));
-    var b = color_val % 256;
+  static setBackgroundColor(color: THREE.Color) {
+    let color_val = parseInt("0x" + color.substr(1));
+    const b = color_val % 256;
     color_val /= 256;
-    var g = color_val % 256;
+    const g = color_val % 256;
     color_val /= 256;
-    var r = color_val;
-    var brightness = Math.min(255, 256 - Math.max(r, g, b));
-    this.axisColors = calculateColorsWithBrightness(axisColorBases, brightness);
+    const r = color_val;
+    const brightness = Math.min(255, 256 - Math.max(r, g, b));
+
+    this.axisColors = axisColorBases.map((base) =>
+      "#" + ("00" + Math.floor(base.r * brightness).toString(16)).slice(-2)
+          + ("00" + Math.floor(base.g * brightness).toString(16)).slice(-2)
+          + ("00" + Math.floor(base.b * brightness).toString(16)).slice(-2)
+    );
     GraphControl.renderer.setClearColor(color);
     PlotControl.update_axes(true);
   }
