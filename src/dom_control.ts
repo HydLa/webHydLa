@@ -100,4 +100,16 @@ export class DOMControl {
       }
     }
   }
+
+  /* function to start preloader */
+  static startPreloader() {
+    document.getElementById("graph-preloader").classList.remove("hide");
+    document.getElementById("output-preloader").classList.remove("hide");
+  }
+
+  /* function called when graph is drawn */
+  static stopPreloader() {
+    document.getElementById("graph-preloader").classList.add("hide");
+    document.getElementById("output-preloader").classList.add("hide");
+  }
 }

@@ -1,10 +1,15 @@
+import { DOMControl } from "./dom_control";
+
 const first_script_element = document.getElementsByTagName('script')[0];
 const html_mode_check_box = <HTMLInputElement>document.getElementById("html_mode_check_box");
 
-export class HyLaGI {
-  running = false;
-  dynamic_script_elements: HTMLElement[];
-  exec() {
+export class HyLaGIController {
+  static running = false;
+  static dynamic_script_elements: HTMLElement[];
+  static init() {
+    
+  }
+  static exec() {
     if (this.running) {
       this.killHyLaGI();
     }
@@ -12,7 +17,7 @@ export class HyLaGI {
       this.sendHydLa();
     }
   }
-  updateExecIcon() {
+  static updateExecIcon() {
     let run_button = <HTMLInputElement>document.getElementById('run_button');
     if (this.running) {
       run_button.value = "KILL"; // for new UI
@@ -32,8 +37,8 @@ export class HyLaGI {
     }
   }
   /* function to submit hydla code to server */
-  sendHydLa() {
-    this.startPreloader();
+  static sendHydLa() {
+    DOMControl.startPreloader();
     this.running = true;
     this.updateExecIcon();
 
@@ -127,31 +132,19 @@ export class HyLaGI {
             output.innerHTML += getEscapedStringForHTML(response.stderr);
           }
         }
-        that.stopPreloader();
+        DOMControl.stopPreloader();
         that.running = false;
         that.updateExecIcon();
       };
       xmlhr.send(form);
     };
   }
-  killHyLaGI() {
+  static killHyLaGI() {
     /* build form data */
     var xmlhr = new XMLHttpRequest();
     xmlhr.open("GET", "killer");
     xmlhr.send(null);
     this.running = false;
     this.updateExecIcon();
-  }
-
-  /* function to start preloader */
-  startPreloader() {
-    document.getElementById("graph-preloader").classList.remove("hide");
-    document.getElementById("output-preloader").classList.remove("hide");
-  }
-
-  /* function called when graph is drawn */
-  stopPreloader() {
-    document.getElementById("graph-preloader").classList.add("hide");
-    document.getElementById("output-preloader").classList.add("hide");
   }
 }

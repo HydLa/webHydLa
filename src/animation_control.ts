@@ -4,6 +4,7 @@ import { DOMControl } from "./dom_control";
 import THREE from "three";
 import { GraphControl } from "./graph_control";
 import { HydatParameter, HydatParameterInterval } from "./hydat";
+import { RGB } from "./plot_utils";
 
 export class AnimationControl {
   static maxlen: number;
@@ -48,7 +49,7 @@ export class AnimationControl {
     };
     let color = getColors(parameter_condition_list.length, line.color_angle);
     line.plot_information = { phase_index_array: [{ phase: phase, index: 0 }], axes: axes, line: line, width: PlotControl.plot_settings.lineWidth, color: color, dt: dt, parameter_condition_list: parameter_condition_list };
-    startPreloader();
+    DOMControl.startPreloader();
     PlotControl.array = -1;
     this.animation_line = [];
     this.maxlen = 0;
