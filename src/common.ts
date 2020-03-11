@@ -49,46 +49,6 @@ export class CommonData {
     this.graph.time = this.plot_settings.seek;
     this.graph.animate();
   }
-  fixLayoutOfDatGUI() {
-    this.dat_gui_control.fixLayout();
-  }
-
-  /* function to update variable selector for graph */
-  initVariableSelector(hydat) {
-    this.plot_lines.removeAllFolders();
-
-    this.plot_lines.reset();
-
-    //var guard_list ={x:["x", "xSWON"]};
-
-    let str = this.browser_storage.getItem(hydat.name);
-    if (str !== null) {
-      this.settingsForCurrentHydat = JSON.parse(str);
-      var line_settings = this.settingsForCurrentHydat.plot_line_settings;
-      for (var i in line_settings) {
-        let line = this.plot_lines.addNewLineWithIndex(line_settings[i].x, line_settings[i].y, line_settings[i].z, i);
-        /*for(key in guard_list){
-          if(line_settings[i].x == key){
-            for(var l in guard_list.x){
-              addNewLineWithIndexGuard(guard_list.x[l], "x'", "0", i+l);
-            }
-          }
-        }*/
-        if (line.settings.x != "" || line.settings.y != "" || line.settings.z != "") line.folder.open();
-      }
-      this.graph.replotAll();
-    }
-
-    if (this.plot_lines.getLength() == 0) {
-      this.settingsForCurrentHydat = { plot_line_settings: {} };
-      let first_line = this.plot_lines.addNewLine("t", this.current_hydat !== undefined ? this.current_hydat.variables[0] : "", "0");
-      first_line.color_angle = 0;
-      first_line.replot();
-      first_line.folder.open();
-    }
-
-    dat_gui_variable_folder.open();
-  }
   
   loadHydat(hydat:HydatRaw) {
     try {

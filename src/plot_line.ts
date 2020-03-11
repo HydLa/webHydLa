@@ -1,3 +1,5 @@
+import { PlotLineMapControl } from "./plot_line_map_control";
+
 export class PlotLine {
   index: number;
   name: string;
@@ -25,7 +27,7 @@ export class PlotLine {
     this.index = index;
     this.name = "plot" + this.index;
     this.folder = dat_gui_variable_folder.addFolder(this.name);
-    this.settings = { x: x_name, y: y_name, z: z_name, remove: () => { plot_lines.removeLine(this) }, dashed: false };
+    this.settings = { x: x_name, y: y_name, z: z_name, remove: () => { PlotLineMapControl.removeLine(this) }, dashed: false };
     this.x_item = this.folder.add(this.settings, "x");
     this.x_item.onChange(this.getUpdateFunction(this.x_item));
     this.y_item = this.folder.add(this.settings, "y");

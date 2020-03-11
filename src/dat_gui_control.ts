@@ -1,4 +1,5 @@
 import * as dat from "dat.gui";
+import { GraphControl } from "./graph_control";
 export let range_mode: boolean;
 
 export class DatGUIControl{
@@ -114,7 +115,7 @@ export class DatGUIControl{
   
       let parameter_item =
         this.parameter_folder.add(plot_settings.parameter_condition[key], 'value', min_par_value, max_par_value).name(key);
-      parameter_item.onChange((_) => { plot_lines.replotAll(); });
+      parameter_item.onChange((_) => { GraphControl.replotAll(); });
       parameter_item.step(step);
   
       let mode_item = this.parameter_folder.add(plot_settings.parameter_condition[key], 'fixed');
@@ -130,7 +131,7 @@ export class DatGUIControl{
         else {
           parameter_item.min(min_par_value).max(max_par_value).step(step).setValue((min_par_value + max_par_value) / 2);
         }
-        plot_lines.replotAll();
+        GraphControl.replotAll();
       });
       mode_item_range.onChange((_) => {
         range_mode = plot_settings.parameter_condition[key_copy].range

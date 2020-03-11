@@ -1,4 +1,7 @@
 import { PlotLine } from "./plot_line";
+import { Hydat } from "./hydat";
+import { GraphControl } from "./graph_control";
+import { DatGUIControl } from "./dat_gui_control";
 
 export class PlotLineMapControl {
   static map: { [key: number]: PlotLine } = {};
@@ -65,5 +68,41 @@ export class PlotLineMapControl {
       this.map[i].color_angle = parseInt(i) / this.getLength() * 360;
       this.map[i].replot();
     }
+  }
+
+  /* function to update variable selector for graph */
+  static initVariableSelector(hydat:Hydat) {
+    this.removeAllFolders();
+    this.reset();
+
+    //var guard_list ={x:["x", "xSWON"]};
+
+    let str = this.browser_storage.getItem(hydat.name);
+    if (str !== null) {
+      this.settingsForCurrentHydat = JSON.parse(str);
+      var line_settings = this.settingsForCurrentHydat.plot_line_settings;
+      for (var i in line_settings) {
+        let line = this.addNewLineWithIndex(line_settings[i].x, line_settings[i].y, line_settings[i].z, i);
+        /*for(key in guard_list){
+          if(line_settings[i].x == key){
+            for(var l in guard_list.x){
+              addNewLineWithIndexGuard(guard_list.x[l], "x'", "0", i+l);
+            }
+          }
+        }*/
+        if (line.settings.x != "" || line.settings.y != "" || line.settings.z != "") line.folder.open();
+      }
+      GraphControl.replotAll();
+    }
+
+    if (this.getLength() == 0) {
+      this.settingsForCurrentHydat = { plot_line_settings: {} };
+      let first_line = this.addNewLine("t", this.current_hydat !== undefined ? this.current_hydat.variables[0] : "", "0");
+      first_line.color_angle = 0;
+      first_line.replot();
+      first_line.folder.open();
+    }
+
+    DatGUIControl.variable_folder.open();
   }
 }

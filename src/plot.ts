@@ -1,3 +1,5 @@
+import { PlotLineMapControl } from "./plot_line_map_control";
+
 // (() => {
 // declare let THREE: never;
 
@@ -374,7 +376,7 @@ function check_parameter_condition(parameter_maps, parameter_condition_list) {
 
 function checkAndStopPreloader() {
   var table = document.getElementById("graph_axis_table");
-  if (!plot_lines.isAllReady()) return;
+  if (!PlotLineMapControl.isAllReady()) return;
   var current_time = new Date().getTime();
   if (PlotStartTime == undefined || current_time - PlotStartTime >= 1000) {
     showToast("Plot finished.", 1000, "blue");

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { PlotLineMapControl } from './plot_line_map_control';
 
 export class GraphControl {
   static scene: THREE.Scene;
@@ -253,7 +254,7 @@ export class GraphControl {
   }
 
   static replotAll() {
-    plot_lines.replot();
+    PlotLineMapControl.replot();
     this.time = 0;
   }
 }
