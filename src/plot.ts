@@ -219,35 +219,6 @@ function toUnitVector(vector) {
   return unit_vector;
 }
 
-function expandFrustum(orig, epsilon) {
-  var expanded = orig.clone();
-  expandTwoPlanesOfFrustum(expanded.planes[0], expanded.planes[1]);
-  expandTwoPlanesOfFrustum(expanded.planes[2], expanded.planes[3]);
-  expandTwoPlanesOfFrustum(expanded.planes[4], expanded.planes[5]);
-  return expanded;
-}
-
-
-function expandTwoPlanesOfFrustum(plane1, plane2) {
-  var dot = plane1.normal.dot(plane2.normal);
-  var rate = 1.1;
-
-  if (dot * plane1.constant * plane2.constant > 0) {
-    if (Math.abs(plane1.constant) > Math.abs(plane2.constant)) {
-      plane1.constant *= rate;
-      plane2.constant /= rate;
-    }
-    else {
-      plane1.constant /= rate;
-      plane2.constant *= rate;
-    }
-  }
-  else {
-    plane1.constant *= rate;
-    plane2.constant *= rate;
-  }
-  return;
-}
 
 
 

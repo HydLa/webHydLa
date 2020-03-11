@@ -257,104 +257,133 @@ export class PlotControl {
       Range.getEmpty(),
       Range.getEmpty()
     );
-  
+
     // Near Plane dimensions
     var hNear = (camera.top - camera.bottom) / camera.zoom;
     var wNear = (camera.right - camera.left) / camera.zoom;
-  
+
     // Far Plane dimensions
     var hFar = hNear;
     var wFar = wNear;
-  
+
     var p = camera.position.clone();
     var l = GraphControl.controls.target.clone();
     var u = new THREE.Vector3(0, 1, 0);
-  
+
     var d = new THREE.Vector3();
     d.subVectors(l, p);
     d.normalize();
-  
+
     var cross_d = u.clone();
     cross_d.cross(d);
     var rotate_axis = cross_d.clone();
     rotate_axis.normalize();
     var dot = u.dot(d);
     u.applyAxisAngle(rotate_axis, Math.acos(dot) - Math.PI / 2);
-  
+
     var r = new THREE.Vector3();
     r.crossVectors(u, d);
     r.normalize();
-  
+
     // Near Plane center
     var dTmp = d.clone();
     var nc = new THREE.Vector3();
     nc.addVectors(p, dTmp.multiplyScalar(camera.near));
-  
+
     // Near Plane vertices
     var uTmp = u.clone();
     var rTmp = r.clone();
     var ntr = new THREE.Vector3();
     ntr.addVectors(nc, uTmp.multiplyScalar(hNear / 2));
     ntr.sub(rTmp.multiplyScalar(wNear / 2));
-  
+
     uTmp.copy(u);
     rTmp.copy(r);
     var ntl = new THREE.Vector3();
     ntl.addVectors(nc, uTmp.multiplyScalar(hNear / 2));
     ntl.add(rTmp.multiplyScalar(wNear / 2));
-  
+
     var nbr = new THREE.Vector3();
     uTmp.copy(u);
     rTmp.copy(r);
     nbr.subVectors(nc, uTmp.multiplyScalar(hNear / 2));
     nbr.sub(rTmp.multiplyScalar(wNear / 2));
-  
+
     uTmp.copy(u);
     rTmp.copy(r);
     var nbl = new THREE.Vector3();
     nbl.subVectors(nc, uTmp.multiplyScalar(hNear / 2));
     nbl.add(rTmp.multiplyScalar(wNear / 2));
-  
-  
+
+
     // Far Plane center
     dTmp.copy(d);
     var fc = new THREE.Vector3();
     fc.addVectors(p, dTmp.multiplyScalar(camera.far));
-  
+
     // Far Plane vertices
     uTmp.copy(u);
     rTmp.copy(r);
     var ftr = new THREE.Vector3();
     ftr.addVectors(fc, uTmp.multiplyScalar(hFar / 2));
     ftr.sub(rTmp.multiplyScalar(wFar / 2));
-  
+
     uTmp.copy(u);
     rTmp.copy(r);
     var ftl = new THREE.Vector3();
     ftl.addVectors(fc, uTmp.multiplyScalar(hFar / 2));
     ftl.add(rTmp.multiplyScalar(wFar / 2));
-  
+
     uTmp.copy(u);
     rTmp.copy(r);
     var fbr = new THREE.Vector3();
     fbr.subVectors(fc, uTmp.multiplyScalar(hFar / 2));
     fbr.sub(rTmp.multiplyScalar(wFar / 2));
-  
+
     uTmp.copy(u);
     rTmp.copy(r);
     var fbl = new THREE.Vector3();
     fbl.subVectors(fc, uTmp.multiplyScalar(hFar / 2));
     fbl.add(rTmp.multiplyScalar(wFar / 2));
-  
+
     GraphControl.camera.updateMatrix(); // make sure camera's local matrix is updated
     GraphControl.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
     GraphControl.camera.matrixWorldInverse.getInverse(GraphControl.camera.matrixWorld);
-  
+
     var frustum = new THREE.Frustum();
     var expansion_rate = 1.2; // to absorb the error caused by floating point arithmetic
     frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(GraphControl.camera.projectionMatrix, GraphControl.camera.matrixWorldInverse));
+
+    const expandFrustum = (orig: THREE.Frustum) => {
+      let expanded = orig.clone();
+      const expandTwoPlanesOfFrustum = (plane1:THREE.Plane, plane2:THREE.Plane) => {
+        var dot = plane1.normal.dot(plane2.normal);
+        var rate = 1.1;
+
+        if (dot * plane1.constant * plane2.constant > 0) {
+          if (Math.abs(plane1.constant) > Math.abs(plane2.constant)) {
+            plane1.constant *= rate;
+            plane2.constant /= rate;
+          }
+          else {
+            plane1.constant /= rate;
+            plane2.constant *= rate;
+          }
+        }
+        else {
+          plane1.constant *= rate;
+          plane2.constant *= rate;
+        }
+        return;
+      }
+
+      expandTwoPlanesOfFrustum(expanded.planes[0], expanded.planes[1]);
+      expandTwoPlanesOfFrustum(expanded.planes[2], expanded.planes[3]);
+      expandTwoPlanesOfFrustum(expanded.planes[4], expanded.planes[5]);
+      return expanded;
+    }
     frustum = expandFrustum(frustum);
-    
+
     /// calculate cross point of the plane and three axes(x, y, z).
     /// The plane is defined by point_a, point_b, point_c and point_d.(The forth parameter is required to determine the range of the plane.)
     const calculate_intercept = (point_a: THREE.Vector3, point_b: THREE.Vector3, point_c: THREE.Vector3, point_d: THREE.Vector3, frustum: THREE.Frustum) => {
@@ -369,7 +398,7 @@ export class PlotControl {
       else ret.y = sum / cross_product.y;
       if (cross_product.z == 0) ret.z = 0;
       else ret.z = sum / cross_product.z;
-    
+
       if (!frustum.containsPoint(new THREE.Vector3(ret.x, 0, 0))) ret.x = Number.NaN;
       if (!frustum.containsPoint(new THREE.Vector3(0, ret.y, 0))) ret.y = Number.NaN;
       if (!frustum.containsPoint(new THREE.Vector3(0, 0, ret.z))) ret.z = Number.NaN;
@@ -389,7 +418,7 @@ export class PlotControl {
       // far surface 
       calculate_intercept(ftl, ftr, fbr, fbl, frustum)
     ];
-  
+
     var epsilon = 1e-8;
     var visible_x = Math.abs(d.y) + Math.abs(d.z) > epsilon,
       visible_y = Math.abs(d.z) + Math.abs(d.x) > epsilon,
