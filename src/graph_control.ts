@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { DatGUIControl } from './dat_gui_control';
+import { PlotControl } from './plot_control';
 
 export class GraphControl {
   static scene: THREE.Scene;
@@ -95,10 +96,10 @@ export class GraphControl {
     if (this.last_frame_zoom !== this.camera.zoom) {
       GraphControl.replotAll();
     }
-    update_axes(false);
+    PlotControl.update_axes(false);
     if (this.animatable) {
       GraphControl.animate(); // animating function
-      animate_time();
+      GraphControl.animateTime();
     } else {
       GraphControl.animate();
     }
@@ -119,45 +120,6 @@ export class GraphControl {
     this.renderer.render(this.scene, this.camera);
   }
 
-  static animate() {
-    if (this.time_prev !== this.time) {
-      plot_animate = [];
-      let arr = 0;
-      for (let i = 0; i < this.scene.children.length - 1; i++) {
-        if ('isLine' in this.scene.children[i]) {
-          if (animation_line[arr] === undefined) {
-            continue;
-          }
-          if (this.time > animation_line.maxlen - 1) {
-            this.time = 0;
-          }
-          if (this.time == 0) {
-            this.scene.children[i + 1].material.color.set(
-              animation_line[arr].color
-            );
-          }
-          if (this.time > animation_line[arr].length - 1) {
-            this.scene.children[i + 1].material.color.set(
-              198,
-              198,
-              198
-            );
-            plot_animate[arr] = (this.scene.children[i + 1]);
-            arr++;
-            continue;
-          }
-          this.scene.children[i + 1].position.set(
-            animation_line[arr][this.time].x,
-            animation_line[arr][this.time].y,
-            animation_line[arr][this.time].z);
-          plot_animate[arr] = (this.scene.children[i + 1]);
-          arr += 1;
-        }
-      }
-      GraphControl.time_prev = this.time;
-      GraphControl.render_three_js();
-    }
-  }
 
   static animateTime() {
     this.time++;
@@ -205,36 +167,6 @@ export class GraphControl {
     this.scene = new THREE.Scene();
     // TODO: 複数のプロットが存在するときの描画範囲について考える
     // TODO: 設定を変更した時に動的に変更が反映されるようにする
-  }
-
-  static updateAxisScaleLabel(ranges: ComparableTriplet<Range>) {
-    var canvas = <HTMLCanvasElement>document.getElementById('scaleLabelCanvas');
-    if (!canvas || !canvas.getContext) {
-      return false;
-    }
-
-    var ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (!plot_settings.scaleLabelVisible) return;
-    ctx.font = "20px 'Arial'";
-
-    const sub = (range: Range, axisColor: string, embedFunc: (arg: number) => THREE.Vector3) => {
-      let scale_interval = calculateScaleInterval(range);
-      let fixed = calculateNumberOfDigits(scale_interval);
-      ctx.fillStyle = axisColor;
-      let start = Math.floor(range.min / scale_interval) * scale_interval;
-
-      for (let i = 0; start + i * scale_interval <= range.max; i++) {
-        const current = start + i * scale_interval;
-        const vec = embedFunc(current);
-        const pos = graph.toScreenPosition(vec);
-        ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
-      }
-    }
-
-    sub(ranges.x, axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
-    sub(ranges.y, axisColors.y, (arg) => new THREE.Vector3(0, arg, 0));
-    sub(ranges.z, axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
   }
 
   static replotAll() {

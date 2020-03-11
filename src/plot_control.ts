@@ -124,7 +124,7 @@ export class PlotControl {
             new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
           );
           three_line.isLine = true;
-          graph.scene.add(three_line);
+          GraphControl.scene.add(three_line);
           line.plot.push(three_line);
 
           animation_line[PlotControl.array] = (PlotControl.current_line_vec_animation);
@@ -266,6 +266,36 @@ export class PlotControl {
     var grid_obj = new THREE.Object3D();
     grid_obj.add(new THREE.LineSegments(geometry, material));
     return grid_obj;
+  }
+
+  static updateAxisScaleLabel(ranges: ComparableTriplet<Range>) {
+    var canvas = <HTMLCanvasElement>document.getElementById('scaleLabelCanvas');
+    if (!canvas || !canvas.getContext) {
+      return false;
+    }
+
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!plot_settings.scaleLabelVisible) return;
+    ctx.font = "20px 'Arial'";
+
+    const sub = (range: Range, axisColor: string, embedFunc: (arg: number) => THREE.Vector3) => {
+      let scale_interval = calculateScaleInterval(range);
+      let fixed = calculateNumberOfDigits(scale_interval);
+      ctx.fillStyle = axisColor;
+      let start = Math.floor(range.min / scale_interval) * scale_interval;
+
+      for (let i = 0; start + i * scale_interval <= range.max; i++) {
+        const current = start + i * scale_interval;
+        const vec = embedFunc(current);
+        const pos = GraphControl.toScreenPosition(vec);
+        ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
+      }
+    }
+
+    sub(ranges.x, PlotControl.axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
+    sub(ranges.y, PlotControl.axisColors.y, (arg) => new THREE.Vector3(0, arg, 0));
+    sub(ranges.z, PlotControl.axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
   }
 
   static setBackgroundColor(color: THREE.Color) {
