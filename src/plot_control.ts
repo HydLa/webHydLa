@@ -13,19 +13,19 @@ const axisColorBases = new Triplet<RGB>(
   new RGB(0.3, 0.3, 1.0)
 );
 
-export class PlotControl{
+export class PlotControl {
   static array = -1;
   static current_line_vec_animation = [];
   static PlotStartTime: number;
 
   static axisColors = new Triplet<string>("#FF8080", "#80FF80", "#8080FF")
   static prev_ranges: ComparableTriplet<Range>;
-  static axisLines:Triplet<THREE.Object3D>;
+  static axisLines: Triplet<THREE.Object3D>;
 
   static init() {
-    
+
   }
-  static add_plot(line:PlotLine) {
+  static add_plot(line: PlotLine) {
     var axes;
     if (line.settings.x == "" ||
       line.settings.y == "" ||
@@ -65,7 +65,7 @@ export class PlotControl{
           PlotControl.PlotStartTime = undefined;
           return;
         }
-  
+
         // phase_index_array is used to implement dfs without function call.
         let phase_index = phase_index_array[phase_index_array.length - 1];
         let phase = phase_index.phase;
@@ -76,7 +76,7 @@ export class PlotControl{
         if (phase.children.length == 0) {
           PlotControl.array += 1;
           // on leaves
-  
+
           var cylindersGeometry = new THREE.Geometry();
           let scaledWidth = 0.5 * width / graph.camera.zoom;
           var addCylinder = function (startPos: THREE.Vector3, endPos: THREE.Vector3) {
@@ -84,20 +84,20 @@ export class PlotControl{
             const height = directionVec.length();
             directionVec.normalize();
             let cylinderMesh = new THREE.Mesh(new THREE.CylinderGeometry(scaledWidth, scaledWidth, height + scaledWidth, 8, 1));
-  
+
             const upVec = new THREE.Vector3(0, 1, 0);
             const rotationAxis = upVec.clone().cross(directionVec).normalize();
             const rotationAngle = Math.acos(upVec.dot(directionVec));
-  
+
             const newpos = startPos.clone().lerp(endPos, 0.5);
             cylinderMesh.position.set(newpos.x, newpos.y, newpos.z);
             cylinderMesh.setRotationFromAxisAngle(rotationAxis, rotationAngle);
-  
+
             cylinderMesh.updateMatrix();
             const geometry = cylinderMesh.geometry instanceof THREE.Geometry ? cylinderMesh.geometry : new THREE.Geometry().fromBufferGeometry(cylinderMesh.geometry);
             cylindersGeometry.merge(geometry, cylinderMesh.matrix);
           };
-  
+
           const dottedLength = 10.0 / graph.camera.zoom;
           for (var i = 0; i + 1 < current_line_vec.length; i++) {
             if ('isPP' in current_line_vec[i + 1]) {
@@ -118,7 +118,7 @@ export class PlotControl{
               addCylinder(current_line_vec[i], current_line_vec[i + 1]);
             }
           }
-  
+
           let three_line = new THREE.Mesh(
             cylindersGeometry,
             new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
@@ -126,7 +126,7 @@ export class PlotControl{
           three_line.isLine = true;
           graph.scene.add(three_line);
           line.plot.push(three_line);
-  
+
           animation_line[PlotControl.array] = (PlotControl.current_line_vec_animation);
           animation_line[PlotControl.array].color = (color[current_param_idx]);
           if (animation_line.maxlen < PlotControl.current_line_vec_animation.length) {
@@ -170,8 +170,8 @@ export class PlotControl{
             }
           }
           if (to_next_child) break;
-  
-  
+
+
           // Plot for this current_param_idx is completed.
           if (phase_index_array.length == 1) {
             ++current_param_idx;
@@ -222,12 +222,12 @@ export class PlotControl{
     var ranges = getRangesOfFrustum(GraphControl.camera);
     if (force === true || PlotControl.prev_ranges === undefined || !ranges.equals(PlotControl.prev_ranges)) {
       var margin_rate = 1.1;
-  
+
       var max_interval_px = 200; // 50 px
       const min_visible_ticks = Math.floor(Math.max(GraphControl.elem.clientWidth, GraphControl.elem.clientHeight) / max_interval_px);
       const min_visible_range = Math.min(ranges.x.getInterval(), ranges.y.getInterval(), ranges.z.getInterval());
       var max_interval = min_visible_range / min_visible_ticks;
-  
+
       if (PlotControl.axisLines !== undefined) {
         GraphControl.scene.remove(PlotControl.axisLines.x);
         GraphControl.scene.remove(PlotControl.axisLines.y);
@@ -239,7 +239,7 @@ export class PlotControl{
         PlotControl.makeAxis(ranges.x, interval, new THREE.Color(PlotControl.axisColors.x)),
         PlotControl.makeAxis(ranges.y, interval, new THREE.Color(PlotControl.axisColors.y)),
         PlotControl.makeAxis(ranges.z, interval, new THREE.Color(PlotControl.axisColors.z))
-      ); ;
+      );;
       ;
       PlotControl.axisLines.x.rotation.set(0, Math.PI / 2, Math.PI / 2);
       PlotControl.axisLines.y.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
@@ -266,5 +266,18 @@ export class PlotControl{
     var grid_obj = new THREE.Object3D();
     grid_obj.add(new THREE.LineSegments(geometry, material));
     return grid_obj;
-  };
+  }
+
+  static setBackgroundColor(color:THREE.Color) {
+    var color_val = parseInt("0x" + color.substr(1));
+    var b = color_val % 256;
+    color_val /= 256;
+    var g = color_val % 256;
+    color_val /= 256;
+    var r = color_val;
+    var brightness = Math.min(255, 256 - Math.max(r, g, b));
+    this.axisColors = calculateColorsWithBrightness(axisColorBases, brightness);
+    GraphControl.renderer.setClearColor(color);
+    PlotControl.update_axes(true);
+  }
 }

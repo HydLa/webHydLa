@@ -487,20 +487,6 @@ function range_make_all() {
   }
 }
 
-function setBackgroundColor(color) {
-  var color_val = parseInt("0x" + color.substr(1));
-  var b = color_val % 256;
-  color_val /= 256;
-  var g = color_val % 256;
-  color_val /= 256;
-  var r = color_val;
-  var brightness = Math.min(255, 256 - Math.max(r, g, b));
-  xAxisColor = calculateColorWithBrightness(xAxisColorBase, brightness);
-  yAxisColor = calculateColorWithBrightness(yAxisColorBase, brightness);
-  zAxisColor = calculateColorWithBrightness(zAxisColorBase, brightness);
-  graph_renderer.setClearColor(color);
-  update_axes(true);
-}
 
 
 function calculateColorWithBrightness(base, brightness) {
