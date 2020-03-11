@@ -38,7 +38,7 @@ var plot_animate = [];
 var animation_line = [];
 
 
-function getColors(colorNum, colorAngle) {
+function getColors(colorNum:number, colorAngle:number) {
   var angle = 360 / colorNum;
   var angle_start = Math.floor(colorAngle);
   var retColors = [];
@@ -48,46 +48,7 @@ function getColors(colorNum, colorAngle) {
   return retColors;
 }
 
-function hue2rgb(h) {
-  // assume S = V = 1
-  var r = 1;
-  var g = 1;
-  var b = 1;
-  h /= 60;
-  var i = Math.floor(h);
-  var f = h - i;
-  switch (i) {
-    default:
-    case 0:
-      g *= f;
-      b *= 0;
-      break;
-    case 1:
-      r *= 1 - f;
-      b *= 0;
-      break;
-    case 2:
-      r *= 0;
-      b *= f;
-      break;
-    case 3:
-      r *= 0;
-      g *= 1 - f;
-      break;
-    case 4:
-      r *= f;
-      g *= 0;
-      break;
-    case 5:
-      g *= 0;
-      b *= 1 - f;
-      break;
-  }
-  r = Math.floor(255 * r);
-  g = Math.floor(255 * g);
-  b = Math.floor(255 * b);
-  return (r << 16) + (g << 8) + b;
-}
+
 
 
 

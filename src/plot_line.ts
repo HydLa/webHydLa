@@ -111,7 +111,7 @@ class PlotInformation{
   axes;
   line: PlotLine;
   width: number;
-  color;
+  color:number[];
   dt: number;
   parameter_condition_list;
 }

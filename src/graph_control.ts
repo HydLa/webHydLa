@@ -4,6 +4,7 @@ import { PlotLineMapControl } from './plot_line_map_control';
 import { DatGUIControl } from './dat_gui_control';
 import { PlotControl } from './plot_control';
 import { PlotLine } from './plot_line';
+import { RGB } from './plot_utils';
 
 export class GraphControl {
   static scene: THREE.Scene;
@@ -116,7 +117,16 @@ export class GraphControl {
     var dt = PlotControl.plot_settings.plotInterval;
     var phase = current_hydat.first_phases[0];
     var parameter_condition_list = PlotControl.divideParameter(current_hydat.parameters);
-    var color = getColors(parameter_condition_list.length, line.color_angle);
+    const getColors = (colorNum: number, colorAngle: number) => {
+      var angle = 360 / colorNum;
+      var angle_start = Math.floor(colorAngle);
+      var retColors:number[] = [];
+      for (var i = 0; i < colorNum; i++) {
+        retColors.push(RGB.fromHue((Math.floor(angle * i) + angle_start) % 360).asHex24());
+      }
+      return retColors;
+    };
+    let color = getColors(parameter_condition_list.length, line.color_angle);
     line.plot_information = { phase_index_array: [{ phase: phase, index: 0 }], axes: axes, line: line, width: PlotControl.plot_settings.lineWidth, color: color, dt: dt, parameter_condition_list: parameter_condition_list };
     startPreloader();
     PlotControl.array = -1;
