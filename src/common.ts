@@ -7,11 +7,12 @@ export class CommonData {
   graph = new Graph();
   plot_lines = new PlotLineMap();
   dat_gui_control: DatGUIControl;
+  browser_storage: Storage;
 
   constructor() {
+    this.browser_storage = localStorage;
     initScrollZoom();
 
-    editor.clearSelection();
     /* initialize materialize components */
     $('#file-dropdown-button').dropdown({
       constrainWidth: true,
@@ -35,8 +36,6 @@ export class CommonData {
     loadKeyBindingFromWebstorage();
     $('select').formSelect();
 
-    first_script_element = document.getElementsByTagName('script')[0];
-
     this.plot_settings = PlotSettings.parseJSON(browser_storage.getItem('plot_settings'));
     // var controler;
     this.dat_gui_control = new DatGUIControl();
@@ -50,9 +49,9 @@ export class CommonData {
     }
 
     this.graph.update2DMode(this.plot_settings.twoDimensional);
-    time_stop();
+    this.time_stop();
 
-    graph.render();
+    this.graph.render();
   }
   time_stop() {
     this.graph.animatable = !this.plot_settings.animate;

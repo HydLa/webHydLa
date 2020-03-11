@@ -1,43 +1,9 @@
-import * as ace from "ace-builds";
 import $ from 'jquery';
 import Materialize from "materialize-css";
-import "ace-builds/src-noconflict/theme-sqlserver"
-import "ace-builds/src-noconflict/theme-monokai"
-import "ace-builds/src-noconflict/theme-github"
-import "ace-builds/src-noconflict/theme-clouds"
-import "ace-builds/src-noconflict/keybinding-emacs"
-import "ace-builds/src-noconflict/keybinding-vim"
 import { CommonData } from "./common";
 
-const html_mode_check_box = <HTMLInputElement>document.getElementById("html_mode_check_box")
 
-/* ID="editor" な div をエディタにする */
-let editor = ace.edit("editor");
 
-/* 諸々の設定 */
-editor.setTheme("ace/theme/sqlserver");
-editor.getSession().setMode("ace/mode/hydla")
-editor.getSession().setTabSize(4);
-editor.getSession().setUseSoftTabs(true);
-editor.setHighlightActiveLine(false);
-// editor.$blockScrolling = Infinity;
-editor.setOptions({
-  enableBasicAutocompletion: true,
-  enableSnippets: true,
-  enableLiveAutocompletion: true,
-  fontSize: "12pt",
-});
-
-/* set keybinding */
-editor.commands.addCommand({
-  name: "runHyLaGI",
-  bindKey: { win: "Ctrl-Enter", mac: "Command-Enter" },
-  exec: function (editor) { sendHydLa(); },
-  readOnly: true
-});
-
-let first_script_element: HTMLScriptElement;
-let dynamic_script_elements: HTMLScriptElement[] = [];
 
 // $(document).ready(function () {
 let common = new CommonData();
@@ -54,176 +20,18 @@ $(window).resize(function () {
 
 
 
-/* set default hydla code */
-var default_hydla =
-  //"// a sample hydla code: bouncing_particle.hydla\n\
-  "// a sample hydla code: bouncing_particle.hydla\n\
-\n\
-INIT <=> y = 10 & y' = 0.\n\
-FALL <=> [](y'' = -10).\n\
-BOUNCE <=> [](y- = 0 => y' = -4/5 * y'-).\n\
-\n\
-INIT, FALL << BOUNCE.\n\
-\n\
-// #hylagi -p 10\n\
-";
 
-/* load saved hydla code if it exist */
-var browser_storage = localStorage;
-var saved_hydla = browser_storage.getItem("hydla");
-var saved_hydat = browser_storage.getItem("hydat");
-if (saved_hydla) {
-  editor.setValue(saved_hydla);
-} else {
-  browser_storage.setItem("hydla_name", "bouncing_ball");
-  editor.setValue(default_hydla);
-}
 
-var hylagi_running = false;
 
-function onExecButtonClick() {
-  if (hylagi_running) {
-    killHyLaGI();
-  }
-  else {
-    sendHydLa();
-  }
-}
 
-function updateExecIcon() {
-  let run_button = <HTMLInputElement>document.getElementById('run_button');
-  if (hylagi_running) {
-    run_button.value = "KILL"; // for new UI
-    var elist = document.getElementsByClassName("exec-icon");
-    for (var i = 0; i < elist.length; ++i) {
-      elist[i].classList.remove("mdi-content-send");
-      elist[i].classList.add("mdi-content-clear");
-    }
-  }
-  else {
-    run_button.value = "RUN"; // for new UI
-    var elist = document.getElementsByClassName("exec-icon");
-    for (var i = 0; i < elist.length; ++i) {
-      elist[i].classList.add("mdi-content-send");
-      elist[i].classList.remove("mdi-content-clear");
-    }
-  }
-}
-
-/* function to submit hydla code to server */
-function sendHydLa() {
-  startPreloader();
-  hylagi_running = true;
-  updateExecIcon();
-
-  var hr = new XMLHttpRequest();
-  hr.open("GET", "start_session");
-  hr.send(null);
-
-  hr.onload = function (progress_ev) {
-    /* build form data */
-    var form = new FormData();
-    form.append("hydla_code", editor.getValue());
-    var options_value = "";
-    let phase_num = <HTMLInputElement>document.getElementById("phase_num");
-    let simulation_time = <HTMLInputElement>document.getElementById("simulation_time");
-    let nd_mode_check_box = <HTMLInputElement>document.getElementById("nd_mode_check_box");
-    let other_options = <HTMLInputElement>document.getElementById("other_options");
-    let timeout_option = <HTMLInputElement>document.getElementById("timeout_option");
-    if (phase_num.value != "") options_value += " -p " + phase_num.value;
-    if (simulation_time.value != "") options_value += " -t " + simulation_time.value;
-    if (phase_num.value == "" && simulation_time.value == "") options_value += " -p10";
-    if (html_mode_check_box.checked) options_value += " -d --fhtml ";
-    if (nd_mode_check_box.checked) options_value += " --fnd ";
-    else options_value += " --fno-nd ";
-    if (other_options.value != "") options_value += other_options.value;
-    form.append("hylagi_option", options_value);
-    var timeout_value = "";
-    if (timeout_option.value != "") timeout_value = timeout_option.value;
-    else timeout_value = "30";
-    form.append("timeout_option", timeout_value);
-    var xmlhr = new XMLHttpRequest();
-    xmlhr.open("POST", "hydat.cgi");
-    xmlhr.send(form);
-    xmlhr.onload = function (ev) {
-      var response = JSON.parse(xmlhr.responseText);
-
-      switch (response.error) {
-        case 0:
-          Materialize.toast({ html: "Simulation was successful.", displayLength: 1000 });
-          if (response.hydat != undefined) {
-            response.hydat.name = browser_storage.getItem("hydla_name");
-            loadHydat(response.hydat);
-          }
-          else {
-            $('ul.tabs').tabs('select', 'output-area');
-          }
-          break;
-        default:
-          if (hylagi_running) {
-            Materialize.toast({
-              html: "Error message: " + response.message,
-              displayLength: 3000,
-              classes: "red darken-4"
-            });
-            $('ul.tabs').tabs('select', 'output-area');
-          }
-          else {
-            Materialize.toast({ html: "Killed HyLaGI", displayLength: 1000 });
-          }
-          break;
-      }
-      let server_response = response;
-      var output = document.getElementById("output-initial");
-      output.innerHTML = "";
-      for (var si = 0; si < dynamic_script_elements.length; si++) {
-        dynamic_script_elements[si].parentNode.removeChild(dynamic_script_elements[si]);
-      }
-      dynamic_script_elements = [];
-      if (html_mode_check_box.checked) {
-        if (response.stdout != undefined) {
-          output.innerHTML += response.stdout;
-        }
-        if (response.stderr != undefined) {
-          output.innerHTML += response.stderr;
-        }
-        let scriptNodes = output.getElementsByTagName("script");
-        for (var si = 0; si < scriptNodes.length; si++) {
-          if (scriptNodes[si].hasAttribute("src")) {
-            continue;
-          }
-          var newScript = document.createElement("script");
-          newScript.innerHTML = scriptNodes[si].innerHTML;
-          dynamic_script_elements.push(first_script_element.parentNode.insertBefore(newScript, first_script_element));
-        }
-      }
-      else {
-        if (response.stdout != undefined) {
-          output.innerHTML += getEscapedStringForHTML(response.stdout);
-        }
-        if (response.stderr != undefined) {
-          output.innerHTML += getEscapedStringForHTML(response.stderr);
-        }
-      }
-      stopPreloader();
-      hylagi_running = false;
-      updateExecIcon();
-    };
-  };
-}
-
-function getEscapedStringForHTML(orig_string) {
-  return orig_string.replace(/\n/mg, "<br/>").replace(/\s/mg, "&nbsp;");
-}
-
-function killHyLaGI() {
-  /* build form data */
-  var xmlhr = new XMLHttpRequest();
-  xmlhr.open("GET", "killer");
-  xmlhr.send(null);
-  hylagi_running = false;
-  updateExecIcon();
-}
+// function onExecButtonClick() {
+//   if (hylagi_running) {
+//     killHyLaGI();
+//   }
+//   else {
+//     sendHydLa();
+//   }
+// }
 
 // function getErrorMessage(sid) {
 //   var form = document.createElement("form");
@@ -238,17 +46,6 @@ function killHyLaGI() {
 //   form.submit();
 // }
 
-/* function to start preloader */
-function startPreloader() {
-  document.getElementById("graph-preloader").classList.remove("hide");
-  document.getElementById("output-preloader").classList.remove("hide");
-}
-
-/* function called when graph is drawn */
-function stopPreloader() {
-  document.getElementById("graph-preloader").classList.add("hide");
-  document.getElementById("output-preloader").classList.add("hide");
-}
 
 
 /* function to enable/disable input field */
@@ -262,21 +59,6 @@ function stopPreloader() {
 //     elm.classList.add("hide");
 //   }
 // }
-
-
-var resizeLoopCount;
-
-function startResizingGraphArea() {
-  resizeLoopCount = 0;
-  setTimeout("resizeGraphArea()", 10);
-}
-
-function resizeGraphArea() {
-  resizeLoopCount++;
-  graph.resizeGraphRenderer();
-  //TODO: do this without timer
-  if (resizeLoopCount < 80) setTimeout("resizeGraphArea()", 10);
-}
 
 /* function to close/open input-pane */
 (function () {
