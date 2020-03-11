@@ -1,4 +1,5 @@
 import { DOMControl } from "./dom_control";
+import { EditorControl } from "./editor_control";
 
 const first_script_element = document.getElementsByTagName('script')[0];
 const html_mode_check_box = <HTMLInputElement>document.getElementById("html_mode_check_box");
@@ -14,7 +15,7 @@ export class HyLaGIController {
       this.killHyLaGI();
     }
     else {
-      this.sendHydLa();
+      EditorControl.sendHydLa();
     }
   }
   static updateExecIcon() {
@@ -37,7 +38,7 @@ export class HyLaGIController {
     }
   }
   /* function to submit hydla code to server */
-  static sendHydLa() {
+  static sendHydLa(hydla:string) {
     DOMControl.startPreloader();
     this.running = true;
     this.updateExecIcon();
@@ -47,10 +48,10 @@ export class HyLaGIController {
     hr.send(null);
 
     let that = this;
-    hr.onload = function (progress_ev) {
+    hr.onload = (_) => {
       /* build form data */
       var form = new FormData();
-      form.append("hydla_code", editor.getValue());
+      form.append("hydla_code", hydla);
       var options_value = "";
       let phase_num = <HTMLInputElement>document.getElementById("phase_num");
       let simulation_time = <HTMLInputElement>document.getElementById("simulation_time");

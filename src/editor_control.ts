@@ -7,6 +7,7 @@ import "ace-builds/src-noconflict/keybinding-emacs"
 import "ace-builds/src-noconflict/keybinding-vim"
 import { DOMControl } from "./dom_control";
 import { StorageControl } from "./storage_control";
+import { HyLaGIController } from "./hylagi";
 
 /* set default hydla code */
 const default_hydla = `// a sample hydla code: bouncing_particle.hydla
@@ -46,7 +47,7 @@ export class EditorControl {
     this.editor.commands.addCommand({
       name: "runHyLaGI",
       bindKey: { win: "Ctrl-Enter", mac: "Command-Enter" },
-      exec: function (editor) { sendHydLa(); },
+      exec: function (editor) { EditorControl.sendHydLa(); },
       readOnly: true
     });
 
@@ -67,6 +68,10 @@ export class EditorControl {
         that.autosave_changed = true;
       }
     });
+  }
+
+  static sendHydLa() {
+    HyLaGIController.sendHydLa(this.editor.getValue());
   }
 
   /* function to save HydLa file */

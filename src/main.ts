@@ -31,7 +31,7 @@ function toggleInputPane() {
 //     killHyLaGI();
 //   }
 //   else {
-//     sendHydLa();
+//     EditorControl.sendHydLa();
 //   }
 // }
 
