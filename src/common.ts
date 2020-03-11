@@ -1,6 +1,8 @@
 import { Graph } from "./three_init";
 import { PlotLineMap } from "./plot_line";
 import { DatGUIControl } from "./graph_axis";
+import Materialize from "materialize-css";
+import { NewUI } from "./new_ui";
 
 const key_binding_selector = <HTMLSelectElement>document.getElementById("key_binding_selector");
 const theme_selector = <HTMLSelectElement>document.getElementById("theme_selector");
@@ -15,9 +17,12 @@ export class CommonData {
   current_hydat:Hydat;
   settingsForCurrentHydat = {};
 
+  new_ui: NewUI;
+
   constructor() {
     this.browser_storage = localStorage;
-    initScrollZoom();
+
+    this.new_ui = new NewUI(this.graph.controls);
 
     /* initialize materialize components */
     $('#file-dropdown-button').dropdown({
@@ -158,8 +163,19 @@ export class CommonData {
       console.log(e.stack);
       showToast("Failed to load hydat: " + e.name + "(" + e.message + ")", 3000, "red darken-4");
     }
-    clearPlot();
+    this.graph.clearPlot();
     this.initVariableSelector(hydat);
     update_axes(true);
+  }
+
+  showToast(message: string, duration: number, classes: string) {
+    Materialize.toast({ html: message, displayLength: duration, classes: classes });
+    let toast_container = document.getElementById("toast-container");
+    const MAX_CHILDREN_NUM = 5;
+    if (toast_container.children.length > MAX_CHILDREN_NUM) {
+      for (let i = 0; i < toast_container.children.length - MAX_CHILDREN_NUM; i++) {
+        toast_container.removeChild(toast_container.children[i]);
+      }
+    }
   }
 }

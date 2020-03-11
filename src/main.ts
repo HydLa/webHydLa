@@ -1,9 +1,5 @@
 import $ from 'jquery';
-import Materialize from "materialize-css";
 import { CommonData } from "./common";
-
-
-
 
 // $(document).ready(function () {
 let common = new CommonData();
@@ -168,13 +164,3 @@ function toggleInputPane() {
 //TODO: implement this in more elegant way
 setTimeout(() => { graph.resizeGraphRenderer() }, 200);
 
-function showToast(message: string, duration: number, classes: string) {
-  Materialize.toast({ html: message, displayLength: duration, classes: classes });
-  let toast_container = document.getElementById("toast-container");
-  const MAX_CHILDREN_NUM = 5;
-  if (toast_container.children.length > MAX_CHILDREN_NUM) {
-    for (let i = 0; i < toast_container.children.length - MAX_CHILDREN_NUM; i++) {
-      toast_container.removeChild(toast_container.children[i]);
-    }
-  }
-}
