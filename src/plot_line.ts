@@ -38,7 +38,7 @@ export class PlotLine {
     this.y_item.onChange(this.getUpdateFunction(this.y_item));
     this.z_item = this.folder.add(this.settings, "z");
     this.folder.add(this.settings, "remove");
-    this.folder.add(this.settings, "dashed").onChange(function () { replot(this) });
+    this.folder.add(this.settings, "dashed").onChange(function () { this.replot() });
     this.z_item.onChange(this.getUpdateFunction(this.z_item));
   }
 
@@ -76,7 +76,7 @@ export class PlotLine {
 
   removeFolder() {
     this.folder.close();
-    dat_gui_variable_folder.removeFolder(this.folder);
+    DatGUIControl.variable_folder.removeFolder(this.folder);
   }
 
   replot() {
@@ -100,7 +100,7 @@ export class PlotLine {
       this.plot_ready = undefined;
       this.last_plot_time = new Date().getTime();
       if (PlotControl.PlotStartTime === undefined) PlotControl.PlotStartTime = new Date().getTime();
-      PlotControl.add_plot_each(plot_information.phase_index_array, plot_information.axes, plot_information.line, plot_information.width, plot_information.color, plot_information.dt, plot_information.parameter_condition_list, 0, []);
+      AnimationControl.add_plot_each(plot_information.phase_index_array, plot_information.axes, plot_information.line, plot_information.width, plot_information.color, plot_information.dt, plot_information.parameter_condition_list, 0, []);
     }
   }
 }
