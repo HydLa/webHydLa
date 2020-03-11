@@ -22,6 +22,8 @@ INIT, FALL << BOUNCE.\n\
 
 export class EditorControl {
   editor: ace.Ace.Editor;
+  autosave_event_enabled = true;
+  autosave_changed = false;
   constructor() {
     /* ID="editor" な div をエディタにする */
     this.editor = ace.edit("editor");
@@ -58,5 +60,94 @@ export class EditorControl {
       this.editor.setValue(default_hydla);
     }
     this.editor.clearSelection();
+
+    let that = this;
+    this.editor.on("change", (_) => {
+      if (that.autosave_event_enabled) {
+        that.saveHydlaToWebstorage();
+      } else {
+        that.autosave_changed = true;
+      }
+    });
+  }
+
+  /* function to save HydLa file */
+  saveHydla() {
+    var blob = new Blob([this.editor.getValue()])
+    var object = window.URL.createObjectURL(blob);
+    var d = new Date();
+    var date = d.getFullYear() + "-" + d.getMonth() + 1 + "-" + d.getDate() + "T" + d.getHours() + "-" + d.getMinutes() + "-" + d.getSeconds();
+    var a = document.createElement("a");
+    a.href = object;
+    a.download = date + ".hydla";
+    var event = document.createEvent("MouseEvents");
+    event.initMouseEvent(
+      "click", true, false, window, 0, 0, 0, 0, 0
+      , false, false, false, false, 0, null
+    );
+    a.dispatchEvent(event);
+  }
+
+  loadFile() {
+    var i = document.createElement("input");
+    i.type = "file";
+    var event = document.createEvent("MouseEvents");
+    event.initMouseEvent(
+      "click", true, false, window, 0, 0, 0, 0, 0
+      , false, false, false, false, 0, null
+    );
+    i.addEventListener("change", (_) => {
+      var input_file = i.files[0];
+      var fr = new FileReader();
+      fr.readAsText(input_file);
+      var splitted_strs = input_file.name.split(".");
+      var ext = splitted_strs[splitted_strs.length - 1].toLowerCase();
+      if (ext == "hydat") {
+        fr.onload = (_) => {
+          loadHydat(JSON.parse(<string>fr.result));
+        };
+      }
+      else {
+        browser_storage.setItem("hydla_name", input_file.name);
+        fr.onload = (_) => {
+          this.editor.setValue(<string>fr.result);
+        };
+      }
+    }, false);
+    i.dispatchEvent(event);
+  }
+
+  /* function to save Hydat file */
+  saveHydat() {
+    var blob = new Blob([JSON.stringify(current_hydat)]);
+    var object = window.URL.createObjectURL(blob);
+    var d = new Date();
+    var date = d.getFullYear() + "-" + d.getMonth() + 1 + "-" + d.getDate() + "T" + d.getHours() + "-" + d.getMinutes() + "-" + d.getSeconds();
+    var a = document.createElement("a");
+    a.href = object;
+    a.download = date + ".hydat";
+    var event = document.createEvent("MouseEvents");
+    event.initMouseEvent(
+      "click", true, false, window, 0, 0, 0, 0, 0
+      , false, false, false, false, 0, null
+    );
+    a.dispatchEvent(event);
+  }
+
+  /* function to save HydLa code into Web Storage */
+  saveHydlaToWebstorage() {
+    this.autosave_event_enabled = false;
+    this.autosave_changed = false;
+    browser_storage.setItem("hydla", this.editor.getValue());
+    Materialize.toast({ html: "Saved", displayLength: 1000 });
+
+    let that = this;
+    setTimeout(function () {
+      if (that.autosave_changed) {
+        that.saveHydlaToWebstorage();
+      } else {
+        that.autosave_event_enabled = true;
+      }
+    }, 5000);
   }
 }

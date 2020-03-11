@@ -1,60 +1,5 @@
-import { plot_lines, PlotLine } from "./plot_line";
-import { graph, plot_settings } from "./main";
-import THREE from "three";
-
-function makeAxis(range:Range, delta: number, color: THREE.Color) {
-  var geometry = new THREE.Geometry();
-  var material = new THREE.LineBasicMaterial({ vertexColors: true })
-  // var i;
-  // var start = Math.floor(range.min / delta) * delta;
-  // var end = range.max;
-  // for(i=start; i<=end; i+=delta){
-  //   geometry.vertices.push(new THREE.Vector3(-1,0,i), new THREE.Vector3(1,0,i));
-  //   geometry.colors.push(color,color);
-  // }
-  geometry.vertices.push(new THREE.Vector3(0, 0, range.min), new THREE.Vector3(0, 0, range.max));
-  geometry.colors.push(color, color);
-  var grid_obj = new THREE.Object3D();
-  grid_obj.add(new THREE.LineSegments(geometry, material));
-  return grid_obj;
-};
-
-
-function clearPlot() {
-  graph.scene = new THREE.Scene();
-  // TODO: 複数のプロットが存在するときの描画範囲について考える
-  // TODO: 設定を変更した時に動的に変更が反映されるようにする
-}
-
-function updateAxisScaleLabel(ranges:ComparableTriplet<Range>) {
-  var canvas = <HTMLCanvasElement>document.getElementById('scaleLabelCanvas');
-  if (!canvas || !canvas.getContext) {
-    return false;
-  }
-
-  var ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (!plot_settings.scaleLabelVisible) return;
-  ctx.font = "20px 'Arial'";
-
-  const sub = (range:Range,axisColor:string,embedFunc:(arg:number)=>THREE.Vector3) => {
-    let scale_interval = calculateScaleInterval(range);
-    let fixed = calculateNumberOfDigits(scale_interval);
-    ctx.fillStyle = axisColor;
-    let start = Math.floor(range.min / scale_interval) * scale_interval;
-
-    for (let i = 0; start + i * scale_interval <= range.max; i++) {
-      const current = start + i * scale_interval;
-      const vec = embedFunc(current);
-      const pos = graph.toScreenPosition(vec);
-      ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
-    }
-  }
-
-  sub(ranges.x, axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
-  sub(ranges.y, axisColors.y, (arg) => new THREE.Vector3(0, arg, 0));
-  sub(ranges.z, axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
-}
+// (() => {
+// declare let THREE: never;
 
 function calculateNumberOfDigits(interval) {
   let num = Math.floor(Math.log(interval) / Math.log(10));
@@ -64,7 +9,7 @@ function calculateNumberOfDigits(interval) {
   return num;
 }
 
-function calculateScaleInterval(range:Range) {
+function calculateScaleInterval(range: Range) {
   var log = Math.log(range.getInterval()) / Math.log(10);
   var floor = Math.floor(log);
   var fractional_part = log - floor;
@@ -76,24 +21,6 @@ function calculateScaleInterval(range:Range) {
 }
 
 
-var current_hydat:Hydat;
-
-function loadHydat(hydat:HydatRaw) {
-  try {
-    browser_storage.setItem("hydat", JSON.stringify(hydat));
-    current_hydat = new Hydat(hydat);
-    parameter_setting(current_hydat.parameters);
-    modifyNameLabel(current_hydat.name);
-  }
-  catch (e) {
-    console.log(e);
-    console.log(e.stack);
-    showToast("Failed to load hydat: " + e.name + "(" + e.message + ")", 3000, "red darken-4");
-  }
-  clearPlot();
-  initVariableSelector(hydat);
-  update_axes(true);
-}
 
 function modifyNameLabel(name) {
   var text = "";
@@ -128,25 +55,11 @@ var plot_animate = [];
 //   }
 // }
 
-var PlotStartTime;
 var array = -1;
 
 
 
 
-function plot_ready(line: PlotLine) {
-  var plot_information = line.plot_information;
-  if (plot_information.line.plotting) {
-    line.plot_ready = requestAnimationFrame(function () { plot_ready(line) });
-  }
-  else {
-    line.plotting = true;
-    line.plot_ready = undefined;
-    line.last_plot_time = new Date().getTime();
-    if (PlotStartTime == undefined) PlotStartTime = new Date().getTime();
-    add_plot_each(plot_information.phase_index_array, plot_information.axes, plot_information.line, plot_information.width, plot_information.color, plot_information.dt, plot_information.parameter_condition_list, 0, []);
-  }
-}
 
 var animation_line = [];
 var current_line_vec_animation = [];
@@ -180,7 +93,7 @@ function add_plot_each(phase_index_array, axes, line: PlotLine, width, color, dt
 
         var cylindersGeometry = new THREE.Geometry();
         let scaledWidth = 0.5 * width / graph.camera.zoom;
-        var addCylinder = function (startPos:THREE.Vector3, endPos:THREE.Vector3) {
+        var addCylinder = function (startPos: THREE.Vector3, endPos: THREE.Vector3) {
           let directionVec = endPos.clone().sub(startPos);
           const height = directionVec.length();
           directionVec.normalize();
@@ -467,7 +380,7 @@ function checkAndStopPreloader() {
     showToast("Plot finished.", 1000, "blue");
   }
   PlotStartTime = undefined;
-  graph_renderer.render(graph_scene, graph_camera);
+  graph.renderer.render(graph.scene, graph.camera);
   stopPreloader();
 }
 
@@ -531,7 +444,7 @@ function expandTwoPlanesOfFrustum(plane1, plane2) {
   return;
 }
 
-class Range{
+class Range {
   min: number;
   max: number;
   constructor(min: number, max: number) {
@@ -543,7 +456,7 @@ class Range{
     return this.max - this.min;
   }
 
-  equals(r:Range) {
+  equals(r: Range) {
     return this.min === r.min && this.max === r.max;
   }
 
@@ -552,13 +465,13 @@ class Range{
   }
 }
 
-function getRangesOfFrustum(camera: THREE.OrthographicCamera):ComparableTriplet<Range> {
+function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet<Range> {
   let ranges = new ComparableTriplet<Range>(
     Range.getEmpty(),
     Range.getEmpty(),
     Range.getEmpty()
   );
-  
+
   // Near Plane dimensions
   var hNear = (camera.top - camera.bottom) / camera.zoom;
   var wNear = (camera.right - camera.left) / camera.zoom;
@@ -693,7 +606,7 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera):ComparableTriplet<
 
 /// calculate cross point of the plane and three axes(x, y, z).
 /// The plane is defined by point_a, point_b, point_c and point_d.(The forth parameter is required to determine the range of the plane.)
-function calculate_intercept(point_a:THREE.Vector3, point_b:THREE.Vector3, point_c:THREE.Vector3, point_d:THREE.Vector3, frustum:THREE.Frustum) {
+function calculate_intercept(point_a: THREE.Vector3, point_b: THREE.Vector3, point_c: THREE.Vector3, point_d: THREE.Vector3, frustum: THREE.Frustum) {
   var ab_vec = new THREE.Vector3().subVectors(point_b, point_a);
   var ac_vec = new THREE.Vector3().subVectors(point_c, point_a);
   var cross_product = ab_vec.clone().cross(ac_vec);
@@ -733,7 +646,7 @@ class ComparableTriplet<T extends { equals(t: T): boolean; }> extends Triplet<T>
   }
 }
 
-class RGB{
+class RGB {
   r: number;
   g: number;
   b: number;
@@ -749,13 +662,13 @@ class RGB{
   }
 }
 
-const axisColorBases = new ComparableTriplet<RGB>(
+const axisColorBases = new Triplet<RGB>(
   new RGB(1.0, 0.3, 0.3),
   new RGB(0.3, 1.0, 0.3),
   new RGB(0.3, 0.3, 1.0)
 );
 
-let axisColors = new Triplet<string>("#FF8080","#80FF80","#8080FF")
+let axisColors = new Triplet<string>("#FF8080", "#80FF80", "#8080FF")
 
 let prev_ranges: ComparableTriplet<Range>;
 
@@ -766,7 +679,7 @@ function update_axes(force: boolean) {
 
     var max_interval_px = 200; // 50 px
     const min_visible_ticks = Math.floor(Math.max(graph.elem.clientWidth, graph.elem.clientHeight) / max_interval_px);
-    const min_visible_range = Math.min(ranges.x.getInterval(),ranges.y.getInterval(),ranges.z.getInterval());
+    const min_visible_range = Math.min(ranges.x.getInterval(), ranges.y.getInterval(), ranges.z.getInterval());
     var max_interval = min_visible_range / min_visible_ticks;
 
     if (xAxisLine !== undefined) {
@@ -791,16 +704,16 @@ function update_axes(force: boolean) {
 }
 
 function guard() {
-  g_geometry = new THREE.PlaneGeometry(100, 100, 100, 100);
-  g_material = new THREE.MeshBasicMaterial({
+  const g_geometry = new THREE.PlaneGeometry(100, 100, 100, 100);
+  const g_material = new THREE.MeshBasicMaterial({
     color: 0x0000ff
     , wireframe: true
   });
-  guard = new THREE.Mesh(g_geometry, g_material);
+  let guard = new THREE.Mesh(g_geometry, g_material);
   guard.position.set(0, 0, 0);
   //guard.rotation.set(0, Math.PI/2, Math.PI/2);//y
   guard.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
-  graph_scene.add(guard);
+  graph.scene.add(guard);
 }
 
 
@@ -813,10 +726,10 @@ function range_make_all() {
   face_a = [];
   var arr_face = 0;
   if (animation_line.length != 0) {
-    for (j = 0; j < animation_line.length - 1; j++) {
+    for (let j = 0; j < animation_line.length - 1; j++) {
       var face_geometry = new THREE.Geometry();
       var time_r = 0;
-      for (i = 0; i < animation_line.maxlen; i++) {
+      for (let i = 0; i < animation_line.maxlen; i++) {
         if (animation_line[j][time_r] == undefined) {
           break;
         } else if (animation_line[j + 1][time_r] == undefined) {
@@ -827,13 +740,13 @@ function range_make_all() {
         }
         time_r++;
       }
-      for (k = 0; k < face_geometry.vertices.length - 2; k++) {
+      for (let k = 0; k < face_geometry.vertices.length - 2; k++) {
         face_geometry.faces.push(new THREE.Face3(k, (k + 1), (k + 2)));
       }
       face_geometry.computeFaceNormals();
       face_geometry.computeVertexNormals();
       face_all = new THREE.Mesh(face_geometry, new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: true, transparent: true, side: THREE.DoubleSide, opacity: 0.5 }));
-      graph_scene.add(face_all);
+      graph.scene.add(face_all);
       face_a[arr_face] = (face_all);
       arr_face++;
     }
@@ -862,3 +775,4 @@ function calculateColorWithBrightness(base, brightness) {
     + ("00" + Math.floor(base.g * brightness).toString(16)).slice(-2)
     + ("00" + Math.floor(base.b * brightness).toString(16)).slice(-2);
 }
+// }

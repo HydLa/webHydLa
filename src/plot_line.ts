@@ -19,6 +19,8 @@ export class PlotLine {
   plot_ready: number;
   plot_information: PlotInformation;
 
+  last_plot_time: number;
+
   constructor(x_name: string, y_name: string, z_name: string, index: number) {
     this.index = index;
     this.name = "plot" + this.index;
@@ -74,7 +76,7 @@ export class PlotLine {
   replot() {
     remove_plot(this);
     remove_mesh(plot_animate);
-    add_plot(this);
+    this.add_plot();
     if (this.settings.x != "" && this.settings.y != "" && this.settings.z != "") {
       if (this.remain === undefined) {
         settingsForCurrentHydat.plot_line_settings[this.index] = this.settings;
@@ -113,6 +115,21 @@ export class PlotLine {
     animation_line = [];
     animation_line.maxlen = 0;
     if (this.plot_ready == undefined) requestAnimationFrame(function () { plot_ready(this) });
+  }
+
+  plotReady() {
+    var plot_information = this.plot_information;
+    if (plot_information.line.plotting) {
+      let that = this;
+      this.plot_ready = requestAnimationFrame(function () { that.plotReady() });
+    }
+    else {
+      this.plotting = true;
+      this.plot_ready = undefined;
+      this.last_plot_time = new Date().getTime();
+      if (PlotStartTime == undefined) PlotStartTime = new Date().getTime();
+      add_plot_each(plot_information.phase_index_array, plot_information.axes, plot_information.line, plot_information.width, plot_information.color, plot_information.dt, plot_information.parameter_condition_list, 0, []);
+    }
   }
 }
 

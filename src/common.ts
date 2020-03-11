@@ -2,12 +2,18 @@ import { Graph } from "./three_init";
 import { PlotLineMap } from "./plot_line";
 import { DatGUIControl } from "./graph_axis";
 
+const key_binding_selector = <HTMLSelectElement>document.getElementById("key_binding_selector");
+const theme_selector = <HTMLSelectElement>document.getElementById("theme_selector");
+
 export class CommonData {
   plot_settings: PlotSettings;
   graph = new Graph();
   plot_lines = new PlotLineMap();
   dat_gui_control: DatGUIControl;
   browser_storage: Storage;
+
+  current_hydat:Hydat;
+  settingsForCurrentHydat = {};
 
   constructor() {
     this.browser_storage = localStorage;
@@ -41,11 +47,11 @@ export class CommonData {
     this.dat_gui_control = new DatGUIControl();
 
     if (saved_hydat) {
-      loadHydat(JSON.parse(saved_hydat));
+      this.loadHydat(JSON.parse(saved_hydat));
     }
 
-    if (plot_settings.backgroundColor != undefined) {
-      setBackgroundColor(plot_settings.backgroundColor);
+    if (this.plot_settings.backgroundColor !== undefined) {
+      setBackgroundColor(this.plot_settings.backgroundColor);
     }
 
     this.graph.update2DMode(this.plot_settings.twoDimensional);
@@ -66,5 +72,94 @@ export class CommonData {
   }
   savePlotSettings() {
     browser_storage.setItem("plot_settings", JSON.stringify(plot_settings));
+  }
+
+  /* function to save editor into Web Storage */
+  saveKeyBindingToWebstorage() {
+    var bind_selector = key_binding_selector.value;
+    browser_storage.setItem("key_binding", bind_selector);
+  }
+
+  loadKeyBindingFromWebstorage() {
+    var key_binding_setting = browser_storage.getItem("key_binding");
+    if (key_binding_setting != undefined) {
+      key_binding_selector.value = browser_storage.getItem("key_binding");
+    }
+    else {
+      key_binding_selector.value = key_binding_selector.options[key_binding_selector.selectedIndex].value;
+      browser_storage.setItem("key_binding", key_binding_selector.value);
+    }
+    if (key_binding_selector.value == "") editor.setKeyboardHandler(null);
+    else editor.setKeyboardHandler(key_binding_selector.value);
+  }
+
+  /* function to save theme into Web Storage */
+  saveThemeToWebstorage() {
+    var theme = theme_selector.value;
+    browser_storage.setItem("theme", theme);
+  }
+
+  loadThemeFromWebstorage() {
+    var theme_setting = browser_storage.getItem("theme");
+    if (theme_setting != undefined) {
+      theme_selector.value = browser_storage.getItem("theme");
+    } else {
+      browser_storage.setItem("theme", theme_selector.value);
+    }
+    editor.setTheme("ace/theme/" + theme_selector.value);
+  }
+
+  /* function to update variable selector for graph */
+  initVariableSelector(hydat) {
+    this.plot_lines.removeAllFolders();
+
+    this.plot_lines.reset();
+
+    //var guard_list ={x:["x", "xSWON"]};
+
+    let str = this.browser_storage.getItem(hydat.name);
+    if (str !== null) {
+      this.settingsForCurrentHydat = JSON.parse(str);
+      var line_settings = this.settingsForCurrentHydat.plot_line_settings;
+      for (var i in line_settings) {
+        let line = this.plot_lines.addNewLineWithIndex(line_settings[i].x, line_settings[i].y, line_settings[i].z, i);
+        /*for(key in guard_list){
+          if(line_settings[i].x == key){
+            for(var l in guard_list.x){
+              addNewLineWithIndexGuard(guard_list.x[l], "x'", "0", i+l);
+            }
+          }
+        }*/
+        if (line.settings.x != "" || line.settings.y != "" || line.settings.z != "") line.folder.open();
+      }
+      this.plot_lines.replotAll();
+    }
+
+    if (this.plot_lines.getLength() == 0) {
+      this.settingsForCurrentHydat = { plot_line_settings: {} };
+      let first_line = this.plot_lines.addNewLine("t", this.current_hydat !== undefined ? this.current_hydat.variables[0] : "", "0");
+      first_line.color_angle = 0;
+      first_line.replot();
+      first_line.folder.open();
+    }
+
+    dat_gui_variable_folder.open();
+  }
+  
+  loadHydat(hydat:HydatRaw) {
+    try {
+      this.browser_storage.setItem("hydat", JSON.stringify(hydat));
+      this.current_hydat = new Hydat(hydat);
+      parameter_setting(this.current_hydat.parameters);
+      modifyNameLabel(this.current_hydat.name);
+    }
+    catch (e) {
+      console.log(e);
+      console.log(e.stack);
+      showToast("Failed to load hydat: " + e.name + "(" + e.message + ")", 3000, "red darken-4");
+    }
+    clearPlot();
+    this.initVariableSelector(hydat);
+    update_axes(true);
   }
 }

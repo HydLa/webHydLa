@@ -195,4 +195,57 @@ export class Graph {
     //TODO: do this without timer
     if (this.resizeLoopCount < 80) setTimeout(() => { this.resizeGraphArea(); }, 10);
   }
+
+  static makeAxis(range: Range, delta: number, color: THREE.Color) {
+    var geometry = new THREE.Geometry();
+    var material = new THREE.LineBasicMaterial({ vertexColors: true })
+    // var i;
+    // var start = Math.floor(range.min / delta) * delta;
+    // var end = range.max;
+    // for(i=start; i<=end; i+=delta){
+    //   geometry.vertices.push(new THREE.Vector3(-1,0,i), new THREE.Vector3(1,0,i));
+    //   geometry.colors.push(color,color);
+    // }
+    geometry.vertices.push(new THREE.Vector3(0, 0, range.min), new THREE.Vector3(0, 0, range.max));
+    geometry.colors.push(color, color);
+    var grid_obj = new THREE.Object3D();
+    grid_obj.add(new THREE.LineSegments(geometry, material));
+    return grid_obj;
+  };
+
+  clearPlot() {
+    this.scene = new THREE.Scene();
+    // TODO: 複数のプロットが存在するときの描画範囲について考える
+    // TODO: 設定を変更した時に動的に変更が反映されるようにする
+  }
+
+  updateAxisScaleLabel(ranges: ComparableTriplet<Range>) {
+    var canvas = <HTMLCanvasElement>document.getElementById('scaleLabelCanvas');
+    if (!canvas || !canvas.getContext) {
+      return false;
+    }
+
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!plot_settings.scaleLabelVisible) return;
+    ctx.font = "20px 'Arial'";
+
+    const sub = (range: Range, axisColor: string, embedFunc: (arg: number) => THREE.Vector3) => {
+      let scale_interval = calculateScaleInterval(range);
+      let fixed = calculateNumberOfDigits(scale_interval);
+      ctx.fillStyle = axisColor;
+      let start = Math.floor(range.min / scale_interval) * scale_interval;
+
+      for (let i = 0; start + i * scale_interval <= range.max; i++) {
+        const current = start + i * scale_interval;
+        const vec = embedFunc(current);
+        const pos = graph.toScreenPosition(vec);
+        ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
+      }
+    }
+
+    sub(ranges.x, axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
+    sub(ranges.y, axisColors.y, (arg) => new THREE.Vector3(0, arg, 0));
+    sub(ranges.z, axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
+  }
 }
