@@ -38,7 +38,7 @@ export class Hydat {
   }
 }
 
-class HydatRaw{
+export class HydatRaw{
   name: string;
   first_phases: HydatPhaseRaw[];
   parameters: { [key: string]: HydatParameterRaw };
