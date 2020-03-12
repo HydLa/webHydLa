@@ -2,6 +2,8 @@ import Materialize from "materialize-css";
 import $ from 'jquery';
 import { GraphControl } from "./graph_control";
 import { EditorControl } from "./editor_control";
+import { HydatControl } from "./hydat_control";
+import { HyLaGIController } from "./hylagi";
 
 export class DOMControl {
   static init() {
@@ -89,6 +91,22 @@ export class DOMControl {
             $("#secretdiv").remove();
           })
       });
+    
+    document.getElementById("load-file")?.addEventListener("click", () => {
+      EditorControl.loadFile();
+    });
+    document.getElementById("save-hydla")?.addEventListener("click", () => {
+      EditorControl.saveHydla();
+    });
+    document.getElementById("save-hydat")?.addEventListener("click", () => {
+      HydatControl.saveHydat();
+    });
+    document.getElementById("run_button")?.addEventListener("click", () => {
+      HyLaGIController.exec();
+    });
+    document.getElementById("toggle-input-pane")?.addEventListener("click", () => {
+      DOMControl.toggleInputPane();
+    });
   }
   static showToast(message: string, duration: number, classes: string) {
     Materialize.toast({ html: message, displayLength: duration, classes: classes });

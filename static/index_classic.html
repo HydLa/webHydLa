@@ -59,9 +59,9 @@
         </div>
         <a class="waves-effect waves-light btn dropdown-button" id="file-dropdown-button" data-activates="dropdown-file">Save/Load<i class="mdi-file-attachment right"></i></a>
         <ul id="dropdown-file" class="dropdown-content">
-          <li><a onClick='loadFile();'>Load File</a></li>
-          <li><a onClick='saveHydla();'>Save HydLa</a></li>
-          <li><a onClick='saveHydat();'>Save Hydat</a></li>
+          <li><a id="load-file" href="#">Load File</a></li>
+          <li><a id="save-hydla" href="#">Save HydLa</a></li>
+          <li><a id="save-hydat" href="#">Save Hydat</a></li>
         </ul>
         <a class="waves-effect waves-light btn modal-trigger right" href="#modal_about">About<i class="mdi-action-help right"></i></a>
         <div id="modal_about" class="modal">
@@ -119,7 +119,7 @@
                       editor.insert(' <=> []( => ).');
                       });*/
                   </script>
-                  <a class="exec-button waves-effect waves-light btn-floating btn-large red disabled-running z-depth-3" title="RUN/KILL (Shortcut: Ctrl-Enter)" onClick="onExecButtonClick();"><i class="mdi-content-send exec-icon right"></i></a>
+                  <a class="exec-button waves-effect waves-light btn-floating btn-large red disabled-running z-depth-3" title="RUN/KILL (Shortcut: Ctrl-Enter)" id="run_button" href="#"><i class="mdi-content-send exec-icon right"></i></a>
                 </div>
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script>
@@ -179,7 +179,7 @@
           </div>
 
           <div id="v-separator" class="valign-wrapper">
-            <a onClick='toggleInputPane()'>
+            <a href="#" id="toggle-input-pane">
               <i id="v-toggle-icon" class="valign mdi-navigation-chevron-left"></i>
             </a>
           </div>

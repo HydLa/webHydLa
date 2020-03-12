@@ -92,9 +92,9 @@
 						<!-- content of "Save/Load" -->
 						<a class="waves-effect waves-light btn dropdown-button indigo darken-4" id="file-dropdown-button" data-activates="dropdown-file">Save/Load<i class="mdi-file-attachment right"></i></a>
 						<ul id="dropdown-file" class="dropdown-content indigo darken-4">
-							<li><a onClick='loadFile();'>Load File</a></li>
-							<li><a onClick='saveHydla();'>Save HydLa</a></li>
-							<li><a onClick='saveHydat();'>Save Hydat</a></li>
+							<li><a id="load-file" href="#">Load File</a></li>
+							<li><a id="save-hydla" href="#">Save HydLa</a></li>
+							<li><a id="save-hydat" href="#">Save Hydat</a></li>
 						</ul>
 
 
@@ -148,7 +148,7 @@
 						<!-- nd_mode_check_box はmain.jsの中でデフォルトで"checked"になっている -->
 						<div class="each_option">ND mode: <input id="nd_mode_check_box" type="checkbox" class="options_checkbox"></div>
 						<div class="each_option">HTML mode: <input id="html_mode_check_box" type="checkbox" class="options_checkbox"></div>
-						<input type="submit" value="RUN" class="exec-button disabled-running" title="RUN/KILL (Shortcut: Ctrl-Enter)" onClick="onExecButtonClick();" id="run_button">
+						<input type="submit" value="RUN" class="exec-button disabled-running" title="RUN/KILL (Shortcut: Ctrl-Enter)" id="run_button">
 						<!-- TODO: クリックして処理中は"RUN"から"KILL"に表示を変更する -->
 					</div>
 
