@@ -85,7 +85,8 @@ export class PlotLineMapControl {
       HydatControl.settingsForCurrentHydat = JSON.parse(str);
       var line_settings = HydatControl.settingsForCurrentHydat.plot_line_settings;
       for (var i in line_settings) {
-        let line = this.addNewLineWithIndex(line_settings[i].x, line_settings[i].y, line_settings[i].z, i);
+        let index = parseInt(i);
+        let line = this.addNewLineWithIndex(line_settings[index].x, line_settings[index].y, line_settings[index].z, index);
         /*for(key in guard_list){
           if(line_settings[i].x == key){
             for(var l in guard_list.x){
@@ -99,7 +100,7 @@ export class PlotLineMapControl {
     }
 
     if (this.getLength() == 0) {
-      HydatControl.settingsForCurrentHydat = { plot_line_settings: {} };
+      HydatControl.settingsForCurrentHydat = { plot_line_settings: [] };
       let first_line = this.addNewLine("t", HydatControl.current_hydat !== undefined ? HydatControl.current_hydat.variables[0] : "", "0");
       first_line.color_angle = 0;
       first_line.replot();

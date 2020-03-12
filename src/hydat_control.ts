@@ -8,7 +8,13 @@ import { DatGUIControl } from "./dat_gui_control";
 
 export class HydatControl{
   static current_hydat:Hydat;
-  static settingsForCurrentHydat = {};
+  static settingsForCurrentHydat:{plot_line_settings?:{
+    x: string;
+    y: string;
+    z: string;
+    remove: () => void;
+    dashed: boolean;
+  }[]} = {};
 
   static init(saved_hydat:string) {
     if (saved_hydat) {
