@@ -24,10 +24,13 @@ export class GraphControl {
 
   static resizeLoopCount: number = 0;
 
-  static face_a:THREE.Mesh[];
+  static face_a: THREE.Mesh[];
+  
+  static lineIDSet: Set<number>;
 
   static init() {
     this.scene = new THREE.Scene();
+    this.lineIDSet = new Set<number>();
 
     // PerspectiveCamera
     // camera = new THREE.PerspectiveCamera(75, 600 / 400, 1, 1000);

@@ -27,6 +27,8 @@ export class PlotLine {
 
   last_plot_time: number;
 
+  plot: THREE.Mesh[];
+
   constructor(x_name: string, y_name: string, z_name: string, index: number) {
     this.index = index;
     this.name = "plot" + this.index;

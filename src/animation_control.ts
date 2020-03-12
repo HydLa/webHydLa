@@ -123,7 +123,7 @@ export class AnimationControl {
             cylindersGeometry,
             new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
           );
-          three_line.isLine = true;
+          GraphControl.lineIDSet.add(three_line.id);
           GraphControl.scene.add(three_line);
           line.plot.push(three_line);
 
@@ -212,6 +212,7 @@ export class AnimationControl {
     if (line.plot !== undefined) {
       for (var i = 0; i < line.plot.length; i++) {
         GraphControl.scene.remove(line.plot[i]);
+        GraphControl.lineIDSet.delete(line.plot[i].id);
       }
       delete line.plot[i];
     }
@@ -219,8 +220,8 @@ export class AnimationControl {
   }
 
   static remove_mesh(line:THREE.Mesh[]) {
-    if (line != undefined) {
-      for (var i = 0; i < line.length; i++) {
+    if (line !== undefined) {
+      for (let i = 0; i < line.length; i++) {
         GraphControl.scene.remove(line[i]);
         delete line[i];
       }
@@ -299,33 +300,43 @@ export class AnimationControl {
       AnimationControl.plot_animate = [];
       let arr = 0;
       for (let i = 0; i < GraphControl.scene.children.length - 1; i++) {
-        if ('isLine' in GraphControl.scene.children[i]) {
+        // if ('isLine' in GraphControl.scene.children[i]) {
+        if (GraphControl.lineIDSet.has(GraphControl.scene.children[i].id)) {
+          let next_sphere = GraphControl.scene.children[i + 1];
+          if (!(next_sphere instanceof THREE.Mesh)) {
+            console.error("unexpected: !(next_sphere instanceof THREE.Mesh)")
+            continue;
+          }
           if (AnimationControl.animation_line[arr] === undefined) {
             continue;
           }
           if (this.time > AnimationControl.maxlen - 1) {
             this.time = 0;
           }
+          if (!(next_sphere.material instanceof THREE.MeshBasicMaterial)) {
+            console.error("unexpected: !(next_sphere.material instanceof THREE.MeshBasicMaterial)")
+            continue;
+          }
           if (this.time == 0) {
-            GraphControl.scene.children[i + 1].material.color.set(
+            next_sphere.material.color.set(
               AnimationControl.animation_line[arr].color
             );
           }
           if (this.time > AnimationControl.animation_line[arr].length - 1) {
-            GraphControl.scene.children[i + 1].material.color.set(
+            next_sphere.material.color.set(
               198,
               198,
               198
             );
-            AnimationControl.plot_animate[arr] = (GraphControl.scene.children[i + 1]);
+            AnimationControl.plot_animate[arr] = next_sphere;
             arr++;
             continue;
           }
-          GraphControl.scene.children[i + 1].position.set(
+          next_sphere.position.set(
             AnimationControl.animation_line[arr][this.time].x,
             AnimationControl.animation_line[arr][this.time].y,
             AnimationControl.animation_line[arr][this.time].z);
-          AnimationControl.plot_animate[arr] = (GraphControl.scene.children[i + 1]);
+          AnimationControl.plot_animate[arr] = next_sphere;
           arr += 1;
         }
       }
