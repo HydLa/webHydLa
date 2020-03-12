@@ -112,4 +112,19 @@ export class DOMControl {
     document.getElementById("graph-preloader").classList.add("hide");
     document.getElementById("output-preloader").classList.add("hide");
   }
+
+  static toggleInputPane() {
+    var elm = document.getElementById("left-pane");
+    var tgl = document.getElementById("v-toggle-icon");
+    if (elm.getAttribute("style")) {
+      elm.removeAttribute("style");
+      tgl.classList.remove("mdi-navigation-chevron-right");
+      tgl.classList.add("mdi-navigation-chevron-left");
+    } else {
+      elm.style.width = "0px";
+      tgl.classList.remove("mdi-navigation-chevron-left");
+      tgl.classList.add("mdi-navigation-chevron-right");
+    }
+    GraphControl.startResizingGraphArea();
+  }
 }

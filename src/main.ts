@@ -10,21 +10,6 @@ let common = new CommonData();
 
 
 
-function toggleInputPane() {
-  var elm = document.getElementById("left-pane");
-  var tgl = document.getElementById("v-toggle-icon");
-  if (elm.getAttribute("style")) {
-    elm.removeAttribute("style");
-    tgl.classList.remove("mdi-navigation-chevron-right");
-    tgl.classList.add("mdi-navigation-chevron-left");
-  } else {
-    elm.style.width = "0px";
-    tgl.classList.remove("mdi-navigation-chevron-left");
-    tgl.classList.add("mdi-navigation-chevron-right");
-  }
-  startResizingGraphArea();
-}
-
 
 // function onExecButtonClick() {
 //   if (hylagi_running) {
