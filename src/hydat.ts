@@ -27,9 +27,11 @@ export class Hydat {
   name: string;
   first_phases: HydatPhase[];
   parameters: { [key: string]: HydatParameter };
+  variables: string[];
 
   constructor(hydat: HydatRaw) {
     this.name = hydat.name;
+    this.variables = hydat.variables;
     this.first_phases = [];
     for (let ph of hydat.first_phases) {
       this.first_phases.push(new HydatPhase(ph));
@@ -42,6 +44,7 @@ export class HydatRaw{
   name: string;
   first_phases: HydatPhaseRaw[];
   parameters: { [key: string]: HydatParameterRaw };
+  variables: string[];
 }
 
 export class HydatPhase {

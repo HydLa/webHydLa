@@ -2,3 +2,4 @@ secret_key
 /HyLaGI
 node_modules
 static/*.js
+log.txt
