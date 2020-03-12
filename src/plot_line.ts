@@ -5,6 +5,8 @@ import { PlotControl } from "./plot_control";
 import { AnimationControl } from "./animation_control";
 import { HydatControl } from "./hydat_control";
 import { StorageControl } from "./storage_control";
+import { Triplet } from "./plot_utils";
+import { HydatPhase } from "./hydat";
 
 export class PlotLine {
   index: number;
@@ -22,14 +24,14 @@ export class PlotLine {
   z_item: dat.GUIController;
   remain: boolean|undefined;
   color_angle: number = 0;
-  last_edited_input: HTMLInputElement;
-  plotting: boolean;
-  plot_ready: number;
-  plot_information: PlotInformation;
+  last_edited_input: HTMLInputElement|undefined;
+  plotting: boolean = false;
+  plot_ready: number|undefined;
+  plot_information: PlotInformation|undefined;
 
-  last_plot_time: number;
+  last_plot_time: number = 0;
 
-  plot: THREE.Mesh[];
+  plot: THREE.Mesh[]|undefined;
 
   constructor(x_name: string, y_name: string, z_name: string, index: number) {
     this.index = index;
@@ -49,7 +51,7 @@ export class PlotLine {
 
   getUpdateFunction(item: dat.GUIController) {
     let prev: string;
-    return (value) => {
+    return () => {
       this.last_edited_input = <HTMLInputElement>item.domElement.firstChild;
       let val = (<HTMLInputElement>item.domElement.firstChild).value;
       if (prev === undefined || val != prev) {
@@ -96,6 +98,9 @@ export class PlotLine {
 
   plotReady() {
     var plot_information = this.plot_information;
+    if (!plot_information) {
+      throw new Error("unexpected: plot_information is undefined")
+    }
     if (plot_information.line.plotting) {
       let that = this;
       this.plot_ready = requestAnimationFrame(function () { that.plotReady() });
@@ -111,12 +116,12 @@ export class PlotLine {
 }
 
 interface PlotInformation{
-  phase_index_array: { phase, index: number }[];
-  axes;
+  phase_index_array: { phase: HydatPhase, index: number }[];
+  axes: Triplet<Construct>;
   line: PlotLine;
   width: number;
   color: number[];
   dt: number;
-  parameter_condition_list;
+  parameter_condition_list: { [key: string]: Constant }[];
 }
 

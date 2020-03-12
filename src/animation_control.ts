@@ -3,8 +3,8 @@ import { PlotControl } from "./plot_control";
 import { DOMControl } from "./dom_control";
 import * as THREE from "three";
 import { GraphControl } from "./graph_control";
-import { HydatParameter, HydatParameterInterval } from "./hydat";
-import { RGB } from "./plot_utils";
+import { HydatParameter, HydatParameterInterval, HydatPhase } from "./hydat";
+import { RGB, Triplet } from "./plot_utils";
 import { HydatControl } from "./hydat_control";
 
 export class AnimationControl {
@@ -17,18 +17,18 @@ export class AnimationControl {
   static plot_animate: THREE.Mesh[];
 
   static add_plot(line: PlotLine) {
-    var axes;
+    var axes:Triplet<Construct>;
     if (line.settings.x == "" ||
       line.settings.y == "" ||
       line.settings.z == "") {
       return;
     }
     try {
-      axes = {
-        x: Construct.parse(line.settings.x),
-        y: Construct.parse(line.settings.y),
-        z: Construct.parse(line.settings.z)
-      };
+      axes = new Triplet<Construct>(
+        Construct.parse(line.settings.x),
+        Construct.parse(line.settings.y),
+        Construct.parse(line.settings.z)
+      );
       line.updateFolder(true);
     } catch (e) {
       console.log(e);
@@ -57,7 +57,7 @@ export class AnimationControl {
     if (line.plot_ready == undefined) requestAnimationFrame(function () { line.plotReady() });
   }
 
-  static add_plot_each(phase_index_array:{ phase, index: number }[], axes, line: PlotLine, width:number, color:number[], dt:number, parameter_condition_list, current_param_idx, current_line_vec:{vec:THREE.Vector3, isPP:boolean}[]) {
+  static add_plot_each(phase_index_array: { phase: HydatPhase, index: number }[], axes: Triplet<Construct>, line: PlotLine, width: number, color: number[], dt: number, parameter_condition_list: { [key: string]: Constant; }[], current_param_idx: number, current_line_vec: { vec: THREE.Vector3, isPP: boolean }[]) {
     try {
       while (true) {
         if (line.plot_ready) {
@@ -129,6 +129,10 @@ export class AnimationControl {
           );
           GraphControl.lineIDSet.add(three_line.id);
           GraphControl.scene.add(three_line);
+
+          if (!line.plot) {
+            throw new Error("unexpected: line.plot is undefined");
+          }
           line.plot.push(three_line);
 
           AnimationControl.animation_line[PlotControl.array].vecs = (PlotControl.current_line_vec_animation);
@@ -239,7 +243,7 @@ export class AnimationControl {
     AnimationControl.add_plot(line);
   }
 
-  static check_parameter_condition(parameter_maps: { [key: string]: HydatParameter }[], parameter_condition_list) {
+  static check_parameter_condition(parameter_maps: { [key: string]: HydatParameter }[], parameter_condition_list:{[key:string]:Constant}) {
     let epsilon = 0.0001;
     for (let map of parameter_maps) {
       let included = true;
@@ -281,7 +285,7 @@ export class AnimationControl {
           } else if (AnimationControl.animation_line[j + 1].vecs[time_r] == undefined) {
             break;
           } else {
-            face_geometry.vertices.push(new THREE.Vector3(AnimationControl.animation_line[j].vecs[time_r].x, AnimationControl.animation_line[j].vecs[time_r].y, AnimationControl.animation_line[j][time_r].z));
+            face_geometry.vertices.push(new THREE.Vector3(AnimationControl.animation_line[j].vecs[time_r].x, AnimationControl.animation_line[j].vecs[time_r].y, AnimationControl.animation_line[j].vecs[time_r].z));
             face_geometry.vertices.push(new THREE.Vector3(AnimationControl.animation_line[j + 1].vecs[time_r].x, AnimationControl.animation_line[j + 1].vecs[time_r].y, AnimationControl.animation_line[j + 1].vecs[time_r].z));
           }
           time_r++;

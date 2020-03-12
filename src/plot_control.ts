@@ -29,7 +29,7 @@ export class PlotControl {
     this.plot_settings = plot_settings;
   }
   static divideParameter(parameter_map:{ [key: string]: HydatParameter }) {
-    var now_parameter_condition_list = [{}];
+    var now_parameter_condition_list: {[key:string]:Constant}[] = [{}];
   
     for (let parameter_name in parameter_map) {
       var setting = PlotControl.plot_settings.parameter_condition[parameter_name];
@@ -60,7 +60,7 @@ export class PlotControl {
     return now_parameter_condition_list;
   }
 
-  static phase_to_line_vectors(phase: HydatPhase, parameter_condition_list, axis, maxDeltaT) {
+  static phase_to_line_vectors(phase: HydatPhase, parameter_condition_list:{[key:string]:Constant}, axis: Triplet<Construct>, maxDeltaT:number) {
     var line: { vec: THREE.Vector3, isPP: boolean }[] = [];
     var t;
     if (phase.simulation_state != "SIMULATED" && phase.simulation_state != "TIME_LIMIT" && phase.simulation_state != "STEP_LIMIT") return line;
