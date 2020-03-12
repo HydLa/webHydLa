@@ -4,6 +4,7 @@ import { GraphControl } from "./graph_control";
 import { DatGUIControl } from "./dat_gui_control";
 import { AnimationControl } from "./animation_control";
 import { HydatControl } from "./hydat_control";
+import { StorageControl } from "./storage_control";
 
 export class PlotLineMapControl {
   static map: { [key: number]: PlotLine } = {};
@@ -23,7 +24,7 @@ export class PlotLineMapControl {
     DatGUIControl.variable_folder.removeFolder(line.folder);
     AnimationControl.remove_plot(line);
     delete HydatControl.settingsForCurrentHydat.plot_line_settings[line.index];
-    browser_storage.setItem(HydatControl.current_hydat.name, JSON.stringify(HydatControl.settingsForCurrentHydat));
+    StorageControl.saveHydatSettings();
     delete this.map[line.index];
   }
   static addNewLine(x_name: string, y_name: string, z_name: string) {
@@ -79,7 +80,7 @@ export class PlotLineMapControl {
 
     //var guard_list ={x:["x", "xSWON"]};
 
-    let str = this.browser_storage.getItem(hydat.name);
+    let str = StorageControl.loadHydatSettings(hydat.name);
     if (str !== null) {
       HydatControl.settingsForCurrentHydat = JSON.parse(str);
       var line_settings = HydatControl.settingsForCurrentHydat.plot_line_settings;

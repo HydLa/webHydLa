@@ -87,7 +87,7 @@ export class Range {
 //   if (line.settings.x != "" && line.settings.y != "" && line.settings.z != "") {
 //     if (line.remain == undefined) {
 //       settingsForCurrentHydat.plot_line_settings[line.index] = line.settings;
-//       browser_storage.setItem(current_hydat.name, JSON.stringify(settingsForCurrentHydat));
+//       StorageControl.saveHydatSettings();
 //     }
 //   }
 // }

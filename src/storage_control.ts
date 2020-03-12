@@ -1,6 +1,7 @@
 import { PlotSettings, PlotSettingsControl } from "./plot_settings";
 import { HydatRaw } from "./hydat";
 import { EditorControl } from "./editor_control";
+import { HydatControl } from "./hydat_control";
 
 const storage = localStorage;
 
@@ -71,5 +72,21 @@ export class StorageControl{
 
   static loadPlotSettings() {
     return PlotSettingsControl.parseJSON(storage.getItem("plot_settings"));
+  }
+
+  static saveHydlaName(hydla_name:string) {
+    storage.setItem("hydla_name", hydla_name);
+  }
+
+  static loadHydlaName() {
+    return storage.getItem("hydla_name");
+  }
+
+  static saveHydatSettings() {
+    storage.setItem(HydatControl.current_hydat.name, JSON.stringify(HydatControl.settingsForCurrentHydat))
+  }
+
+  static loadHydatSettings(hydat_name:string) {
+    return storage.getItem(hydat_name);
   }
 }

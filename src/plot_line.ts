@@ -4,6 +4,7 @@ import { GraphControl } from "./graph_control";
 import { PlotControl } from "./plot_control";
 import { AnimationControl } from "./animation_control";
 import { HydatControl } from "./hydat_control";
+import { StorageControl } from "./storage_control";
 
 export class PlotLine {
   index: number;
@@ -87,7 +88,7 @@ export class PlotLine {
     if (this.settings.x != "" && this.settings.y != "" && this.settings.z != "") {
       if (this.remain === undefined) {
         HydatControl.settingsForCurrentHydat.plot_line_settings[this.index] = this.settings;
-        browser_storage.setItem(HydatControl.current_hydat.name, JSON.stringify(HydatControl.settingsForCurrentHydat));
+        StorageControl.saveHydatSettings();
       }
     }
   }

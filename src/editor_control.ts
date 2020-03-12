@@ -56,7 +56,7 @@ export class EditorControl {
     if (saved_hydla) {
       this.editor.setValue(saved_hydla);
     } else {
-      browser_storage.setItem("hydla_name", "bouncing_ball");
+      StorageControl.saveHydlaName("bouncing_ball");
       this.editor.setValue(default_hydla);
     }
     this.editor.clearSelection();
@@ -112,7 +112,7 @@ export class EditorControl {
         };
       }
       else {
-        browser_storage.setItem("hydla_name", input_file.name);
+        StorageControl.saveHydlaName(input_file.name);
         fr.onload = (_) => {
           this.editor.setValue(<string>fr.result);
         };
