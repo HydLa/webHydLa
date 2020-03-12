@@ -5,21 +5,17 @@ import { PlotSettingsControl } from "./plot_settings";
 import { DOMControl } from "./dom_control";
 import { EditorControl } from "./editor_control";
 import { StorageControl } from "./storage_control";
-import { Hydat } from "./hydat";
 import { PlotLineMapControl } from "./plot_line_map_control";
 import { PlotControl } from "./plot_control";
+import { HydatControl } from "./hydat_control";
 
 export class CommonData {
-  current_hydat:Hydat;
-  settingsForCurrentHydat = {};
-
   constructor() {
     GraphControl.init();
     PlotLineMapControl.init();
     NewUI.init(GraphControl.controls);
     DOMControl.init();
     StorageControl.init();
-
     const saved_hydla = StorageControl.loadHydla();
     const saved_hydat = StorageControl.loadHydat();
 
@@ -29,30 +25,11 @@ export class CommonData {
     DatGUIControl.init(PlotSettingsControl.plot_settings);
     PlotControl.init(PlotSettingsControl.plot_settings);
 
-    if (saved_hydat) {
-      this.loadHydat(JSON.parse(saved_hydat));
-    }
+    HydatControl.init(saved_hydat);
 
     GraphControl.update2DMode(PlotSettingsControl.plot_settings.twoDimensional);
     PlotSettingsControl.time_stop();
 
     GraphControl.render();
-  }
-  
-  loadHydat(hydat:HydatRaw) {
-    try {
-      this.browser_storage.setItem("hydat", JSON.stringify(hydat));
-      this.current_hydat = new Hydat(hydat);
-      parameter_setting(this.current_hydat.parameters);
-      modifyNameLabel(this.current_hydat.name);
-    }
-    catch (e) {
-      console.log(e);
-      console.log(e.stack);
-      DOMControl.showToast("Failed to load hydat: " + e.name + "(" + e.message + ")", 3000, "red darken-4");
-    }
-    this.graph.clearPlot();
-    this.initVariableSelector(hydat);
-    update_axes(true);
   }
 }
