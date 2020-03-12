@@ -132,7 +132,7 @@ export class DatGUIControl{
       this.parameter_items.push(parameter_item);
   
       mode_item.onChange(function (value) {
-        if (!DatGUIControl.plot_settings.parameter_condition[key_copy].fixed) {
+        if (!DatGUIControl.plot_settings.parameter_condition![key_copy].fixed) {
           parameter_item.min(1).max(100).step(1).setValue(5);
         }
         else {
@@ -141,7 +141,7 @@ export class DatGUIControl{
         GraphControl.replotAll();
       });
       mode_item_range.onChange((_) => {
-        GraphControl.range_mode = DatGUIControl.plot_settings.parameter_condition[key_copy].range
+        GraphControl.range_mode = DatGUIControl.plot_settings.parameter_condition![key_copy].range
       });
     }
     if (Object.keys(pars).length > 0) this.parameter_folder.open();
@@ -165,7 +165,7 @@ export class DatGUIControl{
       this.parameter_folder_seek.add(DatGUIControl.plot_settings.parameter_condition_seek, 'value', min_par_value, max_par_value);
     parameter_item_seek.onChange((value) => {
       /*GraphControl.replotAll();*/
-      AnimationControl.time = DatGUIControl.plot_settings.parameter_condition_seek.value;
+      AnimationControl.time = DatGUIControl.plot_settings.parameter_condition_seek!.value;
       AnimationControl.animate();
     });
     parameter_item_seek.step(step);
@@ -199,7 +199,7 @@ export class DatGUIControl{
       this.parameter_folder_seek.add(DatGUIControl.plot_settings.parameter_condition_seek, 'value', min_par_value, max_par_value);
     parameter_item_seek.onChange((value) => {
       /*GraphControl.replotAll();*/
-      AnimationControl.time = DatGUIControl.plot_settings.parameter_condition_seek.value;
+      AnimationControl.time = DatGUIControl.plot_settings.parameter_condition_seek!.value;
       AnimationControl.animate();
     });
     parameter_item_seek.step(step);

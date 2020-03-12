@@ -26,7 +26,7 @@ export class EditorControl {
   static editor: ace.Ace.Editor;
   static autosave_event_enabled = true;
   static autosave_changed = false;
-  static init(saved_hydla:string) {
+  static init(saved_hydla:string|null) {
     /* ID="editor" な div をエディタにする */
     this.editor = ace.edit("editor");
 
@@ -101,6 +101,9 @@ export class EditorControl {
       , false, false, false, false, 0, null
     );
     i.addEventListener("change", (_) => {
+      if (!i.files) {
+        throw new Error("unexpected: i.files is undefined");
+      }
       var input_file = i.files[0];
       var fr = new FileReader();
       fr.readAsText(input_file);
@@ -138,8 +141,9 @@ export class EditorControl {
     }, 5000);
   }
 
-  static setKeyBinding(binding:string|null) {
-    this.editor.setKeyboardHandler(binding);
+  static setKeyBinding(binding: string | null) {
+    if (!binding) this.editor.setKeyboardHandler("");
+    else this.editor.setKeyboardHandler(binding);
   }
 
   static setTheme(theme:string) {

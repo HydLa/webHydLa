@@ -1,18 +1,26 @@
+const isHydatParameterPointRaw = (raw:HydatParameterRaw): raw is HydatParameterPointRaw => {
+  return (raw as HydatParameterPointRaw).unique_value !== undefined;
+}
+
+const isHydatTimePPRaw = (raw:HydatTimeRaw): raw is HydatTimePPRaw => {
+  return (raw as HydatTimePPRaw).time_point !== undefined;
+}
+
 const translate_parameter_map = (parameter_map: { [key: string]: HydatParameterRaw }) => {
   let map:{[key:string]:HydatParameter} = {};
   for (var key in parameter_map) {
     const p = parameter_map[key];
-    if (parameter_map[key].unique_value === undefined) {
-      map[key] = new HydatParameterInterval(p.lower_bounds,p.upper_bounds);
-    } else {
+    if (isHydatParameterPointRaw(p)) {
       map[key] = new HydatParameterPoint(p.unique_value);
+    } else {
+      map[key] = new HydatParameterInterval(p.lower_bounds,p.upper_bounds);
     }
   }
   return map;
 }
 
 export class HydatException extends Error {
-  constructor(message) {
+  constructor(message:string) {
     super();
     Object.defineProperty(this, 'name', {
       get: () => this.constructor.name,
@@ -40,7 +48,7 @@ export class Hydat {
   }
 }
 
-export class HydatRaw{
+export interface HydatRaw{
   name: string;
   first_phases: HydatPhaseRaw[];
   parameters: { [key: string]: HydatParameterRaw };
@@ -57,12 +65,15 @@ export class HydatPhase {
 
   constructor(phase: HydatPhaseRaw) {
     this.simulation_state = phase.simulation_state;
-    if (phase.time instanceof HydatTimePPRaw) { // phase.type === "PP"
+    if (isHydatTimePPRaw(phase.time)) { // phase.type === "PP"
+      this.type = "PP"
       this.time = new HydatTimePP(phase.time.time_point);
     } else {
+      this.type = "IP"
       this.time = new HydatTimeIP(phase.time.start_time, phase.time.end_time);
     }
     
+    this.variable_map = {};
     for (let key in phase.variable_map) {
       if (phase.variable_map[key].unique_value === undefined) {
         throw new HydatException(`webHydLa doesn't support ununique value in variable maps for ${key}`);
@@ -82,7 +93,7 @@ export class HydatPhase {
   }
 }
 
-class HydatPhaseRaw {
+interface HydatPhaseRaw {
   type: string
   time: HydatTimeRaw;
   variable_map:{[key:string]:HydatVariableRaw};
@@ -134,10 +145,15 @@ export class HydatParameterInterval{
   }
 }
 
-class HydatParameterRaw{
-  lower_bounds?: { value: string }[];
-  upper_bounds?: { value: string }[];
-  unique_value?: string;
+type HydatParameterRaw = HydatParameterPointRaw | HydatParameterIntervalRaw;
+
+interface HydatParameterPointRaw{
+  unique_value: string;
+}
+
+interface HydatParameterIntervalRaw{
+  lower_bounds: { value: string }[];
+  upper_bounds: { value: string }[];
 }
 
 type HydatTime = HydatTimePP | HydatTimeIP;
@@ -162,15 +178,15 @@ class HydatTimeIP{
   }
 }
 
-class HydatVariableRaw{
+interface HydatVariableRaw{
   unique_value:string;
 }
 
 type HydatTimeRaw = HydatTimePPRaw | HydatTimeIPRaw;
-class HydatTimePPRaw{
+interface HydatTimePPRaw{
   time_point: string;
 }
-class HydatTimeIPRaw{
+interface HydatTimeIPRaw{
   start_time: string;
   end_time: string;
 }

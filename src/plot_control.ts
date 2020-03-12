@@ -32,7 +32,7 @@ export class PlotControl {
     var now_parameter_condition_list: {[key:string]:Constant}[] = [{}];
   
     for (let parameter_name in parameter_map) {
-      var setting = PlotControl.plot_settings.parameter_condition[parameter_name];
+      var setting = PlotControl.plot_settings.parameter_condition![parameter_name];
       if (setting.fixed) {
         for (var i = 0; i < now_parameter_condition_list.length; i++) {
           var parameter_value = setting.value;

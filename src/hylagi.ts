@@ -103,10 +103,10 @@ export class HyLaGIController {
             break;
         }
         // let server_response = response;
-        var output = document.getElementById("output-initial");
+        var output = document.getElementById("output-initial")!;
         output.innerHTML = "";
         for (let elem of that.dynamic_script_elements) {
-          elem.parentNode.removeChild(elem);
+          elem.parentNode!.removeChild(elem);
         }
         that.dynamic_script_elements = [];
         if (html_mode_check_box.checked) {
@@ -123,11 +123,11 @@ export class HyLaGIController {
             }
             var newScript = document.createElement("script");
             newScript.innerHTML = scriptNodes[si].innerHTML;
-            that.dynamic_script_elements.push(first_script_element.parentNode.insertBefore(newScript, first_script_element));
+            that.dynamic_script_elements.push(first_script_element.parentNode!.insertBefore(newScript, first_script_element));
           }
         }
         else {
-          const getEscapedStringForHTML = (orig_string)=>orig_string.replace(/\n/mg, "<br/>").replace(/\s/mg, "&nbsp;");
+          const getEscapedStringForHTML = (orig_string:string)=>orig_string.replace(/\n/mg, "<br/>").replace(/\s/mg, "&nbsp;");
           if (response.stdout != undefined) {
             output.innerHTML += getEscapedStringForHTML(response.stdout);
           }

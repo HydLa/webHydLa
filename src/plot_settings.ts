@@ -11,8 +11,8 @@ export class PlotSettingsControl{
       PlotControl.setBackgroundColor(this.plot_settings.backgroundColor);
     }
   }
-  static parseJSON(json: string) {
-    return new PlotSettings(JSON.parse(json));
+  static parseJSON(json: string|null) {
+    return new PlotSettings(JSON.parse(json ?? ""));
   }
   static saveToWebStorage() {
     StorageControl.savePlotSettings(this.plot_settings);
@@ -36,8 +36,8 @@ export class PlotSettings {
   autoRotate: boolean;
   animate: boolean;
   seek: number;
-  parameter_condition: { [key: string]: ParameterCondition };
-  parameter_condition_seek: ParameterConditionSeek;
+  parameter_condition: { [key: string]: ParameterCondition }|undefined;
+  parameter_condition_seek: ParameterConditionSeek|undefined;
   constructor(obj: any) {
     this.plotInterval = obj?.plotInterval ?? 0.1;
     this.backgroundColor = obj?.backgroundColor ?? "#000000";

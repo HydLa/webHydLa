@@ -16,7 +16,7 @@ export class HydatControl{
     dashed: boolean;
   }[]};
 
-  static init(saved_hydat:string) {
+  static init(saved_hydat:string|null) {
     if (saved_hydat) {
       this.loadHydat(JSON.parse(saved_hydat));
     }

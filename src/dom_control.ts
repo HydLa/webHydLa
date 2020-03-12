@@ -33,9 +33,9 @@ export class DOMControl {
     $("#v-separator")
       .mousedown((e) => {
         const initial_x = e.pageX;
-        const initial_width = $("#left-pane").width();
+        const initial_width = $("#left-pane").width()!;
         // const initial_left = $("#v-separator").css("left");
-        const initial_editor = $("#editor").width();
+        const initial_editor = $("#editor").width()!;
         let dragging = true;
         $("<div id='secretdiv'>")
           .css({
@@ -65,7 +65,7 @@ export class DOMControl {
     $("#h-separator")
       .mousedown((e) => {
         const initial_y = e.pageY;
-        const initial_height = $("#input-pane").height();
+        const initial_height = $("#input-pane").height()!;
         let dragging = true;
         $("<div id='secretdiv'>")
           .css({
@@ -92,7 +92,7 @@ export class DOMControl {
   }
   static showToast(message: string, duration: number, classes: string) {
     Materialize.toast({ html: message, displayLength: duration, classes: classes });
-    let toast_container = document.getElementById("toast-container");
+    let toast_container = document.getElementById("toast-container")!;
     const MAX_CHILDREN_NUM = 5;
     if (toast_container.children.length > MAX_CHILDREN_NUM) {
       for (let i = 0; i < toast_container.children.length - MAX_CHILDREN_NUM; i++) {
@@ -103,19 +103,19 @@ export class DOMControl {
 
   /* function to start preloader */
   static startPreloader() {
-    document.getElementById("graph-preloader").classList.remove("hide");
-    document.getElementById("output-preloader").classList.remove("hide");
+    document.getElementById("graph-preloader")!.classList.remove("hide");
+    document.getElementById("output-preloader")!.classList.remove("hide");
   }
 
   /* function called when graph is drawn */
   static stopPreloader() {
-    document.getElementById("graph-preloader").classList.add("hide");
-    document.getElementById("output-preloader").classList.add("hide");
+    document.getElementById("graph-preloader")!.classList.add("hide");
+    document.getElementById("output-preloader")!.classList.add("hide");
   }
 
   static toggleInputPane() {
-    var elm = document.getElementById("left-pane");
-    var tgl = document.getElementById("v-toggle-icon");
+    var elm = document.getElementById("left-pane")!;
+    var tgl = document.getElementById("v-toggle-icon")!;
     if (elm.getAttribute("style")) {
       elm.removeAttribute("style");
       tgl.classList.remove("mdi-navigation-chevron-right");

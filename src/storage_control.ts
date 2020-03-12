@@ -22,8 +22,8 @@ export class StorageControl{
 
   static loadKeyBinding() {
     var key_binding_setting = storage.getItem("key_binding");
-    if (key_binding_setting != undefined) {
-      key_binding_selector.value = storage.getItem("key_binding");
+    if (key_binding_setting !== null) {
+      key_binding_selector.value = key_binding_setting;
     }
     else {
       key_binding_selector.value = key_binding_selector.options[key_binding_selector.selectedIndex].value;
@@ -41,8 +41,8 @@ export class StorageControl{
 
   static loadTheme() {
     var theme_setting = storage.getItem("theme");
-    if (theme_setting != undefined) {
-      theme_selector.value = storage.getItem("theme");
+    if (theme_setting !== null) {
+      theme_selector.value = theme_setting;
     } else {
       storage.setItem("theme", theme_selector.value);
     }
