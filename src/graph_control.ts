@@ -15,7 +15,7 @@ export class GraphControl {
   static controls: OrbitControls;
   static renderer: THREE.WebGLRenderer;
   static animatable: boolean = true;
-  static rangemode: boolean = false;
+  static range_mode: boolean = false;
 
   static controls_position0: THREE.Vector3;
 
@@ -127,7 +127,7 @@ export class GraphControl {
       AnimationControl.animate();
     }
     if (AnimationControl.getLength() !== this.a_line) {
-      if (range_mode) { AnimationControl.range_make_all(); }
+      if (GraphControl.range_mode) { AnimationControl.range_make_all(); }
       this.a_line = AnimationControl.getLength();
     }
     if (AnimationControl.maxlen !== this.t_line) {

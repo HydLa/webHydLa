@@ -5,7 +5,6 @@ import { PlotLineMapControl } from "./plot_line_map_control";
 import { PlotControl } from "./plot_control";
 import { HydatParameter, HydatParameterPoint } from "./hydat";
 import { AnimationControl } from "./animation_control";
-export let range_mode: boolean;
 
 export class DatGUIControl{
   static parameter_folder: dat.GUI;
@@ -142,7 +141,7 @@ export class DatGUIControl{
         GraphControl.replotAll();
       });
       mode_item_range.onChange((_) => {
-        range_mode = DatGUIControl.plot_settings.parameter_condition[key_copy].range
+        GraphControl.range_mode = DatGUIControl.plot_settings.parameter_condition[key_copy].range
       });
     }
     if (Object.keys(pars).length > 0) this.parameter_folder.open();
