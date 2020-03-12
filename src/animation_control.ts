@@ -57,7 +57,7 @@ export class AnimationControl {
     if (line.plot_ready == undefined) requestAnimationFrame(function () { line.plotReady() });
   }
 
-  static add_plot_each(phase_index_array, axes, line: PlotLine, width:number, color:number[], dt, parameter_condition_list, current_param_idx, current_line_vec) {
+  static add_plot_each(phase_index_array, axes, line: PlotLine, width:number, color:number[], dt, parameter_condition_list, current_param_idx, current_line_vec:{vec:THREE.Vector3, isPP:boolean}[]) {
     try {
       while (true) {
         if (line.plot_ready) {
@@ -73,7 +73,10 @@ export class AnimationControl {
         let vec = PlotControl.phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, dt);
         current_line_vec = current_line_vec.concat(vec);
         let vec_animation = PlotControl.phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, 0.01);
-        PlotControl.current_line_vec_animation = PlotControl.current_line_vec_animation.concat(vec_animation);
+        // PlotControl.current_line_vec_animation = PlotControl.current_line_vec_animation.concat(vec_animation);
+        for (let v of vec_animation) {
+          PlotControl.current_line_vec_animation.push(v.vec);
+        }
         if (phase.children.length == 0) {
           PlotControl.array += 1;
           // on leaves
@@ -101,9 +104,9 @@ export class AnimationControl {
 
           const dottedLength = 10.0 / GraphControl.camera.zoom;
           for (var i = 0; i + 1 < current_line_vec.length; i++) {
-            if ('isPP' in current_line_vec[i + 1]) {
-              const posBegin = current_line_vec[i];
-              const posEnd = current_line_vec[i + 1];
+            if (current_line_vec[i + 1].isPP) {
+              const posBegin = current_line_vec[i].vec;
+              const posEnd = current_line_vec[i + 1].vec;
               let directionVec = posEnd.clone().sub(posBegin);
               const lineLength = directionVec.length();
               directionVec.normalize();
@@ -115,8 +118,8 @@ export class AnimationControl {
                 );
               }
             }
-            else if (!current_line_vec[i].equals(current_line_vec[i + 1])) {
-              addCylinder(current_line_vec[i], current_line_vec[i + 1]);
+            else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) {
+              addCylinder(current_line_vec[i].vec, current_line_vec[i + 1].vec);
             }
           }
 

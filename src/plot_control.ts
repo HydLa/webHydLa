@@ -60,8 +60,8 @@ export class PlotControl {
     return now_parameter_condition_list;
   }
 
-  static phase_to_line_vectors(phase:HydatPhase, parameter_condition_list, axis, maxDeltaT) {
-    var line:THREE.Vector3[] = [];
+  static phase_to_line_vectors(phase: HydatPhase, parameter_condition_list, axis, maxDeltaT) {
+    var line: { vec: THREE.Vector3, isPP: boolean }[] = [];
     var t;
     if (phase.simulation_state != "SIMULATED" && phase.simulation_state != "TIME_LIMIT" && phase.simulation_state != "STEP_LIMIT") return line;
   
@@ -70,9 +70,10 @@ export class PlotControl {
   
     if (phase.time instanceof HydatTimePP) {
       env.t = phase.time.time_point;
-      let newPos = new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env));
-      newPos.isPP = true;
-      line.push(newPos);
+      line.push({
+        vec: new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)),
+        isPP: true
+      });
     } else {
       var start_time = phase.time.start_time.getValue(env);
       var end_time = phase.time.end_time.getValue(env);
@@ -81,10 +82,16 @@ export class PlotControl {
       var delta_t = Math.min(maxDeltaT, (end_time - start_time) / MIN_STEP);
       for (t = start_time; t < end_time; t = t + delta_t) {
         env.t = new Constant(t);
-        line.push(new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)));
+        line.push({
+          vec: new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)),
+          isPP: false
+        });
       }
       env.t = new Constant(end_time);
-      line.push(new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)));
+      line.push({
+        vec: new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)),
+        isPP: false
+      });
     }
     return line;
   }
