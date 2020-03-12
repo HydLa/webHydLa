@@ -5,10 +5,11 @@ import THREE from "three";
 import { GraphControl } from "./graph_control";
 import { HydatParameter, HydatParameterInterval } from "./hydat";
 import { RGB } from "./plot_utils";
+import { HydatControl } from "./hydat_control";
 
 export class AnimationControl {
   static maxlen: number;
-  static animation_line = [];
+  static animation_line:{vecs:THREE.Vector3[],color:number}[] = [];
 
   static time: number = 0;
   static time_prev: number = -100;
@@ -36,8 +37,8 @@ export class AnimationControl {
       return;
     }
     var dt = PlotControl.plot_settings.plotInterval;
-    var phase = current_hydat.first_phases[0];
-    var parameter_condition_list = PlotControl.divideParameter(current_hydat.parameters);
+    var phase = HydatControl.current_hydat.first_phases[0];
+    var parameter_condition_list = PlotControl.divideParameter(HydatControl.current_hydat.parameters);
     const getColors = (colorNum: number, colorAngle: number) => {
       var angle = 360 / colorNum;
       var angle_start = Math.floor(colorAngle);
@@ -56,7 +57,7 @@ export class AnimationControl {
     if (line.plot_ready == undefined) requestAnimationFrame(function () { line.plotReady() });
   }
 
-  static add_plot_each(phase_index_array, axes, line: PlotLine, width, color, dt, parameter_condition_list, current_param_idx, current_line_vec) {
+  static add_plot_each(phase_index_array, axes, line: PlotLine, width:number, color:number[], dt, parameter_condition_list, current_param_idx, current_line_vec) {
     try {
       while (true) {
         if (line.plot_ready) {
@@ -127,7 +128,7 @@ export class AnimationControl {
           GraphControl.scene.add(three_line);
           line.plot.push(three_line);
 
-          AnimationControl.animation_line[PlotControl.array] = (PlotControl.current_line_vec_animation);
+          AnimationControl.animation_line[PlotControl.array].vecs = (PlotControl.current_line_vec_animation);
           AnimationControl.animation_line[PlotControl.array].color = (color[current_param_idx]);
           if (AnimationControl.maxlen < PlotControl.current_line_vec_animation.length) {
             AnimationControl.maxlen = PlotControl.current_line_vec_animation.length;
@@ -153,7 +154,7 @@ export class AnimationControl {
           // search next child to plot
           for (; phase_index.index < phase.children.length; phase_index.index++) {
             var child = phase.children[phase_index.index];
-            var included_by_parameter_condition = check_parameter_condition(child.parameter_maps, parameter_condition_list[current_param_idx]);
+            var included_by_parameter_condition = AnimationControl.check_parameter_condition(child.parameter_maps, parameter_condition_list[current_param_idx]);
             if (included_by_parameter_condition) {
               phase_index_array.push({ phase: child, index: 0 });
               var current_time = new Date().getTime();
@@ -272,13 +273,13 @@ export class AnimationControl {
         var face_geometry = new THREE.Geometry();
         var time_r = 0;
         for (let i = 0; i < AnimationControl.maxlen; i++) {
-          if (AnimationControl.animation_line[j][time_r] == undefined) {
+          if (AnimationControl.animation_line[j].vecs[time_r] == undefined) {
             break;
-          } else if (AnimationControl.animation_line[j + 1][time_r] == undefined) {
+          } else if (AnimationControl.animation_line[j + 1].vecs[time_r] == undefined) {
             break;
           } else {
-            face_geometry.vertices.push(new THREE.Vector3(AnimationControl.animation_line[j][time_r].x, AnimationControl.animation_line[j][time_r].y, AnimationControl.animation_line[j][time_r].z));
-            face_geometry.vertices.push(new THREE.Vector3(AnimationControl.animation_line[j + 1][time_r].x, AnimationControl.animation_line[j + 1][time_r].y, AnimationControl.animation_line[j + 1][time_r].z));
+            face_geometry.vertices.push(new THREE.Vector3(AnimationControl.animation_line[j].vecs[time_r].x, AnimationControl.animation_line[j].vecs[time_r].y, AnimationControl.animation_line[j][time_r].z));
+            face_geometry.vertices.push(new THREE.Vector3(AnimationControl.animation_line[j + 1].vecs[time_r].x, AnimationControl.animation_line[j + 1].vecs[time_r].y, AnimationControl.animation_line[j + 1].vecs[time_r].z));
           }
           time_r++;
         }
@@ -317,25 +318,23 @@ export class AnimationControl {
             console.error("unexpected: !(next_sphere.material instanceof THREE.MeshBasicMaterial)")
             continue;
           }
-          if (this.time == 0) {
+          if (this.time === 0) {
             next_sphere.material.color.set(
               AnimationControl.animation_line[arr].color
             );
           }
-          if (this.time > AnimationControl.animation_line[arr].length - 1) {
+          if (this.time > AnimationControl.animation_line[arr].vecs.length - 1) {
             next_sphere.material.color.set(
-              198,
-              198,
-              198
+              new RGB(198,198,198).asHex24()
             );
             AnimationControl.plot_animate[arr] = next_sphere;
             arr++;
             continue;
           }
           next_sphere.position.set(
-            AnimationControl.animation_line[arr][this.time].x,
-            AnimationControl.animation_line[arr][this.time].y,
-            AnimationControl.animation_line[arr][this.time].z);
+            AnimationControl.animation_line[arr].vecs[this.time].x,
+            AnimationControl.animation_line[arr].vecs[this.time].y,
+            AnimationControl.animation_line[arr].vecs[this.time].z);
           AnimationControl.plot_animate[arr] = next_sphere;
           arr += 1;
         }
