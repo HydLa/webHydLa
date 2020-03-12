@@ -14,6 +14,7 @@ export class CommonData {
   settingsForCurrentHydat = {};
 
   constructor() {
+    GraphControl.init();
     PlotLineMapControl.init();
     NewUI.init(GraphControl.controls);
     DOMControl.init();
@@ -32,10 +33,10 @@ export class CommonData {
       this.loadHydat(JSON.parse(saved_hydat));
     }
 
-    this.graph.update2DMode(this.plot_settings.twoDimensional);
-    this.time_stop();
+    GraphControl.update2DMode(PlotSettingsControl.plot_settings.twoDimensional);
+    PlotSettingsControl.time_stop();
 
-    this.graph.render();
+    GraphControl.render();
   }
   
   loadHydat(hydat:HydatRaw) {
