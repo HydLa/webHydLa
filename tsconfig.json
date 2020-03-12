@@ -7,7 +7,7 @@
     "lib": ["DOM"],
     "sourceMap": true,
     "declaration": false,
-    "strict": false,
+    "strict": true,
     "esModuleInterop": true,
     "experimentalDecorators": true
   }

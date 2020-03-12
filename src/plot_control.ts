@@ -18,7 +18,7 @@ const axisColorBases = new Triplet<RGB>(
 export class PlotControl {
   static array = -1;
   static current_line_vec_animation:THREE.Vector3[] = [];
-  static PlotStartTime: number;
+  static PlotStartTime: number|undefined;
 
   static axisColors = new Triplet<string>("#FF8080", "#80FF80", "#8080FF")
   static prev_ranges: ComparableTriplet<Range>;
@@ -65,7 +65,7 @@ export class PlotControl {
     var t;
     if (phase.simulation_state != "SIMULATED" && phase.simulation_state != "TIME_LIMIT" && phase.simulation_state != "STEP_LIMIT") return line;
   
-    let env:{t?:Construct} = {};
+    let env: { [key: string]: Construct; } = {};
     $.extend(env, parameter_condition_list, phase.variable_map);
   
     if (phase.time instanceof HydatTimePP) {
@@ -353,7 +353,7 @@ export class PlotControl {
       return false;
     }
 
-    var ctx = canvas.getContext('2d');
+    var ctx = canvas.getContext('2d')!;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (!PlotControl.plot_settings.scaleLabelVisible) return;
     ctx.font = "20px 'Arial'";
@@ -369,7 +369,7 @@ export class PlotControl {
         if (scale_interval <= 0) return Number.MAX_VALUE;
         return scale_interval;
       }
-      const calculateNumberOfDigits = (interval) => {
+      const calculateNumberOfDigits = (interval:number) => {
         let num = Math.floor(Math.log(interval) / Math.log(10));
         num = num > 0 ? 0 : -num;
         num = Math.max(num, 0);

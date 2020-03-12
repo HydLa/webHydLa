@@ -46,7 +46,7 @@ export class GraphControl {
     this.camera = new THREE.OrthographicCamera(left, right, top, bottom, -1000, 1000);
 
     this.camera.position.set(0, 0, 100);
-    this.elem = document.getElementById("graph-area");
+    this.elem = document.getElementById("graph-area")!;
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
 
     this.renderer.domElement.style.position = 'absolute';
@@ -85,8 +85,8 @@ export class GraphControl {
 
       this.camera.updateProjectionMatrix();
 
-      var w = $('#scale_label_wrapper').width();
-      var h = $('#scale_label_wrapper').height();
+      var w = $('#scale_label_wrapper').width()!;
+      var h = $('#scale_label_wrapper').height()!;
       $('#scaleLabelCanvas').attr('width', w);
       $('#scaleLabelCanvas').attr('height', h);
       PlotControl.update_axes(true);
@@ -106,7 +106,7 @@ export class GraphControl {
     if (!canvas || !canvas.getContext) {
       return false;
     }
-    var ctx = canvas.getContext('2d');
+    var ctx = canvas.getContext('2d')!;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = "20px 'Arial'";
     ctx.fillStyle = "#FFFFFF";

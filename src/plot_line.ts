@@ -20,8 +20,8 @@ export class PlotLine {
   x_item: dat.GUIController;
   y_item: dat.GUIController;
   z_item: dat.GUIController;
-  remain: boolean;
-  color_angle: number;
+  remain: boolean|undefined;
+  color_angle: number = 0;
   last_edited_input: HTMLInputElement;
   plotting: boolean;
   plot_ready: number;
@@ -42,7 +42,8 @@ export class PlotLine {
     this.y_item.onChange(this.getUpdateFunction(this.y_item));
     this.z_item = this.folder.add(this.settings, "z");
     this.folder.add(this.settings, "remove");
-    this.folder.add(this.settings, "dashed").onChange(function () { this.replot() });
+    let that = this;
+    this.folder.add(this.settings, "dashed").onChange(function () { that.replot() });
     this.z_item.onChange(this.getUpdateFunction(this.z_item));
   }
 
@@ -109,7 +110,7 @@ export class PlotLine {
   }
 }
 
-class PlotInformation{
+interface PlotInformation{
   phase_index_array: { phase, index: number }[];
   axes;
   line: PlotLine;

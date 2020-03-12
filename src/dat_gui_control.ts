@@ -12,7 +12,7 @@ export class DatGUIControl{
   static parameter_folder_seek: dat.GUI;
 
   static parameter_items: dat.GUIController[] = [];
-  static parameter_items_seek = [];
+  static parameter_items_seek: dat.GUIController[] = [];
 
   static plot_settings:PlotSettings
 
@@ -74,8 +74,8 @@ export class DatGUIControl{
       });
     //dat_gui_animate.add(plot_settings, 'seek', 0, 1000).step(1).name('seek').onChange(function(value){seek();PlotSettingsControl.saveToWebStorage();});
 
-    dat_gui.domElement.style['z-index'] = 2;
-    dat_gui_animate.domElement.style['z-index'] = 3;
+    dat_gui.domElement.style.zIndex = "2";
+    dat_gui_animate.domElement.style.zIndex = "3";
     dat_gui_animate.domElement.style['position'] = 'absolute';
     dat_gui_animate.domElement.style['bottom'] = '50px';
     //dat_gui_animate.domElement.style['margin'] = '0 auto';
@@ -88,10 +88,10 @@ export class DatGUIControl{
     dat_gui.add(add_line_obj, 'add').name("add new line");
     this.variable_folder = dat_gui.addFolder('variables');
 
-    var dat_container = document.getElementById('dat-gui');
+    var dat_container = document.getElementById('dat-gui')!;
     dat_container.appendChild(dat_gui.domElement);
 
-    var dat_container_b = document.getElementById('dat-gui-bottom');
+    var dat_container_b = document.getElementById('dat-gui-bottom')!;
     dat_container_b.style.height = height_area;
     dat_container_b.appendChild(dat_gui_animate.domElement);
 
@@ -182,7 +182,7 @@ export class DatGUIControl{
     //else this.parameter_folder_seek.close();
     this.fixLayout();
   }
-  static parameter_seek_setting_animate(line_len, time_line) {
+  static parameter_seek_setting_animate(line_len: number, time_line:number) {
     for (let item of this.parameter_items_seek) {
       this.parameter_folder_seek.remove(item);
     }

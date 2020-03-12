@@ -14,7 +14,7 @@ export class AnimationControl {
   static time: number = 0;
   static time_prev: number = -100;
 
-  static plot_animate;
+  static plot_animate: THREE.Mesh[];
 
   static add_plot(line: PlotLine) {
     var axes;
@@ -57,7 +57,7 @@ export class AnimationControl {
     if (line.plot_ready == undefined) requestAnimationFrame(function () { line.plotReady() });
   }
 
-  static add_plot_each(phase_index_array, axes, line: PlotLine, width:number, color:number[], dt, parameter_condition_list, current_param_idx, current_line_vec:{vec:THREE.Vector3, isPP:boolean}[]) {
+  static add_plot_each(phase_index_array:{ phase, index: number }[], axes, line: PlotLine, width:number, color:number[], dt:number, parameter_condition_list, current_param_idx, current_line_vec:{vec:THREE.Vector3, isPP:boolean}[]) {
     try {
       while (true) {
         if (line.plot_ready) {
