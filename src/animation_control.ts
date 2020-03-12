@@ -1,7 +1,7 @@
 import { PlotLine } from "./plot_line";
 import { PlotControl } from "./plot_control";
 import { DOMControl } from "./dom_control";
-import THREE from "three";
+import * as THREE from "three";
 import { GraphControl } from "./graph_control";
 import { HydatParameter, HydatParameterInterval } from "./hydat";
 import { RGB } from "./plot_utils";
@@ -345,6 +345,10 @@ export class AnimationControl {
       this.time_prev = this.time;
       GraphControl.render_three_js();
     }
+  }
+
+  static animateTime() {
+    this.time++;
   }
 
   static getLength() {

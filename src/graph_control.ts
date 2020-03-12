@@ -6,6 +6,7 @@ import { PlotControl } from './plot_control';
 import { PlotLine } from './plot_line';
 import { RGB } from './plot_utils';
 import { AnimationControl } from './animation_control';
+import { HydatControl } from './hydat_control';
 
 export class GraphControl {
   static scene: THREE.Scene;
@@ -88,11 +89,11 @@ export class GraphControl {
       var h = $('#scale_label_wrapper').height();
       $('#scaleLabelCanvas').attr('width', w);
       $('#scaleLabelCanvas').attr('height', h);
-      update_axes(true);
+      PlotControl.update_axes(true);
 
       $('#nameLabelCanvas').attr('width', w);
       $('#nameLabelCanvas').attr('height', h);
-      GraphControl.modifyNameLabel(current_hydat.name);
+      GraphControl.modifyNameLabel(HydatControl.current_hydat.name);
     }
   }
 
@@ -120,30 +121,26 @@ export class GraphControl {
     }
     PlotControl.update_axes(false);
     if (this.animatable) {
-      GraphControl.animate(); // animating function
-      GraphControl.animateTime();
+      AnimationControl.animate(); // animating function
+      AnimationControl.animateTime();
     } else {
-      GraphControl.animate();
+      AnimationControl.animate();
     }
     if (AnimationControl.getLength() !== this.a_line) {
-      if (range_mode) { GraphControl.range_make_all(); }
+      if (range_mode) { AnimationControl.range_make_all(); }
       this.a_line = AnimationControl.getLength();
     }
     if (AnimationControl.maxlen !== this.t_line) {
       this.t_line = AnimationControl.maxlen;
       DatGUIControl.parameter_seek_setting(this.t_line);
     } else if (this.animatable) {
-      DatGUIControl.parameter_seek_setting_animate(this.t_line, this.time);
+      DatGUIControl.parameter_seek_setting_animate(this.t_line, AnimationControl.time);
     }
     this.last_frame_zoom = this.camera.zoom;
   }
 
   static render_three_js() {
     this.renderer.render(this.scene, this.camera);
-  }
-
-  static animateTime() {
-    this.time++;
   }
 
   static toScreenPosition(pos: THREE.Vector3) {
@@ -192,6 +189,6 @@ export class GraphControl {
 
   static replotAll() {
     PlotLineMapControl.replot();
-    this.time = 0;
+    AnimationControl.time = 0;
   }
 }

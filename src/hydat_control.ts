@@ -16,6 +16,23 @@ export class HydatControl{
     }
   }
 
+  /* function to save Hydat file */
+  static saveHydat() {
+    var blob = new Blob([JSON.stringify(HydatControl.current_hydat)]);
+    var object = window.URL.createObjectURL(blob);
+    var d = new Date();
+    var date = d.getFullYear() + "-" + d.getMonth() + 1 + "-" + d.getDate() + "T" + d.getHours() + "-" + d.getMinutes() + "-" + d.getSeconds();
+    var a = document.createElement("a");
+    a.href = object;
+    a.download = date + ".hydat";
+    var event = document.createEvent("MouseEvents");
+    event.initMouseEvent(
+      "click", true, false, window, 0, 0, 0, 0, 0
+      , false, false, false, false, 0, null
+    );
+    a.dispatchEvent(event);
+  }
+
   static loadHydat(hydat:HydatRaw) {
     try {
       StorageControl.saveHydat(hydat);

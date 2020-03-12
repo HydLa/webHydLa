@@ -6,7 +6,7 @@ import { DOMControl } from "./dom_control";
 import * as THREE from 'three';
 import { Triplet, RGB, ComparableTriplet, Range } from "./plot_utils";
 import { Object3D } from "three";
-import { HydatParameter, HydatPhase, HydatTimePP } from "./hydat";
+import { HydatParameter, HydatPhase, HydatTimePP, HydatException } from "./hydat";
 import { PlotSettings } from "./plot_settings";
 
 const axisColorBases = new Triplet<RGB>(
@@ -77,7 +77,9 @@ export class PlotControl {
     } else {
       var start_time = phase.time.start_time.getValue(env);
       var end_time = phase.time.end_time.getValue(env);
-      if (!Number.isFinite(start_time) || !Number.isFinite(end_time)) throw new HydatException("invalid time interval: from" + phase.time.start_time + " to " + phase.time.end_time);
+      if (!Number.isFinite(start_time) || !Number.isFinite(end_time)) {
+        throw new HydatException(`invalid time interval: from ${phase.time.start_time} to ${phase.time.end_time}`);
+      }
       var MIN_STEP = 10; // Minimum step of plotting one IP
       var delta_t = Math.min(maxDeltaT, (end_time - start_time) / MIN_STEP);
       for (t = start_time; t < end_time; t = t + delta_t) {
@@ -105,7 +107,7 @@ export class PlotControl {
     }
     PlotControl.PlotStartTime = undefined;
     GraphControl.renderer.render(GraphControl.scene, GraphControl.camera);
-    stopPreloader();
+    DOMControl.stopPreloader();
   }
   static update_axes(force: boolean) {
     var ranges = PlotControl.getRangesOfFrustum(GraphControl.camera);

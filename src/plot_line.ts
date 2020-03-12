@@ -3,6 +3,7 @@ import { DatGUIControl } from "./dat_gui_control";
 import { GraphControl } from "./graph_control";
 import { PlotControl } from "./plot_control";
 import { AnimationControl } from "./animation_control";
+import { HydatControl } from "./hydat_control";
 
 export class PlotLine {
   index: number;
@@ -85,8 +86,8 @@ export class PlotLine {
     AnimationControl.reset(this);
     if (this.settings.x != "" && this.settings.y != "" && this.settings.z != "") {
       if (this.remain === undefined) {
-        settingsForCurrentHydat.plot_line_settings[this.index] = this.settings;
-        browser_storage.setItem(current_hydat.name, JSON.stringify(settingsForCurrentHydat));
+        HydatControl.settingsForCurrentHydat.plot_line_settings[this.index] = this.settings;
+        browser_storage.setItem(HydatControl.current_hydat.name, JSON.stringify(HydatControl.settingsForCurrentHydat));
       }
     }
   }

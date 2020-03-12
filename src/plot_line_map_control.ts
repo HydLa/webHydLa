@@ -2,6 +2,8 @@ import { PlotLine } from "./plot_line";
 import { Hydat } from "./hydat";
 import { GraphControl } from "./graph_control";
 import { DatGUIControl } from "./dat_gui_control";
+import { AnimationControl } from "./animation_control";
+import { HydatControl } from "./hydat_control";
 
 export class PlotLineMapControl {
   static map: { [key: number]: PlotLine } = {};
@@ -18,10 +20,10 @@ export class PlotLineMapControl {
     if (this.getLength() <= 1) {
       return;
     }
-    dat_gui_variable_folder.removeFolder(line.folder);
-    remove_plot(line);
-    delete settingsForCurrentHydat.plot_line_settings[line.index];
-    browser_storage.setItem(current_hydat.name, JSON.stringify(settingsForCurrentHydat));
+    DatGUIControl.variable_folder.removeFolder(line.folder);
+    AnimationControl.remove_plot(line);
+    delete HydatControl.settingsForCurrentHydat.plot_line_settings[line.index];
+    browser_storage.setItem(HydatControl.current_hydat.name, JSON.stringify(HydatControl.settingsForCurrentHydat));
     delete this.map[line.index];
   }
   static addNewLine(x_name: string, y_name: string, z_name: string) {
@@ -32,7 +34,7 @@ export class PlotLineMapControl {
   }
   static addNewLineWithIndex(x_name: string, y_name: string, z_name: string, index: number) {
     const line = new PlotLine(x_name, y_name, z_name, index);
-    fixLayoutOfDatGUI();
+    DatGUIControl.fixLayout();
     this.map[index] = line;
     return line;
   }
@@ -79,8 +81,8 @@ export class PlotLineMapControl {
 
     let str = this.browser_storage.getItem(hydat.name);
     if (str !== null) {
-      this.settingsForCurrentHydat = JSON.parse(str);
-      var line_settings = this.settingsForCurrentHydat.plot_line_settings;
+      HydatControl.settingsForCurrentHydat = JSON.parse(str);
+      var line_settings = HydatControl.settingsForCurrentHydat.plot_line_settings;
       for (var i in line_settings) {
         let line = this.addNewLineWithIndex(line_settings[i].x, line_settings[i].y, line_settings[i].z, i);
         /*for(key in guard_list){
@@ -96,8 +98,8 @@ export class PlotLineMapControl {
     }
 
     if (this.getLength() == 0) {
-      this.settingsForCurrentHydat = { plot_line_settings: {} };
-      let first_line = this.addNewLine("t", this.current_hydat !== undefined ? this.current_hydat.variables[0] : "", "0");
+      HydatControl.settingsForCurrentHydat = { plot_line_settings: {} };
+      let first_line = this.addNewLine("t", HydatControl.current_hydat !== undefined ? HydatControl.current_hydat.variables[0] : "", "0");
       first_line.color_angle = 0;
       first_line.replot();
       first_line.folder.open();

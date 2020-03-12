@@ -1,6 +1,7 @@
 import { StorageControl } from "./storage_control";
 import { PlotControl } from "./plot_control";
 import { GraphControl } from "./graph_control";
+import { AnimationControl } from "./animation_control";
 
 export class PlotSettingsControl{
   static plot_settings: PlotSettings;
@@ -21,8 +22,8 @@ export class PlotSettingsControl{
   }
   static seek() {
     //if(plot_settings.animate)
-    GraphControl.time = this.plot_settings.seek;
-    GraphControl.animate();
+    AnimationControl.time = this.plot_settings.seek;
+    AnimationControl.animate();
   }
 }
 
@@ -49,7 +50,7 @@ export class PlotSettings {
   }
 }
 
-class ParameterCondition {
+export class ParameterCondition {
   fixed: boolean;
   range: boolean;
   value: number;
@@ -65,7 +66,7 @@ class ParameterCondition {
   }
 }
 
-class ParameterConditionSeek {
+export class ParameterConditionSeek {
   stop: boolean;
   value: number;
   min_value: number;

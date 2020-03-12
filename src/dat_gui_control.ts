@@ -1,6 +1,10 @@
 import * as dat from "dat.gui";
 import { GraphControl } from "./graph_control";
-import { PlotSettings, PlotSettingsControl } from "./plot_settings";
+import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from "./plot_settings";
+import { PlotLineMapControl } from "./plot_line_map_control";
+import { PlotControl } from "./plot_control";
+import { HydatParameter, HydatParameterPoint } from "./hydat";
+import { AnimationControl } from "./animation_control";
 export let range_mode: boolean;
 
 export class DatGUIControl{
@@ -15,7 +19,7 @@ export class DatGUIControl{
 
   static init(plot_settings: PlotSettings) {
     this.plot_settings = plot_settings;
-    const add_line_obj = { add: function () { var line = addNewLine("", "", ""); line.folder.open(); } };
+    const add_line_obj = { add: function () { var line = PlotLineMapControl.addNewLine("", "", ""); line.folder.open(); } };
     let dat_gui = new dat.GUI({ autoPlace: false, load: localStorage });
     let dat_gui_animate = new dat.GUI({ autoPlace: false, load: localStorage });
     dat_gui
@@ -38,7 +42,7 @@ export class DatGUIControl{
       .add(plot_settings, 'scaleLabelVisible')
       .name("show scale label")
       .onChange((_) => {
-        update_axes(true);
+        PlotControl.update_axes(true);
         PlotSettingsControl.saveToWebStorage();
       });
     dat_gui
@@ -59,14 +63,14 @@ export class DatGUIControl{
       .addColor(plot_settings, 'backgroundColor')
       .name('background')
       .onChange((value) => {
-        setBackgroundColor(value);
+        PlotControl.setBackgroundColor(value);
         PlotSettingsControl.saveToWebStorage();/*render_three_js();i*/
       });
     dat_gui_animate
       .add(plot_settings, 'animate')
       .name("stop")
       .onChange((_) => {
-        time_stop();
+        PlotSettingsControl.time_stop();
         PlotSettingsControl.saveToWebStorage();
       });
     //dat_gui_animate.add(plot_settings, 'seek', 0, 1000).step(1).name('seek').onChange(function(value){seek();PlotSettingsControl.saveToWebStorage();});
@@ -160,7 +164,11 @@ export class DatGUIControl{
   
     var parameter_item_seek =
       this.parameter_folder_seek.add(DatGUIControl.plot_settings.parameter_condition_seek, 'value', min_par_value, max_par_value);
-    parameter_item_seek.onChange(function (value) {/*GraphControl.replotAll();*/graph.time = DatGUIControl.plot_settings.parameter_condition_seek.value; animate(); });
+    parameter_item_seek.onChange((value) => {
+      /*GraphControl.replotAll();*/
+      AnimationControl.time = DatGUIControl.plot_settings.parameter_condition_seek.value;
+      AnimationControl.animate();
+    });
     parameter_item_seek.step(step);
   
     //var mode_item_seek = this.parameter_folder_seek.add(plot_settings.parameter_condition_seek, 'stop');
@@ -190,7 +198,11 @@ export class DatGUIControl{
   
     var parameter_item_seek =
       this.parameter_folder_seek.add(DatGUIControl.plot_settings.parameter_condition_seek, 'value', min_par_value, max_par_value);
-    parameter_item_seek.onChange(function (value) {/*GraphControl.replotAll();*/graph.time = DatGUIControl.plot_settings.parameter_condition_seek.value; animate(); });
+    parameter_item_seek.onChange((value) => {
+      /*GraphControl.replotAll();*/
+      AnimationControl.time = DatGUIControl.plot_settings.parameter_condition_seek.value;
+      AnimationControl.animate();
+    });
     parameter_item_seek.step(step);
   
     //var mode_item_seek = this.parameter_folder_seek.add(plot_settings.parameter_condition_seek, 'stop');

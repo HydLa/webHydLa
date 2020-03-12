@@ -8,6 +8,7 @@ import "ace-builds/src-noconflict/keybinding-vim"
 import { DOMControl } from "./dom_control";
 import { StorageControl } from "./storage_control";
 import { HyLaGIController } from "./hylagi";
+import { HydatControl } from "./hydat_control";
 
 /* set default hydla code */
 const default_hydla = `// a sample hydla code: bouncing_particle.hydla
@@ -107,7 +108,7 @@ export class EditorControl {
       var ext = splitted_strs[splitted_strs.length - 1].toLowerCase();
       if (ext == "hydat") {
         fr.onload = (_) => {
-          loadHydat(JSON.parse(<string>fr.result));
+          HydatControl.loadHydat(JSON.parse(<string>fr.result));
         };
       }
       else {
@@ -118,23 +119,6 @@ export class EditorControl {
       }
     }, false);
     i.dispatchEvent(event);
-  }
-
-  /* function to save Hydat file */
-  static saveHydat() {
-    var blob = new Blob([JSON.stringify(current_hydat)]);
-    var object = window.URL.createObjectURL(blob);
-    var d = new Date();
-    var date = d.getFullYear() + "-" + d.getMonth() + 1 + "-" + d.getDate() + "T" + d.getHours() + "-" + d.getMinutes() + "-" + d.getSeconds();
-    var a = document.createElement("a");
-    a.href = object;
-    a.download = date + ".hydat";
-    var event = document.createEvent("MouseEvents");
-    event.initMouseEvent(
-      "click", true, false, window, 0, 0, 0, 0, 0
-      , false, false, false, false, 0, null
-    );
-    a.dispatchEvent(event);
   }
 
   /* function to save HydLa code into Web Storage */

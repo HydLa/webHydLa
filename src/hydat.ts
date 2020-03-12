@@ -11,7 +11,7 @@ const translate_parameter_map = (parameter_map: { [key: string]: HydatParameterR
   return map;
 }
 
-class HydatException extends Error {
+export class HydatException extends Error {
   constructor(message) {
     super();
     Object.defineProperty(this, 'name', {
@@ -104,7 +104,7 @@ class HydatPhaseRaw {
 // }
 
 export type HydatParameter = HydatParameterPoint | HydatParameterInterval;
-class HydatParameterPoint{
+export class HydatParameterPoint{
   unique_value: Construct;
 
   constructor(unique_value:string) {

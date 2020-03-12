@@ -1,5 +1,6 @@
 import { DOMControl } from "./dom_control";
 import { EditorControl } from "./editor_control";
+import { HydatControl } from "./hydat_control";
 
 const first_script_element = document.getElementsByTagName('script')[0];
 const html_mode_check_box = <HTMLInputElement>document.getElementById("html_mode_check_box");
@@ -80,7 +81,7 @@ export class HyLaGIController {
             DOMControl.showToast("Simulation was successful.", 1000, "");
             if (response.hydat != undefined) {
               response.hydat.name = browser_storage.getItem("hydla_name");
-              loadHydat(response.hydat);
+              HydatControl.loadHydat(response.hydat);
             }
             else {
               $('ul.tabs').tabs('select', 'output-area');
