@@ -5,6 +5,7 @@ import "ace-builds/src-noconflict/theme-github"
 import "ace-builds/src-noconflict/theme-clouds"
 import "ace-builds/src-noconflict/keybinding-emacs"
 import "ace-builds/src-noconflict/keybinding-vim"
+// import "./mode-hydla"
 import { DOMControl } from "./dom_control";
 import { StorageControl } from "./storage_control";
 import { HyLaGIController } from "./hylagi";

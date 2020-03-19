@@ -1,7 +1,9 @@
+require("ace-builds");
+
 define("ace/mode/matching_brace_outdent", ["require", "exports", "module", "ace/range"], function (require, exports, module) {
     "use strict";
 
-    var Range = require("../range").Range;
+    var Range = require("ace/range").Range;
     var MatchingBraceOutdent = function() {};
 
     (function()
@@ -43,9 +45,9 @@ define("ace/mode/matching_brace_outdent", ["require", "exports", "module", "ace/
 define("ace/mode/hydla_highlight_rules",["require","exports","module","ace/lib/oop","ace/lib/lang","ace/mode/text_highlight_rules"], function(require, exports, module) {
     "use strict";
 
-    var oop = require("../lib/oop");
-    var lang = require("../lib/lang");
-    var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+    var oop = require("ace/lib/oop");
+    var lang = require("ace/lib/lang");
+    var TextHighlightRules = require("ace/text_highlight_rules").TextHighlightRules;
 
     var HydLaHighlightRules = function()
     {
@@ -138,8 +140,8 @@ define("ace/mode/hydla_highlight_rules",["require","exports","module","ace/lib/o
 define("ace/mode/hydla",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/matching_brace_outdent","ace/mode/hydla_highlight_rules"], function(require, exports, module) {
     "use strict";
 
-    var oop = require("../lib/oop");
-    var TextMode = require("./text").Mode;
+    var oop = require("ace/lib/oop");
+    var TextMode = require("ace/text").Mode;
     var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent;
     var HydLaHighlightRules = require("./hydla_highlight_rules").HydLaHighlightRules;
 

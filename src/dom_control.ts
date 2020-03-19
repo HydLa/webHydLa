@@ -1,5 +1,4 @@
 import Materialize from "materialize-css";
-import $ from 'jquery';
 import { GraphControl } from "./graph_control";
 import { EditorControl } from "./editor_control";
 import { HydatControl } from "./hydat_control";
@@ -7,17 +6,21 @@ import { HyLaGIController } from "./hylagi";
 
 export class DOMControl {
   static init() {
-    $('select').formSelect();
+    // $('select').formSelect();
+    Materialize.FormSelect.init(document.querySelectorAll("select"));
     $(window).resize(function () {
       GraphControl.resizeGraphRenderer();
     });
 
     /* initialize materialize components */
-    $('#file-dropdown-button').dropdown({
+    console.log(document.getElementById("file-dropdown-button"));
+    Materialize.Dropdown.init(
+      document.querySelectorAll("#file-dropdown-button")!, {
       constrainWidth: true,
       hover: false,
     });
-    $('.axis-dropdown-button').dropdown({
+    Materialize.Dropdown.init(
+      document.querySelectorAll('.axis-dropdown-button'),{
       constrainWidth: false,
       hover: false
     });

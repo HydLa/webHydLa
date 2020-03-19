@@ -9,7 +9,7 @@ import { PlotLineMapControl } from "./plot_line_map_control";
 import { PlotControl } from "./plot_control";
 import { HydatControl } from "./hydat_control";
 
-window.addEventListener("load", () => {
+$(document).ready(() => {
   GraphControl.init();
   PlotLineMapControl.init();
   NewUI.init(GraphControl.controls);

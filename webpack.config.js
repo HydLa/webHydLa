@@ -1,13 +1,14 @@
 const webpack = require("webpack");
 
 module.exports = { 
-  entry: `./src/main.ts`,
+  entry: `${__dirname}/src/main.ts`,
   output: {
     path: `${__dirname}/static`,
     filename: 'main.js'
   },
   mode: 'development',
   // mode: 'production',
+  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -28,7 +29,8 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       $: "jquery",
-      jQuery: "jquery"
+      jQuery: "jquery",
+      "window.jQuery": "jquery"
     })
   ]
 };

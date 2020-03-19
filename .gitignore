@@ -3,3 +3,4 @@ secret_key
 node_modules
 static/*.js
 log.txt
+static/*.js.map

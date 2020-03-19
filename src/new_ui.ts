@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 // below are functions added for new UI
