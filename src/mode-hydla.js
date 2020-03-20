@@ -1,6 +1,7 @@
-require("ace-builds");
+import "ace-builds/webpack-resolver";
 
-define("ace/mode/matching_brace_outdent", ["require", "exports", "module", "ace/range"], function (require, exports, module) {
+export function defineHydlaMode(ace){
+ace.define("ace/mode/matching_brace_outdent", ["require", "exports", "module", "ace/range"], function (require, exports, module) {
     "use strict";
 
     var Range = require("ace/range").Range;
@@ -42,7 +43,7 @@ define("ace/mode/matching_brace_outdent", ["require", "exports", "module", "ace/
     exports.MatchingBraceOutdent = MatchingBraceOutdent;
 });
 
-define("ace/mode/hydla_highlight_rules",["require","exports","module","ace/lib/oop","ace/lib/lang","ace/mode/text_highlight_rules"], function(require, exports, module) {
+ace.define("ace/mode/hydla_highlight_rules",["require","exports","module","ace/lib/oop","ace/lib/lang","ace/mode/text_highlight_rules"], function(require, exports, module) {
     "use strict";
 
     var oop = require("ace/lib/oop");
@@ -137,7 +138,7 @@ define("ace/mode/hydla_highlight_rules",["require","exports","module","ace/lib/o
     exports.HydLaHighlightRules = HydLaHighlightRules;
 });
 
-define("ace/mode/hydla",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/matching_brace_outdent","ace/mode/hydla_highlight_rules"], function(require, exports, module) {
+ace.define("ace/mode/hydla",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/matching_brace_outdent","ace/mode/hydla_highlight_rules"], function(require, exports, module) {
     "use strict";
 
     var oop = require("ace/lib/oop");
@@ -202,3 +203,6 @@ define("ace/mode/hydla",["require","exports","module","ace/lib/oop","ace/mode/te
 
     exports.Mode = Mode;
 });
+
+  
+}

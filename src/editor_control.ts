@@ -5,7 +5,7 @@ import "ace-builds/src-noconflict/theme-github"
 import "ace-builds/src-noconflict/theme-clouds"
 import "ace-builds/src-noconflict/keybinding-emacs"
 import "ace-builds/src-noconflict/keybinding-vim"
-// import "./mode-hydla"
+import { defineHydlaMode } from "./mode-hydla"; 
 import { DOMControl } from "./dom_control";
 import { StorageControl } from "./storage_control";
 import { HyLaGIController } from "./hylagi";
@@ -28,6 +28,8 @@ export class EditorControl {
   static autosave_event_enabled = true;
   static autosave_changed = false;
   static init(saved_hydla:string|null) {
+    defineHydlaMode(ace);
+
     /* ID="editor" な div をエディタにする */
     this.editor = ace.edit("editor");
 
