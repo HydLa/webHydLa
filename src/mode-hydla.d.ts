@@ -1,1 +1,0 @@
-export function defineHydlaMode(ace:any):void;

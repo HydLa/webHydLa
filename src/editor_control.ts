@@ -6,9 +6,7 @@ import "ace-builds/src-noconflict/theme-github"
 import "ace-builds/src-noconflict/theme-clouds"
 import "ace-builds/src-noconflict/keybinding-emacs"
 import "ace-builds/src-noconflict/keybinding-vim"
-import "ace-builds/webpack-resolver";
 
-import { defineHydlaMode } from "./mode-hydla"; 
 import { DOMControl } from "./dom_control";
 import { StorageControl } from "./storage_control";
 import { HyLaGIController } from "./hylagi";
@@ -31,13 +29,12 @@ export class EditorControl {
   static autosave_event_enabled = true;
   static autosave_changed = false;
   static init(saved_hydla:string|null) {
-    defineHydlaMode(ace);
-
     /* ID="editor" な div をエディタにする */
     this.editor = ace.edit("editor");
 
     /* 諸々の設定 */
     this.editor.setTheme("ace/theme/sqlserver");
+    ace.config.setModuleUrl("ace/mode/hydla","./mode-hydla.js")
     this.editor.getSession().setMode("ace/mode/hydla")
     this.editor.getSession().setTabSize(4);
     this.editor.getSession().setUseSoftTabs(true);
