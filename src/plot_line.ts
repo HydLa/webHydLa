@@ -7,6 +7,7 @@ import { HydatControl } from "./hydat_control";
 import { StorageControl } from "./storage_control";
 import { Triplet } from "./plot_utils";
 import { HydatPhase } from "./hydat";
+import { Construct, Constant } from "./parse";
 
 export class PlotLine {
   index: number;

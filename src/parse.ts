@@ -1,4 +1,4 @@
-abstract class Construct {
+export abstract class Construct {
   abstract toString(): string;
   abstract getValue(env: { [key: string]: Construct }): number;
 
@@ -231,7 +231,7 @@ abstract class BinaryConstruct extends Construct {
   }
 }
 
-class Plus extends BinaryConstruct {
+export class Plus extends BinaryConstruct {
   toString() {
     return `(${this.lhs.toString()} + ${this.rhs.toString()})`;
   }
@@ -276,7 +276,7 @@ class Power extends BinaryConstruct {
   }
 }
 
-class Constant extends Construct {
+export class Constant extends Construct {
   val: number;
   constructor(val: number) {
     super();

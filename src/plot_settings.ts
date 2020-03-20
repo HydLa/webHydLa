@@ -7,12 +7,9 @@ export class PlotSettingsControl{
   static plot_settings: PlotSettings;
   static init() {
     this.plot_settings = StorageControl.loadPlotSettings();
-    if (this.plot_settings.backgroundColor !== undefined) {
-      PlotControl.setBackgroundColor(this.plot_settings.backgroundColor);
-    }
   }
   static parseJSON(json: string|null) {
-    return new PlotSettings(JSON.parse(json ?? ""));
+    return new PlotSettings(JSON.parse(json ?? "{}"));
   }
   static saveToWebStorage() {
     StorageControl.savePlotSettings(this.plot_settings);

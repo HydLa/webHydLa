@@ -1,10 +1,13 @@
 import * as ace from "ace-builds";
+import "ace-builds/src-noconflict/ext-language_tools"
 import "ace-builds/src-noconflict/theme-sqlserver"
 import "ace-builds/src-noconflict/theme-monokai"
 import "ace-builds/src-noconflict/theme-github"
 import "ace-builds/src-noconflict/theme-clouds"
 import "ace-builds/src-noconflict/keybinding-emacs"
 import "ace-builds/src-noconflict/keybinding-vim"
+import "ace-builds/webpack-resolver";
+
 import { defineHydlaMode } from "./mode-hydla"; 
 import { DOMControl } from "./dom_control";
 import { StorageControl } from "./storage_control";

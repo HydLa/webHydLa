@@ -10,25 +10,31 @@ import { PlotControl } from "./plot_control";
 import { HydatControl } from "./hydat_control";
 
 $(document).ready(() => {
-  GraphControl.init();
-  PlotLineMapControl.init();
-  NewUI.init(GraphControl.controls);
-  DOMControl.init();
   const saved_hydla = StorageControl.loadHydla();
   const saved_hydat = StorageControl.loadHydat();
   
-  EditorControl.init(saved_hydla);
-  StorageControl.init();
-  
   PlotSettingsControl.init();
-  DatGUIControl.init(PlotSettingsControl.plot_settings);
+  GraphControl.init();
+
   PlotControl.init(PlotSettingsControl.plot_settings);
+  DatGUIControl.init(PlotSettingsControl.plot_settings);
   
   HydatControl.init(saved_hydat);
+
+  PlotLineMapControl.init();
+  NewUI.init(GraphControl.controls);
+  DOMControl.init();
+
+  EditorControl.init(saved_hydla);
+  StorageControl.init();
   
   GraphControl.update2DMode(PlotSettingsControl.plot_settings.twoDimensional);
   PlotSettingsControl.time_stop();
   
+  if (PlotControl.plot_settings.backgroundColor !== undefined) {
+    PlotControl.setBackgroundColor(PlotControl.plot_settings.backgroundColor);
+  }
+
   GraphControl.render();
 });
 

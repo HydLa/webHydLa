@@ -83,6 +83,9 @@ export class StorageControl{
   }
 
   static saveHydatSettings() {
+    if (HydatControl.current_hydat === undefined){
+      throw new Error("current_hydat is undefined");
+    }
     storage.setItem(HydatControl.current_hydat.name, JSON.stringify(HydatControl.settingsForCurrentHydat))
   }
 

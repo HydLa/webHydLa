@@ -7,7 +7,7 @@ import { DOMControl } from "./dom_control";
 import { DatGUIControl } from "./dat_gui_control";
 
 export class HydatControl{
-  static current_hydat:Hydat;
+  static current_hydat:Hydat|undefined;
   static settingsForCurrentHydat:{plot_line_settings:{
     x: string;
     y: string;
@@ -52,7 +52,9 @@ export class HydatControl{
       DOMControl.showToast("Failed to load hydat: " + e.name + "(" + e.message + ")", 3000, "red darken-4");
     }
     GraphControl.clearPlot();
-    PlotLineMapControl.initVariableSelector(this.current_hydat);
+    if (this.current_hydat !== undefined){
+      PlotLineMapControl.initVariableSelector(this.current_hydat);
+    }
     PlotControl.update_axes(true);
   }
 }

@@ -6,9 +6,10 @@ import { GraphControl } from "./graph_control";
 import { HydatParameter, HydatParameterInterval, HydatPhase } from "./hydat";
 import { RGB, Triplet } from "./plot_utils";
 import { HydatControl } from "./hydat_control";
+import { Construct, Constant } from "./parse";
 
 export class AnimationControl {
-  static maxlen: number;
+  static maxlen: number = 0;
   static animation_line:{vecs:THREE.Vector3[],color:number}[] = [];
 
   static time: number = 0;
@@ -35,6 +36,9 @@ export class AnimationControl {
       console.log(e.stack);
       line.updateFolder(false);
       return;
+    }
+    if (HydatControl.current_hydat === undefined){
+      throw new Error("current_hydat is undefined");
     }
     var dt = PlotControl.plot_settings.plotInterval;
     var phase = HydatControl.current_hydat.first_phases[0];
@@ -135,8 +139,10 @@ export class AnimationControl {
           }
           line.plot.push(three_line);
 
-          AnimationControl.animation_line[PlotControl.array].vecs = (PlotControl.current_line_vec_animation);
-          AnimationControl.animation_line[PlotControl.array].color = (color[current_param_idx]);
+          AnimationControl.animation_line[PlotControl.array] = {
+            vecs: PlotControl.current_line_vec_animation,
+            color: color[current_param_idx]
+          };
           if (AnimationControl.maxlen < PlotControl.current_line_vec_animation.length) {
             AnimationControl.maxlen = PlotControl.current_line_vec_animation.length;
           }
@@ -227,14 +233,14 @@ export class AnimationControl {
     line.plot = [];
   }
 
-  static remove_mesh(line:THREE.Mesh[]) {
+  static remove_mesh(line:THREE.Mesh[]|undefined) {
     if (line !== undefined) {
       for (let i = 0; i < line.length; i++) {
         GraphControl.scene.remove(line[i]);
         delete line[i];
       }
+      line.length = 0;
     }
-    line.length = 0;
   }
 
   static reset(line: PlotLine) {

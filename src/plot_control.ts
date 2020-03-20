@@ -8,6 +8,7 @@ import { Triplet, RGB, ComparableTriplet, Range } from "./plot_utils";
 import { Object3D } from "three";
 import { HydatParameter, HydatPhase, HydatTimePP, HydatException } from "./hydat";
 import { PlotSettings } from "./plot_settings";
+import { Construct, Constant } from "./parse";
 
 const axisColorBases = new Triplet<RGB>(
   new RGB(1.0, 0.3, 0.3),

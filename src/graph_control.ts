@@ -46,6 +46,8 @@ export class GraphControl {
     this.camera = new THREE.OrthographicCamera(left, right, top, bottom, -1000, 1000);
 
     this.camera.position.set(0, 0, 100);
+    this.controls_position0 = new THREE.Vector3(0, 0, 100);
+    
     this.elem = document.getElementById("graph-area")!;
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
 
@@ -61,7 +63,7 @@ export class GraphControl {
     this.scene.add(directionalLight);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls_position0 = this.controls.object.position.clone();
+    this.controls.screenSpacePanning = true;
 
     //TODO: implement this in more elegant way
     setTimeout(() => { this.resizeGraphRenderer() }, 200);
@@ -93,11 +95,11 @@ export class GraphControl {
 
       $('#nameLabelCanvas').attr('width', w);
       $('#nameLabelCanvas').attr('height', h);
-      GraphControl.modifyNameLabel(HydatControl.current_hydat.name);
+      GraphControl.modifyNameLabel(HydatControl.current_hydat?.name);
     }
   }
 
-  static modifyNameLabel(name:string) {
+  static modifyNameLabel(name:string|undefined) {
     var text = "";
     if (!(name == undefined || name == null)) {
       text = name;
@@ -144,8 +146,8 @@ export class GraphControl {
   }
 
   static toScreenPosition(pos: THREE.Vector3) {
-    const widthHalf = 0.5 * this.renderer.context.canvas.width;
-    const heightHalf = 0.5 * this.renderer.context.canvas.height;
+    const widthHalf = 0.5 * this.renderer.getContext().canvas.width;
+    const heightHalf = 0.5 * this.renderer.getContext().canvas.height;
 
     pos.project(this.camera);
 
