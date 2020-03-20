@@ -13,7 +13,6 @@ export class DOMControl {
     });
 
     /* initialize materialize components */
-    console.log(document.getElementById("file-dropdown-button"));
     Materialize.Dropdown.init(
       document.querySelectorAll("#file-dropdown-button")!, {
       constrainWidth: true,

@@ -86,6 +86,7 @@ export class PlotLineMapControl {
       var line_settings = HydatControl.settingsForCurrentHydat.plot_line_settings;
       for (var i in line_settings) {
         let index = parseInt(i);
+        if (line_settings[index] === null) continue;
         let line = this.addNewLineWithIndex(line_settings[index].x, line_settings[index].y, line_settings[index].z, index);
         /*for(key in guard_list){
           if(line_settings[i].x == key){
