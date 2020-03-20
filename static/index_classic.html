@@ -96,28 +96,8 @@
               <div id="input-pane">
                 <div id="editor-area">
                   <div id="editor" style="z-index:1; width:100%"></div>
-                  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
-                  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script>
-                  <script>
-                   var editor = ace.edit("editor");
-                   editor.$blockScrolling = Infinity;
-                   editor.setOptions({
-                     enableBasicAutocompletion: true,
-                                           enableSnippets: true,
-                                           enableLiveAutocompletion: true
-                   });
-                   editor.getSession().setUseWrapMode(true);
-                   /*$('#init').click(function(e) {
-                      editor.insert('INIT <=> x =  & y = .');
-                      });
-                      $('#constraint').click(function(e) {
-                      editor.insert(' <=> []( => ).');
-                      });*/
-                  </script>
                   <a class="exec-button waves-effect waves-light btn-floating btn-large red disabled-running z-depth-3" title="RUN/KILL (Shortcut: Ctrl-Enter)" id="run_button" href="#"><i class="mdi-content-send exec-icon right"></i></a>
                 </div>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script>
               </div>
 
               <div id="graph-setting-area" class="valign">

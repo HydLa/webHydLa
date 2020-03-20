@@ -36,6 +36,7 @@ export class EditorControl {
     this.editor.getSession().setMode("ace/mode/hydla")
     this.editor.getSession().setTabSize(4);
     this.editor.getSession().setUseSoftTabs(true);
+    this.editor.getSession().setUseWrapMode(true);
     this.editor.setHighlightActiveLine(false);
     // this.editor.$blockScrolling = Infinity;
     this.editor.setOptions({
