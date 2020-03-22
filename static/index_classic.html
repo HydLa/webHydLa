@@ -27,7 +27,7 @@
                 </form>
               </div>
               <div class="col s6">
-                <h6>theme<h6>
+                <h6>theme</h6>
                   <div class="input-field">
                     <select id="theme_selector" name = "theme_selector" onChange='editor.setTheme("ace/theme/" + this.value);saveThemeToWebstorage();'>
                       <option value="monokai" selected="true">Dark</option>
@@ -37,7 +37,7 @@
                   </div>
               </div>
               <div class="col s6">
-                <h6>key binding<h6>
+                <h6>key binding</h6>
                   <div class="input-field">
                     <select id="key_binding_selector" name = "key_binding_selector" onChange='editor.setKeyboardHandler(this.value);saveKeyBindingToWebstorage();'>
                       <option value="ace/keyboard/emacs">Emacs</option>
@@ -274,6 +274,8 @@
         </div>
 
       </div>
+    </div>
+      
       <script src="./main.js" type="text/javascript" charset="utf-8"></script>
   </body>
 </html>
