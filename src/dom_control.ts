@@ -5,6 +5,8 @@ import { HydatControl } from "./hydat_control";
 import { HyLaGIController } from "./hylagi";
 
 export class DOMControl {
+  static tabs: Materialize.Tabs;
+
   static init() {
     // $('select').formSelect();
     Materialize.FormSelect.init(document.querySelectorAll("select"));
@@ -14,7 +16,7 @@ export class DOMControl {
 
     /* initialize materialize components */
     Materialize.Dropdown.init(
-      document.querySelectorAll("#file-dropdown-button")!, {
+      document.querySelectorAll("#file-dropdown-button"), {
       constrainWidth: true,
       hover: false,
     });
@@ -23,8 +25,8 @@ export class DOMControl {
       constrainWidth: false,
       hover: false
     });
-    $('.modal-trigger').modal();
-    $('ui.tabs').tabs();
+    Materialize.Modal.init(document.querySelectorAll('.modal'));
+    DOMControl.tabs = Materialize.Tabs.init(document.querySelectorAll("ui.tabs")[0]);
 
     $("fix_button").on('change', function () {
       GraphControl.replotAll();
@@ -146,5 +148,9 @@ export class DOMControl {
       tgl.classList.add("mdi-navigation-chevron-right");
     }
     GraphControl.startResizingGraphArea();
+  }
+
+  static selectGraphTab() {
+    this.tabs.select("output-area");
   }
 }

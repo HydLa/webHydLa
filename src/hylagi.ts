@@ -85,7 +85,7 @@ export class HyLaGIController {
               HydatControl.loadHydat(response.hydat);
             }
             else {
-              $('ul.tabs').tabs('select', 'output-area');
+              DOMControl.selectGraphTab();
             }
             break;
           default:
@@ -95,7 +95,7 @@ export class HyLaGIController {
                 3000,
                 "red darken-4"
               );
-              $('ul.tabs').tabs('select', 'output-area');
+              DOMControl.selectGraphTab();
             }
             else {
               DOMControl.showToast("Killed HyLaGI", 1000, "");
