@@ -62,7 +62,7 @@ export class AnimationControl {
   }
 
   // startPosからendPosまで幅scaledWidthの線をgeometryに追加
-  static make_line(startPos: any, endPos: any, scaledWidth: number) {
+  static make_line(startPos: THREE.Vector3, endPos: THREE.Vector3, scaledWidth: number) {
     var directionVec = endPos.clone().sub(startPos);
     var height = directionVec.length();
     directionVec.normalize();
@@ -105,7 +105,7 @@ export class AnimationControl {
         }
       }
       else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) { // IPの各折れ線を追加
-        let l = AnimationControl.make_line(current_line_vec[i], current_line_vec[i + 1], scaledWidth);
+        let l = AnimationControl.make_line(current_line_vec[i].vec, current_line_vec[i + 1].vec, scaledWidth);
         linesGeometry.merge(<any>l.geometry, l.matrix);
       }
     }
