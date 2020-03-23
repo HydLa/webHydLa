@@ -103,6 +103,7 @@ html, body{
 	box-shadow: initial!important;
 	box-sizing: initial!important;
 	transition: initial!important;
+	color: white !important;
 }
 #other_options {
 	width: 120px!important;
@@ -123,6 +124,9 @@ html, body{
 	box-shadow: initial!important;
 	box-sizing: initial!important;
 	transition: initial!important;
+	position: initial!important;
+	opacity: initial!important;
+	pointer-events: initial!important;
 }
 #run_button {
 	color: white;

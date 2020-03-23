@@ -3,8 +3,11 @@ import { GraphControl } from "./graph_control";
 import { EditorControl } from "./editor_control";
 import { HydatControl } from "./hydat_control";
 import { HyLaGIController } from "./hylagi";
+import { StorageControl } from "./storage_control";
 
 export class DOMControl {
+  static tabs: Materialize.Tabs;
+
   static init() {
     // $('select').formSelect();
     Materialize.FormSelect.init(document.querySelectorAll("select"));
@@ -14,7 +17,7 @@ export class DOMControl {
 
     /* initialize materialize components */
     Materialize.Dropdown.init(
-      document.querySelectorAll("#file-dropdown-button")!, {
+      document.querySelectorAll("#file-dropdown-button"), {
       constrainWidth: true,
       hover: false,
     });
@@ -23,8 +26,8 @@ export class DOMControl {
       constrainWidth: false,
       hover: false
     });
-    $('.modal-trigger').modal();
-    $('ui.tabs').tabs();
+    Materialize.Modal.init(document.querySelectorAll('.modal'));
+    DOMControl.tabs = Materialize.Tabs.init(document.getElementById("tabs")!);
 
     $("fix_button").on('change', function () {
       GraphControl.replotAll();
@@ -32,6 +35,20 @@ export class DOMControl {
     $("step_button").on('change', function () {
       GraphControl.replotAll();
     });
+
+    document.getElementById("editor_font_size")?.addEventListener("change", (e) => {
+      EditorControl.setFontSize((e.target as HTMLInputElement).valueAsNumber);
+    })
+
+    document.getElementById("theme_selector")?.addEventListener("change", (e) => {
+      EditorControl.setTheme((e.target as HTMLInputElement).value);
+      StorageControl.saveTheme();
+    })
+
+    document.getElementById("key_binding_selector")?.addEventListener("change", (e) => {
+      EditorControl.setKeyBinding((e.target as HTMLInputElement).value);
+      StorageControl.saveKeyBinding();
+    })
 
     /* function to close/open input-pane */
     $("#v-separator")
@@ -146,5 +163,9 @@ export class DOMControl {
       tgl.classList.add("mdi-navigation-chevron-right");
     }
     GraphControl.startResizingGraphArea();
+  }
+
+  static selectLogTab() {
+    this.tabs.select("output-area");
   }
 }

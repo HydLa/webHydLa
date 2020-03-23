@@ -151,10 +151,14 @@ export class EditorControl {
   }
 
   static setTheme(theme:string) {
-    this.editor.setTheme("ace/theme/" + theme)
+    this.editor.setTheme(`ace/theme/${theme}`);
   }
 
   static resize() {
     this.editor.resize();
+  }
+
+  static setFontSize(n:number) {
+    this.editor.setOption("fontSize", n);
   }
 }
