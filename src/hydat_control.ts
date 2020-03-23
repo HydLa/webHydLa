@@ -24,7 +24,8 @@ export class HydatControl{
 
   /* function to save Hydat file */
   static saveHydat() {
-    var blob = new Blob([JSON.stringify(HydatControl.current_hydat)]);
+    if (!HydatControl.current_hydat) return;
+    var blob = new Blob([JSON.stringify(HydatControl.current_hydat.raw)]);
     var object = window.URL.createObjectURL(blob);
     var d = new Date();
     var date = d.getFullYear() + "-" + d.getMonth() + 1 + "-" + d.getDate() + "T" + d.getHours() + "-" + d.getMinutes() + "-" + d.getSeconds();

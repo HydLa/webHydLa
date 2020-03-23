@@ -38,8 +38,10 @@ export class Hydat {
   first_phases: HydatPhase[];
   parameters: { [key: string]: HydatParameter };
   variables: string[];
+  raw: HydatRaw;
 
   constructor(hydat: HydatRaw) {
+    this.raw = hydat;
     this.name = hydat.name;
     this.variables = hydat.variables;
     this.first_phases = [];
