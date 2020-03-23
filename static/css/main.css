@@ -108,7 +108,7 @@ html, body{
 #other_options {
 	width: 120px!important;
 }
-.options_checkbox {
+input[type="checkbox"] {
 	background-color: #555!important;
 	border: initial!important;
 	border-bottom: initial!important;
