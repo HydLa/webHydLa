@@ -47,14 +47,14 @@
 										<form>
 											<p class="range-field">
 												<label for="editor_font_size">Editor Font Size</label>
-												<input type="range" id="editor_font_size" min="1" max="100" value="12" onChange='editor.setOption("fontSize", this.value + "pt");'>
+												<input type="range" id="editor_font_size" min="1" max="100" value="12">
 											</p>
 										</form>
 									</div>
 									<div class="col s6">
 										<h6>theme</h6>
 										<div class="input-field">
-											<select id="theme_selector" name = "theme_selector" onChange='editor.setTheme("ace/theme/" + this.value);saveThemeToWebstorage();'>
+											<select id="theme_selector" name = "theme_selector">
 												<option value="monokai" selected="true">Dark</option>
 												<option value="sqlserver">Bright</option>
 											</select>
@@ -64,7 +64,7 @@
 									<div class="col s6">
 										<h6>key binding</h6>
 										<div class="input-field">
-											<select id="key_binding_selector" name = "key_binding_selector" onChange='editor.setKeyboardHandler(this.value);saveKeyBindingToWebstorage();'>
+											<select id="key_binding_selector" name = "key_binding_selector"'>
 												<option value="ace/keyboard/emacs">Emacs</option>
 												<option value="ace/keyboard/vim">Vim</option>
 												<option value="" selected="true">Windows</option>
@@ -141,7 +141,7 @@
 		<!-- グラフのパネルを包んでいる（＋現在は、ログ出力） -->
 		<div id="result_pane">
 
-			<ul class="tabs tabs-fixed-width">
+			<ul id="tabs" class="tabs tabs-fixed-width">
 				<li class="tab col s12 indigo darken-4">
 					<a class="graphlog_tab" href="#graph-area">Graph</a>
 				</li>

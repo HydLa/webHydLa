@@ -8,6 +8,7 @@ import { StorageControl } from "./storage_control";
 import { PlotLineMapControl } from "./plot_line_map_control";
 import { PlotControl } from "./plot_control";
 import { HydatControl } from "./hydat_control";
+import { HyLaGIController } from "./hylagi";
 
 $(document).ready(() => {
   const saved_hydla = StorageControl.loadHydla();
@@ -20,6 +21,7 @@ $(document).ready(() => {
   DatGUIControl.init(PlotSettingsControl.plot_settings);
   
   HydatControl.init(saved_hydat);
+  HyLaGIController.init();
 
   PlotLineMapControl.init();
   NewUI.init(GraphControl.controls);

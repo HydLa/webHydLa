@@ -10,7 +10,7 @@ export class HyLaGIController {
   static running = false;
   static dynamic_script_elements: HTMLElement[];
   static init() {
-    
+    this.dynamic_script_elements = [];
   }
   static exec() {
     if (this.running) {
@@ -85,7 +85,7 @@ export class HyLaGIController {
               HydatControl.loadHydat(response.hydat);
             }
             else {
-              DOMControl.selectGraphTab();
+              DOMControl.selectLogTab();
             }
             break;
           default:
@@ -95,7 +95,8 @@ export class HyLaGIController {
                 3000,
                 "red darken-4"
               );
-              DOMControl.selectGraphTab();
+              DOMControl.selectLogTab();
+              console.error(response);
             }
             else {
               DOMControl.showToast("Killed HyLaGI", 1000, "");
