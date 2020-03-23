@@ -10,7 +10,7 @@ import { Construct, Constant } from "./parse";
 
 export class AnimationControl {
   static maxlen: number = 0;
-  static animation_line:{vecs:THREE.Vector3[],color:number}[] = [];
+  static animation_line: { vecs: THREE.Vector3[], color: number }[] = []; // ボールの軌道のリスト
 
   static time: number = 0;
   static time_prev: number = -100;
@@ -18,7 +18,7 @@ export class AnimationControl {
   static plot_animate: THREE.Mesh[];
 
   static add_plot(line: PlotLine) {
-    var axes:Triplet<Construct>;
+    var axes: Triplet<Construct>;
     if (line.settings.x == "" ||
       line.settings.y == "" ||
       line.settings.z == "") {
@@ -37,7 +37,7 @@ export class AnimationControl {
       line.updateFolder(false);
       return;
     }
-    if (HydatControl.current_hydat === undefined){
+    if (HydatControl.current_hydat === undefined) {
       throw new Error("current_hydat is undefined");
     }
     var dt = PlotControl.plot_settings.plotInterval;
@@ -61,7 +61,86 @@ export class AnimationControl {
     if (line.plot_ready == undefined) requestAnimationFrame(function () { line.plotReady() });
   }
 
-  static add_plot_each(phase_index_array: { phase: HydatPhase, index: number }[], axes: Triplet<Construct>, line: PlotLine, width: number, color: number[], dt: number, parameter_condition_list: { [key: string]: Constant; }[], current_param_idx: number, current_line_vec: { vec: THREE.Vector3, isPP: boolean }[]) {
+  // startPosからendPosまで幅scaledWidthの線をgeometryに追加
+  static make_line(startPos: any, endPos: any, scaledWidth: number) {
+    var directionVec = endPos.clone().sub(startPos);
+    var height = directionVec.length();
+    directionVec.normalize();
+    var cylinderMesh = new THREE.Mesh(new THREE.CylinderGeometry(scaledWidth, scaledWidth, height + scaledWidth, 8, 1));
+
+    var upVec = new THREE.Vector3(0, 1, 0);
+    var rotationAxis = upVec.clone().cross(directionVec).normalize();
+    var rotationAngle = Math.acos(upVec.dot(directionVec));
+
+    var newpos = startPos.clone().lerp(endPos, 0.5);
+    cylinderMesh.position.set(newpos.x, newpos.y, newpos.z);
+    cylinderMesh.setRotationFromAxisAngle(rotationAxis, rotationAngle);
+
+    cylinderMesh.updateMatrix();
+    return cylinderMesh;
+  };
+
+  static add_line(current_line_vec: { vec: THREE.Vector3, isPP: boolean }[], current_param_idx: number, line: PlotLine, width: number, color: number[]) {
+    PlotControl.array += 1;
+
+    var linesGeometry = new THREE.Geometry();
+    let scaledWidth = 0.5 * width / GraphControl.camera.zoom;
+
+    const dottedLength = 10.0 / GraphControl.camera.zoom;
+    for (var i = 0; i + 1 < current_line_vec.length; i++) {
+      if (current_line_vec[i + 1].isPP) {
+        const posBegin = current_line_vec[i].vec;
+        const posEnd = current_line_vec[i + 1].vec;
+        let directionVec = posEnd.clone().sub(posBegin);
+        const lineLength = directionVec.length();
+        directionVec.normalize();
+        const numOfDots = lineLength / dottedLength;
+        for (var j = 1; j + 1 < numOfDots; j += 2) { // 点線の各点を追加
+          let l = AnimationControl.make_line(
+            posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength)),
+            posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength)),
+            scaledWidth
+          );
+          linesGeometry.merge(<any>l.geometry, l.matrix);
+        }
+      }
+      else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) { // IPの各折れ線を追加
+        let l = AnimationControl.make_line(current_line_vec[i], current_line_vec[i + 1], scaledWidth);
+        linesGeometry.merge(<any>l.geometry, l.matrix);
+      }
+    }
+
+    let three_line = new THREE.Mesh(
+      linesGeometry,
+      new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
+    );
+    GraphControl.lineIDSet.add(three_line.id);
+    GraphControl.scene.add(three_line);
+
+    if (!line.plot) {
+      throw new Error("unexpected: line.plot is undefined");
+    }
+    line.plot.push(three_line);
+
+    AnimationControl.animation_line[PlotControl.array] = {
+      vecs: PlotControl.current_line_vec_animation,
+      color: color[current_param_idx]
+    };
+    if (AnimationControl.maxlen < PlotControl.current_line_vec_animation.length) {
+      AnimationControl.maxlen = PlotControl.current_line_vec_animation.length;
+    }
+
+    // 動く点
+    let s_geometry = new THREE.SphereGeometry(0.1);
+    let s_material = new THREE.MeshBasicMaterial({ color: color[current_param_idx] });
+    let sphere = new THREE.Mesh(s_geometry, s_material);
+    sphere.position.set(0, 0, 0);
+    GraphControl.scene.add(sphere);
+    AnimationControl.plot_animate[PlotControl.array] = (sphere);
+  }
+
+  // dfs to add plot each line
+  static dfs_each_line(phase_index_array: { phase: HydatPhase, index: number }[], axes: Triplet<Construct>, line: PlotLine, width: number, color: number[], dt: number, parameter_condition_list: { [key: string]: Constant; }[], current_param_idx: number, current_line_vec: { vec: THREE.Vector3, isPP: boolean }[]) {
     try {
       while (true) {
         if (line.plot_ready) {
@@ -72,124 +151,49 @@ export class AnimationControl {
         }
 
         // phase_index_array is used to implement dfs without function call.
-        let phase_index = phase_index_array[phase_index_array.length - 1];
+        let phase_index = phase_index_array[phase_index_array.length - 1]; // top
         let phase = phase_index.phase;
         let vec = PlotControl.phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, dt);
         current_line_vec = current_line_vec.concat(vec);
-        let vec_animation = PlotControl.phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, 0.01);
+        let vec_animation = PlotControl.phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, 0.01); // tを0.01刻みで点を取る -> time = t * 100
         // PlotControl.current_line_vec_animation = PlotControl.current_line_vec_animation.concat(vec_animation);
         for (let v of vec_animation) {
           PlotControl.current_line_vec_animation.push(v.vec);
         }
-        if (phase.children.length == 0) {
-          PlotControl.array += 1;
-          // on leaves
+        if (phase.children.length == 0) { // on leaves
+          AnimationControl.add_line(current_line_vec, current_param_idx, line, width, color);
 
-          var cylindersGeometry = new THREE.Geometry();
-          let scaledWidth = 0.5 * width / GraphControl.camera.zoom;
-          var addCylinder = function (startPos: THREE.Vector3, endPos: THREE.Vector3) {
-            let directionVec = endPos.clone().sub(startPos);
-            const height = directionVec.length();
-            directionVec.normalize();
-            let cylinderMesh = new THREE.Mesh(new THREE.CylinderGeometry(scaledWidth, scaledWidth, height + scaledWidth, 8, 1));
-
-            const upVec = new THREE.Vector3(0, 1, 0);
-            const rotationAxis = upVec.clone().cross(directionVec).normalize();
-            const rotationAngle = Math.acos(upVec.dot(directionVec));
-
-            const newpos = startPos.clone().lerp(endPos, 0.5);
-            cylinderMesh.position.set(newpos.x, newpos.y, newpos.z);
-            cylinderMesh.setRotationFromAxisAngle(rotationAxis, rotationAngle);
-
-            cylinderMesh.updateMatrix();
-            const geometry = cylinderMesh.geometry instanceof THREE.Geometry ? cylinderMesh.geometry : new THREE.Geometry().fromBufferGeometry(cylinderMesh.geometry);
-            cylindersGeometry.merge(geometry, cylinderMesh.matrix);
-          };
-
-          const dottedLength = 10.0 / GraphControl.camera.zoom;
-          for (var i = 0; i + 1 < current_line_vec.length; i++) {
-            if (current_line_vec[i + 1].isPP) {
-              const posBegin = current_line_vec[i].vec;
-              const posEnd = current_line_vec[i + 1].vec;
-              let directionVec = posEnd.clone().sub(posBegin);
-              const lineLength = directionVec.length();
-              directionVec.normalize();
-              const numOfDots = lineLength / dottedLength;
-              for (var j = 1; j + 1 < numOfDots; j += 2) {
-                addCylinder(
-                  posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength)),
-                  posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength))
-                );
-              }
-            }
-            else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) {
-              addCylinder(current_line_vec[i].vec, current_line_vec[i + 1].vec);
-            }
-          }
-
-          let three_line = new THREE.Mesh(
-            cylindersGeometry,
-            new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
-          );
-          GraphControl.lineIDSet.add(three_line.id);
-          GraphControl.scene.add(three_line);
-
-          if (!line.plot) {
-            throw new Error("unexpected: line.plot is undefined");
-          }
-          line.plot.push(three_line);
-
-          AnimationControl.animation_line[PlotControl.array] = {
-            vecs: PlotControl.current_line_vec_animation,
-            color: color[current_param_idx]
-          };
-          if (AnimationControl.maxlen < PlotControl.current_line_vec_animation.length) {
-            AnimationControl.maxlen = PlotControl.current_line_vec_animation.length;
-          }
-          let s_geometry = new THREE.SphereGeometry(0.1);
-          let s_material = new THREE.MeshBasicMaterial({ color: color[current_param_idx] });
-          let sphere = new THREE.Mesh(s_geometry, s_material);
-          sphere.position.set(0, 0, 0);
-          GraphControl.scene.add(sphere);
-          AnimationControl.plot_animate[PlotControl.array] = (sphere);
           current_line_vec = [];
           PlotControl.current_line_vec_animation = [];
           phase_index_array.pop();
           phase_index = phase_index_array[phase_index_array.length - 1];
           ++(phase_index.index);
           phase = phase_index.phase;
-          if (AnimationControl.animation_line.length > 4) {
-            console.log("a");
-          }
         }
-        while (true) {
-          var to_next_child = false;
+        while2: while (true) {
           // search next child to plot
-          for (; phase_index.index < phase.children.length; phase_index.index++) {
+          for (/* restart searching */; phase_index.index < phase.children.length; phase_index.index++) {
             var child = phase.children[phase_index.index];
             var included_by_parameter_condition = AnimationControl.check_parameter_condition(child.parameter_maps, parameter_condition_list[current_param_idx]);
-            if (included_by_parameter_condition) {
-              phase_index_array.push({ phase: child, index: 0 });
+            if (included_by_parameter_condition) { // パラメータに含まれるchild，つまり描画するべきchildが見つかった
+              phase_index_array.push({ phase: child, index: 0 }); // start from 0th child
               var current_time = new Date().getTime();
-              if (current_time - line.last_plot_time >= 200) {
+              if (current_time - line.last_plot_time >= 200) { // interrupt searching
                 line.last_plot_time = current_time;
                 // use setTimeout to check event queue
                 requestAnimationFrame(function () {
-                  AnimationControl.add_plot_each(phase_index_array, axes, line, width, color, dt, parameter_condition_list, current_param_idx, current_line_vec)
+                  AnimationControl.dfs_each_line(phase_index_array, axes, line, width, color, dt, parameter_condition_list, current_param_idx, current_line_vec)
                 });
                 return;
               }
-              else to_next_child = true;
-              break;
+              break while2; // go to child
             }
           }
-          if (to_next_child) break;
 
-
+          // 以下，描画するべきchildが見つからなかった場合
           // Plot for this current_param_idx is completed.
           if (phase_index_array.length == 1) {
-            ++current_param_idx;
-            if (current_param_idx >= parameter_condition_list.length) {
+            if (current_param_idx == parameter_condition_list.length - 1) { // last
               // Plot is completed.
               line.plotting = false;
               PlotControl.checkAndStopPreloader();
@@ -197,8 +201,10 @@ export class AnimationControl {
             }
             else {
               // setTimeout(function()
-              //             {add_plot_each([{phase:phase_index_array[0].phase, index:0}], axes, line, width, color, dt, parameter_condition_list, current_param_idx, [])
+              //             {dfs_each_line([{phase:phase_index_array[0].phase, index:0}], axes, line, width, color, dt, parameter_condition_list, current_param_idx, [])
               //             }, 0);
+              // 次のparameter conditionで探索しなおす
+              ++current_param_idx;
               phase_index_array[0].index = 0;
               break;
             }
@@ -207,7 +213,7 @@ export class AnimationControl {
             phase_index_array.pop();
             phase_index = phase_index_array[phase_index_array.length - 1];
             ++(phase_index.index);
-            phase = phase_index.phase;
+            phase = phase_index.phase; // start from next sibling
           }
         }
       }
@@ -233,7 +239,7 @@ export class AnimationControl {
     line.plot = [];
   }
 
-  static remove_mesh(line:THREE.Mesh[]|undefined) {
+  static remove_mesh(line: THREE.Mesh[] | undefined) {
     if (line !== undefined) {
       for (let i = 0; i < line.length; i++) {
         GraphControl.scene.remove(line[i]);
@@ -249,7 +255,7 @@ export class AnimationControl {
     AnimationControl.add_plot(line);
   }
 
-  static check_parameter_condition(parameter_maps: { [key: string]: HydatParameter }[], parameter_condition_list:{[key:string]:Constant}) {
+  static check_parameter_condition(parameter_maps: { [key: string]: HydatParameter }[], parameter_condition_list: { [key: string]: Constant }) {
     let epsilon = 0.0001;
     for (let map of parameter_maps) {
       let included = true;
@@ -338,7 +344,7 @@ export class AnimationControl {
           }
           if (this.time > AnimationControl.animation_line[arr].vecs.length - 1) {
             next_sphere.material.color.set(
-              new RGB(198,198,198).asHex24()
+              new RGB(198, 198, 198).asHex24()
             );
             AnimationControl.plot_animate[arr] = next_sphere;
             arr++;

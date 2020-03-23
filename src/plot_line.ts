@@ -23,16 +23,16 @@ export class PlotLine {
   x_item: dat.GUIController;
   y_item: dat.GUIController;
   z_item: dat.GUIController;
-  remain: boolean|undefined;
+  remain: boolean | undefined;
   color_angle: number = 0;
-  last_edited_input: HTMLInputElement|undefined;
+  last_edited_input: HTMLInputElement | undefined;
   plotting: boolean = false;
-  plot_ready: number|undefined;
-  plot_information: PlotInformation|undefined;
+  plot_ready: number | undefined;
+  plot_information: PlotInformation | undefined;
 
   last_plot_time: number = 0;
 
-  plot: THREE.Mesh[]|undefined;
+  plot: THREE.Mesh[] | undefined;
 
   constructor(x_name: string, y_name: string, z_name: string, index: number) {
     this.index = index;
@@ -111,12 +111,12 @@ export class PlotLine {
       this.plot_ready = undefined;
       this.last_plot_time = new Date().getTime();
       if (PlotControl.PlotStartTime === undefined) PlotControl.PlotStartTime = new Date().getTime();
-      AnimationControl.add_plot_each(plot_information.phase_index_array, plot_information.axes, plot_information.line, plot_information.width, plot_information.color, plot_information.dt, plot_information.parameter_condition_list, 0, []);
+      AnimationControl.dfs_each_line(plot_information.phase_index_array, plot_information.axes, plot_information.line, plot_information.width, plot_information.color, plot_information.dt, plot_information.parameter_condition_list, 0, []);
     }
   }
 }
 
-interface PlotInformation{
+interface PlotInformation {
   phase_index_array: { phase: HydatPhase, index: number }[];
   axes: Triplet<Construct>;
   line: PlotLine;
