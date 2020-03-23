@@ -163,6 +163,11 @@ export class GraphControl {
 
   static update2DMode(twoDimensional: boolean) {
     this.controls.enableRotate = !twoDimensional;
+    this.controls.mouseButtons = {
+      LEFT: twoDimensional ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE,
+      MIDDLE: THREE.MOUSE.DOLLY,
+      RIGHT: THREE.MOUSE.PAN
+    }
     if (twoDimensional) {
       this.camera.position.copy(this.controls_position0.clone());
       this.controls.target.set(0, 0, 0);
