@@ -17,11 +17,14 @@ export class AnimationControl {
 
   static plot_animate: THREE.Mesh[];
 
+  // 動的描画
   static dti: number = 0; // 何dt分追加したか
   static amli: number = 0; // accumulative_merged_linesをどこまで追加したか
-  static dynamic_lines: any[][] = [];
+  static dynamic_lines: any[][] = []; // 動的に描画したい線
+  // 最適化のために各PPまでの線を累積マージして格納しておく
+  // accumulative_merged_lines[i][j]: i本目の線について2j+1フェーズ目までの線をマージした線
   static accumulative_merged_lines: any[][] = [];
-  static drawn_dynamic_lines: any[][] = [];
+  static drawn_dynamic_lines: any[][] = []; // sceneに追加された線を登録しておく
 
   static add_plot(line: PlotLine) {
     var axes: Triplet<Construct>;
@@ -392,9 +395,6 @@ export class AnimationControl {
   }
 
   static animate() {
-    console.log(AnimationControl.dynamic_lines);
-    console.log(AnimationControl.accumulative_merged_lines);
-    console.log(AnimationControl.drawn_dynamic_lines);
     if (this.time_prev !== this.time) {
       AnimationControl.plot_animate = [];
       let arr = 0;
@@ -444,7 +444,6 @@ export class AnimationControl {
           this.dti = 0;
           this.amli = 0;
         }
-        //AnimationControl.remove_dynamic_lines();
         AnimationControl.draw_dynamic_lines();
       }
 

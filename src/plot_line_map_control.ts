@@ -72,7 +72,6 @@ export class PlotLineMapControl {
   /** @deprecated */
   static replot() {
     if (PlotControl.plot_settings.dynamicDraw) {
-      console.log(-1);
       PlotControl.plot_settings.plotInterval = 0.01;
       AnimationControl.dynamic_lines = [];
       AnimationControl.accumulative_merged_lines = [];
