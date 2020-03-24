@@ -5,6 +5,7 @@ import { DatGUIControl } from "./dat_gui_control";
 import { AnimationControl } from "./animation_control";
 import { HydatControl } from "./hydat_control";
 import { StorageControl } from "./storage_control";
+import { PlotControl } from "./plot_control";
 
 export class PlotLineMapControl {
   static map: { [key: number]: PlotLine } = {};
@@ -22,7 +23,11 @@ export class PlotLineMapControl {
       return;
     }
     DatGUIControl.variable_folder.removeFolder(line.folder);
-    AnimationControl.remove_plot(line);
+    if (PlotControl.plot_settings.dynamicDraw) {
+      AnimationControl.remove_ith_dynamic_line(line.index);
+    } else {
+      AnimationControl.remove_plot(line);
+    }
     delete HydatControl.settingsForCurrentHydat.plot_line_settings[line.index];
     StorageControl.saveHydatSettings();
     delete this.map[line.index];
@@ -64,8 +69,15 @@ export class PlotLineMapControl {
     return true;
   }
 
-  /** @deprecated */ 
+  /** @deprecated */
   static replot() {
+    if (PlotControl.plot_settings.dynamicDraw) {
+      console.log(-1);
+      PlotControl.plot_settings.plotInterval = 0.01;
+      AnimationControl.dynamic_lines = [];
+      AnimationControl.accumulative_merged_lines = [];
+      AnimationControl.remove_dynamic_lines();
+    }
     // var table = document.getElementById("graph_axis_table");
     for (let i in this.map) {
       this.map[i].color_angle = parseInt(i) / this.getLength() * 360;
@@ -74,7 +86,7 @@ export class PlotLineMapControl {
   }
 
   /* function to update variable selector for graph */
-  static initVariableSelector(hydat:Hydat) {
+  static initVariableSelector(hydat: Hydat) {
     this.removeAllFolders();
     this.reset();
 

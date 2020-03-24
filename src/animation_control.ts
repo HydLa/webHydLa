@@ -17,6 +17,12 @@ export class AnimationControl {
 
   static plot_animate: THREE.Mesh[];
 
+  static dti: number = 0; // 何dt分追加したか
+  static amli: number = 0; // accumulative_merged_linesをどこまで追加したか
+  static dynamic_lines: any[][] = [];
+  static accumulative_merged_lines: any[][] = [];
+  static drawn_dynamic_lines: any[][] = [];
+
   static add_plot(line: PlotLine) {
     var axes: Triplet<Construct>;
     if (line.settings.x == "" ||
@@ -62,11 +68,11 @@ export class AnimationControl {
   }
 
   // startPosからendPosまで幅scaledWidthの線をgeometryに追加
-  static make_line(startPos: THREE.Vector3, endPos: THREE.Vector3, scaledWidth: number) {
+  static make_line(startPos: THREE.Vector3, endPos: THREE.Vector3, scaledWidth: number, material: THREE.Material) {
     var directionVec = endPos.clone().sub(startPos);
     var height = directionVec.length();
     directionVec.normalize();
-    var cylinderMesh = new THREE.Mesh(new THREE.CylinderGeometry(scaledWidth, scaledWidth, height + scaledWidth, 8, 1));
+    var cylinderMesh = new THREE.Mesh(new THREE.CylinderGeometry(scaledWidth, scaledWidth, height + scaledWidth, 8, 1), material);
 
     var upVec = new THREE.Vector3(0, 1, 0);
     var rotationAxis = upVec.clone().cross(directionVec).normalize();
@@ -87,6 +93,12 @@ export class AnimationControl {
     let scaledWidth = 0.5 * width / GraphControl.camera.zoom;
 
     const dottedLength = 10.0 / GraphControl.camera.zoom;
+
+    var tmp_dynamic_line: any[] = [];
+    if (PlotControl.plot_settings.dynamicDraw) {
+      if (AnimationControl.accumulative_merged_lines.length - 1 < PlotControl.array) AnimationControl.accumulative_merged_lines.push([]);
+      if (AnimationControl.dynamic_lines.length - 1 < PlotControl.array) AnimationControl.dynamic_lines.push([]);
+    }
     for (var i = 0; i + 1 < current_line_vec.length; i++) {
       if (current_line_vec[i + 1].isPP) {
         const posBegin = current_line_vec[i].vec;
@@ -95,27 +107,47 @@ export class AnimationControl {
         const lineLength = directionVec.length();
         directionVec.normalize();
         const numOfDots = lineLength / dottedLength;
+        let tmp_geometry = new THREE.Geometry();
         for (var j = 1; j + 1 < numOfDots; j += 2) { // 点線の各点を追加
           let l = AnimationControl.make_line(
             posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength)),
             posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength)),
-            scaledWidth
+            scaledWidth,
+            new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
           );
+          if (PlotControl.plot_settings.dynamicDraw) tmp_geometry.merge(<any>l.geometry.clone(), l.matrix.clone());
           linesGeometry.merge(<any>l.geometry, l.matrix);
+        }
+        if (PlotControl.plot_settings.dynamicDraw) {
+          let l: any = new THREE.Mesh(
+            tmp_geometry,
+            new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
+          );
+          l.isPP = true;
+          tmp_dynamic_line.push(l);
+
+          AnimationControl.accumulative_merged_lines[PlotControl.array].push(
+            new THREE.Mesh(
+              linesGeometry.clone(),
+              new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
+            )
+          );
         }
       }
       else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) { // IPの各折れ線を追加
-        let l = AnimationControl.make_line(current_line_vec[i].vec, current_line_vec[i + 1].vec, scaledWidth);
+        let l = AnimationControl.make_line(current_line_vec[i].vec, current_line_vec[i + 1].vec, scaledWidth, new THREE.MeshBasicMaterial({ color: color[current_param_idx] }));
+        if (PlotControl.plot_settings.dynamicDraw) tmp_dynamic_line.push(l);
         linesGeometry.merge(<any>l.geometry, l.matrix);
       }
     }
+    if (PlotControl.plot_settings.dynamicDraw) AnimationControl.dynamic_lines[PlotControl.array] = tmp_dynamic_line;
 
     let three_line = new THREE.Mesh(
       linesGeometry,
       new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
     );
     GraphControl.lineIDSet.add(three_line.id);
-    GraphControl.scene.add(three_line);
+    if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
 
     if (!line.plot) {
       throw new Error("unexpected: line.plot is undefined");
@@ -315,12 +347,62 @@ export class AnimationControl {
     }
   }
 
+  static remove_ith_dynamic_line(i: number) {
+    for (var l of AnimationControl.drawn_dynamic_lines[i]) {
+      GraphControl.scene.remove(l);
+    }
+    AnimationControl.drawn_dynamic_lines[i] = [];
+  }
+
+  static remove_dynamic_lines() {
+    for (var i = 0; i < AnimationControl.drawn_dynamic_lines.length; i++) {
+      AnimationControl.remove_ith_dynamic_line(i);
+    }
+    AnimationControl.drawn_dynamic_lines = [];
+  }
+
+  // 現在時刻以下の線をsceneに追加する
+  static draw_dynamic_lines() {
+    var dt = PlotControl.plot_settings.plotInterval;
+
+    var tmp_dti = this.dti;
+    var tmp_amli = this.amli;
+    for (var i = 0; i < AnimationControl.dynamic_lines.length; i++) {
+      if (AnimationControl.drawn_dynamic_lines.length - 1 < i) AnimationControl.drawn_dynamic_lines.push([]);
+      tmp_dti = this.dti;
+      tmp_amli = this.amli;
+      for (var j = tmp_dti; j < AnimationControl.dynamic_lines[i].length; j++) { // 差分のみ追加
+        if ('isPP' in AnimationControl.dynamic_lines[i][j]) { // PP
+          // これまで追加した線を取り除き，代わりにマージ済みの線を追加する
+          AnimationControl.remove_ith_dynamic_line(i);
+          GraphControl.scene.add(AnimationControl.accumulative_merged_lines[i][tmp_amli]);
+          AnimationControl.drawn_dynamic_lines[i].push(AnimationControl.accumulative_merged_lines[i][tmp_amli]);
+          tmp_amli++;
+        } else if ((j + 1) * dt < this.time * 0.01) { // IP
+          GraphControl.scene.add(AnimationControl.dynamic_lines[i][j]);
+          AnimationControl.drawn_dynamic_lines[i].push(AnimationControl.dynamic_lines[i][j]);
+        } else { // timeより未来の線は書かない
+          break;
+        }
+        tmp_dti++;
+      }
+    }
+    this.dti = tmp_dti;
+    this.amli = tmp_amli;
+  }
+
   static animate() {
+    console.log(AnimationControl.dynamic_lines);
+    console.log(AnimationControl.accumulative_merged_lines);
+    console.log(AnimationControl.drawn_dynamic_lines);
     if (this.time_prev !== this.time) {
       AnimationControl.plot_animate = [];
       let arr = 0;
       for (let i = 0; i < GraphControl.scene.children.length - 1; i++) {
         // if ('isLine' in GraphControl.scene.children[i]) {
+        if (this.time > AnimationControl.maxlen - 1) {
+          this.time = 0;
+        }
         if (GraphControl.lineIDSet.has(GraphControl.scene.children[i].id)) {
           let next_sphere = GraphControl.scene.children[i + 1];
           if (!(next_sphere instanceof THREE.Mesh)) {
@@ -329,9 +411,6 @@ export class AnimationControl {
           }
           if (AnimationControl.animation_line[arr] === undefined) {
             continue;
-          }
-          if (this.time > AnimationControl.maxlen - 1) {
-            this.time = 0;
           }
           if (!(next_sphere.material instanceof THREE.MeshBasicMaterial)) {
             console.error("unexpected: !(next_sphere.material instanceof THREE.MeshBasicMaterial)")
@@ -358,6 +437,17 @@ export class AnimationControl {
           arr += 1;
         }
       }
+
+      if (PlotControl.plot_settings.dynamicDraw) {
+        if (this.time == 0) {
+          AnimationControl.remove_dynamic_lines();
+          this.dti = 0;
+          this.amli = 0;
+        }
+        //AnimationControl.remove_dynamic_lines();
+        AnimationControl.draw_dynamic_lines();
+      }
+
       this.time_prev = this.time;
       GraphControl.render_three_js();
     }
