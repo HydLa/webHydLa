@@ -10,21 +10,29 @@ import { Construct, Constant } from "./parse";
 
 export class AnimationControl {
   static maxlen: number = 0;
-  static animation_line: { vecs: THREE.Vector3[], color: number }[] = []; // ボールの軌道のリスト
+  /** ボールの軌道のリスト */
+  static animation_line: { vecs: THREE.Vector3[], color: number }[] = [];
 
   static time: number = 0;
   static time_prev: number = -100;
 
+  /** 描画したボールを登録しておく */
   static plot_animate: THREE.Mesh[];
 
   // 動的描画
-  static line_count: number = 0; // 何dt分追加したか
-  static amli: number = 0; // accumulative_merged_linesをどこまで追加したか
-  static dynamic_lines: any[][] = []; // 動的に描画したい線
-  // 最適化のために各PPまでの線を累積マージして格納しておく
-  // accumulative_merged_lines[i][j]: i本目の線について2j+1フェーズ目までの線をマージした線
+  /** 何本の線を動的に追加したか */
+  static line_count: number = 0;
+  /** accumulative_merged_linesをどこまで追加したか */
+  static amli: number = 0;
+  /** 動的に描画したい線 */
+  static dynamic_lines: any[][] = [];
+  /**
+   * 最適化のために各PPまでの線を累積マージして格納しておく<br>
+   * accumulative_merged_lines[i][j]: i本目の線について2j+1フェーズ目までの線をマージした線
+   */
   static accumulative_merged_lines: any[][] = [];
-  static drawn_dynamic_lines: any[][] = []; // sceneに追加された線を登録しておく
+  /** sceneに追加された線を登録しておく */
+  static drawn_dynamic_lines: any[][] = [];
 
   static add_plot(line: PlotLine) {
     var axes: Triplet<Construct>;
@@ -70,7 +78,7 @@ export class AnimationControl {
     if (line.plot_ready == undefined) requestAnimationFrame(function () { line.plotReady() });
   }
 
-  // startPosからendPosまで幅scaledWidthの線をgeometryに追加
+  /** startPosからendPosまで幅scaledWidthの線を作る */
   static make_line(startPos: THREE.Vector3, endPos: THREE.Vector3, scaledWidth: number, material: THREE.Material) {
     var directionVec = endPos.clone().sub(startPos);
     var height = directionVec.length();
@@ -174,7 +182,7 @@ export class AnimationControl {
     AnimationControl.plot_animate[PlotControl.array] = (sphere);
   }
 
-  // dfs to add plot each line
+  /** dfs to add plot each line */
   static dfs_each_line(phase_index_array: { phase: HydatPhase, index: number }[], axes: Triplet<Construct>, line: PlotLine, width: number, color: number[], dt: number, parameter_condition_list: { [key: string]: Constant; }[], current_param_idx: number, current_line_vec: { vec: THREE.Vector3, isPP: boolean }[]) {
     try {
       while (true) {
@@ -290,6 +298,7 @@ export class AnimationControl {
     AnimationControl.add_plot(line);
   }
 
+  /** parameter_condition_listの値がparameter_mapsの範囲内にあるか */
   static check_parameter_condition(parameter_maps: { [key: string]: HydatParameter }[], parameter_condition_list: { [key: string]: Constant }) {
     let epsilon = 0.0001;
     for (let map of parameter_maps) {
@@ -350,6 +359,7 @@ export class AnimationControl {
     }
   }
 
+  /** i番目のdynamic lineを消す */
   static remove_ith_dynamic_line(i: number) {
     for (var l of AnimationControl.drawn_dynamic_lines[i]) {
       GraphControl.scene.remove(l);
@@ -357,6 +367,7 @@ export class AnimationControl {
     AnimationControl.drawn_dynamic_lines[i] = [];
   }
 
+  /** 全てのdynamic lineを消す */
   static remove_dynamic_lines() {
     for (var i = 0; i < AnimationControl.drawn_dynamic_lines.length; i++) {
       AnimationControl.remove_ith_dynamic_line(i);
@@ -364,7 +375,7 @@ export class AnimationControl {
     AnimationControl.drawn_dynamic_lines = [];
   }
 
-  // 現在時刻以下の線をsceneに追加する
+  /** 現在時刻以下の線をsceneに追加する */
   static draw_dynamic_lines() {
     var tmp_line_count = this.line_count;
     var tmp_amli = this.amli;
@@ -392,6 +403,10 @@ export class AnimationControl {
     this.amli = tmp_amli;
   }
 
+  /**
+   * ボールの位置を動的に変更して動いているように見せる
+   * dynamic drawモードなら線も動的に追加する
+   */
   static animate() {
     if (this.time_prev !== this.time) {
       AnimationControl.plot_animate = [];
