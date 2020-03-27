@@ -398,44 +398,35 @@ export class AnimationControl {
     if (this.time_prev !== this.time) {
       AnimationControl.plot_animate = [];
       let arr = 0;
-      for (let i = 0; i < GraphControl.scene.children.length - 1; i++) {
-        // if ('isLine' in GraphControl.scene.children[i]) {
-        if (this.time > AnimationControl.maxlen - 1) {
-          this.time = 0;
+      if (this.time > AnimationControl.maxlen - 1) {
+        this.time = 0;
+      }
+      for (let sphere of GraphControl.scene.children) {
+        if (AnimationControl.animation_line[arr] === undefined) {
+          continue;
         }
-        if (GraphControl.lineIDSet.has(GraphControl.scene.children[i].id)) {
-          let next_sphere = GraphControl.scene.children[i + 1];
-          if (!(next_sphere instanceof THREE.Mesh)) {
-            console.error("unexpected: !(next_sphere instanceof THREE.Mesh)")
-            continue;
-          }
-          if (AnimationControl.animation_line[arr] === undefined) {
-            continue;
-          }
-          if (!(next_sphere.material instanceof THREE.MeshBasicMaterial)) {
-            console.error("unexpected: !(next_sphere.material instanceof THREE.MeshBasicMaterial)")
-            continue;
-          }
-          if (this.time === 0) {
-            next_sphere.material.color.set(
-              AnimationControl.animation_line[arr].color
-            );
-          }
-          if (this.time > AnimationControl.animation_line[arr].vecs.length - 1) {
-            next_sphere.material.color.set(
-              new RGB(198, 198, 198).asHex24()
-            );
-            AnimationControl.plot_animate[arr] = next_sphere;
-            arr++;
-            continue;
-          }
-          next_sphere.position.set(
-            AnimationControl.animation_line[arr].vecs[this.time].x,
-            AnimationControl.animation_line[arr].vecs[this.time].y,
-            AnimationControl.animation_line[arr].vecs[this.time].z);
-          AnimationControl.plot_animate[arr] = next_sphere;
-          arr += 1;
+
+        if (!(sphere instanceof THREE.Mesh)) continue;
+        if (!(sphere.material instanceof THREE.MeshBasicMaterial)) {
+          console.error("unexpected: !(sphere.material instanceof THREE.MeshBasicMaterial)")
+          continue;
         }
+        if (!(sphere.geometry instanceof THREE.SphereGeometry)) continue;
+        if (this.time === 0) {
+          sphere.material.color.set(
+            AnimationControl.animation_line[arr].color
+          );
+        }
+        if (this.time > AnimationControl.animation_line[arr].vecs.length - 1) {
+          arr++;
+          continue;
+        }
+        sphere.position.set(
+          AnimationControl.animation_line[arr].vecs[this.time].x,
+          AnimationControl.animation_line[arr].vecs[this.time].y,
+          AnimationControl.animation_line[arr].vecs[this.time].z);
+        AnimationControl.plot_animate[arr] = sphere;
+        arr += 1;
       }
 
       if (PlotControl.plot_settings.dynamicDraw) {
