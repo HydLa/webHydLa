@@ -3,12 +3,12 @@ import { PlotControl } from "./plot_control";
 import { GraphControl } from "./graph_control";
 import { AnimationControl } from "./animation_control";
 
-export class PlotSettingsControl{
+export class PlotSettingsControl {
   static plot_settings: PlotSettings;
   static init() {
     this.plot_settings = StorageControl.loadPlotSettings();
   }
-  static parseJSON(json: string|null) {
+  static parseJSON(json: string | null) {
     return new PlotSettings(JSON.parse(json ?? "{}"));
   }
   static saveToWebStorage() {
@@ -31,10 +31,11 @@ export class PlotSettings {
   scaleLabelVisible: boolean;
   twoDimensional: boolean;
   autoRotate: boolean;
+  dynamicDraw: boolean;
   animate: boolean;
   seek: number;
-  parameter_condition: { [key: string]: ParameterCondition }|undefined;
-  parameter_condition_seek: ParameterConditionSeek|undefined;
+  parameter_condition: { [key: string]: ParameterCondition } | undefined;
+  parameter_condition_seek: ParameterConditionSeek | undefined;
   constructor(obj: any) {
     this.plotInterval = obj?.plotInterval ?? 0.1;
     this.backgroundColor = obj?.backgroundColor ?? "#000000";
@@ -42,6 +43,7 @@ export class PlotSettings {
     this.scaleLabelVisible = obj?.scaleLabelVisible ?? true;
     this.twoDimensional = obj?.twoDimensional ?? false;
     this.autoRotate = obj?.autoRotate ?? false;
+    this.dynamicDraw = obj?.dynamicDraw ?? false;
     this.animate = obj?.animate ?? false;
     this.seek = obj?.seek ?? 0;
   }
