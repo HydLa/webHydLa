@@ -6,7 +6,8 @@
   "scripts": {
     "build": "webpack",
     "watch": "webpack -w",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "doc": "typedoc --out doc src"
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,7 @@
     "@types/materialize-css": "^1.0.7",
     "@types/node": "^13.9.0",
     "ts-loader": "^6.2.1",
+    "typedoc": "^0.17.3",
     "typescript": "^3.8.3",
     "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11"

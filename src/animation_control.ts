@@ -18,7 +18,7 @@ export class AnimationControl {
   static plot_animate: THREE.Mesh[];
 
   // 動的描画
-  static dti: number = 0; // 何dt分追加したか
+  static line_count: number = 0; // 何dt分追加したか
   static amli: number = 0; // accumulative_merged_linesをどこまで追加したか
   static dynamic_lines: any[][] = []; // 動的に描画したい線
   // 最適化のために各PPまでの線を累積マージして格納しておく
@@ -366,31 +366,29 @@ export class AnimationControl {
 
   // 現在時刻以下の線をsceneに追加する
   static draw_dynamic_lines() {
-    var dt = PlotControl.plot_settings.plotInterval;
-
-    var tmp_dti = this.dti;
+    var tmp_line_count = this.line_count;
     var tmp_amli = this.amli;
     for (var i = 0; i < AnimationControl.dynamic_lines.length; i++) {
       if (AnimationControl.drawn_dynamic_lines.length - 1 < i) AnimationControl.drawn_dynamic_lines.push([]);
-      tmp_dti = this.dti;
+      tmp_line_count = this.line_count;
       tmp_amli = this.amli;
-      for (var j = tmp_dti; j < AnimationControl.dynamic_lines[i].length; j++) { // 差分のみ追加
+      for (var j = tmp_line_count; j < AnimationControl.dynamic_lines[i].length; j++) { // 差分のみ追加
         if ('isPP' in AnimationControl.dynamic_lines[i][j]) { // PP
           // これまで追加した線を取り除き，代わりにマージ済みの線を追加する
           AnimationControl.remove_ith_dynamic_line(i);
           GraphControl.scene.add(AnimationControl.accumulative_merged_lines[i][tmp_amli]);
           AnimationControl.drawn_dynamic_lines[i].push(AnimationControl.accumulative_merged_lines[i][tmp_amli]);
           tmp_amli++;
-        } else if ((j + 1) * dt < this.time * 0.01) { // IP
+        } else if (j < this.time) { // IP
           GraphControl.scene.add(AnimationControl.dynamic_lines[i][j]);
           AnimationControl.drawn_dynamic_lines[i].push(AnimationControl.dynamic_lines[i][j]);
         } else { // timeより未来の線は書かない
           break;
         }
-        tmp_dti++;
+        tmp_line_count++;
       }
     }
-    this.dti = tmp_dti;
+    this.line_count = tmp_line_count;
     this.amli = tmp_amli;
   }
 
@@ -432,7 +430,7 @@ export class AnimationControl {
       if (PlotControl.plot_settings.dynamicDraw) {
         if (this.time == 0) {
           AnimationControl.remove_dynamic_lines();
-          this.dti = 0;
+          this.line_count = 0;
           this.amli = 0;
         }
         AnimationControl.draw_dynamic_lines();
