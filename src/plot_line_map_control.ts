@@ -73,10 +73,11 @@ export class PlotLineMapControl {
   static replot() {
     if (PlotControl.plot_settings.dynamicDraw) {
       PlotControl.plot_settings.plotInterval = 0.01;
-      AnimationControl.dynamic_lines = [];
-      AnimationControl.accumulative_merged_lines = [];
-      AnimationControl.remove_dynamic_lines();
     }
+    AnimationControl.dynamic_lines = [];
+    AnimationControl.accumulative_merged_lines = [];
+    AnimationControl.remove_dynamic_lines();
+
     // var table = document.getElementById("graph_axis_table");
     for (let i in this.map) {
       this.map[i].color_angle = parseInt(i) / this.getLength() * 360;
