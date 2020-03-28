@@ -102,8 +102,8 @@ export class AnimationControl {
 
     var linesGeometry = new THREE.Geometry();
     let scaledWidth = 0.5 * width / GraphControl.camera.zoom;
-
     const dottedLength = 10.0 / GraphControl.camera.zoom;
+    let material = new THREE.MeshBasicMaterial({ color: color[current_param_idx] });
 
     var tmp_dynamic_line: any[] = [];
     if (PlotControl.plot_settings.dynamicDraw) {
@@ -124,7 +124,7 @@ export class AnimationControl {
             posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength)),
             posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength)),
             scaledWidth,
-            new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
+            material
           );
           if (PlotControl.plot_settings.dynamicDraw) tmp_geometry.merge(<any>l.geometry.clone(), l.matrix.clone());
           linesGeometry.merge(<any>l.geometry, l.matrix);
@@ -132,7 +132,7 @@ export class AnimationControl {
         if (PlotControl.plot_settings.dynamicDraw) {
           let l: any = new THREE.Mesh(
             tmp_geometry,
-            new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
+            material
           );
           l.isPP = true;
           tmp_dynamic_line.push(l);
@@ -140,13 +140,13 @@ export class AnimationControl {
           AnimationControl.accumulative_merged_lines[PlotControl.array].push(
             new THREE.Mesh(
               linesGeometry.clone(),
-              new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
+              material
             )
           );
         }
       }
       else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) { // IPの各折れ線を追加
-        let l = AnimationControl.make_line(current_line_vec[i].vec, current_line_vec[i + 1].vec, scaledWidth, new THREE.MeshBasicMaterial({ color: color[current_param_idx] }));
+        let l = AnimationControl.make_line(current_line_vec[i].vec, current_line_vec[i + 1].vec, scaledWidth, material);
         if (PlotControl.plot_settings.dynamicDraw) tmp_dynamic_line.push(l);
         linesGeometry.merge(<any>l.geometry, l.matrix);
       }
@@ -155,7 +155,7 @@ export class AnimationControl {
 
     let three_line = new THREE.Mesh(
       linesGeometry,
-      new THREE.MeshBasicMaterial({ color: color[current_param_idx] })
+      material
     );
     GraphControl.lineIDSet.add(three_line.id);
     if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
@@ -175,8 +175,7 @@ export class AnimationControl {
 
     // 動く点
     let s_geometry = new THREE.SphereGeometry(0.1);
-    let s_material = new THREE.MeshBasicMaterial({ color: color[current_param_idx] });
-    let sphere = new THREE.Mesh(s_geometry, s_material);
+    let sphere = new THREE.Mesh(s_geometry, material);
     sphere.position.set(0, 0, 0);
     GraphControl.scene.add(sphere);
     AnimationControl.plot_animate[PlotControl.array] = (sphere);
