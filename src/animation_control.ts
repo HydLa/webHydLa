@@ -390,7 +390,7 @@ export class AnimationControl {
           GraphControl.scene.add(AnimationControl.accumulative_merged_lines[i][tmp_amli]);
           AnimationControl.drawn_dynamic_lines[i].push(AnimationControl.accumulative_merged_lines[i][tmp_amli]);
           tmp_amli++;
-        } else if (j < this.time) { // IP
+        } else if (j + 1 < this.time) { // IP
           GraphControl.scene.add(AnimationControl.dynamic_lines[i][j]);
           AnimationControl.drawn_dynamic_lines[i].push(AnimationControl.dynamic_lines[i][j]);
         } else { // timeより未来の線は書かない
