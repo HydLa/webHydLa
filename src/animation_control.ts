@@ -174,7 +174,7 @@ export class AnimationControl {
     }
 
     // 動く点
-    let s_geometry = new THREE.SphereGeometry(0.1);
+    let s_geometry = new THREE.SphereBufferGeometry(0.1);
     let sphere = new THREE.Mesh(s_geometry, material);
     sphere.position.set(0, 0, 0);
     GraphControl.scene.add(sphere);
@@ -423,7 +423,7 @@ export class AnimationControl {
           console.error("unexpected: !(sphere.material instanceof THREE.MeshBasicMaterial)")
           continue;
         }
-        if (!(sphere.geometry instanceof THREE.SphereGeometry)) continue;
+        if (!(sphere.geometry instanceof THREE.SphereBufferGeometry)) continue;
         if (this.time === 0) {
           sphere.material.color.set(
             AnimationControl.animation_line[arr].color
