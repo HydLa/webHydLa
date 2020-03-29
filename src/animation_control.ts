@@ -182,6 +182,75 @@ export class AnimationControl {
     AnimationControl.plot_animate[PlotControl.array] = (sphere);
   }
 
+  static make_line(points: THREE.Vector3[], material: THREE.Material, segments: boolean = false) {
+    var geometry = new THREE.BufferGeometry().setFromPoints(points);
+    if (segments) return new THREE.LineSegments(geometry, material);
+    else return new THREE.Line(geometry, material);
+  }
+
+  static add_line(current_line_vec: { vec: THREE.Vector3, isPP: boolean }[], current_param_idx: number, line: PlotLine, color: number[]) {
+    PlotControl.array += 1;
+
+    var lines: THREE.Vector3[] = [];
+    const dottedLength = 10.0 / GraphControl.camera.zoom;
+    let material = new THREE.LineBasicMaterial({ color: color[current_param_idx] });
+
+    var tmp_dynamic_line: any[] = [];
+    if (PlotControl.plot_settings.dynamicDraw) {
+      if (AnimationControl.accumulative_merged_lines.length - 1 < PlotControl.array) AnimationControl.accumulative_merged_lines.push([]);
+      if (AnimationControl.dynamic_lines.length - 1 < PlotControl.array) AnimationControl.dynamic_lines.push([]);
+    }
+    for (var i = 0; i + 1 < current_line_vec.length; i++) {
+      if (current_line_vec[i + 1].isPP) {
+        const posBegin = current_line_vec[i].vec;
+        const posEnd = current_line_vec[i + 1].vec;
+        let directionVec = posEnd.clone().sub(posBegin);
+        const lineLength = directionVec.length();
+        directionVec.normalize();
+        const numOfDots = lineLength / dottedLength;
+        for (var j = 1; j + 1 < numOfDots; j += 2) { // 点線の各点を追加
+          let tmpBegin = posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength));
+          let tmpEnd = posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength));
+          lines.push(tmpBegin, tmpEnd);
+        }
+        if (PlotControl.plot_settings.dynamicDraw) {
+          let l: any = AnimationControl.make_line([posBegin, posEnd], material);
+          l.isPP = true;
+          tmp_dynamic_line.push(l);
+
+          AnimationControl.accumulative_merged_lines[PlotControl.array].push(
+            AnimationControl.make_line(lines.concat(), material, true)
+          );
+        }
+      }
+      else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) { // IPの各折れ線を追加
+        if (PlotControl.plot_settings.dynamicDraw) {
+          let l = AnimationControl.make_line([current_line_vec[i].vec, current_line_vec[i + 1].vec], material);
+          tmp_dynamic_line.push(l);
+        }
+        lines.push(current_line_vec[i].vec, current_line_vec[i + 1].vec);
+      }
+    }
+    if (PlotControl.plot_settings.dynamicDraw) AnimationControl.dynamic_lines[PlotControl.array] = tmp_dynamic_line;
+
+    let three_line = AnimationControl.make_line(lines, material, true);
+    GraphControl.lineIDSet.add(three_line.id);
+    if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
+
+    if (!line.plot) {
+      throw new Error("unexpected: line.plot is undefined");
+    }
+    line.plot.push(three_line);
+
+    AnimationControl.animation_line[PlotControl.array] = {
+      vecs: PlotControl.current_line_vec_animation,
+      color: color[current_param_idx]
+    };
+    if (AnimationControl.maxlen < PlotControl.current_line_vec_animation.length) {
+      AnimationControl.maxlen = PlotControl.current_line_vec_animation.length;
+    }
+  }
+
   /** dfs to add plot each line */
   static dfs_each_line(phase_index_array: { phase: HydatPhase, index: number }[], axes: Triplet<Construct>, line: PlotLine, width: number, color: number[], dt: number, parameter_condition_list: { [key: string]: Constant; }[], current_param_idx: number, current_line_vec: { vec: THREE.Vector3, isPP: boolean }[]) {
     try {
@@ -204,7 +273,8 @@ export class AnimationControl {
           PlotControl.current_line_vec_animation.push(v.vec);
         }
         if (phase.children.length == 0) { // on leaves
-          AnimationControl.add_cylinder(current_line_vec, current_param_idx, line, width, color);
+          if (PlotControl.plot_settings.lineWidth == 1) AnimationControl.add_line(current_line_vec, current_param_idx, line, color);
+          else AnimationControl.add_cylinder(current_line_vec, current_param_idx, line, width, color);
           AnimationControl.add_sphere(current_param_idx, color);
 
           current_line_vec = [];
