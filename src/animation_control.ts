@@ -79,7 +79,7 @@ export class AnimationControl {
   }
 
   /** startPosからendPosまで幅scaledWidthの線を作る */
-  static make_line(startPos: THREE.Vector3, endPos: THREE.Vector3, scaledWidth: number, material: THREE.Material) {
+  static make_cylinder(startPos: THREE.Vector3, endPos: THREE.Vector3, scaledWidth: number, material: THREE.Material) {
     var directionVec = endPos.clone().sub(startPos);
     var height = directionVec.length();
     directionVec.normalize();
@@ -97,7 +97,7 @@ export class AnimationControl {
     return cylinderMesh;
   };
 
-  static add_line(current_line_vec: { vec: THREE.Vector3, isPP: boolean }[], current_param_idx: number, line: PlotLine, width: number, color: number[]) {
+  static add_cylinder(current_line_vec: { vec: THREE.Vector3, isPP: boolean }[], current_param_idx: number, line: PlotLine, width: number, color: number[]) {
     PlotControl.array += 1;
 
     var linesGeometry = new THREE.Geometry();
@@ -120,7 +120,7 @@ export class AnimationControl {
         const numOfDots = lineLength / dottedLength;
         let tmp_geometry = new THREE.Geometry();
         for (var j = 1; j + 1 < numOfDots; j += 2) { // 点線の各点を追加
-          let l = AnimationControl.make_line(
+          let l = AnimationControl.make_cylinder(
             posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength)),
             posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength)),
             scaledWidth,
@@ -146,7 +146,7 @@ export class AnimationControl {
         }
       }
       else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) { // IPの各折れ線を追加
-        let l = AnimationControl.make_line(current_line_vec[i].vec, current_line_vec[i + 1].vec, scaledWidth, material);
+        let l = AnimationControl.make_cylinder(current_line_vec[i].vec, current_line_vec[i + 1].vec, scaledWidth, material);
         if (PlotControl.plot_settings.dynamicDraw) tmp_dynamic_line.push(l);
         linesGeometry.merge(<any>l.geometry, l.matrix);
       }
@@ -172,10 +172,11 @@ export class AnimationControl {
     if (AnimationControl.maxlen < PlotControl.current_line_vec_animation.length) {
       AnimationControl.maxlen = PlotControl.current_line_vec_animation.length;
     }
+  }
 
-    // 動く点
+  static add_sphere(current_param_idx: number, color: number[]) {
     let s_geometry = new THREE.SphereBufferGeometry(0.1);
-    let sphere = new THREE.Mesh(s_geometry, material);
+    let sphere = new THREE.Mesh(s_geometry, new THREE.MeshBasicMaterial({ color: color[current_param_idx] }));
     sphere.position.set(0, 0, 0);
     GraphControl.scene.add(sphere);
     AnimationControl.plot_animate[PlotControl.array] = (sphere);
@@ -203,7 +204,8 @@ export class AnimationControl {
           PlotControl.current_line_vec_animation.push(v.vec);
         }
         if (phase.children.length == 0) { // on leaves
-          AnimationControl.add_line(current_line_vec, current_param_idx, line, width, color);
+          AnimationControl.add_cylinder(current_line_vec, current_param_idx, line, width, color);
+          AnimationControl.add_sphere(current_param_idx, color);
 
           current_line_vec = [];
           PlotControl.current_line_vec_animation = [];
