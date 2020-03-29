@@ -1,2 +1,7 @@
 secret_key
-/HyLaGI
+/HyLaGI/
+node_modules/
+static/*.js
+log.txt
+static/*.js.map
+/doc/

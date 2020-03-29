@@ -13,23 +13,13 @@
 	</head>
 
 	<body>
-
-		<script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
-		<script type="text/javascript" src="js/materialize.min.js"></script>
-		<script type="text/javascript" src="js/jsparsec.js"></script>
-		<script type="text/javascript" src="three.min.js"></script>
-		<script type="text/javascript" src="js/dat.gui.min.js"></script>
-		<script type="text/javascript" src="js/OrbitControls.js"></script>
-
 		<div id="top_area">
 
 			<div id="classic_ui">
-				<a href="./index_classic.html" onclick="useClassicUI()">use classic UI</a>
+				<a href="./index_classic.html">use classic UI</a>
 			</div>
 			<!-- original-UIと2019年版-UIでのスクロール操作の区別をするための変数の設定 -->
-			<script type="text/javascript">
-				var classic_ui = false;
-			</script>
+			<input type="hidden" id="classic_ui_flag" value="false">
 
 			<div id="webhydla_title">
 				<h1><div id="webhydla_text">web</div>HydLa</h1>
@@ -45,7 +35,7 @@
 					<div id="menu_bar">
 
 						<!-- blue "Editor Settings" button -->
-						<a class="waves-effect waves-light btn modal-trigger indigo darken-4" href="#modal_options">Editor Settings<i class="mdi-action-settings right"></i></a>
+						<a class="waves-effect waves-light btn modal-trigger indigo darken-4" href="#modal_options">Editor Settings<i class="material-icons right">settings</i></a>
 						
 						<!-- content of "Editor Settings" -->
 						<div id="modal_options" class="modal">
@@ -57,14 +47,14 @@
 										<form>
 											<p class="range-field">
 												<label for="editor_font_size">Editor Font Size</label>
-												<input type="range" id="editor_font_size" min="1" max="100" value="12" onChange='editor.setOption("fontSize", this.value + "pt");'>
+												<input type="range" id="editor_font_size" min="1" max="100" value="12">
 											</p>
 										</form>
 									</div>
 									<div class="col s6">
-										<h6>theme<h6>
+										<h6>theme</h6>
 										<div class="input-field">
-											<select id="theme_selector" name = "theme_selector" onChange='editor.setTheme("ace/theme/" + this.value);saveThemeToWebstorage();'>
+											<select id="theme_selector" name = "theme_selector">
 												<option value="monokai" selected="true">Dark</option>
 												<option value="sqlserver">Bright</option>
 											</select>
@@ -72,9 +62,9 @@
 										</div>
 									</div>
 									<div class="col s6">
-										<h6>key binding<h6>
+										<h6>key binding</h6>
 										<div class="input-field">
-											<select id="key_binding_selector" name = "key_binding_selector" onChange='editor.setKeyboardHandler(this.value);saveKeyBindingToWebstorage();'>
+											<select id="key_binding_selector" name = "key_binding_selector"'>
 												<option value="ace/keyboard/emacs">Emacs</option>
 												<option value="ace/keyboard/vim">Vim</option>
 												<option value="" selected="true">Windows</option>
@@ -93,16 +83,16 @@
 
 
 						<!-- content of "Save/Load" -->
-						<a class="waves-effect waves-light btn dropdown-button indigo darken-4" id="file-dropdown-button" data-activates="dropdown-file">Save/Load<i class="mdi-file-attachment right"></i></a>
+						<a class="waves-effect waves-light btn dropdown-button indigo darken-4" id="file-dropdown-button" data-target="dropdown-file">Save/Load<i class="material-icons right">attachment</i></a>
 						<ul id="dropdown-file" class="dropdown-content indigo darken-4">
-							<li><a onClick='loadFile();'>Load File</a></li>
-							<li><a onClick='saveHydla();'>Save HydLa</a></li>
-							<li><a onClick='saveHydat();'>Save Hydat</a></li>
+							<li><a id="load-file" href="#">Load File</a></li>
+							<li><a id="save-hydla" href="#">Save HydLa</a></li>
+							<li><a id="save-hydat" href="#">Save Hydat</a></li>
 						</ul>
 
 
 						<!-- content of "Help" -->
-						<a class="waves-effect waves-light btn modal-trigger indigo darken-4" href="#modal_about">Help<i class="mdi-action-help right"></i></a>
+						<a class="waves-effect waves-light btn modal-trigger indigo darken-4" href="#modal_about">Help<i class="material-icons right">help</i></a>
 						<div id="modal_about" class="modal">
 							<div class="modal-content">
 								<h3>What is webHydLa...?</h3>
@@ -124,21 +114,8 @@
 					<!-- これが、エディタを包んでいる -->
 					<div id="input-pane">
 						<div id="editor-area">
-							<div id="editor" style="z-index=1" style="width=100%"></div>
-							<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
-							<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script>
-							<script>
-								var editor = ace.edit("editor");
-								editor.$blockScrolling = Infinity;
-								editor.setOptions({
-									enableBasicAutocompletion: true,
-									enableSnippets: true,
-									enableLiveAutocompletion: true});
-								editor.getSession().setUseWrapMode(true);
-							</script>
+							<div id="editor" style="z-index:1; width:100%"></div>
 						</div>
-						<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
-						<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script>
 					</div>
 
 
@@ -151,7 +128,7 @@
 						<!-- nd_mode_check_box はmain.jsの中でデフォルトで"checked"になっている -->
 						<div class="each_option">ND mode: <input id="nd_mode_check_box" type="checkbox" class="options_checkbox"></div>
 						<div class="each_option">HTML mode: <input id="html_mode_check_box" type="checkbox" class="options_checkbox"></div>
-						<input type="submit" value="RUN" class="exec-button disabled-running" title="RUN/KILL (Shortcut: Ctrl-Enter)" onClick="onExecButtonClick();" id="run_button">
+						<input type="submit" value="RUN" class="exec-button disabled-running" title="RUN/KILL (Shortcut: Ctrl-Enter)" id="run_button">
 						<!-- TODO: クリックして処理中は"RUN"から"KILL"に表示を変更する -->
 					</div>
 
@@ -164,7 +141,7 @@
 		<!-- グラフのパネルを包んでいる（＋現在は、ログ出力） -->
 		<div id="result_pane">
 
-			<ul class="tabs">
+			<ul id="tabs" class="tabs tabs-fixed-width">
 				<li class="tab col s12 indigo darken-4">
 					<a class="graphlog_tab" href="#graph-area">Graph</a>
 				</li>
@@ -180,7 +157,7 @@
 			</div>
 				
 			<!-- グラフのパネル -->
-			<div id="graph-area" onscroll="showScrollMessage()"x>
+			<div id="graph-area" onscroll="showScrollMessage()">
 				
 				<div id='dat-gui'>
 				</div>
@@ -243,7 +220,7 @@
 			<!-- id="graph-area" -->
 				
 			<!-- ログ出力のパネル -->
-			<div id="output-area" class="tab">
+			<div id="output-area">
 				<div id="info"></div>
 				<div id="output-initial">
 					<p>Log-Output of simulation:</p>
@@ -300,14 +277,7 @@
 			
 		</div>
 		<!-- result-pane -->
-
-
-		<script src="js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
-		<script src="js/plot.js" type="text/javascript" charset="utf-8"></script>
-		<script src="js/parse.js" type="text/javascript" charset="utf-8"></script>
-		<script src="js/graph_axis.js" type="text/javascript" charset="utf-8"></script>
-		<script type="text/javascript" src="js/three_init.js"></script>
-		<script src="js/main.js" type="text/javascript" charset="utf-8"></script>
+		<script src="./main.js" type="text/javascript" charset="utf-8"></script>
 	
 	</body>
 
