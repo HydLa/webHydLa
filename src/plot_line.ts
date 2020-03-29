@@ -32,7 +32,7 @@ export class PlotLine {
 
   last_plot_time: number = 0;
 
-  plot: THREE.Mesh[] | undefined;
+  plot: (THREE.Mesh | THREE.Line)[] | undefined;
 
   constructor(x_name: string, y_name: string, z_name: string, index: number) {
     this.index = index;
