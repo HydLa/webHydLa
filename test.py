@@ -19,12 +19,7 @@ def scroll_down():
 # いい感じに回す
 def rotate():
   src = driver.find_element_by_id("scroll-message")
-  tgt = driver.find_element_by_xpath("//span[text()='dashed']")
-  rotate = ActionChains(driver).drag_and_drop(src, tgt)
-  rotate.perform()
-  scroll_down()
-  rotate.perform()
-  scroll_down()
+  ActionChains(driver).drag_and_drop_by_offset(src, -5, 5).release().perform()
 
 if __name__ == '__main__':
   try:
@@ -38,6 +33,7 @@ if __name__ == '__main__':
 
     scroll_down()
     rotate()
+    scroll_down()
     time.sleep(1)
 
     # 構造が変わった時は，デベロッパーツール -> Elementsでクリックしたい場所を選んでCopy full XPathで持ってくれば良い
@@ -48,6 +44,13 @@ if __name__ == '__main__':
     driver.find_element_by_xpath(show_scale_label_path).click()
     time.sleep(1)
 
+    # 1秒間auto rotate
+    auto_rotate_path = "/html/body/div[2]/div[2]/div[1]/div/ul/li[5]/div/div/input"
+    driver.find_element_by_xpath(auto_rotate_path).click()
+    time.sleep(1)
+    driver.find_element_by_xpath(auto_rotate_path).click()
+    time.sleep(1)
+
     # XY-modeを2回押す
     xymode_path = "/html/body/div[2]/div[2]/div[1]/div/ul/li[4]/div/div/input"
     driver.find_element_by_xpath(xymode_path).click()
@@ -56,15 +59,9 @@ if __name__ == '__main__':
     time.sleep(1)
 
     rotate()
+    scroll_down()
     time.sleep(1)
   
-    # 1秒間auto rotate
-    auto_rotate_path = "/html/body/div[2]/div[2]/div[1]/div/ul/li[5]/div/div/input"
-    driver.find_element_by_xpath(auto_rotate_path).click()
-    time.sleep(1)
-    driver.find_element_by_xpath(auto_rotate_path).click()
-    time.sleep(1)
-
     # plot intervalを0.1 -> 1 -> 0.01と変更
     plot_interval = driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[1]/div/ul/li[1]/div/div/div[1]/input")
     plot_interval.clear()
