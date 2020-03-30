@@ -160,7 +160,6 @@ export class AnimationControl {
       linesGeometry,
       material
     );
-    GraphControl.lineIDSet.add(three_line.id);
     if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
 
     if (!line.plot) {
@@ -239,7 +238,6 @@ export class AnimationControl {
     if (PlotControl.plot_settings.dynamicDraw) AnimationControl.dynamic_lines[PlotControl.array] = tmp_dynamic_line;
 
     let three_line = AnimationControl.make_line(lines, material, true);
-    GraphControl.lineIDSet.add(three_line.id);
     if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
 
     if (!line.plot) {
@@ -351,7 +349,6 @@ export class AnimationControl {
     if (line.plot !== undefined) {
       for (var i = 0; i < line.plot.length; i++) {
         GraphControl.scene.remove(line.plot[i]);
-        GraphControl.lineIDSet.delete(line.plot[i].id);
       }
       delete line.plot[i];
     }
