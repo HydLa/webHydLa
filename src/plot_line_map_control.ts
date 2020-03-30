@@ -24,7 +24,7 @@ export class PlotLineMapControl {
     }
     DatGUIControl.variable_folder.removeFolder(line.folder);
     if (PlotControl.plot_settings.dynamicDraw) {
-      AnimationControl.remove_ith_dynamic_line(line.index);
+      AnimationControl.remove_dynamic_line(line);
     } else {
       AnimationControl.remove_plot(line);
     }

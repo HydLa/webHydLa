@@ -34,6 +34,9 @@ export class AnimationControl {
   /** sceneに追加された線を登録しておく */
   static drawn_dynamic_lines: any[][] = [];
 
+  /** PlotLine.indexからPlotControl.arrayへの対応 */
+  static index2array_map: Map<number, number> = new Map<number, number>();
+
   static add_plot(line: PlotLine) {
     var axes: Triplet<Construct>;
     if (line.settings.x == "" ||
@@ -190,6 +193,8 @@ export class AnimationControl {
 
   static add_line(current_line_vec: { vec: THREE.Vector3, isPP: boolean }[], current_param_idx: number, line: PlotLine, color: number[]) {
     PlotControl.array += 1;
+
+    AnimationControl.index2array_map.set(line.index, PlotControl.array);
 
     var lines: THREE.Vector3[] = [];
     const dottedLength = 10.0 / GraphControl.camera.zoom;
@@ -452,6 +457,12 @@ export class AnimationControl {
     AnimationControl.accumulative_merged_lines[i] = [];
   }
 
+  static remove_dynamic_line(line: PlotLine) {
+    if (AnimationControl.index2array_map.has(line.index)) {
+      AnimationControl.remove_ith_dynamic_line(<number>AnimationControl.index2array_map.get(line.index));
+    }
+  }
+
   static remove_dynamic_lines() {
     for (var i = 0; i < AnimationControl.drawn_dynamic_lines.length; i++) {
       AnimationControl.remove_ith_dynamic_line(i);
@@ -465,6 +476,7 @@ export class AnimationControl {
     var tmp_line_count = this.line_count;
     var tmp_amli = this.amli;
     for (var i = 0; i < AnimationControl.dynamic_lines.length; i++) {
+      if (AnimationControl.dynamic_lines[i].length == 0) continue;
       if (AnimationControl.drawn_dynamic_lines.length - 1 < i) AnimationControl.drawn_dynamic_lines.push([]);
       tmp_line_count = this.line_count;
       tmp_amli = this.amli;
