@@ -7,6 +7,7 @@ import { HydatParameter, HydatParameterInterval, HydatPhase } from "./hydat";
 import { RGB, Triplet } from "./plot_utils";
 import { HydatControl } from "./hydat_control";
 import { Construct, Constant } from "./parse";
+import { BiDirectionalMap } from 'bi-directional-map/dist';
 
 export class AnimationControl {
   static maxlen: number = 0;
@@ -34,8 +35,8 @@ export class AnimationControl {
   /** sceneに追加された線を登録しておく */
   static drawn_dynamic_lines: any[][] = [];
 
-  /** PlotLine.indexからPlotControl.arrayへの対応 */
-  static index2array_map: Map<number, number> = new Map<number, number>();
+  /** PlotLine.indexとPlotControl.arrayの対応 */
+  static index_array_bimap = new BiDirectionalMap<number, number>();
 
   static add_plot(line: PlotLine) {
     var axes: Triplet<Construct>;
@@ -160,7 +161,6 @@ export class AnimationControl {
       linesGeometry,
       material
     );
-    GraphControl.lineIDSet.add(three_line.id);
     if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
 
     if (!line.plot) {
@@ -194,7 +194,7 @@ export class AnimationControl {
   static add_line(current_line_vec: { vec: THREE.Vector3, isPP: boolean }[], current_param_idx: number, line: PlotLine, color: number[]) {
     PlotControl.array += 1;
 
-    AnimationControl.index2array_map.set(line.index, PlotControl.array);
+    AnimationControl.index_array_bimap.set(line.index, PlotControl.array);
 
     var lines: THREE.Vector3[] = [];
     const dottedLength = 10.0 / GraphControl.camera.zoom;
@@ -239,7 +239,6 @@ export class AnimationControl {
     if (PlotControl.plot_settings.dynamicDraw) AnimationControl.dynamic_lines[PlotControl.array] = tmp_dynamic_line;
 
     let three_line = AnimationControl.make_line(lines, material, true);
-    GraphControl.lineIDSet.add(three_line.id);
     if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
 
     if (!line.plot) {
@@ -351,9 +350,11 @@ export class AnimationControl {
     if (line.plot !== undefined) {
       for (var i = 0; i < line.plot.length; i++) {
         GraphControl.scene.remove(line.plot[i]);
-        GraphControl.lineIDSet.delete(line.plot[i].id);
       }
       delete line.plot[i];
+    }
+    if (AnimationControl.index_array_bimap.hasKey(line.index)) {
+      AnimationControl.index_array_bimap.deleteValue(AnimationControl.index_array_bimap.getValue(line.index));
     }
     line.plot = [];
   }
@@ -455,11 +456,12 @@ export class AnimationControl {
     AnimationControl.remove_ith_drawn_dynamic_line(i);
     AnimationControl.dynamic_lines[i] = [];
     AnimationControl.accumulative_merged_lines[i] = [];
+    AnimationControl.index_array_bimap.deleteValue(i);
   }
 
   static remove_dynamic_line(line: PlotLine) {
-    if (AnimationControl.index2array_map.has(line.index)) {
-      AnimationControl.remove_ith_dynamic_line(<number>AnimationControl.index2array_map.get(line.index));
+    if (AnimationControl.index_array_bimap.hasKey(line.index)) {
+      AnimationControl.remove_ith_dynamic_line(<number>AnimationControl.index_array_bimap.getValue(line.index));
     }
   }
 
@@ -531,10 +533,14 @@ export class AnimationControl {
           arr++;
           continue;
         }
-        sphere.position.set(
-          AnimationControl.animation_line[arr].vecs[this.time].x,
-          AnimationControl.animation_line[arr].vecs[this.time].y,
-          AnimationControl.animation_line[arr].vecs[this.time].z);
+        if (AnimationControl.index_array_bimap.hasValue(arr)) {
+          sphere.position.set(
+            AnimationControl.animation_line[arr].vecs[this.time].x,
+            AnimationControl.animation_line[arr].vecs[this.time].y,
+            AnimationControl.animation_line[arr].vecs[this.time].z);
+        } else {
+          sphere.position.set(0, 0, 0);
+        }
         AnimationControl.plot_animate[arr] = sphere;
         arr += 1;
       }

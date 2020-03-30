@@ -26,12 +26,9 @@ export class GraphControl {
   static resizeLoopCount: number = 0;
 
   static face_a: THREE.Mesh[];
-  
-  static lineIDSet: Set<number>;
 
   static init() {
     this.scene = new THREE.Scene();
-    this.lineIDSet = new Set<number>();
 
     // PerspectiveCamera
     // camera = new THREE.PerspectiveCamera(75, 600 / 400, 1, 1000);
@@ -47,7 +44,7 @@ export class GraphControl {
 
     this.camera.position.set(0, 0, 100);
     this.controls_position0 = new THREE.Vector3(0, 0, 100);
-    
+
     this.elem = document.getElementById("graph-area")!;
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
 
@@ -99,7 +96,7 @@ export class GraphControl {
     }
   }
 
-  static modifyNameLabel(name:string|undefined) {
+  static modifyNameLabel(name: string | undefined) {
     var text = "";
     if (!(name == undefined || name == null)) {
       text = name;
