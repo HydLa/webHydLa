@@ -50,8 +50,6 @@ def bouncing_particle_op():
   driver.find_element_by_xpath(xymode_path).click()
   time.sleep(1)
   driver.find_element_by_xpath(xymode_path).click()
-  time.sleep(1)
-
   rotate()
   scroll_down()
   time.sleep(1)
@@ -105,7 +103,7 @@ def bouncing_particle_op():
   driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[1]/div/ul/li[10]/div/ul/li[3]/div/ul/li[3]/div/div/input").send_keys("2*y", Keys.RETURN)
   # plot1 z
   driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[1]/div/ul/li[10]/div/ul/li[3]/div/ul/li[4]/div/div/input").send_keys("2*y'", Keys.RETURN)
-  time.sleep(10)
+  time.sleep(20)
   # remove
   driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[1]/div/ul/li[10]/div/ul/li[3]/div/ul/li[5]").click()
   time.sleep(1)
@@ -122,5 +120,4 @@ if __name__ == '__main__':
 
     bouncing_particle_op()
   finally:
-    time.sleep(5)
     driver.quit()
