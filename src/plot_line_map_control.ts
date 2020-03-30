@@ -74,8 +74,6 @@ export class PlotLineMapControl {
     if (PlotControl.plot_settings.dynamicDraw) {
       PlotControl.plot_settings.plotInterval = 0.01;
     }
-    AnimationControl.dynamic_lines = [];
-    AnimationControl.accumulative_merged_lines = [];
     AnimationControl.remove_dynamic_lines();
 
     // var table = document.getElementById("graph_axis_table");

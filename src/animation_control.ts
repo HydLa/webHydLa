@@ -430,20 +430,34 @@ export class AnimationControl {
     }
   }
 
-  /** i番目のdynamic lineを消す */
-  static remove_ith_dynamic_line(i: number) {
+  /** i番目のdrawn dynamic lineを消す */
+  static remove_ith_drawn_dynamic_line(i: number) {
     for (var l of AnimationControl.drawn_dynamic_lines[i]) {
       GraphControl.scene.remove(l);
     }
     AnimationControl.drawn_dynamic_lines[i] = [];
   }
 
-  /** 全てのdynamic lineを消す */
+  /** 全てのdrawn dynamic lineを消す */
+  static remove_drawn_dynamic_lines() {
+    for (var i = 0; i < AnimationControl.drawn_dynamic_lines.length; i++) {
+      AnimationControl.remove_ith_drawn_dynamic_line(i);
+    }
+    AnimationControl.drawn_dynamic_lines = [];
+  }
+
+  static remove_ith_dynamic_line(i: number) {
+    AnimationControl.remove_ith_drawn_dynamic_line(i);
+    AnimationControl.dynamic_lines[i] = [];
+    AnimationControl.accumulative_merged_lines[i] = [];
+  }
+
   static remove_dynamic_lines() {
     for (var i = 0; i < AnimationControl.drawn_dynamic_lines.length; i++) {
       AnimationControl.remove_ith_dynamic_line(i);
     }
-    AnimationControl.drawn_dynamic_lines = [];
+    AnimationControl.dynamic_lines = [];
+    AnimationControl.accumulative_merged_lines = [];
   }
 
   /** 現在時刻以下の線をsceneに追加する */
@@ -457,7 +471,7 @@ export class AnimationControl {
       for (var j = tmp_line_count; j < AnimationControl.dynamic_lines[i].length; j++) { // 差分のみ追加
         if ('isPP' in AnimationControl.dynamic_lines[i][j]) { // PP
           // これまで追加した線を取り除き，代わりにマージ済みの線を追加する
-          AnimationControl.remove_ith_dynamic_line(i);
+          AnimationControl.remove_ith_drawn_dynamic_line(i);
           GraphControl.scene.add(AnimationControl.accumulative_merged_lines[i][tmp_amli]);
           AnimationControl.drawn_dynamic_lines[i].push(AnimationControl.accumulative_merged_lines[i][tmp_amli]);
           tmp_amli++;
@@ -515,7 +529,7 @@ export class AnimationControl {
 
       if (PlotControl.plot_settings.dynamicDraw) {
         if (this.time == 0) {
-          AnimationControl.remove_dynamic_lines();
+          AnimationControl.remove_drawn_dynamic_lines();
           this.line_count = 0;
           this.amli = 0;
         }
