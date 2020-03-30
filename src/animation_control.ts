@@ -7,6 +7,7 @@ import { HydatParameter, HydatParameterInterval, HydatPhase } from "./hydat";
 import { RGB, Triplet } from "./plot_utils";
 import { HydatControl } from "./hydat_control";
 import { Construct, Constant } from "./parse";
+import { BiDirectionalMap } from 'bi-directional-map/dist';
 
 export class AnimationControl {
   static maxlen: number = 0;
@@ -34,8 +35,8 @@ export class AnimationControl {
   /** sceneに追加された線を登録しておく */
   static drawn_dynamic_lines: any[][] = [];
 
-  /** PlotLine.indexからPlotControl.arrayへの対応 */
-  static index2array_map: Map<number, number> = new Map<number, number>();
+  /** PlotLine.indexとPlotControl.arrayの対応 */
+  static index_array_bimap = new BiDirectionalMap<number, number>();
 
   static add_plot(line: PlotLine) {
     var axes: Triplet<Construct>;
@@ -193,7 +194,7 @@ export class AnimationControl {
   static add_line(current_line_vec: { vec: THREE.Vector3, isPP: boolean }[], current_param_idx: number, line: PlotLine, color: number[]) {
     PlotControl.array += 1;
 
-    AnimationControl.index2array_map.set(line.index, PlotControl.array);
+    AnimationControl.index_array_bimap.set(line.index, PlotControl.array);
 
     var lines: THREE.Vector3[] = [];
     const dottedLength = 10.0 / GraphControl.camera.zoom;
@@ -455,8 +456,8 @@ export class AnimationControl {
   }
 
   static remove_dynamic_line(line: PlotLine) {
-    if (AnimationControl.index2array_map.has(line.index)) {
-      AnimationControl.remove_ith_dynamic_line(<number>AnimationControl.index2array_map.get(line.index));
+    if (AnimationControl.index_array_bimap.hasKey(line.index)) {
+      AnimationControl.remove_ith_dynamic_line(<number>AnimationControl.index_array_bimap.getValue(line.index));
     }
   }
 
