@@ -353,6 +353,9 @@ export class AnimationControl {
       }
       delete line.plot[i];
     }
+    if (AnimationControl.index_array_bimap.hasKey(line.index)) {
+      AnimationControl.index_array_bimap.deleteValue(AnimationControl.index_array_bimap.getValue(line.index));
+    }
     line.plot = [];
   }
 
@@ -453,6 +456,7 @@ export class AnimationControl {
     AnimationControl.remove_ith_drawn_dynamic_line(i);
     AnimationControl.dynamic_lines[i] = [];
     AnimationControl.accumulative_merged_lines[i] = [];
+    AnimationControl.index_array_bimap.deleteValue(i);
   }
 
   static remove_dynamic_line(line: PlotLine) {
@@ -529,10 +533,14 @@ export class AnimationControl {
           arr++;
           continue;
         }
-        sphere.position.set(
-          AnimationControl.animation_line[arr].vecs[this.time].x,
-          AnimationControl.animation_line[arr].vecs[this.time].y,
-          AnimationControl.animation_line[arr].vecs[this.time].z);
+        if (AnimationControl.index_array_bimap.hasValue(arr)) {
+          sphere.position.set(
+            AnimationControl.animation_line[arr].vecs[this.time].x,
+            AnimationControl.animation_line[arr].vecs[this.time].y,
+            AnimationControl.animation_line[arr].vecs[this.time].z);
+        } else {
+          sphere.position.set(0, 0, 0);
+        }
         AnimationControl.plot_animate[arr] = sphere;
         arr += 1;
       }
