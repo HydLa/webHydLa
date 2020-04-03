@@ -7,7 +7,7 @@ import { HydatParameter, HydatParameterInterval, HydatPhase } from "./hydat";
 import { RGB, Triplet } from "./plot_utils";
 import { HydatControl } from "./hydat_control";
 import { Construct, Constant } from "./parse";
-import { BiDirectionalMap } from 'bi-directional-map/dist';
+import { MaltiBiMap } from "./animation_utils";
 
 export class AnimationControl {
   static maxlen: number = 0;
@@ -36,7 +36,7 @@ export class AnimationControl {
   static drawn_dynamic_lines: any[][] = [];
 
   /** PlotLine.indexとPlotControl.arrayの対応 */
-  static index_array_bimap = new BiDirectionalMap<number, number>();
+  static index_array_maltibimap = new MaltiBiMap<number, number>();
 
   static add_plot(line: PlotLine) {
     var axes: Triplet<Construct>;
@@ -103,6 +103,8 @@ export class AnimationControl {
 
   static add_cylinder(current_line_vec: { vec: THREE.Vector3, isPP: boolean }[], current_param_idx: number, line: PlotLine, width: number, color: number[]) {
     PlotControl.array += 1;
+
+    AnimationControl.index_array_maltibimap.set(line.index, PlotControl.array);
 
     var linesGeometry = new THREE.Geometry();
     let scaledWidth = 0.5 * width / GraphControl.camera.zoom;
@@ -194,7 +196,7 @@ export class AnimationControl {
   static add_line(current_line_vec: { vec: THREE.Vector3, isPP: boolean }[], current_param_idx: number, line: PlotLine, color: number[]) {
     PlotControl.array += 1;
 
-    AnimationControl.index_array_bimap.set(line.index, PlotControl.array);
+    AnimationControl.index_array_maltibimap.set(line.index, PlotControl.array);
 
     var lines: THREE.Vector3[] = [];
     const dottedLength = 10.0 / GraphControl.camera.zoom;
@@ -353,9 +355,7 @@ export class AnimationControl {
       }
       delete line.plot[i];
     }
-    if (AnimationControl.index_array_bimap.hasKey(line.index)) {
-      AnimationControl.index_array_bimap.deleteValue(AnimationControl.index_array_bimap.getValue(line.index));
-    }
+    AnimationControl.index_array_maltibimap.deleteKey(line.index);
     line.plot = [];
   }
 
@@ -456,12 +456,13 @@ export class AnimationControl {
     AnimationControl.remove_ith_drawn_dynamic_line(i);
     AnimationControl.dynamic_lines[i] = [];
     AnimationControl.accumulative_merged_lines[i] = [];
-    AnimationControl.index_array_bimap.deleteValue(i);
+    AnimationControl.index_array_maltibimap.deleteValue(i);
   }
 
   static remove_dynamic_line(line: PlotLine) {
-    if (AnimationControl.index_array_bimap.hasKey(line.index)) {
-      AnimationControl.remove_ith_dynamic_line(<number>AnimationControl.index_array_bimap.getValue(line.index));
+    if (AnimationControl.index_array_maltibimap.hasKey(line.index)) {
+      let values = AnimationControl.index_array_maltibimap.getValue(line.index);
+      values.forEach((i) => AnimationControl.remove_ith_dynamic_line(i));
     }
   }
 
@@ -533,7 +534,7 @@ export class AnimationControl {
           arr++;
           continue;
         }
-        if (AnimationControl.index_array_bimap.hasValue(arr)) {
+        if (AnimationControl.index_array_maltibimap.hasValue(arr)) {
           sphere.position.set(
             AnimationControl.animation_line[arr].vecs[this.time].x,
             AnimationControl.animation_line[arr].vecs[this.time].y,
