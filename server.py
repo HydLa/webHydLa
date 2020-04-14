@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from flask import Flask, redirect, url_for, request, abort, jsonify, render_template, session
-import sys, os, time, shlex, subprocess, json, urllib.request, urllib.parse, shutil
+import sys, os, time, shlex, subprocess, json, urllib.request, urllib.parse, shutil, datetime
 
 key_file = open('secret_key')
 # setup Flask
@@ -19,8 +19,8 @@ hylagi_processes = {}
 
 @app.route('/start_session', methods=['GET', 'POST'])
 def start_session():
-    start_time = time.time()
-    session_id = str(start_time)
+    start_time = datetime.datetime.fromtimestamp(time.time())
+    session_id = start_time.strftime('%Y.%m.%d.%H:%M:%S.%f')
     session['sid'] = session_id
     return ""
 
@@ -52,7 +52,7 @@ def gen_hydat():
 
     hylagi_args = ["hylagi"]
 
-    hylagi_args.extend(shlex.split(form["hylagi_option"]));
+    hylagi_args.extend(shlex.split(form["hylagi_option"]))
     hylagi_args.append("-o")
     hylagi_args.append(save_file_hydat)
 

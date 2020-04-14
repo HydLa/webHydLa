@@ -222,7 +222,8 @@ input[type="checkbox"] {
 
 
 #output-initial {
-	padding-left: 20px;
+  padding-left: 20px;
+  font-family: Consolas, "Courier New", Courier, Monaco, monospace, "ＭＳ ゴシック", "MS Gothic";
 }
 
 #output-preloader {
