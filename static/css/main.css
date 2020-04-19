@@ -312,7 +312,7 @@ input[type="checkbox"] {
 }
 
 
-.dropdown-content {
+#dropdown-file {
   background-color: #fff;
   margin: 0;
   display: none;
@@ -325,7 +325,7 @@ input[type="checkbox"] {
   will-change: width, height;
 }
 
-.dropdown-content li {
+#dropdown-file li {
   clear: both;
   color: rgba(0, 0, 0, 0.87);
   cursor: pointer;
@@ -336,10 +336,10 @@ input[type="checkbox"] {
   text-transform: none;
 }
 
-.dropdown-content li:hover, .dropdown-content li.active, .dropdown-content li.selected {
+#dropdown-file li:hover, #dropdown-file li.active, #dropdown-file li.selected {
   background-color: inherit!important;
   box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.2);
 }
-.dropdown-content li > a, .dropdown-content li > span {
+#dropdown-file li > a, #dropdown-file li > span {
   color: white;
 }
