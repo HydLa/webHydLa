@@ -343,3 +343,8 @@ input[type="checkbox"] {
 #dropdown-file li > a, #dropdown-file li > span {
   color: white;
 }
+
+#modal_examples {
+	width: 50%;
+  height: 40%;
+}

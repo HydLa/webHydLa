@@ -1,284 +1,322 @@
 <!DOCTYPE html>
 <html>
 
-	<head>
-		<meta charset="UTF-8">
-		<title>webHydLa</title>
-		<!--import Google Icon Font-->
-		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-		<!--import materialize.css-->
-		<link type="text/css" rel="stylesheet" href="./css/materialize.min.css" media="screen,projection">
-		<!--import self-edited css-->
-		<link type="text/css" rel="stylesheet" href="./css/main.css">
-	</head>
+<head>
+	<meta charset="UTF-8">
+	<title>webHydLa</title>
+	<!--import Google Icon Font-->
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<!--import materialize.css-->
+	<link type="text/css" rel="stylesheet" href="./css/materialize.min.css" media="screen,projection">
+	<!--import self-edited css-->
+	<link type="text/css" rel="stylesheet" href="./css/main.css">
+</head>
 
-	<body>
-		<div id="top_area">
+<body>
+	<div id="top_area">
 
-			<div id="classic_ui">
-				<a href="./index_classic.html">use classic UI</a>
+		<div id="classic_ui">
+			<a href="./index_classic.html">use classic UI</a>
+		</div>
+		<!-- original-UIと2019年版-UIでのスクロール操作の区別をするための変数の設定 -->
+		<input type="hidden" id="classic_ui_flag" value="false">
+
+		<div id="webhydla_title">
+			<h1>
+				<div id="webhydla_text">web</div>HydLa
+			</h1>
+			<div id="powered_by">
+				<p>powered by UedaLab at Waseda</p>
 			</div>
-			<!-- original-UIと2019年版-UIでのスクロール操作の区別をするための変数の設定 -->
-			<input type="hidden" id="classic_ui_flag" value="false">
+		</div>
 
-			<div id="webhydla_title">
-				<h1><div id="webhydla_text">web</div>HydLa</h1>
-				<div id="powered_by"><p>powered by UedaLab at Waseda</p></div>
-			</div>
+		<div id="blank_space">
+			<!-- ドラッグ移動できる一体 -->
+			<div id="editor_window">
 
-			<div id="blank_space">
-				<!-- ドラッグ移動できる一体 -->
-				<div id="editor_window">
-					
 
-					<!-- 画面上部のメニューバーを包んでいる -->
-					<div id="menu_bar">
+				<!-- 画面上部のメニューバーを包んでいる -->
+				<div id="menu_bar">
 
-						<!-- blue "Editor Settings" button -->
-						<a class="waves-effect waves-light btn modal-trigger indigo darken-4" href="#modal_options">Editor Settings<i class="material-icons right">settings</i></a>
-						
-						<!-- content of "Editor Settings" -->
-						<div id="modal_options" class="modal">
-							<div class="row">
-								
-								<div class="modal-content">
-									<div class="col s12">
-										<h4>Editor Settings</h4>
-										<form>
-											<p class="range-field">
-												<label for="editor_font_size">Editor Font Size</label>
-												<input type="range" id="editor_font_size" min="1" max="100" value="12">
-											</p>
-										</form>
+					<!-- blue "Editor Settings" button -->
+					<a class="waves-effect waves-light btn modal-trigger indigo darken-4" href="#modal_options">Editor Settings<i
+							class="material-icons right">settings</i></a>
+
+					<!-- content of "Editor Settings" -->
+					<div id="modal_options" class="modal">
+						<div class="row">
+
+							<div class="modal-content">
+								<div class="col s12">
+									<h4>Editor Settings</h4>
+									<form>
+										<p class="range-field">
+											<label for="editor_font_size">Editor Font Size</label>
+											<input type="range" id="editor_font_size" min="1" max="100" value="12">
+										</p>
+									</form>
+								</div>
+								<div class="col s6">
+									<h6>theme</h6>
+									<div class="input-field">
+										<select id="theme_selector" name="theme_selector">
+											<option value="monokai" selected="true">Dark</option>
+											<option value="sqlserver">Bright</option>
+										</select>
+										<label>Materialize Select</label>
 									</div>
-									<div class="col s6">
-										<h6>theme</h6>
-										<div class="input-field">
-											<select id="theme_selector" name = "theme_selector">
-												<option value="monokai" selected="true">Dark</option>
-												<option value="sqlserver">Bright</option>
-											</select>
-											<label>Materialize Select</label>
-										</div>
+								</div>
+								<div class="col s6">
+									<h6>key binding</h6>
+									<div class="input-field">
+										<select id="key_binding_selector" name="key_binding_selector">
+											<option value="ace/keyboard/emacs">Emacs</option>
+											<option value="ace/keyboard/vim">Vim</option>
+											<option value="" selected="true">Windows</option>
+										</select>
 									</div>
-									<div class="col s6">
-										<h6>key binding</h6>
-										<div class="input-field">
-											<select id="key_binding_selector" name = "key_binding_selector"'>
-												<option value="ace/keyboard/emacs">Emacs</option>
-												<option value="ace/keyboard/vim">Vim</option>
-												<option value="" selected="true">Windows</option>
-											</select>
-										</div>
-									</div>
-
-								</div> <!-- end of class="modal-content" -->
-
-								<div class="modal-footer">
-									<a href="#" class="waves-effect btn-flat modal-close">Close</a>
 								</div>
 
-							</div> <!-- end of class="row" -->
-						</div> <!-- end of id="modal_options" class="modal" -->
+							</div> <!-- end of class="modal-content" -->
 
-
-						<!-- content of "Save/Load" -->
-						<a class="waves-effect waves-light btn dropdown-button indigo darken-4" id="file-dropdown-button" data-target="dropdown-file">Save/Load<i class="material-icons right">attachment</i></a>
-						<ul id="dropdown-file" class="dropdown-content indigo darken-4">
-							<li><a id="load-file" href="#">Load File</a></li>
-							<li><a id="save-hydla" href="#">Save HydLa</a></li>
-							<li><a id="save-hydat" href="#">Save Hydat</a></li>
-						</ul>
-
-
-						<!-- content of "Help" -->
-						<a class="waves-effect waves-light btn modal-trigger indigo darken-4" href="#modal_about">Help<i class="material-icons right">help</i></a>
-						<div id="modal_about" class="modal">
-							<div class="modal-content">
-								<h3>What is webHydLa...?</h3>
-								<p>webHydLa is the IDE for <a href="http://www.ueda.info.waseda.ac.jp/hydla/" target="_blank">HydLa</a>, the language to describe hybrid systems.</p>
-								<small>Copyright (c) 2015 <a href="http://www.ueda.info.waseda.ac.jp/" target="_blank">Ueda Laboratory, Department of Computer Science and Communications Engineering, Waseda University</a></small>
-								<h5>solver:</h5>
-								<p>webHydLa uses Mathematica as an external constraint solver.</p>
-								<a href="http://www.wolfram.com/webmathematica/sitelink" target="_blank"><img src="webm-white.gif"/></a>
-							</div>
 							<div class="modal-footer">
 								<a href="#" class="waves-effect btn-flat modal-close">Close</a>
 							</div>
+
+						</div> <!-- end of class="row" -->
+					</div> <!-- end of id="modal_options" class="modal" -->
+
+
+					<!-- content of "Save/Load" -->
+					<a class="waves-effect waves-light btn dropdown-button indigo darken-4" id="file-dropdown-button"
+						data-target="dropdown-file">Save/Load<i class="material-icons right">attachment</i></a>
+					<ul id="dropdown-file" class="dropdown-content indigo darken-4">
+						<li><a id="load-examples" class="modal-trigger" href="#modal_examples">Examples</a></li>
+						<li><a id="load-file" href="#">Load File</a></li>
+						<li><a id="save-hydla" href="#">Save HydLa</a></li>
+						<li><a id="save-hydat" href="#">Save Hydat</a></li>
+					</ul>
+					<!-- content of "Examples" -->
+					<div id="modal_examples" class="modal">
+						<select id="example_selector" name="example_selector">
+						</select>
+						<div class="modal-footer">
+							<a href="#" class="waves-effect btn-flat modal-close" id="load-examples-button">Load</a>
+							<a href="#" class="waves-effect btn-flat modal-close">Close</a>
 						</div>
+					</div> <!-- end of id="modal_examples" class="modal" -->
 
-					</div>
-					<!-- up 'til here is id="menu_bar" -->
-
-
-					<!-- これが、エディタを包んでいる -->
-					<div id="input-pane">
-						<div id="editor-area">
-							<div id="editor" style="z-index:1; width:100%"></div>
+					<!-- content of "Help" -->
+					<a class="waves-effect waves-light btn modal-trigger indigo darken-4" href="#modal_about">Help<i
+							class="material-icons right">help</i></a>
+					<div id="modal_about" class="modal">
+						<div class="modal-content">
+							<h3>What is webHydLa...?</h3>
+							<p>webHydLa is the IDE for <a href="http://www.ueda.info.waseda.ac.jp/hydla/" target="_blank">HydLa</a>,
+								the language to describe hybrid systems.</p>
+							<small>Copyright (c) 2015 <a href="http://www.ueda.info.waseda.ac.jp/" target="_blank">Ueda Laboratory,
+									Department of Computer Science and Communications Engineering, Waseda University</a></small>
+							<h5>solver:</h5>
+							<p>webHydLa uses Mathematica as an external constraint solver.</p>
+							<a href="http://www.wolfram.com/webmathematica/sitelink" target="_blank"><img src="webm-white.gif" /></a>
 						</div>
-					</div>
-
-
-					<!-- 諸設定エリア -->
-					<div id="simulation_settings">
-						<div class="each_option">Total Phases: <input id="phase_num" type="text" class="options_input" value=12></div>
-						<div class="each_option">Simulating Time: <input id="simulation_time" type="text" class="options_input"></div>
-						<div class="each_option">Options: <input id="other_options" type="text" class="options_input" value=""></div>
-						<div class="each_option">Time Out: <input id="timeout_option" type="text" class="options_input" value=30></div>
-						<!-- nd_mode_check_box はmain.jsの中でデフォルトで"checked"になっている -->
-						<div class="each_option">ND mode: <input id="nd_mode_check_box" type="checkbox" class="options_checkbox"></div>
-						<div class="each_option">HTML mode: <input id="html_mode_check_box" type="checkbox" class="options_checkbox"></div>
-						<input type="submit" value="RUN" class="exec-button disabled-running" title="RUN/KILL (Shortcut: Ctrl-Enter)" id="run_button">
-						<!-- TODO: クリックして処理中は"RUN"から"KILL"に表示を変更する -->
-					</div>
-
-				</div><!-- up 'til here is id="editor_window"（＝ドラッグできる一体） -->
-			</div>
-
-		</div><!-- end of "#top_area" -->
-
-
-		<!-- グラフのパネルを包んでいる（＋現在は、ログ出力） -->
-		<div id="result_pane">
-
-			<ul id="tabs" class="tabs tabs-fixed-width">
-				<li class="tab col s12 indigo darken-4">
-					<a class="graphlog_tab" href="#graph-area">Graph</a>
-				</li>
-				<li class="tab col s12 indigo darken-4">
-					<a class="graphlog_tab" href="#output-area">Log</a>
-				</li>
-			</ul>
-
-			<div id="scroll-message-pane">
-				<div id="scroll-message">
-					press "shift" + scroll to zoom in/out
-				</div>
-			</div>
-				
-			<!-- グラフのパネル -->
-			<div id="graph-area" onscroll="showScrollMessage()">
-				
-				<div id='dat-gui'>
-				</div>
-
-				<div id='dat-gui-bottom'>
-				</div>
-				
-				<div id = "scale_label_wrapper">
-					<canvas id="scaleLabelCanvas">
-					</canvas>
-					<canvas id="nameLabelCanvas">
-					</canvas>
-				</div>
-				
-				<div id="graph-preloader" class="hide">
-					<div class="preloader-wrapper big active">
-						<!-- wait時にクルクル回る -->
-						<div class="spinner-layer spinner-blue">
-							<div class="circle-clipper left">
-								<div class="circle"></div>
-							</div><div class="gap-patch">
-								<div class="circle"></div>
-							</div><div class="circle-clipper right">
-								<div class="circle"></div>
-							</div>
-						</div>
-						<!-- wait時にクルクル回る -->
-						<div class="spinner-layer spinner-red">
-							<div class="circle-clipper left">
-								<div class="circle"></div>
-							</div><div class="gap-patch">
-								<div class="circle"></div>
-							</div><div class="circle-clipper right">
-								<div class="circle"></div>
-							</div>
-						</div>
-						<!-- wait時にクルクル回る -->
-						<div class="spinner-layer spinner-yellow">
-							<div class="circle-clipper left">
-								<div class="circle"></div>
-							</div><div class="gap-patch">
-								<div class="circle"></div>
-							</div><div class="circle-clipper right">
-								<div class="circle"></div>
-							</div>
-						</div>
-						<!-- wait時にクルクル回る -->
-						<div class="spinner-layer spinner-green">
-							<div class="circle-clipper left">
-								<div class="circle"></div>
-							</div><div class="gap-patch">
-								<div class="circle"></div>
-							</div><div class="circle-clipper right">
-								<div class="circle"></div>
-							</div>
+						<div class="modal-footer">
+							<a href="#" class="waves-effect btn-flat modal-close">Close</a>
 						</div>
 					</div>
-				</div>
-			</div>
-			<!-- id="graph-area" -->
-				
-			<!-- ログ出力のパネル -->
-			<div id="output-area">
-				<div id="info"></div>
-				<div id="output-initial">
-					<p>Log-Output of simulation:</p>
-				</div>
-				
-				<div id="output-preloader" class="hide">
-					<div class="preloader-wrapper big active">
-						
-						<!-- wait時にクルクル回る -->
-						<div class="spinner-layer spinner-blue">
-							<div class="circle-clipper left">
-								<div class="circle"></div>
-							</div><div class="gap-patch">
-								<div class="circle"></div>
-							</div><div class="circle-clipper right">
-								<div class="circle"></div>
-							</div>
-						</div>
-						<!-- wait時にクルクル回る -->
-						<div class="spinner-layer spinner-red">
-							<div class="circle-clipper left">
-								<div class="circle"></div>
-							</div><div class="gap-patch">
-								<div class="circle"></div>
-							</div><div class="circle-clipper right">
-								<div class="circle"></div>
-							</div>
-						</div>
-						<!-- wait時にクルクル回る -->
-						<div class="spinner-layer spinner-yellow">
-							<div class="circle-clipper left">
-								<div class="circle"></div>
-							</div><div class="gap-patch">
-								<div class="circle"></div>
-							</div><div class="circle-clipper right">
-								<div class="circle"></div>
-							</div>
-						</div>
-						<!-- wait時にクルクル回る -->
-						<div class="spinner-layer spinner-green">
-							<div class="circle-clipper left">
-								<div class="circle"></div>
-							</div><div class="gap-patch">
-								<div class="circle"></div>
-							</div><div class="circle-clipper right">
-								<div class="circle"></div>
-							</div>
-						</div>
 
+				</div>
+				<!-- up ' til here is id="menu_bar" -->
+
+
+				<!-- これが、エディタを包んでいる -->
+				<div id="input-pane">
+					<div id="editor-area">
+						<div id="editor" style="z-index:1; width:100%"></div>
 					</div>
 				</div>
-			</div>
-			<!-- id="output-area" -->
-			
+
+
+				<!-- 諸設定エリア -->
+				<div id="simulation_settings">
+					<div class="each_option">Total Phases: <input id="phase_num" type="text" class="options_input" value=12></div>
+					<div class="each_option">Simulating Time: <input id="simulation_time" type="text" class="options_input"></div>
+					<div class="each_option">Options: <input id="other_options" type="text" class="options_input" value=""></div>
+					<div class="each_option">Time Out: <input id="timeout_option" type="text" class="options_input" value=30>
+					</div>
+					<!-- nd_mode_check_box はmain.jsの中でデフォルトで"checked"になっている -->
+					<div class="each_option">ND mode: <input id="nd_mode_check_box" type="checkbox" class="options_checkbox">
+					</div>
+					<div class="each_option">HTML mode: <input id="html_mode_check_box" type="checkbox" class="options_checkbox">
+					</div>
+					<input type="submit" value="RUN" class="exec-button disabled-running" title="RUN/KILL (Shortcut: Ctrl-Enter)"
+						id="run_button">
+					<!-- TODO: クリックして処理中は"RUN"から"KILL"に表示を変更する -->
+				</div>
+
+			</div><!-- up 'til here is id="editor_window"（＝ドラッグできる一体） -->
 		</div>
-		<!-- result-pane -->
-		<script src="./main.js" type="text/javascript" charset="utf-8"></script>
-	
-	</body>
+
+	</div><!-- end of "#top_area" -->
+
+
+	<!-- グラフのパネルを包んでいる（＋現在は、ログ出力） -->
+	<div id="result_pane">
+
+		<ul id="tabs" class="tabs tabs-fixed-width">
+			<li class="tab col s12 indigo darken-4">
+				<a class="graphlog_tab" href="#graph-area">Graph</a>
+			</li>
+			<li class="tab col s12 indigo darken-4">
+				<a class="graphlog_tab" href="#output-area">Log</a>
+			</li>
+		</ul>
+
+		<div id="scroll-message-pane">
+			<div id="scroll-message">
+				press "shift" + scroll to zoom in/out
+			</div>
+		</div>
+
+		<!-- グラフのパネル -->
+		<div id="graph-area" onscroll="showScrollMessage()">
+
+			<div id='dat-gui'>
+			</div>
+
+			<div id='dat-gui-bottom'>
+			</div>
+
+			<div id="scale_label_wrapper">
+				<canvas id="scaleLabelCanvas">
+				</canvas>
+				<canvas id="nameLabelCanvas">
+				</canvas>
+			</div>
+
+			<div id="graph-preloader" class="hide">
+				<div class="preloader-wrapper big active">
+					<!-- wait時にクルクル回る -->
+					<div class="spinner-layer spinner-blue">
+						<div class="circle-clipper left">
+							<div class="circle"></div>
+						</div>
+						<div class="gap-patch">
+							<div class="circle"></div>
+						</div>
+						<div class="circle-clipper right">
+							<div class="circle"></div>
+						</div>
+					</div>
+					<!-- wait時にクルクル回る -->
+					<div class="spinner-layer spinner-red">
+						<div class="circle-clipper left">
+							<div class="circle"></div>
+						</div>
+						<div class="gap-patch">
+							<div class="circle"></div>
+						</div>
+						<div class="circle-clipper right">
+							<div class="circle"></div>
+						</div>
+					</div>
+					<!-- wait時にクルクル回る -->
+					<div class="spinner-layer spinner-yellow">
+						<div class="circle-clipper left">
+							<div class="circle"></div>
+						</div>
+						<div class="gap-patch">
+							<div class="circle"></div>
+						</div>
+						<div class="circle-clipper right">
+							<div class="circle"></div>
+						</div>
+					</div>
+					<!-- wait時にクルクル回る -->
+					<div class="spinner-layer spinner-green">
+						<div class="circle-clipper left">
+							<div class="circle"></div>
+						</div>
+						<div class="gap-patch">
+							<div class="circle"></div>
+						</div>
+						<div class="circle-clipper right">
+							<div class="circle"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- id="graph-area" -->
+
+		<!-- ログ出力のパネル -->
+		<div id="output-area">
+			<div id="info"></div>
+			<div id="output-initial">
+				<p>Log-Output of simulation:</p>
+			</div>
+
+			<div id="output-preloader" class="hide">
+				<div class="preloader-wrapper big active">
+
+					<!-- wait時にクルクル回る -->
+					<div class="spinner-layer spinner-blue">
+						<div class="circle-clipper left">
+							<div class="circle"></div>
+						</div>
+						<div class="gap-patch">
+							<div class="circle"></div>
+						</div>
+						<div class="circle-clipper right">
+							<div class="circle"></div>
+						</div>
+					</div>
+					<!-- wait時にクルクル回る -->
+					<div class="spinner-layer spinner-red">
+						<div class="circle-clipper left">
+							<div class="circle"></div>
+						</div>
+						<div class="gap-patch">
+							<div class="circle"></div>
+						</div>
+						<div class="circle-clipper right">
+							<div class="circle"></div>
+						</div>
+					</div>
+					<!-- wait時にクルクル回る -->
+					<div class="spinner-layer spinner-yellow">
+						<div class="circle-clipper left">
+							<div class="circle"></div>
+						</div>
+						<div class="gap-patch">
+							<div class="circle"></div>
+						</div>
+						<div class="circle-clipper right">
+							<div class="circle"></div>
+						</div>
+					</div>
+					<!-- wait時にクルクル回る -->
+					<div class="spinner-layer spinner-green">
+						<div class="circle-clipper left">
+							<div class="circle"></div>
+						</div>
+						<div class="gap-patch">
+							<div class="circle"></div>
+						</div>
+						<div class="circle-clipper right">
+							<div class="circle"></div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<!-- id="output-area" -->
+
+	</div>
+	<!-- result-pane -->
+	<script src="./main.js" type="text/javascript" charset="utf-8"></script>
+
+</body>
 
 </html>
