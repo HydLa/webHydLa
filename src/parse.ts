@@ -436,30 +436,3 @@ class Negative extends UnaryConstruct {
     return -this.arg.getValue(env);
   }
 }
-
-
-/*
-console.log(parseValue("1+1").getValue() == 2);
-console.log(parseValue("1*1").getValue() == 1);
-console.log(parseValue("1-1").getValue() == 0);
-console.log(parseValue("1\/1").getValue() == 1);
-console.log(parseValue("1").getValue() == 1);
-console.log(parseValue("(1+1)").getValue() == 2);
-console.log(parseValue("(1*1)\/1").getValue() == 1);
-console.log(parseValue("1^1").getValue() == 1);
-console.log(parseValue("-1").getValue() == -1);
-console.log(parseValue("-1+-1").getValue() == -2);
-console.log(parseValue("Infinity"));
-// console.log(parseValue("p[x,0,1]").getValue());
-console.log(parseValue("Pi").getValue());
-console.log(parseValue("E").getValue());
-//console.log(parseValue("t").getValue());
-//console.log(parseValue("timer").getValue());
-//console.log(parseValue("x0").getValue());
-console.log(parseValue("Log[10]").getValue());
-console.log(parseValue("Sin[0]").getValue());
-console.log(parseValue("Cos[0]").getValue());
-console.log(parseValue("Tan[0]").getValue());
-console.log(parseValue("Floor[E]").getValue());
-console.log(parseValue("(t * (-1250) + 125 * p[v, 0, 1] + 613 * (20 * p[ht, 0, 1] + p[v, 0, 1] ^ 2) ^ (1\/2))*(t*(-250)+25*p[v, 0, 1]+97*(20*p[ht, 0, 1]+p[v, 0, 1]^2)^(1\/2))*(-1)\/62500"));
-*/
