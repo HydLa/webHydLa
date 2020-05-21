@@ -6,6 +6,7 @@ import { PlotControl } from "./plot_control";
 import { HydatParameter, HydatParameterPoint } from "./hydat";
 import { AnimationControl } from "./animation_control";
 
+/** 描画用設定の処理を行う */
 export class DatGUIControl {
   static parameter_folder: dat.GUI;
   static variable_folder: dat.GUI;

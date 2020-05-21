@@ -23,6 +23,7 @@ export class PlotSettingsControl {
   }
 }
 
+/** 描画設定用のデータ構造 */
 export class PlotSettings {
   plotInterval: number;
   backgroundColor: string;

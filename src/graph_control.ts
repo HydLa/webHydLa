@@ -6,6 +6,10 @@ import { PlotControl } from './plot_control';
 import { AnimationControl } from './animation_control';
 import { HydatControl } from './hydat_control';
 
+/** 
+ * 描画，再描画，クリアなどを行う<br>
+ * いわゆるView
+ */
 export class GraphControl {
   static scene: THREE.Scene;
   static camera: THREE.OrthographicCamera;
