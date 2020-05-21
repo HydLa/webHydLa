@@ -8,7 +8,7 @@ const key_ctr = 17;
 const key_alt = 18;
 const key_meta_l = 91;
 
-export class NewUI{
+export class NewUI {
   static init(controls: OrbitControls) {
     let in_graph_area: boolean;
     $('#graph-area').hover(
@@ -42,23 +42,16 @@ export class NewUI{
     this.initScrollZoom(controls);
   }
 
-  static isClassicUI() {
-    const elem = <HTMLInputElement>document.getElementById("classic_ui_flag");
-    return elem.value === "true"
-  }
-  
   static enableZoom(controls: OrbitControls) {
-    if (this.isClassicUI()) return;
     controls.enableZoom = true;
     $('body').css("overflow-y", "hidden");
   }
 
   static disableZoom(controls: OrbitControls) {
-    if (this.isClassicUI()) return;
     controls.enableZoom = false;
     $('body').css("overflow-y", "visible");
   }
-  
+
   static initScrollZoom(controls: OrbitControls) {
     this.disableZoom(controls);
   }
