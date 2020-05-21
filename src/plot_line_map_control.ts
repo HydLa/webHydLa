@@ -44,16 +44,6 @@ export class PlotLineMapControl {
     this.map[index] = line;
     return line;
   }
-  // addNewLineWithIndexGuard(x_name: string, y_name: string, z_name: string, index: number) {
-  //   // if(new_guard!=undefined){
-  //   //   new_guard.index = 1 + index;
-  //   //   delete this.map[new_guard.index];
-  //   // }
-  //   let new_guard = new PlotLine(x_name, y_name, z_name, index + 1);
-  //   new_guard.remain = true;
-  //   this.map[new_guard.index] = new_guard;
-  //   //return new_line;
-  // }
   static removeAllFolders() {
     for (let i in this.map) {
       this.map[i].removeFolder();
@@ -76,7 +66,6 @@ export class PlotLineMapControl {
     }
     AnimationControl.remove_dynamic_lines();
 
-    // var table = document.getElementById("graph_axis_table");
     for (let i in this.map) {
       this.map[i].color_angle = parseInt(i) / this.getLength() * 360;
       this.map[i].replot();
@@ -88,8 +77,6 @@ export class PlotLineMapControl {
     this.removeAllFolders();
     this.reset();
 
-    //var guard_list ={x:["x", "xSWON"]};
-
     let str = StorageControl.loadHydatSettings(hydat.name);
     if (str !== null) {
       HydatControl.settingsForCurrentHydat = JSON.parse(str);
@@ -98,13 +85,6 @@ export class PlotLineMapControl {
         let index = parseInt(i);
         if (line_settings[index] === null) continue;
         let line = this.addNewLineWithIndex(line_settings[index].x, line_settings[index].y, line_settings[index].z, index);
-        /*for(key in guard_list){
-          if(line_settings[i].x == key){
-            for(var l in guard_list.x){
-              addNewLineWithIndexGuard(guard_list.x[l], "x'", "0", i+l);
-            }
-          }
-        }*/
         if (line.settings.x != "" || line.settings.y != "" || line.settings.z != "") line.folder.open();
       }
       GraphControl.replotAll();

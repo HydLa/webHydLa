@@ -3,8 +3,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { DatGUIControl } from './dat_gui_control';
 import { PlotControl } from './plot_control';
-import { PlotLine } from './plot_line';
-import { RGB } from './plot_utils';
 import { AnimationControl } from './animation_control';
 import { HydatControl } from './hydat_control';
 
@@ -31,7 +29,6 @@ export class GraphControl {
     this.scene = new THREE.Scene();
 
     // PerspectiveCamera
-    // camera = new THREE.PerspectiveCamera(75, 600 / 400, 1, 1000);
     const width = 50;
     const height = 50;
 
@@ -69,7 +66,6 @@ export class GraphControl {
   static resizeGraphRenderer() {
     if (this.elem.clientWidth > 0 && this.elem.clientHeight > 0) {
       this.renderer.setSize(this.elem.clientWidth, this.elem.clientHeight);
-      // this.camera.aspect = this.elem.clientWidth / this.elem.clientHeight;
       var prev_width = this.camera.right - this.camera.left;
       var prev_height = this.camera.top - this.camera.bottom;
       var extend_rate;

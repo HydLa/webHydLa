@@ -320,9 +320,6 @@ export class AnimationControl {
               return;
             }
             else {
-              // setTimeout(function()
-              //             {dfs_each_line([{phase:phase_index_array[0].phase, index:0}], axes, line, width, color, dt, parameter_condition_list, current_param_idx, [])
-              //             }, 0);
               // 次のparameter conditionで探索しなおす
               ++current_param_idx;
               phase_index_array[0].index = 0;

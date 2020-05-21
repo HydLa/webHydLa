@@ -1,5 +1,4 @@
 import { StorageControl } from "./storage_control";
-import { PlotControl } from "./plot_control";
 import { GraphControl } from "./graph_control";
 import { AnimationControl } from "./animation_control";
 

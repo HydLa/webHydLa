@@ -28,19 +28,18 @@ export class EditorControl {
   static editor: ace.Ace.Editor;
   static autosave_event_enabled = true;
   static autosave_changed = false;
-  static init(saved_hydla:string|null) {
+  static init(saved_hydla: string | null) {
     /* ID="editor" な div をエディタにする */
     this.editor = ace.edit("editor");
 
     /* 諸々の設定 */
     this.editor.setTheme("ace/theme/sqlserver");
-    ace.config.setModuleUrl("ace/mode/hydla","./mode-hydla.js")
+    ace.config.setModuleUrl("ace/mode/hydla", "./mode-hydla.js")
     this.editor.getSession().setMode("ace/mode/hydla")
     this.editor.getSession().setTabSize(4);
     this.editor.getSession().setUseSoftTabs(true);
     this.editor.getSession().setUseWrapMode(true);
     this.editor.setHighlightActiveLine(false);
-    // this.editor.$blockScrolling = Infinity;
     this.editor.setOptions({
       enableBasicAutocompletion: true,
       enableSnippets: true,
@@ -150,7 +149,7 @@ export class EditorControl {
     else this.editor.setKeyboardHandler(binding);
   }
 
-  static setTheme(theme:string) {
+  static setTheme(theme: string) {
     this.editor.setTheme(`ace/theme/${theme}`);
   }
 
@@ -158,7 +157,7 @@ export class EditorControl {
     this.editor.resize();
   }
 
-  static setFontSize(n:number) {
+  static setFontSize(n: number) {
     this.editor.setOption("fontSize", n);
   }
 }

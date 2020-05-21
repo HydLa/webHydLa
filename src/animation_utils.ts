@@ -58,7 +58,4 @@ export class MaltiBiMap<K, V>{
   values(): IterableIterator<V> {
     return this.reverse.keys();
   };
-
-  // entries(): IterableIterator<[K, V]>;
-  // forEach(callbackfn: (value: V, key: K, map: Map<K, V>) => void, thisArg?: any): void;
 }

@@ -79,16 +79,13 @@ export class DatGUIControl {
         PlotSettingsControl.time_stop();
         PlotSettingsControl.saveToWebStorage();
       });
-    //dat_gui_animate.add(plot_settings, 'seek', 0, 1000).step(1).name('seek').onChange(function(value){seek();PlotSettingsControl.saveToWebStorage();});
 
     dat_gui.domElement.style.zIndex = "2";
     dat_gui_animate.domElement.style.zIndex = "3";
     dat_gui_animate.domElement.style['position'] = 'absolute';
     dat_gui_animate.domElement.style['bottom'] = '50px';
-    //dat_gui_animate.domElement.style['margin'] = '0 auto';
 
     var height_area = $("#graph-area").css("height");
-    //var width_area = $("#graph-area").css("width");
 
     this.parameter_folder = dat_gui.addFolder('parameters');
     this.parameter_folder_seek = dat_gui_animate.addFolder('seek');
@@ -160,8 +157,6 @@ export class DatGUIControl {
       this.parameter_folder_seek.remove(item);
     }
     this.parameter_items_seek = [];
-    // var lower = 0;
-    // var upper = line_len - 1;
     var min_par_value = 0;
     var max_par_value = line_len - 1;
     var step = 1;
@@ -171,22 +166,14 @@ export class DatGUIControl {
     var parameter_item_seek =
       this.parameter_folder_seek.add(DatGUIControl.plot_settings.parameter_condition_seek, 'value', min_par_value, max_par_value);
     parameter_item_seek.onChange((value) => {
-      /*GraphControl.replotAll();*/
       AnimationControl.time = DatGUIControl.plot_settings.parameter_condition_seek!.value;
       AnimationControl.animate();
     });
     parameter_item_seek.step(step);
 
-    //var mode_item_seek = this.parameter_folder_seek.add(plot_settings.parameter_condition_seek, 'stop');
-    //this.parameter_items_seek.push(mode_item_seek);
     this.parameter_items_seek.push(parameter_item_seek);
 
-    /*mode_item_seek.onChange(function(value){
-        parameter_item_seek.min(min_par_value).max(max_par_value).step(step).setValue((min_par_value + max_par_value)/2);
-      GraphControl.replotAll();
-    });*/
     this.parameter_folder_seek.open();
-    //else this.parameter_folder_seek.close();
     this.fixLayout();
   }
   static parameter_seek_setting_animate(line_len: number, time_line: number) {
@@ -194,8 +181,6 @@ export class DatGUIControl {
       this.parameter_folder_seek.remove(item);
     }
     this.parameter_items_seek = [];
-    // var lower = 0;
-    // var upper = line_len;
     var min_par_value = 0;
     var max_par_value = line_len;
     var step = 1;
@@ -205,19 +190,15 @@ export class DatGUIControl {
     var parameter_item_seek =
       this.parameter_folder_seek.add(DatGUIControl.plot_settings.parameter_condition_seek, 'value', min_par_value, max_par_value);
     parameter_item_seek.onChange((value) => {
-      /*GraphControl.replotAll();*/
       AnimationControl.time = DatGUIControl.plot_settings.parameter_condition_seek!.value;
       AnimationControl.animate();
     });
     parameter_item_seek.step(step);
 
-    //var mode_item_seek = this.parameter_folder_seek.add(plot_settings.parameter_condition_seek, 'stop');
-    //this.parameter_items_seek.push(mode_item_seek);
     this.parameter_items_seek.push(parameter_item_seek);
 
     parameter_item_seek.min(min_par_value).max(max_par_value).step(step).setValue(time_line);
     this.parameter_folder_seek.open();
-    //else this.parameter_folder_seek.close();
     this.fixLayout();
   }
   static fixLayout() {

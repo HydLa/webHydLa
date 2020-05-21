@@ -9,7 +9,6 @@ export class DOMControl {
   static tabs: Materialize.Tabs;
 
   static init() {
-    // $('select').formSelect();
     Materialize.FormSelect.init(document.querySelectorAll("select"));
     $(window).resize(function () {
       GraphControl.resizeGraphRenderer();
@@ -22,7 +21,7 @@ export class DOMControl {
       hover: false,
     });
     Materialize.Dropdown.init(
-      document.querySelectorAll('.axis-dropdown-button'),{
+      document.querySelectorAll('.axis-dropdown-button'), {
       constrainWidth: false,
       hover: false
     });
@@ -55,7 +54,6 @@ export class DOMControl {
       .mousedown((e) => {
         const initial_x = e.pageX;
         const initial_width = $("#left-pane").width()!;
-        // const initial_left = $("#v-separator").css("left");
         const initial_editor = $("#editor").width()!;
         let dragging = true;
         $("<div id='secretdiv'>")
@@ -110,7 +108,7 @@ export class DOMControl {
             $("#secretdiv").remove();
           })
       });
-    
+
     document.getElementById("load-file")?.addEventListener("click", () => {
       EditorControl.loadFile();
     });
