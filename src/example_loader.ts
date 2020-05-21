@@ -1,5 +1,8 @@
 import { EditorControl } from "./editor_control";
 
+/**
+ * HyLaGIのレポジトリから例題を取得する
+ */
 export class ExampleLoader {
   static names: string[] = [];
   static contents = new Map<string, string>();

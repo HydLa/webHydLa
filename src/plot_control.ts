@@ -1,4 +1,3 @@
-import { PlotLine } from "./plot_line";
 import { GraphControl } from "./graph_control";
 import { PlotLineMapControl } from "./plot_line_map_control";
 import { DOMControl } from "./dom_control";
@@ -18,20 +17,20 @@ const axisColorBases = new Triplet<RGB>(
 
 export class PlotControl {
   static array = -1;
-  static current_line_vec_animation:THREE.Vector3[] = [];
-  static PlotStartTime: number|undefined;
+  static current_line_vec_animation: THREE.Vector3[] = [];
+  static PlotStartTime: number | undefined;
 
   static axisColors = new Triplet<string>("#FF8080", "#80FF80", "#8080FF")
   static prev_ranges: ComparableTriplet<Range>;
   static axisLines: Triplet<THREE.Object3D>;
   static plot_settings: PlotSettings;
 
-  static init(plot_settings:PlotSettings) {
+  static init(plot_settings: PlotSettings) {
     this.plot_settings = plot_settings;
   }
-  static divideParameter(parameter_map:{ [key: string]: HydatParameter }) {
-    var now_parameter_condition_list: {[key:string]:Constant}[] = [{}];
-  
+  static divideParameter(parameter_map: { [key: string]: HydatParameter }) {
+    var now_parameter_condition_list: { [key: string]: Constant }[] = [{}];
+
     for (let parameter_name in parameter_map) {
       var setting = PlotControl.plot_settings.parameter_condition![parameter_name];
       if (setting.fixed) {
@@ -61,14 +60,14 @@ export class PlotControl {
     return now_parameter_condition_list;
   }
 
-  static phase_to_line_vectors(phase: HydatPhase, parameter_condition_list:{[key:string]:Constant}, axis: Triplet<Construct>, maxDeltaT:number) {
+  static phase_to_line_vectors(phase: HydatPhase, parameter_condition_list: { [key: string]: Constant }, axis: Triplet<Construct>, maxDeltaT: number) {
     var line: { vec: THREE.Vector3, isPP: boolean }[] = [];
     var t;
     if (phase.simulation_state != "SIMULATED" && phase.simulation_state != "TIME_LIMIT" && phase.simulation_state != "STEP_LIMIT") return line;
-  
+
     let env: { [key: string]: Construct; } = {};
     $.extend(env, parameter_condition_list, phase.variable_map);
-  
+
     if (phase.time instanceof HydatTimePP) {
       env.t = phase.time.time_point;
       line.push({
@@ -100,7 +99,6 @@ export class PlotControl {
   }
 
   static checkAndStopPreloader() {
-    // var table = document.getElementById("graph_axis_table");
     if (!PlotLineMapControl.isAllReady()) return;
     var current_time = new Date().getTime();
     if (PlotControl.PlotStartTime === undefined || current_time - PlotControl.PlotStartTime >= 1000) {
@@ -248,7 +246,7 @@ export class PlotControl {
 
     const expandFrustum = (orig: THREE.Frustum) => {
       let expanded = orig.clone();
-      const expandTwoPlanesOfFrustum = (plane1:THREE.Plane, plane2:THREE.Plane) => {
+      const expandTwoPlanesOfFrustum = (plane1: THREE.Plane, plane2: THREE.Plane) => {
         var dot = plane1.normal.dot(plane2.normal);
         var rate = 1.1;
 
@@ -334,13 +332,6 @@ export class PlotControl {
   static makeAxis(range: Range, delta: number, color: THREE.Color) {
     var geometry = new THREE.Geometry();
     var material = new THREE.LineBasicMaterial({ vertexColors: true })
-    // var i;
-    // var start = Math.floor(range.min / delta) * delta;
-    // var end = range.max;
-    // for(i=start; i<=end; i+=delta){
-    //   geometry.vertices.push(new THREE.Vector3(-1,0,i), new THREE.Vector3(1,0,i));
-    //   geometry.colors.push(color,color);
-    // }
     geometry.vertices.push(new THREE.Vector3(0, 0, range.min), new THREE.Vector3(0, 0, range.max));
     geometry.colors.push(color, color);
     var grid_obj = new THREE.Object3D();
@@ -370,7 +361,7 @@ export class PlotControl {
         if (scale_interval <= 0) return Number.MAX_VALUE;
         return scale_interval;
       }
-      const calculateNumberOfDigits = (interval:number) => {
+      const calculateNumberOfDigits = (interval: number) => {
         let num = Math.floor(Math.log(interval) / Math.log(10));
         num = num > 0 ? 0 : -num;
         num = Math.max(num, 0);

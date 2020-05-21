@@ -7,7 +7,7 @@ export class Triplet<T>{
     this.y = y;
     this.z = z;
   }
-  map<U>(f: (t:T) => U) {
+  map<U>(f: (t: T) => U) {
     return new Triplet<U>(f(this.x), f(this.y), f(this.z));
   }
 }
@@ -33,9 +33,9 @@ export class RGB {
     return this.r === rgb.r && this.g === rgb.g && this.b === rgb.b;
   }
 
-  static fromHue(h:number) {
+  static fromHue(h: number) {
     // assume S = V = 1
-    let rgb = new RGB(1,1,1);
+    let rgb = new RGB(1, 1, 1);
     h /= 60;
     var i = Math.floor(h);
     var f = h - i;
@@ -54,7 +54,7 @@ export class RGB {
     return rgb;
   }
 
-  asHex24(){
+  asHex24() {
     return (this.r << 16) + (this.g << 8) + this.b;
   }
 }
@@ -79,42 +79,3 @@ export class Range {
     return new Range(Number.MAX_VALUE, Number.MIN_VALUE);
   }
 }
-
-// function replot(line) {
-//   remove_plot(line);
-//   remove_mesh(plot_animate);
-//   add_plot(line);
-//   if (line.settings.x != "" && line.settings.y != "" && line.settings.z != "") {
-//     if (line.remain == undefined) {
-//       settingsForCurrentHydat.plot_line_settings[line.index] = line.settings;
-//       StorageControl.saveHydatSettings();
-//     }
-//   }
-// }
-
-
-// function vector3_to_geometry(vector3_list:THREE.Vector3[]) {
-//   let geometry = new THREE.Geometry();
-//   for (let vec of vector3_list) {
-//     geometry.vertices.push(vec);
-//   }
-//   return geometry;
-// }
-
-// function toUnitVector(vector:THREE.Vector3) {
-//   let length = Math.sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
-//   return new THREE.Vector3(vector.x / length, vector.y / length, vector.z / length);
-// }
-
-// function guard() {
-//   const g_geometry = new THREE.PlaneGeometry(100, 100, 100, 100);
-//   const g_material = new THREE.MeshBasicMaterial({
-//     color: 0x0000ff
-//     , wireframe: true
-//   });
-//   let guard = new THREE.Mesh(g_geometry, g_material);
-//   guard.position.set(0, 0, 0);
-//   //guard.rotation.set(0, Math.PI/2, Math.PI/2);//y
-//   guard.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
-//   GraphControl.scene.add(guard);
-// }

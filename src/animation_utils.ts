@@ -1,4 +1,7 @@
-/** keyに対してはvalueが複数対応し，valueに対してはkeyが一意に対応するデータを扱う */
+/** 
+ * 描画用オブジェクト管理用のデータ構造<br>
+ * keyに対してはvalueが複数対応し，valueに対してはkeyが一意に対応するデータを扱う
+ * */
 export class MaltiBiMap<K, V>{
   private map: Map<K, Set<V>>;
   private reverse: Map<V, K>;
@@ -58,7 +61,4 @@ export class MaltiBiMap<K, V>{
   values(): IterableIterator<V> {
     return this.reverse.keys();
   };
-
-  // entries(): IterableIterator<[K, V]>;
-  // forEach(callbackfn: (value: V, key: K, map: Map<K, V>) => void, thisArg?: any): void;
 }

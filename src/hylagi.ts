@@ -40,7 +40,7 @@ export class HyLaGIController {
     }
   }
   /* function to submit hydla code to server */
-  static sendHydLa(hydla:string) {
+  static sendHydLa(hydla: string) {
     DOMControl.startPreloader();
     this.running = true;
     this.updateExecIcon();
@@ -103,7 +103,6 @@ export class HyLaGIController {
             }
             break;
         }
-        // let server_response = response;
         var output = document.getElementById("output-initial")!;
         output.innerHTML = "";
         for (let elem of that.dynamic_script_elements) {
@@ -128,7 +127,7 @@ export class HyLaGIController {
           }
         }
         else {
-          const getEscapedStringForHTML = (orig_string:string)=>orig_string.replace(/\n/mg, "<br/>").replace(/\s/mg, "&nbsp;");
+          const getEscapedStringForHTML = (orig_string: string) => orig_string.replace(/\n/mg, "<br/>").replace(/\s/mg, "&nbsp;");
           if (response.stdout != undefined) {
             output.innerHTML += getEscapedStringForHTML(response.stdout);
           }

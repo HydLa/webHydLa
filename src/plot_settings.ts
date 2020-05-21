@@ -1,5 +1,4 @@
 import { StorageControl } from "./storage_control";
-import { PlotControl } from "./plot_control";
 import { GraphControl } from "./graph_control";
 import { AnimationControl } from "./animation_control";
 
@@ -24,6 +23,7 @@ export class PlotSettingsControl {
   }
 }
 
+/** 描画設定用のデータ構造 */
 export class PlotSettings {
   plotInterval: number;
   backgroundColor: string;

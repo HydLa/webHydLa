@@ -9,11 +9,13 @@ import { HydatControl } from "./hydat_control";
 import { Construct, Constant } from "./parse";
 import { MaltiBiMap } from "./animation_utils";
 
+/** 描画用オブジェクトの計算，描画，削除を担当 */
 export class AnimationControl {
   static maxlen: number = 0;
   /** ボールの軌道のリスト */
   static animation_line: { vecs: THREE.Vector3[], color: number }[] = [];
 
+  /** 描画におけるグローバル時間 */
   static time: number = 0;
   static time_prev: number = -100;
 
@@ -82,7 +84,11 @@ export class AnimationControl {
     if (line.plot_ready == undefined) requestAnimationFrame(function () { line.plotReady() });
   }
 
-  /** startPosからendPosまで幅scaledWidthの線を作る */
+  /** 
+   * startPosからendPosまで幅scaledWidthの線をcylinderMeshで作る<br>
+   * Lineを使わないのはLineの太さが変わらないバグがあるため<br>
+   * https://threejs.org/docs/#api/en/materials/LineBasicMaterial.linewidth
+   */
   static make_cylinder(startPos: THREE.Vector3, endPos: THREE.Vector3, scaledWidth: number, material: THREE.Material) {
     var directionVec = endPos.clone().sub(startPos);
     var height = directionVec.length();
@@ -100,6 +106,7 @@ export class AnimationControl {
     cylinderMesh.updateMatrix();
     return cylinderMesh;
   };
+
 
   static add_cylinder(current_line_vec: { vec: THREE.Vector3, isPP: boolean }[], current_param_idx: number, line: PlotLine, width: number, color: number[]) {
     PlotControl.array += 1;
@@ -187,6 +194,9 @@ export class AnimationControl {
     AnimationControl.plot_animate[PlotControl.array] = (sphere);
   }
 
+  /**
+   * 太さが変わらないバグはあるものの，軽量なので太さが1で良い時はLineを使う
+   */
   static make_line(points: THREE.Vector3[], material: THREE.Material, segments: boolean = false) {
     var geometry = new THREE.BufferGeometry().setFromPoints(points);
     if (segments) return new THREE.LineSegments(geometry, material);
@@ -320,9 +330,6 @@ export class AnimationControl {
               return;
             }
             else {
-              // setTimeout(function()
-              //             {dfs_each_line([{phase:phase_index_array[0].phase, index:0}], axes, line, width, color, dt, parameter_condition_list, current_param_idx, [])
-              //             }, 0);
               // 次のparameter conditionで探索しなおす
               ++current_param_idx;
               phase_index_array[0].index = 0;
