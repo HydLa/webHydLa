@@ -13,7 +13,6 @@ export class HydatControl{
     y: string;
     z: string;
     remove: () => void;
-    dashed: boolean;
   }[]};
 
   static init(saved_hydat:string|null) {

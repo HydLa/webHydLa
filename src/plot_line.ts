@@ -18,7 +18,6 @@ export class PlotLine {
     y: string;
     z: string;
     remove: () => void;
-    dashed: boolean;
   };
   x_item: dat.GUIController;
   y_item: dat.GUIController;
@@ -38,15 +37,13 @@ export class PlotLine {
     this.index = index;
     this.name = "plot" + this.index;
     this.folder = DatGUIControl.variable_folder.addFolder(this.name);
-    this.settings = { x: x_name, y: y_name, z: z_name, remove: () => { PlotLineMapControl.removeLine(this) }, dashed: false };
+    this.settings = { x: x_name, y: y_name, z: z_name, remove: () => { PlotLineMapControl.removeLine(this) }, };
     this.x_item = this.folder.add(this.settings, "x");
     this.x_item.onChange(this.getUpdateFunction(this.x_item));
     this.y_item = this.folder.add(this.settings, "y");
     this.y_item.onChange(this.getUpdateFunction(this.y_item));
     this.z_item = this.folder.add(this.settings, "z");
     this.folder.add(this.settings, "remove");
-    let that = this;
-    this.folder.add(this.settings, "dashed").onChange(function () { that.replot() });
     this.z_item.onChange(this.getUpdateFunction(this.z_item));
   }
 
