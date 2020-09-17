@@ -4,6 +4,10 @@ const isHydatParameterPointRaw = (raw: HydatParameterRaw): raw is HydatParameter
   return (raw as HydatParameterPointRaw).unique_value !== undefined;
 }
 
+const isHydatParameterIntervalRaw = (raw: HydatParameterRaw): raw is HydatParameterIntervalRaw => {
+  return (raw as HydatParameterIntervalRaw).lower_bounds !== undefined;
+}
+
 const isHydatTimePPRaw = (raw: HydatTimeRaw): raw is HydatTimePPRaw => {
   return (raw as HydatTimePPRaw).time_point !== undefined;
 }
@@ -14,8 +18,10 @@ const translate_parameter_map = (parameter_map: { [key: string]: HydatParameterR
     const p = parameter_map[key];
     if (isHydatParameterPointRaw(p)) {
       map[key] = new HydatParameterPoint(p.unique_value);
-    } else {
+    } else if (isHydatParameterIntervalRaw(p)) {
       map[key] = new HydatParameterInterval(p.lower_bounds, p.upper_bounds);
+    } else {
+      map[key] = new HydatParameterInterval([p.lower_bound],[p.upper_bound]);
     }
   }
   return map;
@@ -114,27 +120,40 @@ export class HydatParameterPoint {
     this.unique_value = Construct.parse(unique_value);
   }
 }
+
+// Hydatのlower_bounds/upper_boundsは歴史的理由から配列となっているが、要素数は必ず1個以下である
+type Bound = {value: Construct};
+
 export class HydatParameterInterval {
-  lower_bounds: { value: Construct }[];
-  upper_bounds: { value: Construct }[];
+  lower_bound: Bound;
+  upper_bound: Bound;
 
   constructor(lower_bounds: { value: string }[], upper_bounds: { value: string }[]) {
-    this.lower_bounds = [];
-    this.upper_bounds = [];
-    for (let lb of lower_bounds) {
-      this.lower_bounds.push({
-        value: Construct.parse(lb.value)
-      });
+    switch (lower_bounds.length){
+      case 0:
+        this.lower_bound = { value: new Constant(-Infinity)};
+        break;
+      case 1:
+        this.lower_bound = { value: Construct.parse(lower_bounds[0].value)};
+        break;
+      default:
+        throw new Error(`Error: lower_bounds.length must be 0 or 1, but got ${lower_bounds.length}.`);
     }
-    for (let ub of upper_bounds) {
-      this.upper_bounds.push({
-        value: Construct.parse(ub.value)
-      })
+
+    switch (upper_bounds.length){
+      case 0:
+        this.upper_bound = { value: new Constant(Infinity)};
+        break;
+      case 1:
+        this.upper_bound = { value: Construct.parse(upper_bounds[0].value)};
+        break;
+      default:
+        throw new Error(`Error: upper_bounds.length must be 0 or 1, but got ${upper_bounds.length}.`);
     }
   }
 }
 
-type HydatParameterRaw = HydatParameterPointRaw | HydatParameterIntervalRaw;
+type HydatParameterRaw = HydatParameterPointRaw | HydatParameterIntervalRaw | HydatParameterIntervalRaw2;
 
 interface HydatParameterPointRaw {
   unique_value: string;
@@ -143,6 +162,11 @@ interface HydatParameterPointRaw {
 interface HydatParameterIntervalRaw {
   lower_bounds: { value: string }[];
   upper_bounds: { value: string }[];
+}
+
+interface HydatParameterIntervalRaw2 {
+  lower_bound: { value: string };
+  upper_bound: { value: string };
 }
 
 type HydatTime = HydatTimePP | HydatTimeIP;

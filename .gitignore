@@ -5,3 +5,4 @@ static/*.js
 log.txt
 static/*.js.map
 /doc/
+npm-debug.log

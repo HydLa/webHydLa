@@ -392,8 +392,8 @@ export class AnimationControl {
         let c = parameter_condition_list[key];
         if (c === undefined) continue;
         if (p instanceof HydatParameterInterval) {
-          const lb = p.lower_bounds[0].value.getValue(parameter_condition_list);
-          const ub = p.upper_bounds[0].value.getValue(parameter_condition_list);
+          const lb = p.lower_bound.value.getValue(parameter_condition_list);
+          const ub = p.upper_bound.value.getValue(parameter_condition_list);
           if (!(lb <= c.getValue(parameter_condition_list) + epsilon
             && ub >= c.getValue(parameter_condition_list) - epsilon)) {
             included = false;

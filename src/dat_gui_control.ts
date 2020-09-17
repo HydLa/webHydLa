@@ -117,11 +117,15 @@ export class DatGUIControl {
       let key_copy = key;
       if (par instanceof HydatParameterPoint) return;
 
-      let lower = par.lower_bounds[0].value.getValue({});
-      let upper = par.upper_bounds[0].value.getValue({});
-      let min_par_value = lower;
-      let max_par_value = upper;
-      let step = (upper - lower) / 100;
+      let lower = par.lower_bound.value.getValue({});
+      let upper = par.upper_bound.value.getValue({});
+      if (!isFinite(lower) && !isFinite(upper)){
+        throw new Error("Error: at least one of lower_bound and upper_bound must be finite.");
+      }
+
+      let min_par_value = isFinite(lower) ? lower : upper-100;
+      let max_par_value = isFinite(upper) ? upper : lower+100;
+      let step = (max_par_value - min_par_value) / 100;
 
       DatGUIControl.plot_settings.parameter_condition[key] = new ParameterCondition(min_par_value, max_par_value);
 

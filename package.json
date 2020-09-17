@@ -22,24 +22,24 @@
   "homepage": "https://github.com/HydLa/webHydLa#readme",
   "devDependencies": {
     "@types/dat.gui": "^0.7.5",
-    "@types/jest": "^25.2.3",
-    "@types/jquery": "^3.3.34",
-    "@types/materialize-css": "^1.0.7",
-    "@types/node": "^13.9.5",
-    "jest": "^26.0.1",
-    "ts-jest": "^26.0.0",
-    "ts-loader": "^6.2.2",
-    "typedoc": "^0.17.3",
-    "typescript": "^3.8.3",
-    "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11"
+    "@types/jest": "^26.0.10",
+    "@types/jquery": "^3.5.1",
+    "@types/materialize-css": "^1.0.8",
+    "@types/node": "^14.6.0",
+    "jest": "^26.4.0",
+    "ts-jest": "^26.2.0",
+    "ts-loader": "^8.0.2",
+    "typedoc": "^0.18.0",
+    "typescript": "^3.9.7",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "ace-builds": "^1.4.8",
-    "dat.gui": "^0.7.6",
+    "ace-builds": "^1.4.12",
+    "dat.gui": "^0.7.7",
     "file-loader": "^6.0.0",
-    "jquery": "^3.5.0",
+    "jquery": "^3.5.1",
     "materialize-css": "^1.0.0",
-    "three": "^0.115.0"
+    "three": "^0.119.1"
   }
 }
