@@ -1,5 +1,5 @@
 # マルチステージビルド
-FROM node:latest AS builder
+FROM node:14 AS builder
 WORKDIR /work
 COPY package*.json ./
 RUN npm install
@@ -12,8 +12,8 @@ RUN rm -rf node_modules
 FROM python:alpine
 COPY --from=builder /work/ /root/
 WORKDIR /root
-RUN pip install flask
+RUN pip install flask==1.1.2
 # ランダムな文字列をシークレットに設定
-RUN cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 10 | head -1 > secret_key
+RUN LC_CTYPE=C tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w 10 | head -n 1 > secret_key
 
-CMD python server.py
+CMD ["python", "server.py"]
