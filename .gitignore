@@ -1,8 +1,8 @@
-secret_key
-/HyLaGI/
-node_modules/
-static/*.js
-log.txt
-static/*.js.map
 /doc/
-npm-debug.log
+/HyLaGI/
+/node_modules/
+
+/static/*.js*
+
+/npm-debug.log
+/secret_key
