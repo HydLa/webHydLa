@@ -43,7 +43,6 @@ def gen_hydat():
     if request.method == 'GET':
         abort(400)
 
-    # start_time = time.time()
     session_id = session['sid']
     save_file_prefix = session_id
     save_file_hydla = save_dir + "/" + save_file_prefix + ".hydla"
