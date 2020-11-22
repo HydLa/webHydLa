@@ -1,4 +1,5 @@
 # webHydla
+![CI](https://github.com/HydLa/webHydLa/workflows/CI/badge.svg)
 
 ## Installation
 
