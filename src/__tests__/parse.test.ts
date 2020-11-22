@@ -1,7 +1,7 @@
 import { Construct, Constant } from "../parse";
 
 test('Constant(1)=1', () => {
-  let one = new Constant(1);
+  const one = new Constant(1);
   expect(one.getValue({})).toBe(1);
 });
 
@@ -18,7 +18,7 @@ test('1-1=0', () => {
 });
 
 test('1/1=1', () => {
-  expect(Construct.parse("1\/1").getValue({})).toBe(1);
+  expect(Construct.parse("1/1").getValue({})).toBe(1);
 });
 
 test('1=1', () => {
@@ -29,8 +29,8 @@ test('(1+1)=2', () => {
   expect(Construct.parse("(1+1)").getValue({})).toBe(2);
 });
 
-test('(1*1)\/1=1', () => {
-  expect(Construct.parse("(1*1)\/1").getValue({})).toBe(1);
+test('(1*1)/1=1', () => {
+  expect(Construct.parse("(1*1)/1").getValue({})).toBe(1);
 });
 
 test('1^1=1', () => {
@@ -94,6 +94,6 @@ test('Floor[E]=2', () => {
 });
 
 test('complicated', () => {
-  expect(Construct.parse("(t * (-1250) + 125 * p[v, 0, 1] + 613 * (20 * p[ht, 0, 1] + p[v, 0, 1] ^ 2) ^ (1\/2))*(t*(-250)+25*p[v, 0, 1]+97*(20*p[ht, 0, 1]+p[v, 0, 1]^2)^(1\/2))*(-1)\/62500")
+  expect(Construct.parse("(t * (-1250) + 125 * p[v, 0, 1] + 613 * (20 * p[ht, 0, 1] + p[v, 0, 1] ^ 2) ^ (1/2))*(t*(-250)+25*p[v, 0, 1]+97*(20*p[ht, 0, 1]+p[v, 0, 1]^2)^(1/2))*(-1)/62500")
     .getValue({ ["t"]: new Constant(1), ["p[v, 0, 1]"]: new Constant(1), ["p[ht, 0, 1]"]: new Constant(1) })).toBe(-5.914890792978555);
 });

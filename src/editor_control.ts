@@ -51,7 +51,7 @@ export class EditorControl {
     this.editor.commands.addCommand({
       name: "runHyLaGI",
       bindKey: { win: "Ctrl-Enter", mac: "Command-Enter" },
-      exec: function (editor) { EditorControl.sendHydLa(); },
+      exec: function () { EditorControl.sendHydLa(); },
       readOnly: true
     });
 
@@ -64,12 +64,11 @@ export class EditorControl {
     }
     this.editor.clearSelection();
 
-    let that = this;
-    this.editor.on("change", (_) => {
-      if (that.autosave_event_enabled) {
-        that.saveHydlaToWebstorage();
+    this.editor.on("change", () => {
+      if (this.autosave_event_enabled) {
+        this.saveHydlaToWebstorage();
       } else {
-        that.autosave_changed = true;
+        this.autosave_changed = true;
       }
     });
   }
@@ -80,14 +79,14 @@ export class EditorControl {
 
   /* function to save HydLa file */
   static saveHydla() {
-    var blob = new Blob([this.editor.getValue()])
-    var object = window.URL.createObjectURL(blob);
-    var d = new Date();
-    var date = d.getFullYear() + "-" + d.getMonth() + 1 + "-" + d.getDate() + "T" + d.getHours() + "-" + d.getMinutes() + "-" + d.getSeconds();
-    var a = document.createElement("a");
+    const blob = new Blob([this.editor.getValue()])
+    const object = window.URL.createObjectURL(blob);
+    const d = new Date();
+    const date = d.getFullYear() + "-" + d.getMonth() + 1 + "-" + d.getDate() + "T" + d.getHours() + "-" + d.getMinutes() + "-" + d.getSeconds();
+    const a = document.createElement("a");
     a.href = object;
     a.download = date + ".hydla";
-    var event = document.createEvent("MouseEvents");
+    const event = document.createEvent("MouseEvents");
     event.initMouseEvent(
       "click", true, false, window, 0, 0, 0, 0, 0
       , false, false, false, false, 0, null
@@ -96,30 +95,30 @@ export class EditorControl {
   }
 
   static loadFile() {
-    var i = document.createElement("input");
+    const i = document.createElement("input");
     i.type = "file";
-    var event = document.createEvent("MouseEvents");
+    const event = document.createEvent("MouseEvents");
     event.initMouseEvent(
       "click", true, false, window, 0, 0, 0, 0, 0
       , false, false, false, false, 0, null
     );
-    i.addEventListener("change", (_) => {
+    i.addEventListener("change", () => {
       if (!i.files) {
         throw new Error("unexpected: i.files is undefined");
       }
-      var input_file = i.files[0];
-      var fr = new FileReader();
+      const input_file = i.files[0];
+      const fr = new FileReader();
       fr.readAsText(input_file);
-      var splitted_strs = input_file.name.split(".");
-      var ext = splitted_strs[splitted_strs.length - 1].toLowerCase();
+      const splitted_strs = input_file.name.split(".");
+      const ext = splitted_strs[splitted_strs.length - 1].toLowerCase();
       if (ext == "hydat") {
-        fr.onload = (_) => {
+        fr.onload = () => {
           HydatControl.loadHydat(JSON.parse(<string>fr.result));
         };
       }
       else {
         StorageControl.saveHydlaName(input_file.name);
-        fr.onload = (_) => {
+        fr.onload = () => {
           this.editor.setValue(<string>fr.result);
         };
       }
@@ -134,12 +133,11 @@ export class EditorControl {
     StorageControl.saveHydla(this.editor.getValue());
     DOMControl.showToast("Saved", 1000, "");
 
-    let that = this;
-    setTimeout(function () {
-      if (that.autosave_changed) {
-        that.saveHydlaToWebstorage();
+    setTimeout(() => {
+      if (this.autosave_changed) {
+        this.saveHydlaToWebstorage();
       } else {
-        that.autosave_event_enabled = true;
+        this.autosave_event_enabled = true;
       }
     }, 5000);
   }

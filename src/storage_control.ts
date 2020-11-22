@@ -16,12 +16,12 @@ export class StorageControl{
 
   /* function to save editor into Web Storage */
   static saveKeyBinding() {
-    var bind_selector = key_binding_selector.value;
+    const bind_selector = key_binding_selector.value;
     storage.setItem("key_binding", bind_selector);
   }
 
   static loadKeyBinding() {
-    var key_binding_setting = storage.getItem("key_binding");
+    const key_binding_setting = storage.getItem("key_binding");
     if (key_binding_setting !== null) {
       key_binding_selector.value = key_binding_setting;
     }
@@ -35,12 +35,12 @@ export class StorageControl{
 
   /* function to save theme into Web Storage */
   static saveTheme() {
-    var theme = theme_selector.value;
+    const theme = theme_selector.value;
     storage.setItem("theme", theme);
   }
 
   static loadTheme() {
-    var theme_setting = storage.getItem("theme");
+    const theme_setting = storage.getItem("theme");
     if (theme_setting !== null) {
       theme_selector.value = theme_setting;
     } else {

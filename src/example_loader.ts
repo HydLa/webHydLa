@@ -16,16 +16,16 @@ export class ExampleLoader {
     fetch(this.path)
       .then((res) => res.json())
       .then((json) => { // 例題ディレクトリからHydLaプログラムのファイル名を取得
-        for (let f of json) {
+        for (const f of json) {
           if (f.name.indexOf('.hydla') != -1) {
             this.names.push(f.name);
           }
         }
       })
       .then(() => { // 選択可能な例題に取得したファイル名を追加
-        for (let name of this.names) {
-          let select = <HTMLElement>document.getElementById("example_selector");
-          let option = document.createElement("option");
+        for (const name of this.names) {
+          const select = <HTMLElement>document.getElementById("example_selector");
+          const option = document.createElement("option");
           option.text = name;
           option.value = name;
           select.appendChild(option);
@@ -33,13 +33,13 @@ export class ExampleLoader {
         (<any>$("#example_selector")).formSelect();
       })
       .then(() => { // 各HydLaプログラムの中身を取得
-        for (let name of this.names) {
-          let url = `${this.path}/${name}`;
+        for (const name of this.names) {
+          const url = `${this.path}/${name}`;
           fetch(url)
             .then((res) => res.json())
             .then((json) => {
-              let encoded_content = json.content.replace(/\n/g, '');
-              let content = atob(encoded_content);
+              const encoded_content = json.content.replace(/\n/g, '');
+              const content = atob(encoded_content);
               this.contents.set(name, content);
             })
         }
@@ -51,13 +51,13 @@ export class ExampleLoader {
   }
 
   static loadContents() {
-    let selected = document.getElementsByClassName("selected");
+    const selected = document.getElementsByClassName("selected");
     let fileindex = -1;
     for (let i = 0; i < selected.length; i++)
       if ((<string>selected[i].textContent).indexOf('.hydla') != -1)
         fileindex = i;
     if (fileindex == -1) return;
-    let filename = <string>selected[fileindex].textContent;
+    const filename = <string>selected[fileindex].textContent;
 
     if (this.contents.has(filename))
       EditorControl.editor.setValue(<string>this.contents.get(filename));

@@ -45,13 +45,13 @@ export class PlotLineMapControl {
     return line;
   }
   static removeAllFolders() {
-    for (let i in this.map) {
+    for (const i in this.map) {
       this.map[i].removeFolder();
     }
   }
 
   static isAllReady() {
-    for (let i in this.map) {
+    for (const i in this.map) {
       if (this.map[i].plotting || this.map[i].plot_ready !== undefined) {
         return false;
       }
@@ -66,7 +66,7 @@ export class PlotLineMapControl {
     }
     AnimationControl.remove_dynamic_lines();
 
-    for (let i in this.map) {
+    for (const i in this.map) {
       this.map[i].color_angle = parseInt(i) / this.getLength() * 360;
       this.map[i].replot();
     }
@@ -77,14 +77,14 @@ export class PlotLineMapControl {
     this.removeAllFolders();
     this.reset();
 
-    let str = StorageControl.loadHydatSettings(hydat.name);
+    const str = StorageControl.loadHydatSettings(hydat.name);
     if (str !== null) {
       HydatControl.settingsForCurrentHydat = JSON.parse(str);
-      var line_settings = HydatControl.settingsForCurrentHydat.plot_line_settings;
-      for (var i in line_settings) {
-        let index = parseInt(i);
+      const line_settings = HydatControl.settingsForCurrentHydat.plot_line_settings;
+      for (const i in line_settings) {
+        const index = parseInt(i);
         if (line_settings[index] === null) continue;
-        let line = this.addNewLineWithIndex(line_settings[index].x, line_settings[index].y, line_settings[index].z, index);
+        const line = this.addNewLineWithIndex(line_settings[index].x, line_settings[index].y, line_settings[index].z, index);
         if (line.settings.x != "" || line.settings.y != "" || line.settings.z != "") line.folder.open();
       }
       GraphControl.replotAll();
@@ -92,7 +92,7 @@ export class PlotLineMapControl {
 
     if (this.getLength() == 0) {
       HydatControl.settingsForCurrentHydat = { plot_line_settings: [] };
-      let first_line = this.addNewLine("t", HydatControl.current_hydat !== undefined ? HydatControl.current_hydat.variables[0] : "", "0");
+      const first_line = this.addNewLine("t", HydatControl.current_hydat !== undefined ? HydatControl.current_hydat.variables[0] : "", "0");
       first_line.color_angle = 0;
       first_line.replot();
       first_line.folder.open();

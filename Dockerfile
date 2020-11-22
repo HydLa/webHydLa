@@ -4,7 +4,7 @@ WORKDIR /work
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run test && npm run build
+RUN npm run lint && npm run test && npm run build
 # 2ステージ目を軽くするため
 RUN rm -rf node_modules ./*.js ./*.json src ui_auto_operation.py
 

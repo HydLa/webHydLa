@@ -13,8 +13,8 @@ const isHydatTimePPRaw = (raw: HydatTimeRaw): raw is HydatTimePPRaw => {
 }
 
 const translate_parameter_map = (parameter_map: { [key: string]: HydatParameterRaw }) => {
-  let map: { [key: string]: HydatParameter } = {};
-  for (var key in parameter_map) {
+  const map: { [key: string]: HydatParameter } = {};
+  for (const key in parameter_map) {
     const p = parameter_map[key];
     if (isHydatParameterPointRaw(p)) {
       map[key] = new HydatParameterPoint(p.unique_value);
@@ -51,7 +51,7 @@ export class Hydat {
     this.name = hydat.name;
     this.variables = hydat.variables;
     this.first_phases = [];
-    for (let ph of hydat.first_phases) {
+    for (const ph of hydat.first_phases) {
       this.first_phases.push(new HydatPhase(ph));
     }
     this.parameters = translate_parameter_map(hydat.parameters);
@@ -84,7 +84,7 @@ export class HydatPhase {
     }
 
     this.variable_map = {};
-    for (let key in phase.variable_map) {
+    for (const key in phase.variable_map) {
       if (phase.variable_map[key].unique_value === undefined) {
         throw new HydatException(`webHydLa doesn't support ununique value in variable maps for ${key}`);
       }
@@ -92,12 +92,12 @@ export class HydatPhase {
     }
 
     this.parameter_maps = [];
-    for (let map of phase.parameter_maps) {
+    for (const map of phase.parameter_maps) {
       this.parameter_maps.push(translate_parameter_map(map));
     }
 
     this.children = [];
-    for (let c of phase.children) {
+    for (const c of phase.children) {
       this.children.push(new HydatPhase(c));
     }
   }

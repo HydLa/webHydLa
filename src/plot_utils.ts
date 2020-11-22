@@ -35,10 +35,10 @@ export class RGB {
 
   static fromHue(h: number) {
     // assume S = V = 1
-    let rgb = new RGB(1, 1, 1);
+    const rgb = new RGB(1, 1, 1);
     h /= 60;
-    var i = Math.floor(h);
-    var f = h - i;
+    const i = Math.floor(h);
+    const f = h - i;
     switch (i) {
       default:
       case 0: rgb.g *= f; rgb.b *= 0; break;

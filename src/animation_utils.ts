@@ -19,7 +19,7 @@ export class MaltiBiMap<K, V>{
     if (!this.reverse.has(value)) {
       this.reverse.set(value, key);
     }
-  };
+  }
 
   clear() {
     this.map = new Map<K, Set<V>>();
@@ -28,37 +28,37 @@ export class MaltiBiMap<K, V>{
 
   getValue(key: K) {
     return <Set<V>>this.map.get(key);
-  };
+  }
   getKey(value: V) {
     return <K>this.reverse.get(value);
-  };
+  }
 
   deleteKey(key: K) {
     if (this.map.has(key)) {
-      let values = <Set<V>>this.map.get(key);
+      const values = <Set<V>>this.map.get(key);
       values.forEach((v) => this.reverse.delete(v));
       this.map.delete(key);
     }
   }
   deleteValue(value: V) {
     if (this.reverse.has(value)) {
-      let key = <K>this.reverse.get(value);
+      const key = <K>this.reverse.get(value);
       this.map.delete(key);
       this.reverse.delete(value);
     }
-  };
+  }
 
   hasKey(key: K) {
     return this.map.has(key);
-  };
+  }
   hasValue(value: V) {
     return this.reverse.has(value)
-  };
+  }
 
-  keys(): IterableIterator<K> {
+  keys() {
     return this.map.keys();
-  };
-  values(): IterableIterator<V> {
+  }
+  values() {
     return this.reverse.keys();
-  };
+  }
 }

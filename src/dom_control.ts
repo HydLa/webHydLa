@@ -74,7 +74,7 @@ export class DOMControl {
             GraphControl.resizeGraphArea();
             EditorControl.resize();
           })
-          .mouseup((e) => {
+          .mouseup(() => {
             dragging = false;
             $("#secretdiv").remove();
           });
@@ -98,12 +98,12 @@ export class DOMControl {
           .appendTo("body")
           .mousemove((e) => {
             if (!dragging) return;
-            var diff = e.pageY - initial_y;
+            const diff = e.pageY - initial_y;
             $("#input-pane").height(initial_height + diff);
             $("#editor").height(initial_height + diff);
             EditorControl.resize();
           })
-          .mouseup((e) => {
+          .mouseup(() => {
             dragging = false;
             $("#secretdiv").remove();
           })
@@ -127,7 +127,7 @@ export class DOMControl {
   }
   static showToast(message: string, duration: number, classes: string) {
     Materialize.toast({ html: message, displayLength: duration, classes: classes });
-    let toast_container = document.getElementById("toast-container")!;
+    const toast_container = document.getElementById("toast-container")!;
     const MAX_CHILDREN_NUM = 5;
     if (toast_container.children.length > MAX_CHILDREN_NUM) {
       for (let i = 0; i < toast_container.children.length - MAX_CHILDREN_NUM; i++) {
@@ -149,8 +149,8 @@ export class DOMControl {
   }
 
   static toggleInputPane() {
-    var elm = document.getElementById("left-pane")!;
-    var tgl = document.getElementById("v-toggle-icon")!;
+    const elm = document.getElementById("left-pane")!;
+    const tgl = document.getElementById("v-toggle-icon")!;
     if (elm.getAttribute("style")) {
       elm.removeAttribute("style");
       tgl.classList.remove("mdi-navigation-chevron-right");

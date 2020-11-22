@@ -21,19 +21,19 @@ export class HyLaGIController {
     }
   }
   static updateExecIcon() {
-    let run_button = <HTMLInputElement>document.getElementById('run_button');
+    const run_button = <HTMLInputElement>document.getElementById('run_button');
     if (this.running) {
       run_button.value = "KILL"; // for new UI
-      var elist = document.getElementsByClassName("exec-icon");
-      for (var i = 0; i < elist.length; ++i) {
+      const elist = document.getElementsByClassName("exec-icon");
+      for (let i = 0; i < elist.length; ++i) {
         elist[i].classList.remove("mdi-content-send");
         elist[i].classList.add("mdi-content-clear");
       }
     }
     else {
       run_button.value = "RUN"; // for new UI
-      var elist = document.getElementsByClassName("exec-icon");
-      for (var i = 0; i < elist.length; ++i) {
+      const elist = document.getElementsByClassName("exec-icon");
+      for (let i = 0; i < elist.length; ++i) {
         elist[i].classList.add("mdi-content-send");
         elist[i].classList.remove("mdi-content-clear");
       }
@@ -45,21 +45,20 @@ export class HyLaGIController {
     this.running = true;
     this.updateExecIcon();
 
-    var hr = new XMLHttpRequest();
+    const hr = new XMLHttpRequest();
     hr.open("GET", "start_session");
     hr.send(null);
 
-    let that = this;
-    hr.onload = (_) => {
+    hr.onload = () => {
       /* build form data */
-      var form = new FormData();
+      const form = new FormData();
       form.append("hydla_code", hydla);
-      var options_value = "";
-      let phase_num = <HTMLInputElement>document.getElementById("phase_num");
-      let simulation_time = <HTMLInputElement>document.getElementById("simulation_time");
-      let nd_mode_check_box = <HTMLInputElement>document.getElementById("nd_mode_check_box");
-      let other_options = <HTMLInputElement>document.getElementById("other_options");
-      let timeout_option = <HTMLInputElement>document.getElementById("timeout_option");
+      let options_value = "";
+      const phase_num = <HTMLInputElement>document.getElementById("phase_num");
+      const simulation_time = <HTMLInputElement>document.getElementById("simulation_time");
+      const nd_mode_check_box = <HTMLInputElement>document.getElementById("nd_mode_check_box");
+      const other_options = <HTMLInputElement>document.getElementById("other_options");
+      const timeout_option = <HTMLInputElement>document.getElementById("timeout_option");
       if (phase_num.value != "") options_value += " -p " + phase_num.value;
       if (simulation_time.value != "") options_value += " -t " + simulation_time.value;
       if (phase_num.value == "" && simulation_time.value == "") options_value += " -p10";
@@ -68,14 +67,14 @@ export class HyLaGIController {
       else options_value += " --fno-nd ";
       if (other_options.value != "") options_value += other_options.value;
       form.append("hylagi_option", options_value);
-      var timeout_value = "";
+      let timeout_value = "";
       if (timeout_option.value != "") timeout_value = timeout_option.value;
       else timeout_value = "30";
       form.append("timeout_option", timeout_value);
-      var xmlhr = new XMLHttpRequest();
+      const xmlhr = new XMLHttpRequest();
       xmlhr.open("POST", "hydat.cgi");
-      xmlhr.onload = (_) => {
-        var response = JSON.parse(xmlhr.responseText);
+      xmlhr.onload = () => {
+        const response = JSON.parse(xmlhr.responseText);
 
         switch (response.error) {
           case 0:
@@ -89,7 +88,7 @@ export class HyLaGIController {
             }
             break;
           default:
-            if (that.running) {
+            if (this.running) {
               DOMControl.showToast(
                 "Error message: " + response.message,
                 3000,
@@ -103,12 +102,12 @@ export class HyLaGIController {
             }
             break;
         }
-        var output = document.getElementById("output-initial")!;
+        const output = document.getElementById("output-initial")!;
         output.innerHTML = "";
-        for (let elem of that.dynamic_script_elements) {
+        for (const elem of this.dynamic_script_elements) {
           elem.parentNode!.removeChild(elem);
         }
-        that.dynamic_script_elements = [];
+        this.dynamic_script_elements = [];
         if (html_mode_check_box.checked) {
           if (response.stdout != undefined) {
             output.innerHTML += response.stdout;
@@ -116,14 +115,14 @@ export class HyLaGIController {
           if (response.stderr != undefined) {
             output.innerHTML += response.stderr;
           }
-          let scriptNodes = output.getElementsByTagName("script");
-          for (var si = 0; si < scriptNodes.length; si++) {
+          const scriptNodes = output.getElementsByTagName("script");
+          for (let si = 0; si < scriptNodes.length; si++) {
             if (scriptNodes[si].hasAttribute("src")) {
               continue;
             }
-            var newScript = document.createElement("script");
+            const newScript = document.createElement("script");
             newScript.innerHTML = scriptNodes[si].innerHTML;
-            that.dynamic_script_elements.push(first_script_element.parentNode!.insertBefore(newScript, first_script_element));
+            this.dynamic_script_elements.push(first_script_element.parentNode!.insertBefore(newScript, first_script_element));
           }
         }
         else {
@@ -136,15 +135,15 @@ export class HyLaGIController {
           }
         }
         DOMControl.stopPreloader();
-        that.running = false;
-        that.updateExecIcon();
+        this.running = false;
+        this.updateExecIcon();
       };
       xmlhr.send(form);
     };
   }
   static killHyLaGI() {
     /* build form data */
-    var xmlhr = new XMLHttpRequest();
+    const xmlhr = new XMLHttpRequest();
     xmlhr.open("GET", "killer");
     xmlhr.send(null);
     this.running = false;

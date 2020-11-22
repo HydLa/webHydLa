@@ -16,8 +16,8 @@ export class GraphControl {
   static elem: HTMLElement;
   static controls: OrbitControls;
   static renderer: THREE.WebGLRenderer;
-  static animatable: boolean = true;
-  static range_mode: boolean = false;
+  static animatable = true;
+  static range_mode = false;
 
   static controls_position0: THREE.Vector3;
 
@@ -25,7 +25,7 @@ export class GraphControl {
   static t_line = 0;
   static last_frame_zoom = 1;
 
-  static resizeLoopCount: number = 0;
+  static resizeLoopCount = 0;
 
   static face_a: THREE.Mesh[];
 
@@ -55,7 +55,7 @@ export class GraphControl {
 
     this.elem.appendChild(this.renderer.domElement);
 
-    let directionalLight = new THREE.DirectionalLight('#ffffff', 1);
+    const directionalLight = new THREE.DirectionalLight('#ffffff', 1);
     directionalLight.position.set(0, 7, 10);
 
     this.scene.add(directionalLight);
@@ -70,9 +70,9 @@ export class GraphControl {
   static resizeGraphRenderer() {
     if (this.elem.clientWidth > 0 && this.elem.clientHeight > 0) {
       this.renderer.setSize(this.elem.clientWidth, this.elem.clientHeight);
-      var prev_width = this.camera.right - this.camera.left;
-      var prev_height = this.camera.top - this.camera.bottom;
-      var extend_rate;
+      const prev_width = this.camera.right - this.camera.left;
+      const prev_height = this.camera.top - this.camera.bottom;
+      let extend_rate;
       if (prev_width != this.camera.right - this.camera.left) extend_rate = this.elem.clientWidth / prev_width;
       else extend_rate = this.elem.clientHeight / prev_height;
 
@@ -84,8 +84,8 @@ export class GraphControl {
 
       this.camera.updateProjectionMatrix();
 
-      var w = $('#scale_label_wrapper').width()!;
-      var h = $('#scale_label_wrapper').height()!;
+      const w = $('#scale_label_wrapper').width()!;
+      const h = $('#scale_label_wrapper').height()!;
       $('#scaleLabelCanvas').attr('width', w);
       $('#scaleLabelCanvas').attr('height', h);
       PlotControl.update_axes(true);
@@ -97,15 +97,15 @@ export class GraphControl {
   }
 
   static modifyNameLabel(name: string | undefined) {
-    var text = "";
+    let text = "";
     if (!(name == undefined || name == null)) {
       text = name;
     }
-    var canvas = <HTMLCanvasElement>document.getElementById('nameLabelCanvas');
+    const canvas = <HTMLCanvasElement>document.getElementById('nameLabelCanvas');
     if (!canvas || !canvas.getContext) {
       return false;
     }
-    var ctx = canvas.getContext('2d')!;
+    const ctx = canvas.getContext('2d')!;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = "20px 'Arial'";
     ctx.fillStyle = "#FFFFFF";

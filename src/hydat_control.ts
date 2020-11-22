@@ -24,14 +24,14 @@ export class HydatControl{
   /* function to save Hydat file */
   static saveHydat() {
     if (!HydatControl.current_hydat) return;
-    var blob = new Blob([JSON.stringify(HydatControl.current_hydat.raw)]);
-    var object = window.URL.createObjectURL(blob);
-    var d = new Date();
-    var date = d.getFullYear() + "-" + d.getMonth() + 1 + "-" + d.getDate() + "T" + d.getHours() + "-" + d.getMinutes() + "-" + d.getSeconds();
-    var a = document.createElement("a");
+    const blob = new Blob([JSON.stringify(HydatControl.current_hydat.raw)]);
+    const object = window.URL.createObjectURL(blob);
+    const d = new Date();
+    const date = d.getFullYear() + "-" + d.getMonth() + 1 + "-" + d.getDate() + "T" + d.getHours() + "-" + d.getMinutes() + "-" + d.getSeconds();
+    const a = document.createElement("a");
     a.href = object;
     a.download = date + ".hydat";
-    var event = document.createEvent("MouseEvents");
+    const event = document.createEvent("MouseEvents");
     event.initMouseEvent(
       "click", true, false, window, 0, 0, 0, 0, 0
       , false, false, false, false, 0, null

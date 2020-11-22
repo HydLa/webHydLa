@@ -27,6 +27,11 @@ Exec `docker-compose up` and open http://0.0.0.0:5000/
 - Execute server.py, then webHydLa will start on http://0.0.0.0:5000/.  
   (If the port has been already in use, it will use another port.)
 
+## Lint
+```
+/webHydLa$ npm run lint
+```
+
 ## Test
 ```
 /webHydLa$ npm t

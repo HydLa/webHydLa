@@ -23,13 +23,13 @@ export class PlotLine {
   y_item: dat.GUIController;
   z_item: dat.GUIController;
   remain: boolean | undefined;
-  color_angle: number = 0;
+  color_angle = 0;
   last_edited_input: HTMLInputElement | undefined;
-  plotting: boolean = false;
+  plotting = false;
   plot_ready: number | undefined;
   plot_information: PlotInformation | undefined;
 
-  last_plot_time: number = 0;
+  last_plot_time = 0;
 
   plot: (THREE.Mesh | THREE.Line)[] | undefined;
 
@@ -51,7 +51,7 @@ export class PlotLine {
     let prev: string;
     return () => {
       this.last_edited_input = <HTMLInputElement>item.domElement.firstChild;
-      let val = (<HTMLInputElement>item.domElement.firstChild).value;
+      const val = (<HTMLInputElement>item.domElement.firstChild).value;
       if (prev === undefined || val != prev) {
         try {
           Construct.parse(val);
@@ -67,13 +67,13 @@ export class PlotLine {
 
   updateFolder(succeeded: boolean) {
     if (succeeded) {
-      var color_on_correct = "#303030";
+      const color_on_correct = "#303030";
       (<HTMLInputElement>this.x_item.domElement.firstChild).style.backgroundColor =
         (<HTMLInputElement>this.y_item.domElement.firstChild).style.backgroundColor =
         (<HTMLInputElement>this.z_item.domElement.firstChild).style.backgroundColor = color_on_correct;
     }
     else {
-      var elm = this.last_edited_input;
+      const elm = this.last_edited_input;
       if (elm === undefined) return;
       elm.style.backgroundColor = "#A00000";
     }
@@ -95,13 +95,12 @@ export class PlotLine {
   }
 
   plotReady() {
-    var plot_information = this.plot_information;
+    const plot_information = this.plot_information;
     if (!plot_information) {
       throw new Error("unexpected: plot_information is undefined")
     }
     if (plot_information.line.plotting) {
-      let that = this;
-      this.plot_ready = requestAnimationFrame(function () { that.plotReady() });
+      this.plot_ready = requestAnimationFrame(() => { this.plotReady() });
     }
     else {
       this.plotting = true;

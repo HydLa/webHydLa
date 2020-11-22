@@ -40,7 +40,7 @@ export abstract class Construct {
     }
 
     const variable = (s: string) => {
-      var v = s[index];
+      let v = s[index];
       index++;
       while (isAlDig(s[index]) || s[index] == "'") {
         v += s[index];
@@ -158,10 +158,10 @@ export abstract class Construct {
     const term2 = (s: string) => {
       // console.log("term", i);
       let lhs = factor(s);
-      while (true) {
+      for (; ;) {
         if (s[index] == "^") {
           index++;
-          let rhs = factor(s);
+          const rhs = factor(s);
           lhs = new Power(lhs, rhs);
         } else {
           break;
@@ -170,17 +170,17 @@ export abstract class Construct {
       return lhs;
     }
 
-    var term = (s: string) => {
+    const term = (s: string) => {
       // console.log("term", i);
-      var lhs = term2(s);
-      while (true) {
+      let lhs = term2(s);
+      for (; ;) {
         if (s[index] == "*") {
           index++;
-          let rhs = term2(s);
+          const rhs = term2(s);
           lhs = new Multiply(lhs, rhs);
-        } else if (s[index] == "\/") {
+        } else if (s[index] == "/") {
           index++;
-          let rhs = term2(s);
+          const rhs = term2(s);
           lhs = new Divide(lhs, rhs);
         } else {
           break;
@@ -191,15 +191,15 @@ export abstract class Construct {
 
     const expression = (s: string) => {
       // console.log("expression", i);
-      var lhs = term(s);
-      while (true) {
+      let lhs = term(s);
+      for (; ;) {
         if (s[index] == "+") {
           index++;
-          let rhs = term(s);
+          const rhs = term(s);
           lhs = new Plus(lhs, rhs);
         } else if (s[index] == "-") {
           index++;
-          let rhs = term(s);
+          const rhs = term(s);
           lhs = new Subtract(lhs, rhs);
         } else {
           break;
@@ -208,7 +208,7 @@ export abstract class Construct {
       return lhs;
     }
 
-    var s = value_str.replace(/\s+/g, "");
+    const s = value_str.replace(/\s+/g, "");
     return expression(s);
   }
 }
@@ -255,7 +255,7 @@ class Multiply extends BinaryConstruct {
   }
   getValue(env: { [key: string]: Construct }) {
     return this.lhs.getValue(env) * this.rhs.getValue(env);
-  };
+  }
 }
 
 class Divide extends BinaryConstruct {
@@ -294,12 +294,12 @@ class Variable extends Construct {
     super();
     this.name = name;
   }
-  toString() { return this.name; };
+  toString() { return this.name; }
   getValue(env: { [key: string]: Construct }) {
     if (env[this.name] == undefined)
       throw new Error(this.name + " is not defined");
     return env[this.name].getValue(env);
-  };
+  }
 }
 
 class Log extends UnaryConstruct {
@@ -430,7 +430,7 @@ class Floor extends UnaryConstruct {
 
 class Negative extends UnaryConstruct {
   toString() {
-    return `-${this.arg.toString()}`;;
+    return `-${this.arg.toString()}`;
   }
   getValue(env: { [key: string]: Construct }) {
     return -this.arg.getValue(env);
