@@ -1,12 +1,17 @@
-# webHydla
+# webHydla - Web IDE of HydLa
 ![CI](https://github.com/HydLa/webHydLa/workflows/CI/badge.svg)
 
-## Installation
+Provided at http://webhydla.ueda.info.waseda.ac.jp
 
-### Build on Docker
+![Editor](https://user-images.githubusercontent.com/39757050/101180365-d3b45980-368e-11eb-8590-e4fb5bef7aae.png)
+![3D visualization](https://user-images.githubusercontent.com/39757050/101180368-d57e1d00-368e-11eb-970f-5f6fd012c1f5.png)
+
+## Build by yourself
+
+### On Docker
 Exec `docker-compose up` and open http://0.0.0.0:5000/
 
-### Build locally
+### Locally
 
 #### System Requirements
 - Operating System: Linux
