@@ -2,6 +2,10 @@
   "name": "webHydLa",
   "version": "1.0.0",
   "description": "a web interface of HydLa",
+  "engines": {
+    "node": ">=15.0.0",
+    "npm": ">=7.0.0"
+  },
   "main": "server.py",
   "scripts": {
     "build": "webpack",
