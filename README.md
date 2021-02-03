@@ -1,4 +1,5 @@
 # webHydla - Web IDE of HydLa
+
 ![CI](https://github.com/HydLa/webHydLa/workflows/CI/badge.svg)
 
 Provided at http://webhydla.ueda.info.waseda.ac.jp
@@ -9,17 +10,20 @@ Provided at http://webhydla.ueda.info.waseda.ac.jp
 ## Build by yourself
 
 ### On Docker
+
 Exec `docker-compose up` and open http://0.0.0.0:5000/
 
 ### Locally
 
 #### System Requirements
+
 - Operating System: Linux
 - Software:
-  - npm
-  - Python 3.3 or superior with flask module (see http://flask.pocoo.org/)
+  - node 15 or later, and npm 7 or later
+  - Python 3.3 or later with flask module (see http://flask.pocoo.org/)
 
 #### Build and Start the Server
+
 - Install packages and build from source with following commands.
   ```
   /webHydLa$ npm install
@@ -34,16 +38,25 @@ Exec `docker-compose up` and open http://0.0.0.0:5000/
   (If the port has been already in use, it will use another port.)
 
 ## Lint
+
 ```
 /webHydLa$ npm run lint
 ```
 
+## Format
+
+```
+/webHydLa$ npm run format
+```
+
 ## Test
+
 ```
 /webHydLa$ npm t
 ```
 
 ## Generate Document
+
 ```
 /webHydLa$ npm run doc
 ```
