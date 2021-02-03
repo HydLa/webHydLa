@@ -1,8 +1,8 @@
-/** 
+/**
  * 描画用オブジェクト管理用のデータ構造<br>
  * keyに対してはvalueが複数対応し，valueに対してはkeyが一意に対応するデータを扱う
  * */
-export class MaltiBiMap<K, V>{
+export class MaltiBiMap<K, V> {
   private map: Map<K, Set<V>>;
   private reverse: Map<V, K>;
 
@@ -52,7 +52,7 @@ export class MaltiBiMap<K, V>{
     return this.map.has(key);
   }
   hasValue(value: V) {
-    return this.reverse.has(value)
+    return this.reverse.has(value);
   }
 
   keys() {

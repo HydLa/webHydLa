@@ -1,10 +1,10 @@
-import * as dat from "dat.gui";
-import { GraphControl } from "./graph_control";
-import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from "./plot_settings";
-import { PlotLineMapControl } from "./plot_line_map_control";
-import { PlotControl } from "./plot_control";
-import { HydatParameter, HydatParameterPoint } from "./hydat";
-import { AnimationControl } from "./animation_control";
+import * as dat from 'dat.gui';
+import { GraphControl } from './graph_control';
+import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plot_settings';
+import { PlotLineMapControl } from './plot_line_map_control';
+import { PlotControl } from './plot_control';
+import { HydatParameter, HydatParameterPoint } from './hydat';
+import { AnimationControl } from './animation_control';
 
 /** 描画用設定の処理を行う */
 export class DatGUIControl {
@@ -15,11 +15,16 @@ export class DatGUIControl {
   static parameter_items: dat.GUIController[] = [];
   static parameter_items_seek: dat.GUIController[] = [];
 
-  static plot_settings: PlotSettings
+  static plot_settings: PlotSettings;
 
   static init(plot_settings: PlotSettings) {
     this.plot_settings = plot_settings;
-    const add_line_obj = { add: function () { const line = PlotLineMapControl.addNewLine("", "", ""); line.folder.open(); } };
+    const add_line_obj = {
+      add: function () {
+        const line = PlotLineMapControl.addNewLine('', '', '');
+        line.folder.open();
+      },
+    };
     const dat_gui = new dat.GUI({ autoPlace: false, load: localStorage });
     const dat_gui_animate = new dat.GUI({ autoPlace: false, load: localStorage });
     dat_gui
@@ -40,28 +45,28 @@ export class DatGUIControl {
       });
     dat_gui
       .add(plot_settings, 'scaleLabelVisible')
-      .name("show scale label")
+      .name('show scale label')
       .onChange(() => {
         PlotControl.update_axes(true);
         PlotSettingsControl.saveToWebStorage();
       });
     dat_gui
       .add(plot_settings, 'twoDimensional')
-      .name("XY-mode")
+      .name('XY-mode')
       .onChange(() => {
         GraphControl.update2DMode(plot_settings.twoDimensional);
         PlotSettingsControl.saveToWebStorage();
       });
     dat_gui
       .add(plot_settings, 'autoRotate')
-      .name("auto rotate")
+      .name('auto rotate')
       .onChange(() => {
         GraphControl.updateRotate(plot_settings.autoRotate);
         PlotSettingsControl.saveToWebStorage();
       });
     dat_gui
       .add(plot_settings, 'dynamicDraw')
-      .name("dynamic draw")
+      .name('dynamic draw')
       .onChange(() => {
         GraphControl.replotAll();
         PlotSettingsControl.saveToWebStorage();
@@ -71,26 +76,26 @@ export class DatGUIControl {
       .name('background')
       .onChange((value) => {
         PlotControl.setBackgroundColor(value);
-        PlotSettingsControl.saveToWebStorage();/*render_three_js();i*/
+        PlotSettingsControl.saveToWebStorage(); /*render_three_js();i*/
       });
     dat_gui_animate
       .add(plot_settings, 'animate')
-      .name("stop")
+      .name('stop')
       .onChange(() => {
         PlotSettingsControl.time_stop();
         PlotSettingsControl.saveToWebStorage();
       });
 
-    dat_gui.domElement.style.zIndex = "2";
-    dat_gui_animate.domElement.style.zIndex = "3";
+    dat_gui.domElement.style.zIndex = '2';
+    dat_gui_animate.domElement.style.zIndex = '3';
     dat_gui_animate.domElement.style['position'] = 'absolute';
     dat_gui_animate.domElement.style['bottom'] = '50px';
 
-    const height_area = $("#graph-area").css("height");
+    const height_area = $('#graph-area').css('height');
 
     this.parameter_folder = dat_gui.addFolder('parameters');
     this.parameter_folder_seek = dat_gui_animate.addFolder('seek');
-    dat_gui.add(add_line_obj, 'add').name("add new line");
+    dat_gui.add(add_line_obj, 'add').name('add new line');
     this.variable_folder = dat_gui.addFolder('variables');
 
     const dat_container = document.getElementById('dat-gui')!;
@@ -100,7 +105,7 @@ export class DatGUIControl {
     dat_container_b.style.height = height_area;
     dat_container_b.appendChild(dat_gui_animate.domElement);
 
-    const nd_mode_check_box = <HTMLInputElement>document.getElementById("nd_mode_check_box")
+    const nd_mode_check_box = <HTMLInputElement>document.getElementById('nd_mode_check_box');
     nd_mode_check_box.checked = true;
 
     this.fixLayout();
@@ -120,7 +125,7 @@ export class DatGUIControl {
       const lower = par.lower_bound.value.getValue({});
       const upper = par.upper_bound.value.getValue({});
       if (!isFinite(lower) && !isFinite(upper)) {
-        throw new Error("Error: at least one of lower_bound and upper_bound must be finite.");
+        throw new Error('Error: at least one of lower_bound and upper_bound must be finite.');
       }
 
       const min_par_value = isFinite(lower) ? lower : upper - 100;
@@ -129,9 +134,12 @@ export class DatGUIControl {
 
       DatGUIControl.plot_settings.parameter_condition[key] = new ParameterCondition(min_par_value, max_par_value);
 
-      const parameter_item =
-        this.parameter_folder.add(DatGUIControl.plot_settings.parameter_condition[key], 'value', min_par_value, max_par_value).name(key);
-      parameter_item.onChange(() => { GraphControl.replotAll(); });
+      const parameter_item = this.parameter_folder
+        .add(DatGUIControl.plot_settings.parameter_condition[key], 'value', min_par_value, max_par_value)
+        .name(key);
+      parameter_item.onChange(() => {
+        GraphControl.replotAll();
+      });
       parameter_item.step(step);
 
       const mode_item = this.parameter_folder.add(DatGUIControl.plot_settings.parameter_condition[key], 'fixed');
@@ -143,14 +151,17 @@ export class DatGUIControl {
       mode_item.onChange(function () {
         if (!DatGUIControl.plot_settings.parameter_condition![key_copy].fixed) {
           parameter_item.min(1).max(100).step(1).setValue(5);
-        }
-        else {
-          parameter_item.min(min_par_value).max(max_par_value).step(step).setValue((min_par_value + max_par_value) / 2);
+        } else {
+          parameter_item
+            .min(min_par_value)
+            .max(max_par_value)
+            .step(step)
+            .setValue((min_par_value + max_par_value) / 2);
         }
         GraphControl.replotAll();
       });
       mode_item_range.onChange(() => {
-        GraphControl.range_mode = DatGUIControl.plot_settings.parameter_condition![key_copy].range
+        GraphControl.range_mode = DatGUIControl.plot_settings.parameter_condition![key_copy].range;
       });
     }
     if (Object.keys(pars).length > 0) this.parameter_folder.open();
@@ -168,8 +179,12 @@ export class DatGUIControl {
 
     DatGUIControl.plot_settings.parameter_condition_seek = new ParameterConditionSeek(min_par_value, max_par_value);
 
-    const parameter_item_seek =
-      this.parameter_folder_seek.add(DatGUIControl.plot_settings.parameter_condition_seek, 'value', min_par_value, max_par_value);
+    const parameter_item_seek = this.parameter_folder_seek.add(
+      DatGUIControl.plot_settings.parameter_condition_seek,
+      'value',
+      min_par_value,
+      max_par_value
+    );
     parameter_item_seek.onChange(() => {
       AnimationControl.time = DatGUIControl.plot_settings.parameter_condition_seek!.value;
       AnimationControl.animate();
@@ -192,8 +207,12 @@ export class DatGUIControl {
 
     DatGUIControl.plot_settings.parameter_condition_seek = new ParameterConditionSeek(min_par_value, max_par_value);
 
-    const parameter_item_seek =
-      this.parameter_folder_seek.add(DatGUIControl.plot_settings.parameter_condition_seek, 'value', min_par_value, max_par_value);
+    const parameter_item_seek = this.parameter_folder_seek.add(
+      DatGUIControl.plot_settings.parameter_condition_seek,
+      'value',
+      min_par_value,
+      max_par_value
+    );
     parameter_item_seek.onChange(() => {
       AnimationControl.time = DatGUIControl.plot_settings.parameter_condition_seek!.value;
       AnimationControl.animate();

@@ -1,19 +1,19 @@
-import { PlotLine } from "./plot_line";
-import { PlotControl } from "./plot_control";
-import { DOMControl } from "./dom_control";
-import * as THREE from "three";
-import { GraphControl } from "./graph_control";
-import { HydatParameter, HydatParameterInterval, HydatPhase } from "./hydat";
-import { RGB, Triplet } from "./plot_utils";
-import { HydatControl } from "./hydat_control";
-import { Construct, Constant } from "./parse";
-import { MaltiBiMap } from "./animation_utils";
+import { PlotLine } from './plot_line';
+import { PlotControl } from './plot_control';
+import { DOMControl } from './dom_control';
+import * as THREE from 'three';
+import { GraphControl } from './graph_control';
+import { HydatParameter, HydatParameterInterval, HydatPhase } from './hydat';
+import { RGB, Triplet } from './plot_utils';
+import { HydatControl } from './hydat_control';
+import { Construct, Constant } from './parse';
+import { MaltiBiMap } from './animation_utils';
 
 /** 描画用オブジェクトの計算，描画，削除を担当 */
 export class AnimationControl {
   static maxlen = 0;
   /** ボールの軌道のリスト */
-  static animation_line: { vecs: THREE.Vector3[], color: number }[] = [];
+  static animation_line: { vecs: THREE.Vector3[]; color: number }[] = [];
 
   /** 描画におけるグローバル時間 */
   static time = 0;
@@ -42,9 +42,7 @@ export class AnimationControl {
 
   static add_plot(line: PlotLine) {
     let axes: Triplet<Construct>;
-    if (line.settings.x == "" ||
-      line.settings.y == "" ||
-      line.settings.z == "") {
+    if (line.settings.x == '' || line.settings.y == '' || line.settings.z == '') {
       return;
     }
     try {
@@ -61,7 +59,7 @@ export class AnimationControl {
       return;
     }
     if (HydatControl.current_hydat === undefined) {
-      throw new Error("current_hydat is undefined");
+      throw new Error('current_hydat is undefined');
     }
     const dt = PlotControl.plot_settings.plotInterval;
     const phase = HydatControl.current_hydat.first_phases[0];
@@ -76,15 +74,26 @@ export class AnimationControl {
       return retColors;
     };
     const color = getColors(parameter_condition_list.length, line.color_angle);
-    line.plot_information = { phase_index_array: [{ phase: phase, index: 0 }], axes: axes, line: line, width: PlotControl.plot_settings.lineWidth, color: color, dt: dt, parameter_condition_list: parameter_condition_list };
+    line.plot_information = {
+      phase_index_array: [{ phase: phase, index: 0 }],
+      axes: axes,
+      line: line,
+      width: PlotControl.plot_settings.lineWidth,
+      color: color,
+      dt: dt,
+      parameter_condition_list: parameter_condition_list,
+    };
     DOMControl.startPreloader();
     PlotControl.array = -1;
     this.animation_line = [];
     this.maxlen = 0;
-    if (line.plot_ready == undefined) requestAnimationFrame(function () { line.plotReady() });
+    if (line.plot_ready == undefined)
+      requestAnimationFrame(function () {
+        line.plotReady();
+      });
   }
 
-  /** 
+  /**
    * startPosからendPosまで幅scaledWidthの線をcylinderMeshで作る<br>
    * Lineを使わないのはLineの太さが変わらないバグがあるため<br>
    * https://threejs.org/docs/#api/en/materials/LineBasicMaterial.linewidth
@@ -93,7 +102,10 @@ export class AnimationControl {
     const directionVec = endPos.clone().sub(startPos);
     const height = directionVec.length();
     directionVec.normalize();
-    const cylinderMesh = new THREE.Mesh(new THREE.CylinderGeometry(scaledWidth, scaledWidth, height + scaledWidth, 8, 1), material);
+    const cylinderMesh = new THREE.Mesh(
+      new THREE.CylinderGeometry(scaledWidth, scaledWidth, height + scaledWidth, 8, 1),
+      material
+    );
 
     const upVec = new THREE.Vector3(0, 1, 0);
     const rotationAxis = upVec.clone().cross(directionVec).normalize();
@@ -107,20 +119,26 @@ export class AnimationControl {
     return cylinderMesh;
   }
 
-
-  static add_cylinder(current_line_vec: { vec: THREE.Vector3, isPP: boolean }[], current_param_idx: number, line: PlotLine, width: number, color: number[]) {
+  static add_cylinder(
+    current_line_vec: { vec: THREE.Vector3; isPP: boolean }[],
+    current_param_idx: number,
+    line: PlotLine,
+    width: number,
+    color: number[]
+  ) {
     PlotControl.array += 1;
 
     AnimationControl.index_array_maltibimap.set(line.index, PlotControl.array);
 
     const linesGeometry = new THREE.Geometry();
-    const scaledWidth = 0.5 * width / GraphControl.camera.zoom;
+    const scaledWidth = (0.5 * width) / GraphControl.camera.zoom;
     const dottedLength = 10.0 / GraphControl.camera.zoom;
     const material = new THREE.MeshBasicMaterial({ color: color[current_param_idx] });
 
     const tmp_dynamic_line: any[] = [];
     if (PlotControl.plot_settings.dynamicDraw) {
-      if (AnimationControl.accumulative_merged_lines.length - 1 < PlotControl.array) AnimationControl.accumulative_merged_lines.push([]);
+      if (AnimationControl.accumulative_merged_lines.length - 1 < PlotControl.array)
+        AnimationControl.accumulative_merged_lines.push([]);
       if (AnimationControl.dynamic_lines.length - 1 < PlotControl.array) AnimationControl.dynamic_lines.push([]);
     }
     for (let i = 0; i + 1 < current_line_vec.length; i++) {
@@ -132,7 +150,8 @@ export class AnimationControl {
         directionVec.normalize();
         const numOfDots = lineLength / dottedLength;
         const tmp_geometry = new THREE.Geometry();
-        for (let j = 1; j + 1 < numOfDots; j += 2) { // 点線の各点を追加
+        for (let j = 1; j + 1 < numOfDots; j += 2) {
+          // 点線の各点を追加
           const l = AnimationControl.make_cylinder(
             posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength)),
             posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength)),
@@ -143,43 +162,39 @@ export class AnimationControl {
           linesGeometry.merge(<any>l.geometry, l.matrix);
         }
         if (PlotControl.plot_settings.dynamicDraw) {
-          const l: any = new THREE.Mesh(
-            tmp_geometry,
-            material
-          );
+          const l: any = new THREE.Mesh(tmp_geometry, material);
           l.isPP = true;
           tmp_dynamic_line.push(l);
 
           AnimationControl.accumulative_merged_lines[PlotControl.array].push(
-            new THREE.Mesh(
-              linesGeometry.clone(),
-              material
-            )
+            new THREE.Mesh(linesGeometry.clone(), material)
           );
         }
-      }
-      else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) { // IPの各折れ線を追加
-        const l = AnimationControl.make_cylinder(current_line_vec[i].vec, current_line_vec[i + 1].vec, scaledWidth, material);
+      } else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) {
+        // IPの各折れ線を追加
+        const l = AnimationControl.make_cylinder(
+          current_line_vec[i].vec,
+          current_line_vec[i + 1].vec,
+          scaledWidth,
+          material
+        );
         if (PlotControl.plot_settings.dynamicDraw) tmp_dynamic_line.push(l);
         linesGeometry.merge(<any>l.geometry, l.matrix);
       }
     }
     if (PlotControl.plot_settings.dynamicDraw) AnimationControl.dynamic_lines[PlotControl.array] = tmp_dynamic_line;
 
-    const three_line = new THREE.Mesh(
-      linesGeometry,
-      material
-    );
+    const three_line = new THREE.Mesh(linesGeometry, material);
     if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
 
     if (!line.plot) {
-      throw new Error("unexpected: line.plot is undefined");
+      throw new Error('unexpected: line.plot is undefined');
     }
     line.plot.push(three_line);
 
     AnimationControl.animation_line[PlotControl.array] = {
       vecs: PlotControl.current_line_vec_animation,
-      color: color[current_param_idx]
+      color: color[current_param_idx],
     };
     if (AnimationControl.maxlen < PlotControl.current_line_vec_animation.length) {
       AnimationControl.maxlen = PlotControl.current_line_vec_animation.length;
@@ -191,7 +206,7 @@ export class AnimationControl {
     const sphere = new THREE.Mesh(s_geometry, new THREE.MeshBasicMaterial({ color: color[current_param_idx] }));
     sphere.position.set(0, 0, 0);
     GraphControl.scene.add(sphere);
-    AnimationControl.plot_animate[PlotControl.array] = (sphere);
+    AnimationControl.plot_animate[PlotControl.array] = sphere;
   }
 
   /**
@@ -203,7 +218,12 @@ export class AnimationControl {
     else return new THREE.Line(geometry, material);
   }
 
-  static add_line(current_line_vec: { vec: THREE.Vector3, isPP: boolean }[], current_param_idx: number, line: PlotLine, color: number[]) {
+  static add_line(
+    current_line_vec: { vec: THREE.Vector3; isPP: boolean }[],
+    current_param_idx: number,
+    line: PlotLine,
+    color: number[]
+  ) {
     PlotControl.array += 1;
 
     AnimationControl.index_array_maltibimap.set(line.index, PlotControl.array);
@@ -214,7 +234,8 @@ export class AnimationControl {
 
     const tmp_dynamic_line: any[] = [];
     if (PlotControl.plot_settings.dynamicDraw) {
-      if (AnimationControl.accumulative_merged_lines.length - 1 < PlotControl.array) AnimationControl.accumulative_merged_lines.push([]);
+      if (AnimationControl.accumulative_merged_lines.length - 1 < PlotControl.array)
+        AnimationControl.accumulative_merged_lines.push([]);
       if (AnimationControl.dynamic_lines.length - 1 < PlotControl.array) AnimationControl.dynamic_lines.push([]);
     }
     for (let i = 0; i + 1 < current_line_vec.length; i++) {
@@ -225,7 +246,8 @@ export class AnimationControl {
         const lineLength = directionVec.length();
         directionVec.normalize();
         const numOfDots = lineLength / dottedLength;
-        for (let j = 1; j + 1 < numOfDots; j += 2) { // 点線の各点を追加
+        for (let j = 1; j + 1 < numOfDots; j += 2) {
+          // 点線の各点を追加
           const tmpBegin = posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength));
           const tmpEnd = posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength));
           lines.push(tmpBegin, tmpEnd);
@@ -239,8 +261,8 @@ export class AnimationControl {
             AnimationControl.make_line(lines.concat(), material, true)
           );
         }
-      }
-      else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) { // IPの各折れ線を追加
+      } else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) {
+        // IPの各折れ線を追加
         if (PlotControl.plot_settings.dynamicDraw) {
           const l = AnimationControl.make_line([current_line_vec[i].vec, current_line_vec[i + 1].vec], material);
           tmp_dynamic_line.push(l);
@@ -254,13 +276,13 @@ export class AnimationControl {
     if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
 
     if (!line.plot) {
-      throw new Error("unexpected: line.plot is undefined");
+      throw new Error('unexpected: line.plot is undefined');
     }
     line.plot.push(three_line);
 
     AnimationControl.animation_line[PlotControl.array] = {
       vecs: PlotControl.current_line_vec_animation,
-      color: color[current_param_idx]
+      color: color[current_param_idx],
     };
     if (AnimationControl.maxlen < PlotControl.current_line_vec_animation.length) {
       AnimationControl.maxlen = PlotControl.current_line_vec_animation.length;
@@ -268,12 +290,22 @@ export class AnimationControl {
   }
 
   /** dfs to add plot each line */
-  static dfs_each_line(phase_index_array: { phase: HydatPhase, index: number }[], axes: Triplet<Construct>, line: PlotLine, width: number, color: number[], dt: number, parameter_condition_list: { [key: string]: Constant; }[], current_param_idx: number, current_line_vec: { vec: THREE.Vector3, isPP: boolean }[]) {
+  static dfs_each_line(
+    phase_index_array: { phase: HydatPhase; index: number }[],
+    axes: Triplet<Construct>,
+    line: PlotLine,
+    width: number,
+    color: number[],
+    dt: number,
+    parameter_condition_list: { [key: string]: Constant }[],
+    current_param_idx: number,
+    current_line_vec: { vec: THREE.Vector3; isPP: boolean }[]
+  ) {
     try {
-      for (; ;) {
+      for (;;) {
         if (line.plot_ready) {
           line.plotting = false;
-          console.log("Plot is interrupted");
+          console.log('Plot is interrupted');
           PlotControl.PlotStartTime = undefined;
           return;
         }
@@ -283,13 +315,20 @@ export class AnimationControl {
         let phase = phase_index.phase;
         const vec = PlotControl.phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, dt);
         current_line_vec = current_line_vec.concat(vec);
-        const vec_animation = PlotControl.phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, 0.01); // tを0.01刻みで点を取る -> time = t * 100
+        const vec_animation = PlotControl.phase_to_line_vectors(
+          phase,
+          parameter_condition_list[current_param_idx],
+          axes,
+          0.01
+        ); // tを0.01刻みで点を取る -> time = t * 100
         // PlotControl.current_line_vec_animation = PlotControl.current_line_vec_animation.concat(vec_animation);
         for (const v of vec_animation) {
           PlotControl.current_line_vec_animation.push(v.vec);
         }
-        if (phase.children.length == 0) { // on leaves
-          if (PlotControl.plot_settings.lineWidth == 1) AnimationControl.add_line(current_line_vec, current_param_idx, line, color);
+        if (phase.children.length == 0) {
+          // on leaves
+          if (PlotControl.plot_settings.lineWidth == 1)
+            AnimationControl.add_line(current_line_vec, current_param_idx, line, color);
           else AnimationControl.add_cylinder(current_line_vec, current_param_idx, line, width, color);
           AnimationControl.add_sphere(current_param_idx, color);
 
@@ -297,22 +336,37 @@ export class AnimationControl {
           PlotControl.current_line_vec_animation = [];
           phase_index_array.pop();
           phase_index = phase_index_array[phase_index_array.length - 1];
-          ++(phase_index.index);
+          ++phase_index.index;
           phase = phase_index.phase;
         }
-        while2: for (; ;) {
+        while2: for (;;) {
           // search next child to plot
-          for (/* restart searching */; phase_index.index < phase.children.length; phase_index.index++) {
+          for (; /* restart searching */ phase_index.index < phase.children.length; phase_index.index++) {
             const child = phase.children[phase_index.index];
-            const included_by_parameter_condition = AnimationControl.check_parameter_condition(child.parameter_maps, parameter_condition_list[current_param_idx]);
-            if (included_by_parameter_condition) { // パラメータに含まれるchild，つまり描画するべきchildが見つかった
+            const included_by_parameter_condition = AnimationControl.check_parameter_condition(
+              child.parameter_maps,
+              parameter_condition_list[current_param_idx]
+            );
+            if (included_by_parameter_condition) {
+              // パラメータに含まれるchild，つまり描画するべきchildが見つかった
               phase_index_array.push({ phase: child, index: 0 }); // start from 0th child
               const current_time = new Date().getTime();
-              if (current_time - line.last_plot_time >= 200) { // interrupt searching
+              if (current_time - line.last_plot_time >= 200) {
+                // interrupt searching
                 line.last_plot_time = current_time;
                 // use setTimeout to check event queue
                 requestAnimationFrame(function () {
-                  AnimationControl.dfs_each_line(phase_index_array, axes, line, width, color, dt, parameter_condition_list, current_param_idx, current_line_vec)
+                  AnimationControl.dfs_each_line(
+                    phase_index_array,
+                    axes,
+                    line,
+                    width,
+                    color,
+                    dt,
+                    parameter_condition_list,
+                    current_param_idx,
+                    current_line_vec
+                  );
                 });
                 return;
               }
@@ -323,13 +377,13 @@ export class AnimationControl {
           // 以下，描画するべきchildが見つからなかった場合
           // Plot for this current_param_idx is completed.
           if (phase_index_array.length == 1) {
-            if (current_param_idx == parameter_condition_list.length - 1) { // last
+            if (current_param_idx == parameter_condition_list.length - 1) {
+              // last
               // Plot is completed.
               line.plotting = false;
               PlotControl.checkAndStopPreloader();
               return;
-            }
-            else {
+            } else {
               // 次のparameter conditionで探索しなおす
               ++current_param_idx;
               phase_index_array[0].index = 0;
@@ -339,17 +393,15 @@ export class AnimationControl {
             // go to parent phase
             phase_index_array.pop();
             phase_index = phase_index_array[phase_index_array.length - 1];
-            ++(phase_index.index);
+            ++phase_index.index;
             phase = phase_index.phase; // start from next sibling
           }
         }
       }
-    }
-    catch (ex) {
+    } catch (ex) {
       console.log(ex);
       console.log(ex.stack);
-      DOMControl.showToast("Plot failed: " + ex.name +
-        "(" + ex.message + ")", 3000, "red darken-4");
+      DOMControl.showToast('Plot failed: ' + ex.name + '(' + ex.message + ')', 3000, 'red darken-4');
       line.plotting = false;
       PlotControl.checkAndStopPreloader();
     }
@@ -384,7 +436,10 @@ export class AnimationControl {
   }
 
   /** parameter_condition_listの値がparameter_mapsの範囲内にあるか */
-  static check_parameter_condition(parameter_maps: { [key: string]: HydatParameter }[], parameter_condition_list: { [key: string]: Constant }) {
+  static check_parameter_condition(
+    parameter_maps: { [key: string]: HydatParameter }[],
+    parameter_condition_list: { [key: string]: Constant }
+  ) {
     const epsilon = 0.0001;
     for (const map of parameter_maps) {
       let included = true;
@@ -395,12 +450,20 @@ export class AnimationControl {
         if (p instanceof HydatParameterInterval) {
           const lb = p.lower_bound.value.getValue(parameter_condition_list);
           const ub = p.upper_bound.value.getValue(parameter_condition_list);
-          if (!(lb <= c.getValue(parameter_condition_list) + epsilon
-            && ub >= c.getValue(parameter_condition_list) - epsilon)) {
+          if (
+            !(
+              lb <= c.getValue(parameter_condition_list) + epsilon &&
+              ub >= c.getValue(parameter_condition_list) - epsilon
+            )
+          ) {
             included = false;
           }
-        } else if (!(p.unique_value.getValue(parameter_condition_list) <= c.getValue(parameter_condition_list) + epsilon
-          && p.unique_value.getValue(parameter_condition_list) >= c.getValue(parameter_condition_list) - epsilon)) {
+        } else if (
+          !(
+            p.unique_value.getValue(parameter_condition_list) <= c.getValue(parameter_condition_list) + epsilon &&
+            p.unique_value.getValue(parameter_condition_list) >= c.getValue(parameter_condition_list) - epsilon
+          )
+        ) {
           included = false;
         }
       }
@@ -426,17 +489,38 @@ export class AnimationControl {
           } else if (AnimationControl.animation_line[j + 1].vecs[time_r] == undefined) {
             break;
           } else {
-            face_geometry.vertices.push(new THREE.Vector3(AnimationControl.animation_line[j].vecs[time_r].x, AnimationControl.animation_line[j].vecs[time_r].y, AnimationControl.animation_line[j].vecs[time_r].z));
-            face_geometry.vertices.push(new THREE.Vector3(AnimationControl.animation_line[j + 1].vecs[time_r].x, AnimationControl.animation_line[j + 1].vecs[time_r].y, AnimationControl.animation_line[j + 1].vecs[time_r].z));
+            face_geometry.vertices.push(
+              new THREE.Vector3(
+                AnimationControl.animation_line[j].vecs[time_r].x,
+                AnimationControl.animation_line[j].vecs[time_r].y,
+                AnimationControl.animation_line[j].vecs[time_r].z
+              )
+            );
+            face_geometry.vertices.push(
+              new THREE.Vector3(
+                AnimationControl.animation_line[j + 1].vecs[time_r].x,
+                AnimationControl.animation_line[j + 1].vecs[time_r].y,
+                AnimationControl.animation_line[j + 1].vecs[time_r].z
+              )
+            );
           }
           time_r++;
         }
         for (let k = 0; k < face_geometry.vertices.length - 2; k++) {
-          face_geometry.faces.push(new THREE.Face3(k, (k + 1), (k + 2)));
+          face_geometry.faces.push(new THREE.Face3(k, k + 1, k + 2));
         }
         face_geometry.computeFaceNormals();
         face_geometry.computeVertexNormals();
-        const face_all = new THREE.Mesh(face_geometry, new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: true, transparent: true, side: THREE.DoubleSide, opacity: 0.5 }));
+        const face_all = new THREE.Mesh(
+          face_geometry,
+          new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            depthTest: true,
+            transparent: true,
+            side: THREE.DoubleSide,
+            opacity: 0.5,
+          })
+        );
         GraphControl.scene.add(face_all);
         GraphControl.face_a.push(face_all);
       }
@@ -491,17 +575,21 @@ export class AnimationControl {
       if (AnimationControl.drawn_dynamic_lines.length - 1 < i) AnimationControl.drawn_dynamic_lines.push([]);
       tmp_line_count = this.line_count;
       tmp_amli = this.amli;
-      for (let j = tmp_line_count; j < AnimationControl.dynamic_lines[i].length; j++) { // 差分のみ追加
-        if ('isPP' in AnimationControl.dynamic_lines[i][j]) { // PP
+      for (let j = tmp_line_count; j < AnimationControl.dynamic_lines[i].length; j++) {
+        // 差分のみ追加
+        if ('isPP' in AnimationControl.dynamic_lines[i][j]) {
+          // PP
           // これまで追加した線を取り除き，代わりにマージ済みの線を追加する
           AnimationControl.remove_ith_drawn_dynamic_line(i);
           GraphControl.scene.add(AnimationControl.accumulative_merged_lines[i][tmp_amli]);
           AnimationControl.drawn_dynamic_lines[i].push(AnimationControl.accumulative_merged_lines[i][tmp_amli]);
           tmp_amli++;
-        } else if (j + 1 < this.time) { // IP
+        } else if (j + 1 < this.time) {
+          // IP
           GraphControl.scene.add(AnimationControl.dynamic_lines[i][j]);
           AnimationControl.drawn_dynamic_lines[i].push(AnimationControl.dynamic_lines[i][j]);
-        } else { // timeより未来の線は書かない
+        } else {
+          // timeより未来の線は書かない
           break;
         }
         tmp_line_count++;
@@ -529,14 +617,12 @@ export class AnimationControl {
 
         if (!(sphere instanceof THREE.Mesh)) continue;
         if (!(sphere.material instanceof THREE.MeshBasicMaterial)) {
-          console.error("unexpected: !(sphere.material instanceof THREE.MeshBasicMaterial)")
+          console.error('unexpected: !(sphere.material instanceof THREE.MeshBasicMaterial)');
           continue;
         }
         if (!(sphere.geometry instanceof THREE.SphereBufferGeometry)) continue;
         if (this.time === 0) {
-          sphere.material.color.set(
-            AnimationControl.animation_line[arr].color
-          );
+          sphere.material.color.set(AnimationControl.animation_line[arr].color);
         }
         if (this.time > AnimationControl.animation_line[arr].vecs.length - 1) {
           arr++;
@@ -546,7 +632,8 @@ export class AnimationControl {
           sphere.position.set(
             AnimationControl.animation_line[arr].vecs[this.time].x,
             AnimationControl.animation_line[arr].vecs[this.time].y,
-            AnimationControl.animation_line[arr].vecs[this.time].z);
+            AnimationControl.animation_line[arr].vecs[this.time].z
+          );
         } else {
           sphere.position.set(0, 0, 0);
         }

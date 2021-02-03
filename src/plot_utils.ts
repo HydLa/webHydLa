@@ -1,4 +1,4 @@
-export class Triplet<T>{
+export class Triplet<T> {
   x: T;
   y: T;
   z: T;
@@ -12,7 +12,7 @@ export class Triplet<T>{
   }
 }
 
-export class ComparableTriplet<T extends { equals(t: T): boolean; }> extends Triplet<T>{
+export class ComparableTriplet<T extends { equals(t: T): boolean }> extends Triplet<T> {
   equals(t: ComparableTriplet<T>) {
     return this.x.equals(t.x) && this.y.equals(t.y) && this.z.equals(t.z);
   }
@@ -41,12 +41,30 @@ export class RGB {
     const f = h - i;
     switch (i) {
       default:
-      case 0: rgb.g *= f; rgb.b *= 0; break;
-      case 1: rgb.r *= 1 - f; rgb.b *= 0; break;
-      case 2: rgb.r *= 0; rgb.b *= f; break;
-      case 3: rgb.r *= 0; rgb.g *= 1 - f; break;
-      case 4: rgb.r *= f; rgb.g *= 0; break;
-      case 5: rgb.g *= 0; rgb.b *= 1 - f; break;
+      case 0:
+        rgb.g *= f;
+        rgb.b *= 0;
+        break;
+      case 1:
+        rgb.r *= 1 - f;
+        rgb.b *= 0;
+        break;
+      case 2:
+        rgb.r *= 0;
+        rgb.b *= f;
+        break;
+      case 3:
+        rgb.r *= 0;
+        rgb.g *= 1 - f;
+        break;
+      case 4:
+        rgb.r *= f;
+        rgb.g *= 0;
+        break;
+      case 5:
+        rgb.g *= 0;
+        rgb.b *= 1 - f;
+        break;
     }
     rgb.r = Math.floor(255 * rgb.r);
     rgb.g = Math.floor(255 * rgb.g);

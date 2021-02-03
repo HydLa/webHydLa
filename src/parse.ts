@@ -28,16 +28,16 @@ export abstract class Construct {
     };
 
     const parameter = (s: string) => {
-      let p = "";
-      while (s[index] != "]") {
+      let p = '';
+      while (s[index] != ']') {
         p += s[index];
         index++;
       }
       p += s[index]; // p[x,0,1]
       index++;
-      p = p.replace(/,/g, ", "); // p[x, 0, 1]
+      p = p.replace(/,/g, ', '); // p[x, 0, 1]
       return new Variable(p);
-    }
+    };
 
     const variable = (s: string) => {
       let v = s[index];
@@ -47,105 +47,105 @@ export abstract class Construct {
         index++;
       }
       return new Variable(v);
-    }
+    };
 
     const leaf = (s: string) => {
       let ret: Construct;
       // console.log("leaf", i);
-      if (s.substring(index, index + 8) == "Infinity") {
+      if (s.substring(index, index + 8) == 'Infinity') {
         index += 8;
         ret = new Constant(Infinity);
-      } else if (s.substring(index, index + 2) == "p[") {
+      } else if (s.substring(index, index + 2) == 'p[') {
         ret = parameter(s);
-      } else if (s.substring(index, index + 2) == "Pi") {
+      } else if (s.substring(index, index + 2) == 'Pi') {
         index += 2;
         ret = new Constant(Math.PI);
-      } else if (s[index] == "E") {
+      } else if (s[index] == 'E') {
         index++;
         ret = new Constant(Math.E);
-      } else if (s[index] == "t" && !isAlDig(s[index + 1])) {
+      } else if (s[index] == 't' && !isAlDig(s[index + 1])) {
         index++;
-        ret = new Variable("t");
+        ret = new Variable('t');
       } else if (isAlpha(s[index])) {
         ret = variable(s);
       } else {
         ret = number(s);
       }
       return ret;
-    }
+    };
 
     const negative = (s: string) => {
       let ret: Construct;
       // console.log("negative", i);
-      if (s[index] == "-") {
+      if (s[index] == '-') {
         index++; // "-"
         ret = new Negative(leaf(s)); // leafと入れ替えると結果が変わる
       } else {
         ret = leaf(s);
       }
       return ret;
-    }
+    };
 
     const factor = (s: string) => {
       let ret: Construct;
       // console.log("factor", i);
-      if (s[index] == "(") {
+      if (s[index] == '(') {
         index++; // "("
         ret = expression(s);
         index++; // ")"
-      } else if (s.substring(index, index + 4) == "Log[") {
+      } else if (s.substring(index, index + 4) == 'Log[') {
         index += 4;
         ret = new Log(expression(s));
         index++;
-      } else if (s.substring(index, index + 4) == "Sin[") {
+      } else if (s.substring(index, index + 4) == 'Sin[') {
         index += 4;
         ret = new Sin(expression(s));
         index++;
-      } else if (s.substring(index, index + 4) == "Cos[") {
+      } else if (s.substring(index, index + 4) == 'Cos[') {
         index += 4;
         ret = new Cos(expression(s));
         index++;
-      } else if (s.substring(index, index + 4) == "Tan[") {
+      } else if (s.substring(index, index + 4) == 'Tan[') {
         index += 4;
         ret = new Tan(expression(s));
         index++;
-      } else if (s.substring(index, index + 7) == "ArcSin[") {
+      } else if (s.substring(index, index + 7) == 'ArcSin[') {
         index += 7;
         ret = new ArcSin(expression(s));
         index++;
-      } else if (s.substring(index, index + 7) == "ArcCos[") {
+      } else if (s.substring(index, index + 7) == 'ArcCos[') {
         index += 7;
         ret = new ArcCos(expression(s));
         index++;
-      } else if (s.substring(index, index + 7) == "ArcTan[") {
+      } else if (s.substring(index, index + 7) == 'ArcTan[') {
         index += 7;
         ret = new ArcTan(expression(s));
         index++;
-      } else if (s.substring(index, index + 5) == "Sinh[") {
+      } else if (s.substring(index, index + 5) == 'Sinh[') {
         index += 5;
         ret = new Sinh(expression(s));
         index++;
-      } else if (s.substring(index, index + 5) == "Cosh[") {
+      } else if (s.substring(index, index + 5) == 'Cosh[') {
         index += 5;
         ret = new Cosh(expression(s));
         index++;
-      } else if (s.substring(index, index + 5) == "Tanh[") {
+      } else if (s.substring(index, index + 5) == 'Tanh[') {
         index += 5;
         ret = new Tanh(expression(s));
         index++;
-      } else if (s.substring(index, index + 8) == "ArcSinh[") {
+      } else if (s.substring(index, index + 8) == 'ArcSinh[') {
         index += 8;
         ret = new ArcSinh(expression(s));
         index++;
-      } else if (s.substring(index, index + 8) == "ArcCosh[") {
+      } else if (s.substring(index, index + 8) == 'ArcCosh[') {
         index += 8;
         ret = new ArcCosh(expression(s));
         index++;
-      } else if (s.substring(index, index + 8) == "ArcTanh[") {
+      } else if (s.substring(index, index + 8) == 'ArcTanh[') {
         index += 8;
         ret = new ArcTanh(expression(s));
         index++;
-      } else if (s.substring(index, index + 6) == "Floor[") {
+      } else if (s.substring(index, index + 6) == 'Floor[') {
         index += 6;
         ret = new Floor(expression(s));
         index++;
@@ -153,13 +153,13 @@ export abstract class Construct {
         ret = negative(s);
       }
       return ret;
-    }
+    };
 
     const term2 = (s: string) => {
       // console.log("term", i);
       let lhs = factor(s);
-      for (; ;) {
-        if (s[index] == "^") {
+      for (;;) {
+        if (s[index] == '^') {
           index++;
           const rhs = factor(s);
           lhs = new Power(lhs, rhs);
@@ -168,17 +168,17 @@ export abstract class Construct {
         }
       }
       return lhs;
-    }
+    };
 
     const term = (s: string) => {
       // console.log("term", i);
       let lhs = term2(s);
-      for (; ;) {
-        if (s[index] == "*") {
+      for (;;) {
+        if (s[index] == '*') {
           index++;
           const rhs = term2(s);
           lhs = new Multiply(lhs, rhs);
-        } else if (s[index] == "/") {
+        } else if (s[index] == '/') {
           index++;
           const rhs = term2(s);
           lhs = new Divide(lhs, rhs);
@@ -192,12 +192,12 @@ export abstract class Construct {
     const expression = (s: string) => {
       // console.log("expression", i);
       let lhs = term(s);
-      for (; ;) {
-        if (s[index] == "+") {
+      for (;;) {
+        if (s[index] == '+') {
           index++;
           const rhs = term(s);
           lhs = new Plus(lhs, rhs);
-        } else if (s[index] == "-") {
+        } else if (s[index] == '-') {
           index++;
           const rhs = term(s);
           lhs = new Subtract(lhs, rhs);
@@ -206,9 +206,9 @@ export abstract class Construct {
         }
       }
       return lhs;
-    }
+    };
 
-    const s = value_str.replace(/\s+/g, "");
+    const s = value_str.replace(/\s+/g, '');
     return expression(s);
   }
 }
@@ -282,7 +282,9 @@ export class Constant extends Construct {
     super();
     this.val = val;
   }
-  toString() { return this.val.toString(); }
+  toString() {
+    return this.val.toString();
+  }
   getValue(env: { [key: string]: Construct }) {
     return this.val;
   }
@@ -294,10 +296,11 @@ class Variable extends Construct {
     super();
     this.name = name;
   }
-  toString() { return this.name; }
+  toString() {
+    return this.name;
+  }
   getValue(env: { [key: string]: Construct }) {
-    if (env[this.name] == undefined)
-      throw new Error(this.name + " is not defined");
+    if (env[this.name] == undefined) throw new Error(this.name + ' is not defined');
     return env[this.name].getValue(env);
   }
 }

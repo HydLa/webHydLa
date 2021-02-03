@@ -1,15 +1,15 @@
-import { GraphControl } from "./graph_control";
-import { DatGUIControl } from "./dat_gui_control";
-import { NewUI } from "./new_ui";
-import { PlotSettingsControl } from "./plot_settings";
-import { DOMControl } from "./dom_control";
-import { EditorControl } from "./editor_control";
-import { StorageControl } from "./storage_control";
-import { PlotLineMapControl } from "./plot_line_map_control";
-import { PlotControl } from "./plot_control";
-import { HydatControl } from "./hydat_control";
-import { HyLaGIController } from "./hylagi";
-import { ExampleLoader } from "./example_loader"
+import { GraphControl } from './graph_control';
+import { DatGUIControl } from './dat_gui_control';
+import { NewUI } from './new_ui';
+import { PlotSettingsControl } from './plot_settings';
+import { DOMControl } from './dom_control';
+import { EditorControl } from './editor_control';
+import { StorageControl } from './storage_control';
+import { PlotLineMapControl } from './plot_line_map_control';
+import { PlotControl } from './plot_control';
+import { HydatControl } from './hydat_control';
+import { HyLaGIController } from './hylagi';
+import { ExampleLoader } from './example_loader';
 
 $(document).ready(() => {
   const saved_hydla = StorageControl.loadHydla();

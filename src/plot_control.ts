@@ -1,26 +1,22 @@
-import { GraphControl } from "./graph_control";
-import { PlotLineMapControl } from "./plot_line_map_control";
-import { DOMControl } from "./dom_control";
+import { GraphControl } from './graph_control';
+import { PlotLineMapControl } from './plot_line_map_control';
+import { DOMControl } from './dom_control';
 
 import * as THREE from 'three';
-import { Triplet, RGB, ComparableTriplet, Range } from "./plot_utils";
-import { Object3D } from "three";
-import { HydatParameter, HydatPhase, HydatTimePP, HydatException } from "./hydat";
-import { PlotSettings } from "./plot_settings";
-import { Construct, Constant } from "./parse";
+import { Triplet, RGB, ComparableTriplet, Range } from './plot_utils';
+import { Object3D } from 'three';
+import { HydatParameter, HydatPhase, HydatTimePP, HydatException } from './hydat';
+import { PlotSettings } from './plot_settings';
+import { Construct, Constant } from './parse';
 
-const axisColorBases = new Triplet<RGB>(
-  new RGB(1.0, 0.3, 0.3),
-  new RGB(0.3, 1.0, 0.3),
-  new RGB(0.3, 0.3, 1.0)
-);
+const axisColorBases = new Triplet<RGB>(new RGB(1.0, 0.3, 0.3), new RGB(0.3, 1.0, 0.3), new RGB(0.3, 0.3, 1.0));
 
 export class PlotControl {
   static array = -1;
   static current_line_vec_animation: THREE.Vector3[] = [];
   static PlotStartTime: number | undefined;
 
-  static axisColors = new Triplet<string>("#FF8080", "#80FF80", "#8080FF")
+  static axisColors = new Triplet<string>('#FF8080', '#80FF80', '#8080FF');
   static prev_ranges: ComparableTriplet<Range>;
   static axisLines: Triplet<THREE.Object3D>;
   static plot_settings: PlotSettings;
@@ -44,12 +40,15 @@ export class PlotControl {
         const div = Math.floor(setting.value);
         const next_parameter_condition_list = [];
         let deltaP;
-        if (div == 1) { deltaP = ub - lb; }
-        else { deltaP = (ub - lb) / (div - 1); }
+        if (div == 1) {
+          deltaP = ub - lb;
+        } else {
+          deltaP = (ub - lb) / (div - 1);
+        }
         for (let i = 0; i < now_parameter_condition_list.length; i++) {
           for (let j = 0; j < div; j++) {
             const parameter_value = lb + j * deltaP;
-            const tmp_obj = $.extend(true, {}, now_parameter_condition_list[i]);  // deep copy
+            const tmp_obj = $.extend(true, {}, now_parameter_condition_list[i]); // deep copy
             tmp_obj[parameter_name] = new Constant(parameter_value);
             next_parameter_condition_list.push(tmp_obj);
           }
@@ -60,19 +59,29 @@ export class PlotControl {
     return now_parameter_condition_list;
   }
 
-  static phase_to_line_vectors(phase: HydatPhase, parameter_condition_list: { [key: string]: Constant }, axis: Triplet<Construct>, maxDeltaT: number) {
-    const line: { vec: THREE.Vector3, isPP: boolean }[] = [];
+  static phase_to_line_vectors(
+    phase: HydatPhase,
+    parameter_condition_list: { [key: string]: Constant },
+    axis: Triplet<Construct>,
+    maxDeltaT: number
+  ) {
+    const line: { vec: THREE.Vector3; isPP: boolean }[] = [];
     let t;
-    if (phase.simulation_state != "SIMULATED" && phase.simulation_state != "TIME_LIMIT" && phase.simulation_state != "STEP_LIMIT") return line;
+    if (
+      phase.simulation_state != 'SIMULATED' &&
+      phase.simulation_state != 'TIME_LIMIT' &&
+      phase.simulation_state != 'STEP_LIMIT'
+    )
+      return line;
 
-    const env: { [key: string]: Construct; } = {};
+    const env: { [key: string]: Construct } = {};
     $.extend(env, parameter_condition_list, phase.variable_map);
 
     if (phase.time instanceof HydatTimePP) {
       env.t = phase.time.time_point;
       line.push({
         vec: new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)),
-        isPP: true
+        isPP: true,
       });
     } else {
       const start_time = phase.time.start_time.getValue(env);
@@ -86,13 +95,13 @@ export class PlotControl {
         env.t = new Constant(t);
         line.push({
           vec: new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)),
-          isPP: false
+          isPP: false,
         });
       }
       env.t = new Constant(end_time);
       line.push({
         vec: new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)),
-        isPP: false
+        isPP: false,
       });
     }
     return line;
@@ -102,7 +111,7 @@ export class PlotControl {
     if (!PlotLineMapControl.isAllReady()) return;
     const current_time = new Date().getTime();
     if (PlotControl.PlotStartTime === undefined || current_time - PlotControl.PlotStartTime >= 1000) {
-      DOMControl.showToast("Plot finished.", 1000, "blue");
+      DOMControl.showToast('Plot finished.', 1000, 'blue');
     }
     PlotControl.PlotStartTime = undefined;
     GraphControl.renderer.render(GraphControl.scene, GraphControl.camera);
@@ -112,7 +121,9 @@ export class PlotControl {
     const ranges = PlotControl.getRangesOfFrustum(GraphControl.camera);
     if (force === true || PlotControl.prev_ranges === undefined || !ranges.equals(PlotControl.prev_ranges)) {
       const max_interval_px = 200; // 50 px
-      const min_visible_ticks = Math.floor(Math.max(GraphControl.elem.clientWidth, GraphControl.elem.clientHeight) / max_interval_px);
+      const min_visible_ticks = Math.floor(
+        Math.max(GraphControl.elem.clientWidth, GraphControl.elem.clientHeight) / max_interval_px
+      );
       const min_visible_range = Math.min(ranges.x.getInterval(), ranges.y.getInterval(), ranges.z.getInterval());
       const max_interval = min_visible_range / min_visible_ticks;
 
@@ -140,11 +151,7 @@ export class PlotControl {
     PlotControl.prev_ranges = ranges;
   }
   static getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet<Range> {
-    const ranges = new ComparableTriplet<Range>(
-      Range.getEmpty(),
-      Range.getEmpty(),
-      Range.getEmpty()
-    );
+    const ranges = new ComparableTriplet<Range>(Range.getEmpty(), Range.getEmpty(), Range.getEmpty());
 
     // Near Plane dimensions
     const hNear = (camera.top - camera.bottom) / camera.zoom;
@@ -203,7 +210,6 @@ export class PlotControl {
     nbl.subVectors(nc, uTmp.multiplyScalar(hNear / 2));
     nbl.add(rTmp.multiplyScalar(wNear / 2));
 
-
     // Far Plane center
     dTmp.copy(d);
     const fc = new THREE.Vector3();
@@ -239,7 +245,9 @@ export class PlotControl {
     GraphControl.camera.matrixWorldInverse.getInverse(GraphControl.camera.matrixWorld);
 
     let frustum = new THREE.Frustum();
-    frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(GraphControl.camera.projectionMatrix, GraphControl.camera.matrixWorldInverse));
+    frustum.setFromProjectionMatrix(
+      new THREE.Matrix4().multiplyMatrices(GraphControl.camera.projectionMatrix, GraphControl.camera.matrixWorldInverse)
+    );
 
     const expandFrustum = (orig: THREE.Frustum) => {
       const expanded = orig.clone();
@@ -251,29 +259,33 @@ export class PlotControl {
           if (Math.abs(plane1.constant) > Math.abs(plane2.constant)) {
             plane1.constant *= rate;
             plane2.constant /= rate;
-          }
-          else {
+          } else {
             plane1.constant /= rate;
             plane2.constant *= rate;
           }
-        }
-        else {
+        } else {
           plane1.constant *= rate;
           plane2.constant *= rate;
         }
         return;
-      }
+      };
 
       expandTwoPlanesOfFrustum(expanded.planes[0], expanded.planes[1]);
       expandTwoPlanesOfFrustum(expanded.planes[2], expanded.planes[3]);
       expandTwoPlanesOfFrustum(expanded.planes[4], expanded.planes[5]);
       return expanded;
-    }
+    };
     frustum = expandFrustum(frustum);
 
     /// calculate cross point of the plane and three axes(x, y, z).
     /// The plane is defined by point_a, point_b, point_c and point_d.(The forth parameter is required to determine the range of the plane.)
-    const calculate_intercept = (point_a: THREE.Vector3, point_b: THREE.Vector3, point_c: THREE.Vector3, point_d: THREE.Vector3, frustum: THREE.Frustum) => {
+    const calculate_intercept = (
+      point_a: THREE.Vector3,
+      point_b: THREE.Vector3,
+      point_c: THREE.Vector3,
+      point_d: THREE.Vector3,
+      frustum: THREE.Frustum
+    ) => {
       const ab_vec = new THREE.Vector3().subVectors(point_b, point_a);
       const ac_vec = new THREE.Vector3().subVectors(point_c, point_a);
       const cross_product = ab_vec.clone().cross(ac_vec);
@@ -300,10 +312,10 @@ export class PlotControl {
       calculate_intercept(nbr, nbl, fbl, fbr, frustum),
       // left surface
       calculate_intercept(ntl, nbl, fbl, ftl, frustum),
-      // near surface 
+      // near surface
       calculate_intercept(ntl, ntr, nbr, nbl, frustum),
-      // far surface 
-      calculate_intercept(ftl, ftr, fbr, fbl, frustum)
+      // far surface
+      calculate_intercept(ftl, ftr, fbr, fbl, frustum),
     ];
 
     const epsilon = 1e-8;
@@ -328,7 +340,7 @@ export class PlotControl {
   }
   static makeAxis(range: Range, delta: number, color: THREE.Color) {
     const geometry = new THREE.Geometry();
-    const material = new THREE.LineBasicMaterial({ vertexColors: true })
+    const material = new THREE.LineBasicMaterial({ vertexColors: true });
     geometry.vertices.push(new THREE.Vector3(0, 0, range.min), new THREE.Vector3(0, 0, range.max));
     geometry.colors.push(color, color);
     const grid_obj = new THREE.Object3D();
@@ -357,14 +369,14 @@ export class PlotControl {
         if (fractional_part > log10_5) scale_interval *= 5;
         if (scale_interval <= 0) return Number.MAX_VALUE;
         return scale_interval;
-      }
+      };
       const calculateNumberOfDigits = (interval: number) => {
         let num = Math.floor(Math.log(interval) / Math.log(10));
         num = num > 0 ? 0 : -num;
         num = Math.max(num, 0);
         num = Math.min(num, 20);
         return num;
-      }
+      };
       const scale_interval = calculateScaleInterval(range);
       const fixed = calculateNumberOfDigits(scale_interval);
       ctx.fillStyle = axisColor;
@@ -376,7 +388,7 @@ export class PlotControl {
         const pos = GraphControl.toScreenPosition(vec);
         ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
       }
-    }
+    };
 
     sub(ranges.x, PlotControl.axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
     sub(ranges.y, PlotControl.axisColors.y, (arg) => new THREE.Vector3(0, arg, 0));
@@ -384,7 +396,7 @@ export class PlotControl {
   }
 
   static setBackgroundColor(color: string) {
-    let color_val = parseInt("0x" + color.substr(1));
+    let color_val = parseInt('0x' + color.substr(1));
     const b = color_val % 256;
     color_val /= 256;
     const g = color_val % 256;
@@ -392,10 +404,12 @@ export class PlotControl {
     const r = color_val;
     const brightness = Math.min(255, 256 - Math.max(r, g, b));
 
-    this.axisColors = axisColorBases.map((base) =>
-      "#" + ("00" + Math.floor(base.r * brightness).toString(16)).slice(-2)
-      + ("00" + Math.floor(base.g * brightness).toString(16)).slice(-2)
-      + ("00" + Math.floor(base.b * brightness).toString(16)).slice(-2)
+    this.axisColors = axisColorBases.map(
+      (base) =>
+        '#' +
+        ('00' + Math.floor(base.r * brightness).toString(16)).slice(-2) +
+        ('00' + Math.floor(base.g * brightness).toString(16)).slice(-2) +
+        ('00' + Math.floor(base.b * brightness).toString(16)).slice(-2)
     );
     GraphControl.renderer.setClearColor(color);
     PlotControl.update_axes(true);
