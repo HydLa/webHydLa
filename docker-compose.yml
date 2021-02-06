@@ -1,0 +1,8 @@
+version: '3'
+services:
+  webhydla:
+    image: webhydla
+    build: .
+    container_name: webhydla
+    ports:
+      - 5000:5000

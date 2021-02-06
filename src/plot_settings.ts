@@ -1,7 +1,6 @@
-import { StorageControl } from "./storage_control";
-import { PlotControl } from "./plot_control";
-import { GraphControl } from "./graph_control";
-import { AnimationControl } from "./animation_control";
+import { StorageControl } from './storage_control';
+import { GraphControl } from './graph_control';
+import { AnimationControl } from './animation_control';
 
 export class PlotSettingsControl {
   static plot_settings: PlotSettings;
@@ -9,7 +8,7 @@ export class PlotSettingsControl {
     this.plot_settings = StorageControl.loadPlotSettings();
   }
   static parseJSON(json: string | null) {
-    return new PlotSettings(JSON.parse(json ?? "{}"));
+    return new PlotSettings(JSON.parse(json ?? '{}'));
   }
   static saveToWebStorage() {
     StorageControl.savePlotSettings(this.plot_settings);
@@ -24,6 +23,7 @@ export class PlotSettingsControl {
   }
 }
 
+/** 描画設定用のデータ構造 */
 export class PlotSettings {
   plotInterval: number;
   backgroundColor: string;
@@ -38,7 +38,7 @@ export class PlotSettings {
   parameter_condition_seek: ParameterConditionSeek | undefined;
   constructor(obj: any) {
     this.plotInterval = obj?.plotInterval ?? 0.1;
-    this.backgroundColor = obj?.backgroundColor ?? "#000000";
+    this.backgroundColor = obj?.backgroundColor ?? '#000000';
     this.lineWidth = obj?.lineWidth ?? 1;
     this.scaleLabelVisible = obj?.scaleLabelVisible ?? true;
     this.twoDimensional = obj?.twoDimensional ?? false;

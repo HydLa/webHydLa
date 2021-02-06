@@ -3,19 +3,21 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { DatGUIControl } from './dat_gui_control';
 import { PlotControl } from './plot_control';
-import { PlotLine } from './plot_line';
-import { RGB } from './plot_utils';
 import { AnimationControl } from './animation_control';
 import { HydatControl } from './hydat_control';
 
+/**
+ * 描画，再描画，クリアなどを行う<br>
+ * いわゆるView
+ */
 export class GraphControl {
   static scene: THREE.Scene;
   static camera: THREE.OrthographicCamera;
   static elem: HTMLElement;
   static controls: OrbitControls;
   static renderer: THREE.WebGLRenderer;
-  static animatable: boolean = true;
-  static range_mode: boolean = false;
+  static animatable = true;
+  static range_mode = false;
 
   static controls_position0: THREE.Vector3;
 
@@ -23,18 +25,14 @@ export class GraphControl {
   static t_line = 0;
   static last_frame_zoom = 1;
 
-  static resizeLoopCount: number = 0;
+  static resizeLoopCount = 0;
 
   static face_a: THREE.Mesh[];
-  
-  static lineIDSet: Set<number>;
 
   static init() {
     this.scene = new THREE.Scene();
-    this.lineIDSet = new Set<number>();
 
     // PerspectiveCamera
-    // camera = new THREE.PerspectiveCamera(75, 600 / 400, 1, 1000);
     const width = 50;
     const height = 50;
 
@@ -47,8 +45,8 @@ export class GraphControl {
 
     this.camera.position.set(0, 0, 100);
     this.controls_position0 = new THREE.Vector3(0, 0, 100);
-    
-    this.elem = document.getElementById("graph-area")!;
+
+    this.elem = document.getElementById('graph-area')!;
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
 
     this.renderer.domElement.style.position = 'absolute';
@@ -57,7 +55,7 @@ export class GraphControl {
 
     this.elem.appendChild(this.renderer.domElement);
 
-    let directionalLight = new THREE.DirectionalLight('#ffffff', 1);
+    const directionalLight = new THREE.DirectionalLight('#ffffff', 1);
     directionalLight.position.set(0, 7, 10);
 
     this.scene.add(directionalLight);
@@ -66,16 +64,17 @@ export class GraphControl {
     this.controls.screenSpacePanning = true;
 
     //TODO: implement this in more elegant way
-    setTimeout(() => { this.resizeGraphRenderer() }, 200);
+    setTimeout(() => {
+      this.resizeGraphRenderer();
+    }, 200);
   }
 
   static resizeGraphRenderer() {
     if (this.elem.clientWidth > 0 && this.elem.clientHeight > 0) {
       this.renderer.setSize(this.elem.clientWidth, this.elem.clientHeight);
-      // this.camera.aspect = this.elem.clientWidth / this.elem.clientHeight;
-      var prev_width = this.camera.right - this.camera.left;
-      var prev_height = this.camera.top - this.camera.bottom;
-      var extend_rate;
+      const prev_width = this.camera.right - this.camera.left;
+      const prev_height = this.camera.top - this.camera.bottom;
+      let extend_rate;
       if (prev_width != this.camera.right - this.camera.left) extend_rate = this.elem.clientWidth / prev_width;
       else extend_rate = this.elem.clientHeight / prev_height;
 
@@ -87,8 +86,8 @@ export class GraphControl {
 
       this.camera.updateProjectionMatrix();
 
-      var w = $('#scale_label_wrapper').width()!;
-      var h = $('#scale_label_wrapper').height()!;
+      const w = $('#scale_label_wrapper').width()!;
+      const h = $('#scale_label_wrapper').height()!;
       $('#scaleLabelCanvas').attr('width', w);
       $('#scaleLabelCanvas').attr('height', h);
       PlotControl.update_axes(true);
@@ -99,24 +98,26 @@ export class GraphControl {
     }
   }
 
-  static modifyNameLabel(name:string|undefined) {
-    var text = "";
+  static modifyNameLabel(name: string | undefined) {
+    let text = '';
     if (!(name == undefined || name == null)) {
       text = name;
     }
-    var canvas = <HTMLCanvasElement>document.getElementById('nameLabelCanvas');
+    const canvas = <HTMLCanvasElement>document.getElementById('nameLabelCanvas');
     if (!canvas || !canvas.getContext) {
       return false;
     }
-    var ctx = canvas.getContext('2d')!;
+    const ctx = canvas.getContext('2d')!;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = "20px 'Arial'";
-    ctx.fillStyle = "#FFFFFF";
+    ctx.fillStyle = '#FFFFFF';
     ctx.fillText(text, 0, canvas.height - 50);
   }
 
   static render() {
-    requestAnimationFrame(() => { this.render() });
+    requestAnimationFrame(() => {
+      this.render();
+    });
     this.controls.update();
     if (this.last_frame_zoom !== this.camera.zoom) {
       GraphControl.replotAll();
@@ -129,7 +130,9 @@ export class GraphControl {
       AnimationControl.animate();
     }
     if (AnimationControl.getLength() !== this.a_line) {
-      if (GraphControl.range_mode) { AnimationControl.range_make_all(); }
+      if (GraphControl.range_mode) {
+        AnimationControl.range_make_all();
+      }
       this.a_line = AnimationControl.getLength();
     }
     if (AnimationControl.maxlen !== this.t_line) {
@@ -152,8 +155,8 @@ export class GraphControl {
     pos.project(this.camera);
 
     return {
-      x: (pos.x * widthHalf) + widthHalf,
-      y: - (pos.y * heightHalf) + heightHalf
+      x: pos.x * widthHalf + widthHalf,
+      y: -(pos.y * heightHalf) + heightHalf,
     };
   }
 
@@ -166,8 +169,8 @@ export class GraphControl {
     this.controls.mouseButtons = {
       LEFT: twoDimensional ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE,
       MIDDLE: THREE.MOUSE.DOLLY,
-      RIGHT: THREE.MOUSE.PAN
-    }
+      RIGHT: THREE.MOUSE.PAN,
+    };
     if (twoDimensional) {
       this.camera.position.copy(this.controls_position0.clone());
       this.controls.target.set(0, 0, 0);
@@ -178,14 +181,19 @@ export class GraphControl {
 
   static startResizingGraphArea() {
     this.resizeLoopCount = 0;
-    setTimeout(() => { this.resizeGraphArea(); }, 10);
+    setTimeout(() => {
+      this.resizeGraphArea();
+    }, 10);
   }
 
   static resizeGraphArea() {
     this.resizeLoopCount++;
     this.resizeGraphRenderer();
     //TODO: do this without timer
-    if (this.resizeLoopCount < 80) setTimeout(() => { this.resizeGraphArea(); }, 10);
+    if (this.resizeLoopCount < 80)
+      setTimeout(() => {
+        this.resizeGraphArea();
+      }, 10);
   }
 
   static clearPlot() {

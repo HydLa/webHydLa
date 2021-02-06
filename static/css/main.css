@@ -8,16 +8,6 @@ html, body{
 #top_area {
 	position: relative;
 }
-#classic_ui {
-	position: absolute;
-	padding-right: 25px;
-	top: -15px;
-	right: 0px;
-	text-decoration: none;
-}
-#classic_ui:hover {
-	text-decoration: underline;
-}
 
 #webhydla_title {
 	display: block;
@@ -222,7 +212,8 @@ input[type="checkbox"] {
 
 
 #output-initial {
-	padding-left: 20px;
+  padding-left: 20px;
+  font-family: Consolas, "Courier New", Courier, Monaco, monospace, "ＭＳ ゴシック", "MS Gothic";
 }
 
 #output-preloader {
@@ -311,7 +302,7 @@ input[type="checkbox"] {
 }
 
 
-.dropdown-content {
+#dropdown-file {
   background-color: #fff;
   margin: 0;
   display: none;
@@ -324,7 +315,7 @@ input[type="checkbox"] {
   will-change: width, height;
 }
 
-.dropdown-content li {
+#dropdown-file li {
   clear: both;
   color: rgba(0, 0, 0, 0.87);
   cursor: pointer;
@@ -335,10 +326,15 @@ input[type="checkbox"] {
   text-transform: none;
 }
 
-.dropdown-content li:hover, .dropdown-content li.active, .dropdown-content li.selected {
+#dropdown-file li:hover, #dropdown-file li.active, #dropdown-file li.selected {
   background-color: inherit!important;
   box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.2);
 }
-.dropdown-content li > a, .dropdown-content li > span {
+#dropdown-file li > a, #dropdown-file li > span {
   color: white;
+}
+
+#modal_examples {
+	width: 50%;
+  height: 40%;
 }
