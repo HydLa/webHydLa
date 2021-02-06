@@ -20,12 +20,13 @@ Exec `docker-compose up` and open http://0.0.0.0:5000/
 - Operating System: Linux
 - Software:
   - node 15 or later, and npm 7 or later
-  - Python 3.3 or later with flask module (see http://flask.pocoo.org/)
+  - Python 3.3 or later
 
 #### Build and Start the Server
 
 - Install packages and build from source with following commands.
   ```
+  /webHydLa$ pip install -r requirements.txt
   /webHydLa$ npm install
   /webHydLa$ npm run build
   ```
