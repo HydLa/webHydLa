@@ -102,22 +102,8 @@ def bouncing_particle_op():
     # dynamic draw
     driver.find_element_by_xpath(
         "/html/body/div[2]/div[2]/div[1]/div/ul/li[6]").click()
-
-    add_new_line.click()
-    # plot1 x
-    driver.find_element_by_xpath(
-        "/html/body/div[2]/div[2]/div[1]/div/ul/li[10]/div/ul/li[3]/div/ul/li[2]/div/div/input").send_keys("t", Keys.RETURN)
-    # plot1 y
-    driver.find_element_by_xpath(
-        "/html/body/div[2]/div[2]/div[1]/div/ul/li[10]/div/ul/li[3]/div/ul/li[3]/div/div/input").send_keys("2*y", Keys.RETURN)
-    # plot1 z
-    driver.find_element_by_xpath(
-        "/html/body/div[2]/div[2]/div[1]/div/ul/li[10]/div/ul/li[3]/div/ul/li[4]/div/div/input").send_keys("2*y'", Keys.RETURN)
     time.sleep(20)
-    # remove
-    driver.find_element_by_xpath(
-        "/html/body/div[2]/div[2]/div[1]/div/ul/li[10]/div/ul/li[3]/div/ul/li[5]").click()
-    time.sleep(1)
+
     line_width.clear()
     line_width.send_keys("2", Keys.RETURN)
     time.sleep(10)
@@ -128,7 +114,7 @@ if __name__ == '__main__':
         driver = webdriver.Chrome(ChromeDriverManager().install())
 
         driver.maximize_window()
-        driver.get("localhost:5000")
+        driver.get("http://localhost:5000")
 
         bouncing_particle_op()
     finally:
