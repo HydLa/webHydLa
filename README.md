@@ -1,6 +1,10 @@
 # webHydla - Web IDE of HydLa
 
-![CI](https://github.com/HydLa/webHydLa/workflows/CI/badge.svg)
+![](https://img.shields.io/badge/node->=15.0.0-brightgreen)
+![](https://img.shields.io/badge/python->=3.3-blue)
+[![CI](https://github.com/HydLa/webHydLa/workflows/CI/badge.svg)](https://github.com/HydLa/webHydLa/actions?query=workflow:CI)
+![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)
+![license: MIT](https://img.shields.io/badge/license-MIT-blue)
 
 Provided at http://webhydla.ueda.info.waseda.ac.jp
 
