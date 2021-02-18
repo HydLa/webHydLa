@@ -2,8 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - master
-      - develop
+      - '*'
   pull_request:
     branches:
       - '*'
@@ -11,27 +10,27 @@ jobs:
   eslint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-        node-version: "15"
-    - run: npm install
-    - run: npm run lint
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '15'
+      - run: npm install
+      - run: npm run lint
   jest:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-        node-version: "15"
-    - run: npm install
-    - run: npm run test
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '15'
+      - run: npm install
+      - run: npm run test
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-        node-version: "15"
-    - run: npm install
-    - run: npm run build
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '15'
+      - run: npm install
+      - run: npm run build
