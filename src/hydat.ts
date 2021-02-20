@@ -1,4 +1,4 @@
-import { Construct, Constant, Plus } from './parse';
+import { parse, Construct, Constant, Plus } from './parse';
 
 const isHydatParameterPointRaw = (raw: HydatParameterRaw): raw is HydatParameterPointRaw => {
   return (raw as HydatParameterPointRaw).unique_value !== undefined;
@@ -89,7 +89,7 @@ export class HydatPhase {
       if (phase.variable_map[key].unique_value === undefined) {
         throw new HydatException(`webHydLa doesn't support ununique value in variable maps for ${key}`);
       }
-      this.variable_map[key] = Construct.parse(phase.variable_map[key].unique_value /*, phase.variable_map*/);
+      this.variable_map[key] = parse(phase.variable_map[key].unique_value /*, phase.variable_map*/);
     }
 
     this.parameter_maps = [];
@@ -118,7 +118,7 @@ export class HydatParameterPoint {
   unique_value: Construct;
 
   constructor(unique_value: string) {
-    this.unique_value = Construct.parse(unique_value);
+    this.unique_value = parse(unique_value);
   }
 }
 
@@ -135,7 +135,7 @@ export class HydatParameterInterval {
         this.lower_bound = { value: new Constant(-Infinity) };
         break;
       case 1:
-        this.lower_bound = { value: Construct.parse(lower_bounds[0].value) };
+        this.lower_bound = { value: parse(lower_bounds[0].value) };
         break;
       default:
         throw new Error(`Error: lower_bounds.length must be 0 or 1, but got ${lower_bounds.length}.`);
@@ -146,7 +146,7 @@ export class HydatParameterInterval {
         this.upper_bound = { value: new Constant(Infinity) };
         break;
       case 1:
-        this.upper_bound = { value: Construct.parse(upper_bounds[0].value) };
+        this.upper_bound = { value: parse(upper_bounds[0].value) };
         break;
       default:
         throw new Error(`Error: upper_bounds.length must be 0 or 1, but got ${upper_bounds.length}.`);
@@ -175,7 +175,7 @@ type HydatTime = HydatTimePP | HydatTimeIP;
 export class HydatTimePP {
   time_point: Construct;
   constructor(time_point: string) {
-    this.time_point = Construct.parse(time_point);
+    this.time_point = parse(time_point);
   }
 }
 
@@ -183,11 +183,11 @@ class HydatTimeIP {
   start_time: Construct;
   end_time: Construct;
   constructor(start_time: string, end_time?: string) {
-    this.start_time = Construct.parse(start_time);
+    this.start_time = parse(start_time);
     if (end_time === undefined || end_time === 'Infinity') {
       this.end_time = new Plus(new Constant(2), this.start_time);
     } else {
-      this.end_time = Construct.parse(end_time);
+      this.end_time = parse(end_time);
     }
   }
 }
