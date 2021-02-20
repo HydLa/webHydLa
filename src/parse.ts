@@ -232,30 +232,22 @@ export function parse(value_str: string) {
   return expression(s, 0)[0];
 }
 
-export abstract class Construct {
-  abstract toString(): string;
-  abstract getValue(env: { [key: string]: Construct }): number;
+export interface Construct {
+  toString(): string;
+  getValue(env: { [key: string]: Construct }): number;
 }
 
-abstract class UnaryConstruct extends Construct {
+interface UnaryConstruct extends Construct {
   arg: Construct;
-  constructor(arg: Construct) {
-    super();
-    this.arg = arg;
-  }
 }
 
-abstract class BinaryConstruct extends Construct {
+interface BinaryConstruct extends Construct {
   lhs: Construct;
   rhs: Construct;
-  constructor(lhs: Construct, rhs: Construct) {
-    super();
-    this.lhs = lhs;
-    this.rhs = rhs;
-  }
 }
 
-export class Plus extends BinaryConstruct {
+export class Plus implements BinaryConstruct {
+  constructor(public lhs: Construct, public rhs: Construct) {}
   toString() {
     return `(${this.lhs.toString()} + ${this.rhs.toString()})`;
   }
@@ -264,7 +256,8 @@ export class Plus extends BinaryConstruct {
   }
 }
 
-class Subtract extends BinaryConstruct {
+class Subtract implements BinaryConstruct {
+  constructor(public lhs: Construct, public rhs: Construct) {}
   toString() {
     return `(${this.lhs.toString()} - ${this.rhs.toString()})`;
   }
@@ -273,7 +266,8 @@ class Subtract extends BinaryConstruct {
   }
 }
 
-class Multiply extends BinaryConstruct {
+class Multiply implements BinaryConstruct {
+  constructor(public lhs: Construct, public rhs: Construct) {}
   toString() {
     return `${this.lhs.toString()} * ${this.rhs.toString()}`;
   }
@@ -282,7 +276,8 @@ class Multiply extends BinaryConstruct {
   }
 }
 
-class Divide extends BinaryConstruct {
+class Divide implements BinaryConstruct {
+  constructor(public lhs: Construct, public rhs: Construct) {}
   toString() {
     return `${this.lhs.toString()} / ${this.rhs.toString()}`;
   }
@@ -291,7 +286,8 @@ class Divide extends BinaryConstruct {
   }
 }
 
-class Power extends BinaryConstruct {
+class Power implements BinaryConstruct {
+  constructor(public lhs: Construct, public rhs: Construct) {}
   toString() {
     return `${this.lhs.toString()} ^ ${this.rhs.toString()}`;
   }
@@ -300,12 +296,8 @@ class Power extends BinaryConstruct {
   }
 }
 
-export class Constant extends Construct {
-  val: number;
-  constructor(val: number) {
-    super();
-    this.val = val;
-  }
+export class Constant implements Construct {
+  constructor(public val: number) {}
   toString() {
     return this.val.toString();
   }
@@ -314,12 +306,8 @@ export class Constant extends Construct {
   }
 }
 
-class Variable extends Construct {
-  name: string;
-  constructor(name: string) {
-    super();
-    this.name = name;
-  }
+class Variable implements Construct {
+  constructor(public name: string) {}
   toString() {
     return this.name;
   }
@@ -329,7 +317,8 @@ class Variable extends Construct {
   }
 }
 
-class Log extends UnaryConstruct {
+class Log implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `log(${this.arg.toString()})`;
   }
@@ -338,7 +327,8 @@ class Log extends UnaryConstruct {
   }
 }
 
-class Sin extends UnaryConstruct {
+class Sin implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `sin(${this.arg.toString()})`;
   }
@@ -347,7 +337,8 @@ class Sin extends UnaryConstruct {
   }
 }
 
-class Cos extends UnaryConstruct {
+class Cos implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `cos(${this.arg.toString()})`;
   }
@@ -356,7 +347,8 @@ class Cos extends UnaryConstruct {
   }
 }
 
-class Tan extends UnaryConstruct {
+class Tan implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `tan(${this.arg.toString()})`;
   }
@@ -365,7 +357,8 @@ class Tan extends UnaryConstruct {
   }
 }
 
-class ArcSin extends UnaryConstruct {
+class ArcSin implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `asin(${this.arg.toString()})`;
   }
@@ -374,7 +367,8 @@ class ArcSin extends UnaryConstruct {
   }
 }
 
-class ArcCos extends UnaryConstruct {
+class ArcCos implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `acos(${this.arg.toString()})`;
   }
@@ -383,7 +377,8 @@ class ArcCos extends UnaryConstruct {
   }
 }
 
-class ArcTan extends UnaryConstruct {
+class ArcTan implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `atan(${this.arg.toString()})`;
   }
@@ -392,7 +387,8 @@ class ArcTan extends UnaryConstruct {
   }
 }
 
-class Sinh extends UnaryConstruct {
+class Sinh implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `sinh(${this.arg.toString()})`;
   }
@@ -401,7 +397,8 @@ class Sinh extends UnaryConstruct {
   }
 }
 
-class Cosh extends UnaryConstruct {
+class Cosh implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `cosh(${this.arg.toString()})`;
   }
@@ -410,7 +407,8 @@ class Cosh extends UnaryConstruct {
   }
 }
 
-class Tanh extends UnaryConstruct {
+class Tanh implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `tanh(${this.arg.toString()})`;
   }
@@ -419,7 +417,8 @@ class Tanh extends UnaryConstruct {
   }
 }
 
-class ArcSinh extends UnaryConstruct {
+class ArcSinh implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `asinh(${this.arg.toString()})`;
   }
@@ -428,7 +427,8 @@ class ArcSinh extends UnaryConstruct {
   }
 }
 
-class ArcCosh extends UnaryConstruct {
+class ArcCosh implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `acosh(${this.arg.toString()})`;
   }
@@ -437,7 +437,8 @@ class ArcCosh extends UnaryConstruct {
   }
 }
 
-class ArcTanh extends UnaryConstruct {
+class ArcTanh implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `atanh(${this.arg.toString()})`;
   }
@@ -446,7 +447,8 @@ class ArcTanh extends UnaryConstruct {
   }
 }
 
-class Floor extends UnaryConstruct {
+class Floor implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `floor(${this.arg.toString()})`;
   }
@@ -455,7 +457,8 @@ class Floor extends UnaryConstruct {
   }
 }
 
-class Negative extends UnaryConstruct {
+class Negative implements UnaryConstruct {
+  constructor(public arg: Construct) {}
   toString() {
     return `-${this.arg.toString()}`;
   }
