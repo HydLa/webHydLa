@@ -18,7 +18,7 @@ export function isAlDig(c: string) {
  * <term2> ::= <factor> { ^<factor> }
  * <factor> ::= (<expression>) | Func[<expression>] | <negative>
  * <negative> ::= { - } <leaf>
- * <leaf> ::= "Infinity" | parameter | constant | variable | number
+ * <leaf> ::= 'Infinity' | parameter | constant | variable | number
  */
 
 export function number(s: string, index: number): [Constant, number] {
@@ -36,9 +36,8 @@ export function parameter(s: string, index: number): [Variable, number] {
     p += s[index];
     index++;
   }
-  p += s[index]; // p[x,0,1]
-  index++;
-  p = p.replace(/,/g, ', '); // p[x, 0, 1]
+  p += s[index++]; // ']'
+  p = p.replace(/,/g, ', '); // p[x,0,1] -> p[x, 0, 1]
   return [new Variable(p), index];
 }
 
@@ -79,7 +78,7 @@ export function leaf(s: string, index: number): [Construct, number] {
 export function negative(s: string, index: number): [Construct, number] {
   let ret: Construct;
   if (s[index] == '-') {
-    index++; // "-"
+    index++; // '-'
     [ret, index] = leaf(s, index);
     ret = new Negative(ret);
   } else {
@@ -92,14 +91,14 @@ export function factor(s: string, index: number): [Construct, number] {
   let ret: Construct;
   let tmp: Construct;
   if (s[index] == '(') {
-    index++; // "("
+    index++; // '('
     [ret, index] = expression(s, index);
-    index++; // ")"
+    index++; // ')'
   } else if (s.substring(index, index + 4) == 'Log[') {
-    index += 4;
+    index += 4; // 'Log['
     [tmp, index] = expression(s, index);
     ret = new Log(tmp);
-    index++;
+    index++; // ']'
   } else if (s.substring(index, index + 4) == 'Sin[') {
     index += 4;
     [tmp, index] = expression(s, index);
@@ -232,6 +231,8 @@ export function parse(value_str: string) {
   return expression(s, 0)[0];
 }
 
+// TODO: { [key: string]: Construct } を Map<string, Construct> で置き換える
+
 export interface Construct {
   toString(): string;
   getValue(env: { [key: string]: Construct }): number;
@@ -312,7 +313,7 @@ class Variable implements Construct {
     return this.name;
   }
   getValue(env: { [key: string]: Construct }) {
-    if (env[this.name] == undefined) throw new Error(this.name + ' is not defined');
+    if (env[this.name] == undefined) throw new Error(`${this.name} is not defined`);
     return env[this.name].getValue(env);
   }
 }
