@@ -7,7 +7,7 @@ import { HydatControl } from './hydat_control';
 import { StorageControl } from './storage_control';
 import { Triplet } from './plot_utils';
 import { HydatPhase } from './hydat';
-import { Construct, Constant } from './parse';
+import { parse, Construct, Constant } from './parse';
 
 export class PlotLine {
   index: number;
@@ -61,7 +61,7 @@ export class PlotLine {
       const val = (<HTMLInputElement>item.domElement.firstChild).value;
       if (prev === undefined || val != prev) {
         try {
-          Construct.parse(val);
+          parse(val);
           GraphControl.replotAll();
         } catch (e) {
           this.updateFolder(false);

@@ -6,7 +6,7 @@ import { GraphControl } from './graph_control';
 import { HydatParameter, HydatParameterInterval, HydatPhase } from './hydat';
 import { RGB, Triplet } from './plot_utils';
 import { HydatControl } from './hydat_control';
-import { Construct, Constant } from './parse';
+import { parse, Construct, Constant } from './parse';
 import { MaltiBiMap } from './animation_utils';
 
 /** 描画用オブジェクトの計算，描画，削除を担当 */
@@ -46,11 +46,7 @@ export class AnimationControl {
       return;
     }
     try {
-      axes = new Triplet<Construct>(
-        Construct.parse(line.settings.x),
-        Construct.parse(line.settings.y),
-        Construct.parse(line.settings.z)
-      );
+      axes = new Triplet<Construct>(parse(line.settings.x), parse(line.settings.y), parse(line.settings.z));
       line.updateFolder(true);
     } catch (e) {
       console.log(e);
