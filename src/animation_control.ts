@@ -581,10 +581,8 @@ export function animate() {
         continue;
       }
       if (animationControlState.index_array_multibimap.hasValue(arr)) {
-        sphere.position.set(
-          animationControlState.animation_line[arr].vecs[animationControlState.time].x,
-          animationControlState.animation_line[arr].vecs[animationControlState.time].y,
-          animationControlState.animation_line[arr].vecs[animationControlState.time].z
+        sphere.position.copy(
+          animationControlState.animation_line[arr].vecs[animationControlState.time]
         );
       } else {
         sphere.position.set(0, 0, 0);
