@@ -291,7 +291,6 @@ export function dfs_each_line(
       }
       if (phase.children.length == 0) {
         // on leaves
-        // PlotControl.plot_settings.lineWidthが1か否か
         add_line(current_line_vec, color[current_param_idx], line, width);
         add_sphere(current_param_idx, color);
 
