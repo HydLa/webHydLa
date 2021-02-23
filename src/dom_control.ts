@@ -5,7 +5,7 @@ import { HydatControl } from './hydat_control';
 import { HyLaGIController } from './hylagi';
 import { StorageControl } from './storage_control';
 
-export class DOMControl {
+class DOMControlState {
   static tabs: Materialize.Tabs;
 }
 
@@ -25,7 +25,7 @@ export function init() {
     hover: false,
   });
   Materialize.Modal.init(document.querySelectorAll('.modal'));
-  DOMControl.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
+  DOMControlState.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
 
   $('fix_button').on('change', function () {
     GraphControl.replotAll();
@@ -160,5 +160,5 @@ export function toggleInputPane() {
 }
 
 export function selectLogTab() {
-  DOMControl.tabs.select('output-area');
+  DOMControlState.tabs.select('output-area');
 }
