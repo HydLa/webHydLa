@@ -60,6 +60,20 @@ export const animationControlState: AnimationControlState = {
   index_array_multibimap: new MultiBiMap<number, number>(),
 };
 
+/**
+ * colorAngleを起点にして、色相をcolorNum個に等分し、
+ * 各点の色を16進6桁の配列で返す
+ */
+function getColors(colorNum: number, colorAngle: number) {
+  const angle = 360 / colorNum;
+  const angle_start = Math.floor(colorAngle);
+  const retColors: number[] = [];
+  for (let i = 0; i < colorNum; i++) {
+    retColors.push(RGB.fromHue((Math.floor(angle * i) + angle_start) % 360).asHex24());
+  }
+  return retColors;
+}
+
 function add_plot(line: PlotLine) {
   let axes: Triplet<Construct>;
   if (line.settings.x == '' || line.settings.y == '' || line.settings.z == '') {
@@ -80,15 +94,6 @@ function add_plot(line: PlotLine) {
   const dt = PlotControl.plot_settings.plotInterval;
   const phase = HydatControl.current_hydat.first_phases[0];
   const parameter_condition_list = PlotControl.divideParameter(HydatControl.current_hydat.parameters);
-  const getColors = (colorNum: number, colorAngle: number) => {
-    const angle = 360 / colorNum;
-    const angle_start = Math.floor(colorAngle);
-    const retColors: number[] = [];
-    for (let i = 0; i < colorNum; i++) {
-      retColors.push(RGB.fromHue((Math.floor(angle * i) + angle_start) % 360).asHex24());
-    }
-    return retColors;
-  };
   const color = getColors(parameter_condition_list.length, line.color_angle);
   line.plot_information = {
     phase_index_array: [{ phase: phase, index: 0 }],
@@ -104,7 +109,7 @@ function add_plot(line: PlotLine) {
   animationControlState.animation_line = [];
   animationControlState.maxlen = 0;
   if (line.plot_ready == undefined)
-    requestAnimationFrame(function () {
+    requestAnimationFrame(() => {
       line.plotReady();
     });
 }
@@ -146,10 +151,10 @@ function add_cylinder(
 
   animationControlState.index_array_multibimap.set(line.index, PlotControl.array);
 
-  const linesGeometry = new THREE.Geometry();
-  const scaledWidth = (0.5 * width) / GraphControl.camera.zoom;
+  const linesGeometry = new THREE.Geometry(); //!
+  const scaledWidth = (0.5 * width) / GraphControl.camera.zoom; //!
   const dottedLength = 10.0 / GraphControl.camera.zoom;
-  const material = new THREE.MeshBasicMaterial({ color: color[current_param_idx] });
+  const material = new THREE.MeshBasicMaterial({ color: color[current_param_idx] }); //!
 
   const tmp_dynamic_line: any[] = [];
   if (PlotControl.plot_settings.dynamicDraw) {
@@ -166,7 +171,7 @@ function add_cylinder(
       const lineLength = directionVec.length();
       directionVec.normalize();
       const numOfDots = lineLength / dottedLength;
-      const tmp_geometry = new THREE.Geometry();
+      const tmp_geometry = new THREE.Geometry(); //!
       for (let j = 1; j + 1 < numOfDots; j += 2) {
         // 点線の各点を追加
         const l = make_cylinder(
@@ -174,29 +179,29 @@ function add_cylinder(
           posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength)),
           scaledWidth,
           material
-        );
-        if (PlotControl.plot_settings.dynamicDraw) tmp_geometry.merge(<any>l.geometry.clone(), l.matrix.clone());
-        linesGeometry.merge(<any>l.geometry, l.matrix);
+        ); //!
+        if (PlotControl.plot_settings.dynamicDraw) tmp_geometry.merge(<any>l.geometry.clone(), l.matrix.clone()); //!
+        linesGeometry.merge(<any>l.geometry, l.matrix); //!
       }
       if (PlotControl.plot_settings.dynamicDraw) {
-        const l: any = new THREE.Mesh(tmp_geometry, material);
+        const l: any = new THREE.Mesh(tmp_geometry, material); //!
         l.isPP = true;
         tmp_dynamic_line.push(l);
 
         animationControlState.accumulative_merged_lines[PlotControl.array].push(
-          new THREE.Mesh(linesGeometry.clone(), material)
+          new THREE.Mesh(linesGeometry.clone(), material) //!
         );
       }
     } else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) {
       // IPの各折れ線を追加
-      const l = make_cylinder(current_line_vec[i].vec, current_line_vec[i + 1].vec, scaledWidth, material);
+      const l = make_cylinder(current_line_vec[i].vec, current_line_vec[i + 1].vec, scaledWidth, material); //!
       if (PlotControl.plot_settings.dynamicDraw) tmp_dynamic_line.push(l);
-      linesGeometry.merge(<any>l.geometry, l.matrix);
+      linesGeometry.merge(<any>l.geometry, l.matrix); //!
     }
   }
   if (PlotControl.plot_settings.dynamicDraw) animationControlState.dynamic_lines[PlotControl.array] = tmp_dynamic_line;
 
-  const three_line = new THREE.Mesh(linesGeometry, material);
+  const three_line = new THREE.Mesh(linesGeometry, material); //!
   if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
 
   if (!line.plot) {
@@ -253,9 +258,10 @@ function add_line(
       const numOfDots = lineLength / dottedLength;
       for (let j = 1; j + 1 < numOfDots; j += 2) {
         // 点線の各点を追加
-        const tmpBegin = posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength));
-        const tmpEnd = posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength));
-        lines.push(tmpBegin, tmpEnd);
+        lines.push(
+          posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength)),
+          posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength))
+        );
       }
       if (PlotControl.plot_settings.dynamicDraw) {
         const l: any = make_line([posBegin, posEnd], material);
@@ -413,7 +419,7 @@ export function dfs_each_line(
   } catch (ex) {
     console.log(ex);
     console.log(ex.stack);
-    DOMControl.showToast('Plot failed: ' + ex.name + '(' + ex.message + ')', 3000, 'red darken-4');
+    DOMControl.showToast(`Plot failed: ${ex.name}(${ex.message})`, 3000, 'red darken-4');
     line.plotting = false;
     PlotControl.checkAndStopPreloader();
   }
@@ -501,18 +507,8 @@ export function range_make_all() {
           break;
         } else {
           face_geometry.vertices.push(
-            new THREE.Vector3(
-              animationControlState.animation_line[j].vecs[time_r].x,
-              animationControlState.animation_line[j].vecs[time_r].y,
-              animationControlState.animation_line[j].vecs[time_r].z
-            )
-          );
-          face_geometry.vertices.push(
-            new THREE.Vector3(
-              animationControlState.animation_line[j + 1].vecs[time_r].x,
-              animationControlState.animation_line[j + 1].vecs[time_r].y,
-              animationControlState.animation_line[j + 1].vecs[time_r].z
-            )
+            animationControlState.animation_line[j].vecs[time_r].clone(),
+            animationControlState.animation_line[j + 1].vecs[time_r].clone()
           );
         }
         time_r++;
