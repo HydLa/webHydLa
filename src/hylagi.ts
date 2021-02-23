@@ -1,6 +1,6 @@
 import { DOMControl } from './dom_control';
 import { EditorControl } from './editor_control';
-import { HydatControl } from './hydat_control';
+import { loadHydat } from './hydat_control';
 import { StorageControl } from './storage_control';
 
 const first_script_element = document.getElementsByTagName('script')[0];
@@ -79,7 +79,7 @@ export class HyLaGIController {
             DOMControl.showToast('Simulation was successful.', 1000, '');
             if (response.hydat != undefined) {
               response.hydat.name = StorageControl.loadHydlaName();
-              HydatControl.loadHydat(response.hydat);
+              loadHydat(response.hydat);
             } else {
               DOMControl.selectLogTab();
             }

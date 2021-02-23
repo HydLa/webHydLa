@@ -10,7 +10,7 @@ import 'ace-builds/src-noconflict/keybinding-vim';
 import { DOMControl } from './dom_control';
 import { StorageControl } from './storage_control';
 import { HyLaGIController } from './hylagi';
-import { HydatControl } from './hydat_control';
+import { loadHydat } from './hydat_control';
 
 /* set default hydla code */
 const default_hydla = `// a sample hydla code: bouncing_particle.hydla
@@ -123,7 +123,7 @@ export class EditorControl {
         const ext = splitted_strs[splitted_strs.length - 1].toLowerCase();
         if (ext == 'hydat') {
           fr.onload = () => {
-            HydatControl.loadHydat(JSON.parse(<string>fr.result));
+            loadHydat(JSON.parse(<string>fr.result));
           };
         } else {
           StorageControl.saveHydlaName(input_file.name);
