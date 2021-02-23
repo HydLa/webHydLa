@@ -119,7 +119,7 @@ export function init() {
     HyLaGIController.exec();
   });
   document.getElementById('toggle-input-pane')?.addEventListener('click', () => {
-    DOMControl.toggleInputPane();
+    toggleInputPane();
   });
 }
 
