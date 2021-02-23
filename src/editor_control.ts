@@ -7,7 +7,7 @@ import 'ace-builds/src-noconflict/theme-clouds';
 import 'ace-builds/src-noconflict/keybinding-emacs';
 import 'ace-builds/src-noconflict/keybinding-vim';
 
-import { DOMControl } from './dom_control';
+import { showToast } from './dom_control';
 import { StorageControl } from './storage_control';
 import { HyLaGIController } from './hylagi';
 import { HydatControl } from './hydat_control';
@@ -142,7 +142,7 @@ export class EditorControl {
     this.autosave_event_enabled = false;
     this.autosave_changed = false;
     StorageControl.saveHydla(this.editor.getValue());
-    DOMControl.showToast('Saved', 1000, '');
+    showToast('Saved', 1000, '');
 
     setTimeout(() => {
       if (this.autosave_changed) {
