@@ -32,20 +32,20 @@ interface AnimationControlState {
   dynamic_lines: any[][];
   /** sceneに追加された線を登録しておく */
   drawn_dynamic_lines: any[][];
-  
+
   /**
    * 最適化のために各PPまでの線を累積マージして格納しておく<br>
    * accumulative_merged_lines[i][j]: i本目の線について2j+1フェーズ目までの線をマージした線
    */
   accumulative_merged_lines: any[][];
   /** accumulative_merged_linesをどこまで追加したか */
-  amli:number;
+  amli: number;
 
   /** PlotLine.indexとPlotControl.arrayの対応 */
   index_array_multibimap: MultiBiMap<number, number>;
 }
 
-export const animationControlState:AnimationControlState = {
+export const animationControlState: AnimationControlState = {
   current_line_vec_animation: [],
   maxlen: 0,
   animation_line: [],
@@ -57,7 +57,7 @@ export const animationControlState:AnimationControlState = {
   drawn_dynamic_lines: [],
   accumulative_merged_lines: [],
   amli: 0,
-  index_array_multibimap: new MultiBiMap<number, number>()
+  index_array_multibimap: new MultiBiMap<number, number>(),
 };
 
 function add_plot(line: PlotLine) {
@@ -155,7 +155,8 @@ function add_cylinder(
   if (PlotControl.plot_settings.dynamicDraw) {
     if (animationControlState.accumulative_merged_lines.length - 1 < PlotControl.array)
       animationControlState.accumulative_merged_lines.push([]);
-    if (animationControlState.dynamic_lines.length - 1 < PlotControl.array) animationControlState.dynamic_lines.push([]);
+    if (animationControlState.dynamic_lines.length - 1 < PlotControl.array)
+      animationControlState.dynamic_lines.push([]);
   }
   for (let i = 0; i + 1 < current_line_vec.length; i++) {
     if (current_line_vec[i + 1].isPP) {
@@ -188,12 +189,7 @@ function add_cylinder(
       }
     } else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) {
       // IPの各折れ線を追加
-      const l = make_cylinder(
-        current_line_vec[i].vec,
-        current_line_vec[i + 1].vec,
-        scaledWidth,
-        material
-      );
+      const l = make_cylinder(current_line_vec[i].vec, current_line_vec[i + 1].vec, scaledWidth, material);
       if (PlotControl.plot_settings.dynamicDraw) tmp_dynamic_line.push(l);
       linesGeometry.merge(<any>l.geometry, l.matrix);
     }
@@ -244,7 +240,8 @@ function add_line(
   if (PlotControl.plot_settings.dynamicDraw) {
     if (animationControlState.accumulative_merged_lines.length - 1 < PlotControl.array)
       animationControlState.accumulative_merged_lines.push([]);
-    if (animationControlState.dynamic_lines.length - 1 < PlotControl.array) animationControlState.dynamic_lines.push([]);
+    if (animationControlState.dynamic_lines.length - 1 < PlotControl.array)
+      animationControlState.dynamic_lines.push([]);
   }
   for (let i = 0; i + 1 < current_line_vec.length; i++) {
     if (current_line_vec[i + 1].isPP) {
@@ -343,8 +340,7 @@ export function dfs_each_line(
       }
       if (phase.children.length == 0) {
         // on leaves
-        if (PlotControl.plot_settings.lineWidth == 1)
-          add_line(current_line_vec, current_param_idx, line, color);
+        if (PlotControl.plot_settings.lineWidth == 1) add_line(current_line_vec, current_param_idx, line, color);
         else add_cylinder(current_line_vec, current_param_idx, line, width, color);
         add_sphere(current_param_idx, color);
 
@@ -468,8 +464,7 @@ function check_parameter_condition(
         const ub = p.upper_bound.value.getValue(parameter_condition_list);
         if (
           !(
-            lb <= c.getValue(parameter_condition_list) + epsilon &&
-            ub >= c.getValue(parameter_condition_list) - epsilon
+            lb <= c.getValue(parameter_condition_list) + epsilon && ub >= c.getValue(parameter_condition_list) - epsilon
           )
         ) {
           included = false;
@@ -680,7 +675,7 @@ export function getLength() {
 }
 
 /** 指定時刻にシーク（移動）する */
-export function seekAnimation(time:number){
+export function seekAnimation(time: number) {
   animationControlState.time = time;
   animate();
 }
