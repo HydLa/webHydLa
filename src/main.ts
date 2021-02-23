@@ -3,7 +3,7 @@ import { DatGUIControl } from './dat_gui_control';
 import { NewUI } from './new_ui';
 import { PlotSettingsControl } from './plot_settings';
 import { init as DOMControl_init } from './dom_control';
-import { EditorControl } from './editor_control';
+import { init as EditorControl_init } from './editor_control';
 import { StorageControl } from './storage_control';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { PlotControl } from './plot_control';
@@ -30,7 +30,7 @@ $(document).ready(() => {
   NewUI.init(GraphControl.controls);
   DOMControl_init();
 
-  EditorControl.init(saved_hydla);
+  EditorControl_init(saved_hydla);
   StorageControl.init();
 
   GraphControl.update2DMode(PlotSettingsControl.plot_settings.twoDimensional);

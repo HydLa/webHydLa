@@ -1,6 +1,6 @@
 import { PlotSettings, PlotSettingsControl } from './plot_settings';
 import { HydatRaw } from './hydat';
-import { EditorControl } from './editor_control';
+import { setKeyBinding, setTheme } from './editor_control';
 import { HydatControl } from './hydat_control';
 
 const storage = localStorage;
@@ -28,8 +28,8 @@ export class StorageControl {
       key_binding_selector.value = key_binding_selector.options[key_binding_selector.selectedIndex].value;
       storage.setItem('key_binding', key_binding_selector.value);
     }
-    if (key_binding_selector.value == '') EditorControl.setKeyBinding(null);
-    else EditorControl.setKeyBinding(key_binding_selector.value);
+    if (key_binding_selector.value == '') setKeyBinding(null);
+    else setKeyBinding(key_binding_selector.value);
   }
 
   /* function to save theme into Web Storage */
@@ -45,7 +45,7 @@ export class StorageControl {
     } else {
       storage.setItem('theme', theme_selector.value);
     }
-    EditorControl.setTheme(theme_selector.value);
+    setTheme(theme_selector.value);
   }
 
   /* function to save HydLa code into Web Storage */

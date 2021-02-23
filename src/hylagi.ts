@@ -1,5 +1,5 @@
 import { startPreloader, stopPreloader, showToast, selectLogTab } from './dom_control';
-import { EditorControl } from './editor_control';
+import { getEditedCode } from './editor_control';
 import { HydatControl } from './hydat_control';
 import { StorageControl } from './storage_control';
 
@@ -16,7 +16,7 @@ export class HyLaGIController {
     if (this.running) {
       this.killHyLaGI();
     } else {
-      EditorControl.sendHydLa();
+      HyLaGIController.sendHydLa(getEditedCode());
     }
   }
   static updateExecIcon() {

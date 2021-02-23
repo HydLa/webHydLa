@@ -1,6 +1,6 @@
 import Materialize from 'materialize-css';
 import { GraphControl } from './graph_control';
-import { EditorControl } from './editor_control';
+import { setFontSize, setTheme, setKeyBinding, resize, loadFile, saveHydla } from './editor_control';
 import { HydatControl } from './hydat_control';
 import { HyLaGIController } from './hylagi';
 import { StorageControl } from './storage_control';
@@ -35,16 +35,16 @@ export function init() {
   });
 
   document.getElementById('editor_font_size')?.addEventListener('change', (e) => {
-    EditorControl.setFontSize((e.target as HTMLInputElement).valueAsNumber);
+    setFontSize((e.target as HTMLInputElement).valueAsNumber);
   });
 
   document.getElementById('theme_selector')?.addEventListener('change', (e) => {
-    EditorControl.setTheme((e.target as HTMLInputElement).value);
+    setTheme((e.target as HTMLInputElement).value);
     StorageControl.saveTheme();
   });
 
   document.getElementById('key_binding_selector')?.addEventListener('change', (e) => {
-    EditorControl.setKeyBinding((e.target as HTMLInputElement).value);
+    setKeyBinding((e.target as HTMLInputElement).value);
     StorageControl.saveKeyBinding();
   });
 
@@ -70,7 +70,7 @@ export function init() {
         $('#left-pane').width(initial_width + diff);
         $('#editor').width(initial_editor + diff);
         GraphControl.resizeGraphArea();
-        EditorControl.resize();
+        resize();
       })
       .mouseup(() => {
         dragging = false;
@@ -98,7 +98,7 @@ export function init() {
         const diff = e.pageY - initial_y;
         $('#input-pane').height(initial_height + diff);
         $('#editor').height(initial_height + diff);
-        EditorControl.resize();
+        resize();
       })
       .mouseup(() => {
         dragging = false;
@@ -107,10 +107,10 @@ export function init() {
   });
 
   document.getElementById('load-file')?.addEventListener('click', () => {
-    EditorControl.loadFile();
+    loadFile();
   });
   document.getElementById('save-hydla')?.addEventListener('click', () => {
-    EditorControl.saveHydla();
+    saveHydla();
   });
   document.getElementById('save-hydat')?.addEventListener('click', () => {
     HydatControl.saveHydat();
