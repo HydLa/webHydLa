@@ -1,6 +1,6 @@
 import { PlotLine } from './plot_line';
 import { PlotControl } from './plot_control';
-import { DOMControl } from './dom_control';
+import { startPreloader, showToast } from './dom_control';
 import * as THREE from 'three';
 import { GraphControl } from './graph_control';
 import { HydatParameter, HydatParameterInterval, HydatPhase } from './hydat';
@@ -79,7 +79,7 @@ export class AnimationControl {
       dt: dt,
       parameter_condition_list: parameter_condition_list,
     };
-    DOMControl.startPreloader();
+    startPreloader();
     PlotControl.array = -1;
     this.animation_line = [];
     this.maxlen = 0;
@@ -397,7 +397,7 @@ export class AnimationControl {
     } catch (ex) {
       console.log(ex);
       console.log(ex.stack);
-      DOMControl.showToast('Plot failed: ' + ex.name + '(' + ex.message + ')', 3000, 'red darken-4');
+      showToast('Plot failed: ' + ex.name + '(' + ex.message + ')', 3000, 'red darken-4');
       line.plotting = false;
       PlotControl.checkAndStopPreloader();
     }
