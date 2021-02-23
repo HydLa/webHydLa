@@ -47,7 +47,6 @@ async function loadContents() {
   const filename = getSelectedFilename();
   if (filename === null) return;
   const content = getContent(filename);
-  if (content === undefined) return;
   EditorControl.editor.setValue(await content);
 }
 
