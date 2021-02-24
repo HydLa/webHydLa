@@ -3,7 +3,7 @@ import { PlotControl } from './plot_control';
 import { startPreloader, showToast } from './dom_control';
 import * as THREE from 'three';
 import { GraphControl } from './graph_control';
-import { HydatParameter, HydatParameterInterval, HydatPhase } from './hydat';
+import { HydatException, HydatParameter, HydatParameterInterval, HydatPhase } from './hydat';
 import { RGB, Triplet } from './plot_utils';
 import { HydatControl } from './hydat_control';
 import { parse, Construct, Constant } from './parse';
@@ -319,64 +319,20 @@ export function dfs_each_line(
         ++phase_index.index;
         phase = phase_index.phase;
       }
-      while2: for (;;) {
-        // search next child to plot
-        for (; /* restart searching */ phase_index.index < phase.children.length; phase_index.index++) {
-          const child = phase.children[phase_index.index];
-          const included_by_parameter_condition = check_parameter_condition(
-            child.parameter_maps,
-            parameter_condition_list[current_param_idx]
-          );
-          if (included_by_parameter_condition) {
-            // パラメータに含まれるchild，つまり描画するべきchildが見つかった
-            phase_index_array.push({ phase: child, index: 0 }); // start from 0th child
-            const current_time = new Date().getTime();
-            if (current_time - line.last_plot_time >= 200) {
-              // interrupt searching
-              line.last_plot_time = current_time;
-              // use setTimeout to check event queue
-              requestAnimationFrame(function () {
-                dfs_each_line(
-                  phase_index_array,
-                  axes,
-                  line,
-                  width,
-                  color,
-                  dt,
-                  parameter_condition_list,
-                  current_param_idx,
-                  current_line_vec
-                );
-              });
-              return;
-            }
-            break while2; // go to child
-          }
-        }
-
-        // 以下，描画するべきchildが見つからなかった場合
-        // Plot for this current_param_idx is completed.
-        if (phase_index_array.length == 1) {
-          if (current_param_idx == parameter_condition_list.length - 1) {
-            // last
-            // Plot is completed.
-            line.plotting = false;
-            PlotControl.checkAndStopPreloader();
-            return;
-          } else {
-            // 次のparameter conditionで探索しなおす
-            ++current_param_idx;
-            phase_index_array[0].index = 0;
-            break;
-          }
-        } else {
-          // go to parent phase
-          phase_index_array.pop();
-          phase_index = phase_index_array[phase_index_array.length - 1];
-          ++phase_index.index;
-          phase = phase_index.phase; // start from next sibling
-        }
-      }
+      const finished = dfs_each_line_sub(
+        phase_index_array,
+        axes,
+        line,
+        width,
+        color,
+        dt,
+        parameter_condition_list,
+        current_param_idx,
+        current_line_vec,
+        phase_index,
+        phase
+      );
+      if (finished) return;
     }
   } catch (ex) {
     console.log(ex);
@@ -384,6 +340,79 @@ export function dfs_each_line(
     showToast(`Plot failed: ${ex.name}(${ex.message})`, 3000, 'red darken-4');
     line.plotting = false;
     PlotControl.checkAndStopPreloader();
+  }
+}
+
+function dfs_each_line_sub(
+  phase_index_array: { phase: HydatPhase; index: number }[],
+  axes: Triplet<Construct>,
+  line: PlotLine,
+  width: number,
+  color: number[],
+  dt: number,
+  parameter_condition_list: { [key: string]: Constant }[],
+  current_param_idx: number,
+  current_line_vec: { vec: THREE.Vector3; isPP: boolean }[],
+  phase_index: { phase: HydatPhase; index: number },
+  phase: HydatPhase
+) {
+  for (;;) {
+    // search next child to plot
+    for (; /* restart searching */ phase_index.index < phase.children.length; phase_index.index++) {
+      const child = phase.children[phase_index.index];
+      const included_by_parameter_condition = check_parameter_condition(
+        child.parameter_maps,
+        parameter_condition_list[current_param_idx]
+      );
+      if (included_by_parameter_condition) {
+        // パラメータに含まれるchild，つまり描画するべきchildが見つかった
+        phase_index_array.push({ phase: child, index: 0 }); // start from 0th child
+        const current_time = new Date().getTime();
+        if (current_time - line.last_plot_time >= 200) {
+          // interrupt searching
+          line.last_plot_time = current_time;
+          // use setTimeout to check event queue
+          requestAnimationFrame(function () {
+            dfs_each_line(
+              phase_index_array,
+              axes,
+              line,
+              width,
+              color,
+              dt,
+              parameter_condition_list,
+              current_param_idx,
+              current_line_vec
+            );
+          });
+          return true;
+        }
+        return false; // go to child
+      }
+    }
+
+    // 以下，描画するべきchildが見つからなかった場合
+    // Plot for this current_param_idx is completed.
+    if (phase_index_array.length == 1) {
+      if (current_param_idx == parameter_condition_list.length - 1) {
+        // last
+        // Plot is completed.
+        line.plotting = false;
+        PlotControl.checkAndStopPreloader();
+        return true;
+      } else {
+        // 次のparameter conditionで探索しなおす
+        ++current_param_idx;
+        phase_index_array[0].index = 0;
+        break;
+      }
+    } else {
+      // go to parent phase
+      phase_index_array.pop();
+      phase_index = phase_index_array[phase_index_array.length - 1];
+      ++phase_index.index;
+      phase = phase_index.phase; // start from next sibling
+    }
   }
 }
 
