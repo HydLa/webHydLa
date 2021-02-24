@@ -7,10 +7,10 @@ import 'ace-builds/src-noconflict/theme-clouds';
 import 'ace-builds/src-noconflict/keybinding-emacs';
 import 'ace-builds/src-noconflict/keybinding-vim';
 
-import { DOMControl } from './dom_control';
+import { showToast } from './dom_control';
 import { StorageControl } from './storage_control';
 import { HyLaGIController } from './hylagi';
-import { HydatControl } from './hydat_control';
+import { loadHydat } from './hydat_control';
 
 /* set default hydla code */
 const default_hydla = `// a sample hydla code: bouncing_particle.hydla
@@ -123,7 +123,7 @@ export class EditorControl {
         const ext = splitted_strs[splitted_strs.length - 1].toLowerCase();
         if (ext == 'hydat') {
           fr.onload = () => {
-            HydatControl.loadHydat(JSON.parse(<string>fr.result));
+            loadHydat(JSON.parse(<string>fr.result));
           };
         } else {
           StorageControl.saveHydlaName(input_file.name);
@@ -142,7 +142,7 @@ export class EditorControl {
     this.autosave_event_enabled = false;
     this.autosave_changed = false;
     StorageControl.saveHydla(this.editor.getValue());
-    DOMControl.showToast('Saved', 1000, '');
+    showToast('Saved', 1000, '');
 
     setTimeout(() => {
       if (this.autosave_changed) {
