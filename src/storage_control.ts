@@ -77,8 +77,8 @@ export class StorageControl {
     storage.setItem('hydla_name', hydla_name);
   }
 
-  static loadHydlaName() {
-    return storage.getItem('hydla_name');
+  static loadHydlaName(): string {
+    return storage.getItem('hydla_name')!;
   }
 
   static saveHydatSettings() {
