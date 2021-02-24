@@ -72,19 +72,23 @@ class GraphControl {
 export const graphControl = new GraphControl();
 
 export function resizeGraphRenderer() {
+  /**
+   * ウィンドウサイズを変更した際, 座標空間も同様に拡大/縮小されるようにカメラ位置の調整等を行う
+   */
+
   if (graphControl.elem.clientWidth > 0 && graphControl.elem.clientHeight > 0) {
     graphControl.renderer.setSize(graphControl.elem.clientWidth, graphControl.elem.clientHeight);
     const prev_width = graphControl.camera.right - graphControl.camera.left;
     const prev_height = graphControl.camera.top - graphControl.camera.bottom;
     let extend_rate;
-    if (prev_width != graphControl.camera.right - graphControl.camera.left)
-      extend_rate = graphControl.elem.clientWidth / prev_width;
+    if (prev_width != graphControl.elem.clientWidth) extend_rate = graphControl.elem.clientWidth / prev_width;
     else extend_rate = graphControl.elem.clientHeight / prev_height;
 
     graphControl.camera.left = -graphControl.elem.clientWidth / 2;
     graphControl.camera.right = graphControl.elem.clientWidth / 2;
     graphControl.camera.top = graphControl.elem.clientHeight / 2;
     graphControl.camera.bottom = -graphControl.elem.clientHeight / 2;
+
     graphControl.camera.zoom *= extend_rate;
 
     graphControl.camera.updateProjectionMatrix();
@@ -102,6 +106,9 @@ export function resizeGraphRenderer() {
 }
 
 export function modifyNameLabel(name: string | undefined) {
+  /**
+   * 座標画面の左下部に現在動かしているファイル名を表示（open controls に隠れる位置）
+   */
   let text = '';
   if (!(name == undefined || name == null)) {
     text = name;
