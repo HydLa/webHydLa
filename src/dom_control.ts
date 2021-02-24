@@ -1,15 +1,22 @@
 import Materialize from 'materialize-css';
 import { GraphControl } from './graph_control';
-import { setFontSize, setTheme, setKeyBinding, resize, loadFile, saveHydla } from './editor_control';
+import {
+  setEditorFontSize,
+  setEditorTheme,
+  setEditorKeyBinding,
+  resizeEditor,
+  loadFile,
+  saveHydla,
+} from './editor_control';
 import { HydatControl } from './hydat_control';
 import { HyLaGIController } from './hylagi';
 import { StorageControl } from './storage_control';
 
-class DOMControlState {
+class DOMState {
   static tabs: Materialize.Tabs;
 }
 
-export function init() {
+export function initDOMState() {
   Materialize.FormSelect.init(document.querySelectorAll('select'));
   $(window).resize(function () {
     GraphControl.resizeGraphRenderer();
@@ -25,7 +32,7 @@ export function init() {
     hover: false,
   });
   Materialize.Modal.init(document.querySelectorAll('.modal'));
-  DOMControlState.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
+  DOMState.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
 
   $('fix_button').on('change', function () {
     GraphControl.replotAll();
@@ -35,16 +42,16 @@ export function init() {
   });
 
   document.getElementById('editor_font_size')?.addEventListener('change', (e) => {
-    setFontSize((e.target as HTMLInputElement).valueAsNumber);
+    setEditorFontSize((e.target as HTMLInputElement).valueAsNumber);
   });
 
   document.getElementById('theme_selector')?.addEventListener('change', (e) => {
-    setTheme((e.target as HTMLInputElement).value);
+    setEditorTheme((e.target as HTMLInputElement).value);
     StorageControl.saveTheme();
   });
 
   document.getElementById('key_binding_selector')?.addEventListener('change', (e) => {
-    setKeyBinding((e.target as HTMLInputElement).value);
+    setEditorKeyBinding((e.target as HTMLInputElement).value);
     StorageControl.saveKeyBinding();
   });
 
@@ -70,7 +77,7 @@ export function init() {
         $('#left-pane').width(initial_width + diff);
         $('#editor').width(initial_editor + diff);
         GraphControl.resizeGraphArea();
-        resize();
+        resizeEditor();
       })
       .mouseup(() => {
         dragging = false;
@@ -98,7 +105,7 @@ export function init() {
         const diff = e.pageY - initial_y;
         $('#input-pane').height(initial_height + diff);
         $('#editor').height(initial_height + diff);
-        resize();
+        resizeEditor();
       })
       .mouseup(() => {
         dragging = false;
@@ -160,5 +167,5 @@ export function toggleInputPane() {
 }
 
 export function selectLogTab() {
-  DOMControlState.tabs.select('output-area');
+  DOMState.tabs.select('output-area');
 }

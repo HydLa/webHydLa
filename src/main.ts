@@ -2,8 +2,8 @@ import { GraphControl } from './graph_control';
 import { DatGUIControl } from './dat_gui_control';
 import { NewUI } from './new_ui';
 import { PlotSettingsControl } from './plot_settings';
-import { init as DOMControl_init } from './dom_control';
-import { init as EditorControl_init } from './editor_control';
+import { initDOMState } from './dom_control';
+import { initEditorState } from './editor_control';
 import { StorageControl } from './storage_control';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { PlotControl } from './plot_control';
@@ -28,9 +28,9 @@ $(document).ready(() => {
 
   PlotLineMapControl.init();
   NewUI.init(GraphControl.controls);
-  DOMControl_init();
+  initDOMState();
 
-  EditorControl_init(saved_hydla);
+  initEditorState(saved_hydla);
   StorageControl.init();
 
   GraphControl.update2DMode(PlotSettingsControl.plot_settings.twoDimensional);

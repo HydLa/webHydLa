@@ -24,25 +24,25 @@ INIT, FALL << BOUNCE.
 // #hylagi -p 10
 `;
 
-class EditorControlState {
+class EditorState {
   static editor: ace.Ace.Editor;
   static autosave_event_enabled = true;
   static autosave_changed = false;
 }
 
-export function init(saved_hydla: string | null) {
+export function initEditorState(saved_hydla: string | null) {
   /* ID="editor" な div をエディタにする */
-  EditorControlState.editor = ace.edit('editor');
+  EditorState.editor = ace.edit('editor');
 
   /* 諸々の設定 */
-  EditorControlState.editor.setTheme('ace/theme/sqlserver');
+  setEditorTheme('ace/theme/sqlserver');
   ace.config.setModuleUrl('ace/mode/hydla', './mode-hydla.js');
-  EditorControlState.editor.getSession().setMode('ace/mode/hydla');
-  EditorControlState.editor.getSession().setTabSize(4);
-  EditorControlState.editor.getSession().setUseSoftTabs(true);
-  EditorControlState.editor.getSession().setUseWrapMode(true);
-  EditorControlState.editor.setHighlightActiveLine(false);
-  EditorControlState.editor.setOptions({
+  EditorState.editor.getSession().setMode('ace/mode/hydla');
+  EditorState.editor.getSession().setTabSize(4);
+  EditorState.editor.getSession().setUseSoftTabs(true);
+  EditorState.editor.getSession().setUseWrapMode(true);
+  EditorState.editor.setHighlightActiveLine(false);
+  EditorState.editor.setOptions({
     enableBasicAutocompletion: true,
     enableSnippets: true,
     enableLiveAutocompletion: true,
@@ -50,36 +50,40 @@ export function init(saved_hydla: string | null) {
   });
 
   /* set keybinding */
-  EditorControlState.editor.commands.addCommand({
+  EditorState.editor.commands.addCommand({
     name: 'runHyLaGI',
     bindKey: { win: 'Ctrl-Enter', mac: 'Command-Enter' },
     exec: function () {
-      HyLaGIController.sendHydLa(getEditedCode());
+      sendEditorHydla();
     },
     readOnly: true,
   });
 
   /* load saved hydla code if it exist */
   if (saved_hydla) {
-    setEditorACode(saved_hydla);
+    setEditorHydla(saved_hydla);
   } else {
     StorageControl.saveHydlaName('bouncing_ball');
-    setEditorACode(default_hydla);
+    setEditorHydla(default_hydla);
   }
-  EditorControlState.editor.clearSelection();
+  EditorState.editor.clearSelection();
 
-  EditorControlState.editor.on('change', () => {
-    if (EditorControlState.autosave_event_enabled) {
+  EditorState.editor.on('change', () => {
+    if (EditorState.autosave_event_enabled) {
       saveHydlaToWebstorage();
     } else {
-      EditorControlState.autosave_changed = true;
+      EditorState.autosave_changed = true;
     }
   });
 }
 
+export function sendEditorHydla() {
+  HyLaGIController.sendHydla(EditorState.editor.getValue());
+}
+
 /* function to save HydLa file */
 export function saveHydla() {
-  const blob = new Blob([EditorControlState.editor.getValue()]);
+  const blob = new Blob([EditorState.editor.getValue()]);
   const object = window.URL.createObjectURL(blob);
   const d = new Date();
   const date =
@@ -126,7 +130,7 @@ export function loadFile() {
       } else {
         StorageControl.saveHydlaName(input_file.name);
         fr.onload = () => {
-          setEditorACode(<string>fr.result);
+          setEditorHydla(<string>fr.result);
         };
       }
     },
@@ -137,43 +141,38 @@ export function loadFile() {
 
 /* function to save HydLa code into Web Storage */
 export function saveHydlaToWebstorage() {
-  EditorControlState.autosave_event_enabled = false;
-  EditorControlState.autosave_changed = false;
-  StorageControl.saveHydla(EditorControlState.editor.getValue());
+  EditorState.autosave_event_enabled = false;
+  EditorState.autosave_changed = false;
+  StorageControl.saveHydla(EditorState.editor.getValue());
   showToast('Saved', 1000, '');
 
   setTimeout(() => {
-    if (EditorControlState.autosave_changed) {
+    if (EditorState.autosave_changed) {
       saveHydlaToWebstorage();
     } else {
-      EditorControlState.autosave_event_enabled = true;
+      EditorState.autosave_event_enabled = true;
     }
   }, 5000);
 }
 
-export function setKeyBinding(binding: string | null) {
-  if (!binding) EditorControlState.editor.setKeyboardHandler('');
-  else EditorControlState.editor.setKeyboardHandler(binding);
+export function setEditorKeyBinding(binding: string | null) {
+  if (!binding) EditorState.editor.setKeyboardHandler('');
+  else EditorState.editor.setKeyboardHandler(binding);
 }
 
-export function setTheme(theme: string) {
-  EditorControlState.editor.setTheme(`ace/theme/${theme}`);
+export function setEditorTheme(theme: string) {
+  EditorState.editor.setTheme(`ace/theme/${theme}`);
 }
 
-export function resize() {
-  EditorControlState.editor.resize();
+export function resizeEditor() {
+  EditorState.editor.resize();
 }
 
-export function setFontSize(n: number) {
-  EditorControlState.editor.setOption('fontSize', n);
+export function setEditorFontSize(n: number) {
+  EditorState.editor.setOption('fontSize', n);
 }
 
-/* set the code to edit */
-export function setEditorACode(code: string) {
-  EditorControlState.editor.setValue(code);
-}
-
-/* get the edited code */
-export function getEditedCode(): string {
-  return EditorControlState.editor.getValue();
+/* function to set HydLa code to editor */
+export function setEditorHydla(hydla: string) {
+  EditorState.editor.setValue(hydla);
 }
