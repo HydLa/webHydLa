@@ -1,7 +1,7 @@
 import { startPreloader, stopPreloader, showToast, selectLogTab } from './dom_control';
 import { sendEditorHydla } from './editor_control';
 import { loadHydat } from './hydat_control';
-import { StorageControl } from './storage_control';
+import { loadHydlaNameFromStorage } from './storage_control';
 
 const first_script_element = document.getElementsByTagName('script')[0];
 const html_mode_check_box = <HTMLInputElement>document.getElementById('html_mode_check_box');
@@ -78,7 +78,7 @@ export class HyLaGIController {
           case 0:
             showToast('Simulation was successful.', 1000, '');
             if (response.hydat != undefined) {
-              response.hydat.name = StorageControl.loadHydlaName();
+              response.hydat.name = loadHydlaNameFromStorage();
               loadHydat(response.hydat);
             } else {
               selectLogTab();

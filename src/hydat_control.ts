@@ -1,5 +1,5 @@
 import { Hydat, HydatRaw } from './hydat';
-import { StorageControl } from './storage_control';
+import { saveHydatToStorage } from './storage_control';
 import { GraphControl } from './graph_control';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { PlotControl } from './plot_control';
@@ -53,7 +53,7 @@ export function saveHydat() {
 
 export function loadHydat(hydat: HydatRaw) {
   try {
-    StorageControl.saveHydat(hydat);
+    saveHydatToStorage(hydat);
     HydatControl.current_hydat = new Hydat(hydat);
     DatGUIControl.parameter_setting(HydatControl.current_hydat.parameters);
     GraphControl.modifyNameLabel(HydatControl.current_hydat.name);
