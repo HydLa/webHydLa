@@ -4,8 +4,8 @@ import { GraphControl } from './graph_control';
 import { DatGUIControl } from './dat_gui_control';
 import { HydatControl } from './hydat_control';
 import { StorageControl } from './storage_control';
-import { PlotControl } from './plot_control';
 import { remove_dynamic_line, remove_dynamic_lines, remove_plot } from './animation_control';
+import { PlotSettingsControl } from './plot_settings';
 
 export class PlotLineMapControl {
   static map: { [key: number]: PlotLine } = {};
@@ -25,7 +25,7 @@ export class PlotLineMapControl {
       return;
     }
     DatGUIControl.variable_folder.removeFolder(line.folder);
-    if (PlotControl.plot_settings.dynamicDraw) {
+    if (PlotSettingsControl.plot_settings.dynamicDraw) {
       remove_dynamic_line(line);
     } else {
       remove_plot(line);
@@ -65,8 +65,8 @@ export class PlotLineMapControl {
 
   /** @deprecated */
   static replot() {
-    if (PlotControl.plot_settings.dynamicDraw) {
-      PlotControl.plot_settings.plotInterval = 0.01;
+    if (PlotSettingsControl.plot_settings.dynamicDraw) {
+      PlotSettingsControl.plot_settings.plotInterval = 0.01;
     }
     remove_dynamic_lines();
 
