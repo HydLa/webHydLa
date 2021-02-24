@@ -106,32 +106,22 @@ export function init() {
       });
   });
 
-    document.getElementById('load-file')?.addEventListener('click', () => {
-      EditorControl.loadFile();
-    });
-    document.getElementById('save-hydla')?.addEventListener('click', () => {
-      EditorControl.saveHydla();
-    });
-    document.getElementById('save-hydat')?.addEventListener('click', () => {
-      saveHydat();
-    });
-    document.getElementById('run_button')?.addEventListener('click', () => {
-      HyLaGIController.exec();
-    });
-    document.getElementById('toggle-input-pane')?.addEventListener('click', () => {
-      DOMControl.toggleInputPane();
-    });
-  }
-  static showToast(message: string, duration: number, classes: string) {
-    Materialize.toast({ html: message, displayLength: duration, classes: classes });
-    const toast_container = document.getElementById('toast-container')!;
-    const MAX_CHILDREN_NUM = 5;
-    if (toast_container.children.length > MAX_CHILDREN_NUM) {
-      for (let i = 0; i < toast_container.children.length - MAX_CHILDREN_NUM; i++) {
-        toast_container.removeChild(toast_container.children[i]);
-      }
-    }
-  }
+  document.getElementById('load-file')?.addEventListener('click', () => {
+    EditorControl.loadFile();
+  });
+  document.getElementById('save-hydla')?.addEventListener('click', () => {
+    EditorControl.saveHydla();
+  });
+  document.getElementById('save-hydat')?.addEventListener('click', () => {
+    saveHydat();
+  });
+  document.getElementById('run_button')?.addEventListener('click', () => {
+    HyLaGIController.exec();
+  });
+  document.getElementById('toggle-input-pane')?.addEventListener('click', () => {
+    toggleInputPane();
+  });
+}
 
 export function showToast(message: string, duration: number, classes: string) {
   Materialize.toast({ html: message, displayLength: duration, classes: classes });

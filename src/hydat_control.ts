@@ -60,7 +60,7 @@ export function loadHydat(hydat: HydatRaw) {
   } catch (e) {
     console.log(e);
     console.log(e.stack);
-    DOMControl.showToast(`Failed to load hydat: ${e.name}(${e.message})`, 3000, 'red darken-4');
+    showToast(`Failed to load hydat: ${e.name}(${e.message})`, 3000, 'red darken-4');
   }
   GraphControl.clearPlot();
   if (HydatControl.current_hydat !== undefined) {
