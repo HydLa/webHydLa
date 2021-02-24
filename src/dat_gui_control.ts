@@ -163,7 +163,7 @@ export class DatGUIControl {
         GraphControl.range_mode = DatGUIControl.plot_settings.parameter_condition![key_copy].range;
       });
     }
-    if (Object.keys(pars).length > 0) this.parameter_folder.open();
+    if (pars.size > 0) this.parameter_folder.open();
     else this.parameter_folder.close();
     this.fixLayout();
   }
