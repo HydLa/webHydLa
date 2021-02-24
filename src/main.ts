@@ -7,7 +7,7 @@ import { initEditorState } from './editor_control';
 import { StorageControl } from './storage_control';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { initHydatControl } from './hydat_control';
-import { HyLaGIController } from './hylagi';
+import { initHyLaGIControllerState } from './hylagi';
 import { initExampleLoader } from './example_loader';
 import { setBackgroundColor } from './plot_control';
 
@@ -23,7 +23,7 @@ $(document).ready(() => {
   DatGUIControl.init(PlotSettingsControl.plot_settings);
 
   initHydatControl(saved_hydat);
-  HyLaGIController.init();
+  initHyLaGIControllerState();
 
   PlotLineMapControl.init();
   NewUI.init(GraphControl.controls);
