@@ -3,7 +3,7 @@ import { StorageControl } from './storage_control';
 import { GraphControl } from './graph_control';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { PlotControl } from './plot_control';
-import { DOMControl } from './dom_control';
+import { showToast } from './dom_control';
 import { DatGUIControl } from './dat_gui_control';
 
 export class HydatControl {
