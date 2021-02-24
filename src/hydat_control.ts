@@ -1,10 +1,10 @@
 import { Hydat, HydatRaw } from './hydat';
 import { saveHydatToStorage } from './storage_control';
-import { GraphControl } from './graph_control';
+import { modifyNameLabel, clearPlot } from './graph_control';
 import { PlotLineMapControl } from './plot_line_map_control';
-import { PlotControl } from './plot_control';
 import { showToast } from './dom_control';
 import { DatGUIControl } from './dat_gui_control';
+import { update_axes } from './plot_control';
 
 export class HydatControl {
   static current_hydat: Hydat | undefined;
@@ -56,15 +56,15 @@ export function loadHydat(hydat: HydatRaw) {
     saveHydatToStorage(hydat);
     HydatControl.current_hydat = new Hydat(hydat);
     DatGUIControl.parameter_setting(HydatControl.current_hydat.parameters);
-    GraphControl.modifyNameLabel(HydatControl.current_hydat.name);
+    modifyNameLabel(HydatControl.current_hydat.name);
   } catch (e) {
     console.log(e);
     console.log(e.stack);
     showToast(`Failed to load hydat: ${e.name}(${e.message})`, 3000, 'red darken-4');
   }
-  GraphControl.clearPlot();
+  clearPlot();
   if (HydatControl.current_hydat !== undefined) {
     PlotLineMapControl.initVariableSelector(HydatControl.current_hydat);
   }
-  PlotControl.update_axes(true);
+  update_axes(true);
 }

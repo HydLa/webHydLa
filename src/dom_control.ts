@@ -1,5 +1,5 @@
 import Materialize from 'materialize-css';
-import { GraphControl } from './graph_control';
+import { resizeGraphRenderer, replotAll, resizeGraphArea, startResizingGraphArea } from './graph_control';
 import {
   setEditorFontSize,
   setEditorTheme,
@@ -9,7 +9,7 @@ import {
   saveHydla,
 } from './editor_control';
 import { saveHydat } from './hydat_control';
-import { HyLaGIController } from './hylagi';
+import { execHyLaGI } from './hylagi';
 import { saveThemeToStorage, saveKeyBindingToStorage } from './storage_control';
 
 class DOMState {
@@ -19,7 +19,7 @@ class DOMState {
 export function initDOMState() {
   Materialize.FormSelect.init(document.querySelectorAll('select'));
   $(window).resize(function () {
-    GraphControl.resizeGraphRenderer();
+    resizeGraphRenderer();
   });
 
   /* initialize materialize components */
@@ -35,10 +35,10 @@ export function initDOMState() {
   DOMState.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
 
   $('fix_button').on('change', function () {
-    GraphControl.replotAll();
+    replotAll();
   });
   $('step_button').on('change', function () {
-    GraphControl.replotAll();
+    replotAll();
   });
 
   document.getElementById('editor_font_size')?.addEventListener('change', (e) => {
@@ -76,7 +76,7 @@ export function initDOMState() {
         const diff = e.pageX - initial_x;
         $('#left-pane').width(initial_width + diff);
         $('#editor').width(initial_editor + diff);
-        GraphControl.resizeGraphArea();
+        resizeGraphArea();
         resizeEditor();
       })
       .mouseup(() => {
@@ -123,7 +123,7 @@ export function initDOMState() {
     saveHydat();
   });
   document.getElementById('run_button')?.addEventListener('click', () => {
-    HyLaGIController.exec();
+    execHyLaGI();
   });
   document.getElementById('toggle-input-pane')?.addEventListener('click', () => {
     toggleInputPane();
@@ -163,7 +163,7 @@ export function toggleInputPane() {
     tgl.classList.remove('mdi-navigation-chevron-left');
     tgl.classList.add('mdi-navigation-chevron-right');
   }
-  GraphControl.startResizingGraphArea();
+  startResizingGraphArea();
 }
 
 export function selectLogTab() {
