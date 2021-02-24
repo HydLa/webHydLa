@@ -384,9 +384,15 @@ export function setBackgroundColor(color: string) {
   plotState.axisColors = axisColorBases.map(
     (base) =>
       '#' +
-      ('00' + Math.floor(base.r * brightness).toString(16)).slice(-2) +
-      ('00' + Math.floor(base.g * brightness).toString(16)).slice(-2) +
-      ('00' + Math.floor(base.b * brightness).toString(16)).slice(-2)
+      Math.floor(base.r * brightness)
+        .toString(16)
+        .padStart(2, '0') +
+      Math.floor(base.g * brightness)
+        .toString(16)
+        .padStart(2, '0') +
+      Math.floor(base.b * brightness)
+        .toString(16)
+        .padStart(2, '0')
   );
   GraphControl.renderer.setClearColor(color);
   update_axes(true);
