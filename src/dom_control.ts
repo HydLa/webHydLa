@@ -8,7 +8,7 @@ import {
   loadFile,
   saveHydla,
 } from './editor_control';
-import { HydatControl } from './hydat_control';
+import { saveHydat } from './hydat_control';
 import { HyLaGIController } from './hylagi';
 import { StorageControl } from './storage_control';
 
@@ -120,7 +120,7 @@ export function initDOMState() {
     saveHydla();
   });
   document.getElementById('save-hydat')?.addEventListener('click', () => {
-    HydatControl.saveHydat();
+    saveHydat();
   });
   document.getElementById('run_button')?.addEventListener('click', () => {
     HyLaGIController.exec();
