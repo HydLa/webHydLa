@@ -3,8 +3,8 @@ import { GraphControl } from './graph_control';
 import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plot_settings';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { PlotControl } from './plot_control';
-import { HydatParameter, HydatParameterPoint, Hydat } from './hydat';
-import { AnimationControl } from './animation_control';
+import { HydatParameter, HydatParameterPoint } from './hydat';
+import { seekAnimation } from './animation_control';
 
 /** 描画用設定の処理を行う */
 export class DatGUIControl {
@@ -185,8 +185,7 @@ export class DatGUIControl {
       max_par_value
     );
     parameter_item_seek.onChange(() => {
-      AnimationControl.time = DatGUIControl.plot_settings.parameter_condition_seek!.value;
-      AnimationControl.animate();
+      seekAnimation(DatGUIControl.plot_settings.parameter_condition_seek!.value);
     });
     parameter_item_seek.step(step);
 
@@ -213,8 +212,7 @@ export class DatGUIControl {
       max_par_value
     );
     parameter_item_seek.onChange(() => {
-      AnimationControl.time = DatGUIControl.plot_settings.parameter_condition_seek!.value;
-      AnimationControl.animate();
+      seekAnimation(DatGUIControl.plot_settings.parameter_condition_seek!.value);
     });
     parameter_item_seek.step(step);
 
