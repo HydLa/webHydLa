@@ -1,4 +1,4 @@
-import { EditorControl } from './editor_control';
+import { setEditorHydla } from './editor_control';
 
 /**
  * HyLaGIのレポジトリから例題を取得する
@@ -47,7 +47,7 @@ async function loadContents() {
   const filename = getSelectedFilename();
   if (filename === null) return;
   const content = await getContent(filename);
-  EditorControl.editor.setValue(content);
+  setEditorHydla(content);
 }
 
 function getSelectedFilename() {
