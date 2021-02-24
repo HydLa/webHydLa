@@ -24,149 +24,148 @@ INIT, FALL << BOUNCE.
 // #hylagi -p 10
 `;
 
-export class EditorControl {
+class EditorState {
   static editor: ace.Ace.Editor;
   static autosave_event_enabled = true;
   static autosave_changed = false;
-  static init(saved_hydla: string | null) {
-    /* ID="editor" な div をエディタにする */
-    this.editor = ace.edit('editor');
+}
 
-    /* 諸々の設定 */
-    this.editor.setTheme('ace/theme/sqlserver');
-    ace.config.setModuleUrl('ace/mode/hydla', './mode-hydla.js');
-    this.editor.getSession().setMode('ace/mode/hydla');
-    this.editor.getSession().setTabSize(4);
-    this.editor.getSession().setUseSoftTabs(true);
-    this.editor.getSession().setUseWrapMode(true);
-    this.editor.setHighlightActiveLine(false);
-    this.editor.setOptions({
-      enableBasicAutocompletion: true,
-      enableSnippets: true,
-      enableLiveAutocompletion: true,
-      fontSize: '12pt',
-    });
+export function initEditorState(saved_hydla: string | null) {
+  /* ID="editor" な div をエディタにする */
+  EditorState.editor = ace.edit('editor');
 
-    /* set keybinding */
-    this.editor.commands.addCommand({
-      name: 'runHyLaGI',
-      bindKey: { win: 'Ctrl-Enter', mac: 'Command-Enter' },
-      exec: function () {
-        EditorControl.sendHydLa();
-      },
-      readOnly: true,
-    });
+  /* 諸々の設定 */
+  setEditorTheme('ace/theme/sqlserver');
+  ace.config.setModuleUrl('ace/mode/hydla', './mode-hydla.js');
+  EditorState.editor.getSession().setMode('ace/mode/hydla');
+  EditorState.editor.getSession().setTabSize(4);
+  EditorState.editor.getSession().setUseSoftTabs(true);
+  EditorState.editor.getSession().setUseWrapMode(true);
+  EditorState.editor.setHighlightActiveLine(false);
+  EditorState.editor.setOptions({
+    enableBasicAutocompletion: true,
+    enableSnippets: true,
+    enableLiveAutocompletion: true,
+    fontSize: '12pt',
+  });
 
-    /* load saved hydla code if it exist */
-    if (saved_hydla) {
-      this.editor.setValue(saved_hydla);
+  /* set keybinding */
+  EditorState.editor.commands.addCommand({
+    name: 'runHyLaGI',
+    bindKey: { win: 'Ctrl-Enter', mac: 'Command-Enter' },
+    exec: function () {
+      sendEditorHydla();
+    },
+    readOnly: true,
+  });
+
+  /* load saved hydla code if it exist */
+  if (saved_hydla) {
+    setEditorHydla(saved_hydla);
+  } else {
+    StorageControl.saveHydlaName('bouncing_ball');
+    setEditorHydla(default_hydla);
+  }
+  EditorState.editor.clearSelection();
+
+  EditorState.editor.on('change', () => {
+    if (EditorState.autosave_event_enabled) {
+      saveHydlaToWebstorage();
     } else {
-      StorageControl.saveHydlaName('bouncing_ball');
-      this.editor.setValue(default_hydla);
+      EditorState.autosave_changed = true;
     }
-    this.editor.clearSelection();
+  });
+}
 
-    this.editor.on('change', () => {
-      if (this.autosave_event_enabled) {
-        this.saveHydlaToWebstorage();
-      } else {
-        this.autosave_changed = true;
+export function sendEditorHydla() {
+  HyLaGIController.sendHydla(EditorState.editor.getValue());
+}
+
+/*
+ * function to save HydLa file
+ * TODO: hydat_control.tsのsaveHydatと共通化
+ */
+export function saveHydla() {
+  const blob = new Blob([EditorState.editor.getValue()]);
+  const object = window.URL.createObjectURL(blob);
+  const d = new Date();
+  const date = `${d.getFullYear()}-${
+    d.getMonth() + 1
+  }-${d.getDate()}T${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
+  const a = document.createElement('a');
+  a.href = object;
+  a.download = `${date}.hydla`;
+  const event = document.createEvent('MouseEvents');
+  event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+  a.dispatchEvent(event);
+}
+
+export function loadFile() {
+  const i = document.createElement('input');
+  i.type = 'file';
+  const event = document.createEvent('MouseEvents');
+  event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+  i.addEventListener(
+    'change',
+    () => {
+      if (!i.files) {
+        throw new Error('unexpected: i.files is undefined');
       }
-    });
-  }
-
-  static sendHydLa() {
-    HyLaGIController.sendHydLa(this.editor.getValue());
-  }
-
-  /* function to save HydLa file */
-  static saveHydla() {
-    const blob = new Blob([this.editor.getValue()]);
-    const object = window.URL.createObjectURL(blob);
-    const d = new Date();
-    const date =
-      d.getFullYear() +
-      '-' +
-      d.getMonth() +
-      1 +
-      '-' +
-      d.getDate() +
-      'T' +
-      d.getHours() +
-      '-' +
-      d.getMinutes() +
-      '-' +
-      d.getSeconds();
-    const a = document.createElement('a');
-    a.href = object;
-    a.download = date + '.hydla';
-    const event = document.createEvent('MouseEvents');
-    event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-    a.dispatchEvent(event);
-  }
-
-  static loadFile() {
-    const i = document.createElement('input');
-    i.type = 'file';
-    const event = document.createEvent('MouseEvents');
-    event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-    i.addEventListener(
-      'change',
-      () => {
-        if (!i.files) {
-          throw new Error('unexpected: i.files is undefined');
-        }
-        const input_file = i.files[0];
-        const fr = new FileReader();
-        fr.readAsText(input_file);
-        const splitted_strs = input_file.name.split('.');
-        const ext = splitted_strs[splitted_strs.length - 1].toLowerCase();
-        if (ext == 'hydat') {
-          fr.onload = () => {
-            loadHydat(JSON.parse(<string>fr.result));
-          };
-        } else {
-          StorageControl.saveHydlaName(input_file.name);
-          fr.onload = () => {
-            this.editor.setValue(<string>fr.result);
-          };
-        }
-      },
-      false
-    );
-    i.dispatchEvent(event);
-  }
-
-  /* function to save HydLa code into Web Storage */
-  static saveHydlaToWebstorage() {
-    this.autosave_event_enabled = false;
-    this.autosave_changed = false;
-    StorageControl.saveHydla(this.editor.getValue());
-    showToast('Saved', 1000, '');
-
-    setTimeout(() => {
-      if (this.autosave_changed) {
-        this.saveHydlaToWebstorage();
+      const input_file = i.files[0];
+      const fr = new FileReader();
+      fr.readAsText(input_file);
+      const splitted_strs = input_file.name.split('.');
+      const ext = splitted_strs[splitted_strs.length - 1].toLowerCase();
+      if (ext == 'hydat') {
+        fr.onload = () => {
+          loadHydat(JSON.parse(<string>fr.result));
+        };
       } else {
-        this.autosave_event_enabled = true;
+        StorageControl.saveHydlaName(input_file.name);
+        fr.onload = () => {
+          setEditorHydla(<string>fr.result);
+        };
       }
-    }, 5000);
-  }
+    },
+    false
+  );
+  i.dispatchEvent(event);
+}
 
-  static setKeyBinding(binding: string | null) {
-    if (!binding) this.editor.setKeyboardHandler('');
-    else this.editor.setKeyboardHandler(binding);
-  }
+/* function to save HydLa code into Web Storage */
+export function saveHydlaToWebstorage() {
+  EditorState.autosave_event_enabled = false;
+  EditorState.autosave_changed = false;
+  StorageControl.saveHydla(EditorState.editor.getValue());
+  showToast('Saved', 1000, '');
 
-  static setTheme(theme: string) {
-    this.editor.setTheme(`ace/theme/${theme}`);
-  }
+  setTimeout(() => {
+    if (EditorState.autosave_changed) {
+      saveHydlaToWebstorage();
+    } else {
+      EditorState.autosave_event_enabled = true;
+    }
+  }, 5000);
+}
 
-  static resize() {
-    this.editor.resize();
-  }
+export function setEditorKeyBinding(binding: string | null) {
+  if (!binding) EditorState.editor.setKeyboardHandler('');
+  else EditorState.editor.setKeyboardHandler(binding);
+}
 
-  static setFontSize(n: number) {
-    this.editor.setOption('fontSize', n);
-  }
+export function setEditorTheme(theme: string) {
+  EditorState.editor.setTheme(`ace/theme/${theme}`);
+}
+
+export function resizeEditor() {
+  EditorState.editor.resize();
+}
+
+export function setEditorFontSize(n: number) {
+  EditorState.editor.setOption('fontSize', n);
+}
+
+/* function to set HydLa code to editor */
+export function setEditorHydla(hydla: string) {
+  EditorState.editor.setValue(hydla);
 }
