@@ -77,7 +77,6 @@ export function initEditorState(saved_hydla: string | null) {
   });
 }
 
-
 export function sendEditorHydla() {
   HyLaGIController.sendHydla(EditorState.editor.getValue());
 }
@@ -119,7 +118,7 @@ export function loadFile() {
       const ext = splitted_strs[splitted_strs.length - 1].toLowerCase();
       if (ext == 'hydat') {
         fr.onload = () => {
-          HydatControl.loadHydat(JSON.parse(<string>fr.result));
+          loadHydat(JSON.parse(<string>fr.result));
         };
       } else {
         StorageControl.saveHydlaName(input_file.name);
