@@ -1,6 +1,6 @@
 import { StorageControl } from './storage_control';
 import { GraphControl } from './graph_control';
-import { AnimationControl } from './animation_control';
+import { seekAnimation } from './animation_control';
 
 export class PlotSettingsControl {
   static plot_settings: PlotSettings;
@@ -18,8 +18,7 @@ export class PlotSettingsControl {
   }
   static seek() {
     //if(plot_settings.animate)
-    AnimationControl.time = this.plot_settings.seek;
-    AnimationControl.animate();
+    seekAnimation(this.plot_settings.seek);
   }
 }
 

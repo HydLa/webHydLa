@@ -13,7 +13,6 @@ const axisColorBases = new Triplet<RGB>(new RGB(1.0, 0.3, 0.3), new RGB(0.3, 1.0
 
 export class PlotControl {
   static array = -1;
-  static current_line_vec_animation: THREE.Vector3[] = [];
   static PlotStartTime: number | undefined;
 
   static axisColors = new Triplet<string>('#FF8080', '#80FF80', '#8080FF');
