@@ -2,9 +2,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { DatGUIControl } from './dat_gui_control';
-import { PlotControl } from './plot_control';
 import { HydatControl } from './hydat_control';
 import { animate, animateTime, animationControlState, getLength, makeRanges } from './animation_control';
+import { update_axes } from './plot_control';
 
 /**
  * 描画，再描画，クリアなどを行う<br>
@@ -90,7 +90,7 @@ export class GraphControl {
       const h = $('#scale_label_wrapper').height()!;
       $('#scaleLabelCanvas').attr('width', w);
       $('#scaleLabelCanvas').attr('height', h);
-      PlotControl.update_axes(true);
+      update_axes(true);
 
       $('#nameLabelCanvas').attr('width', w);
       $('#nameLabelCanvas').attr('height', h);
@@ -122,7 +122,7 @@ export class GraphControl {
     if (this.last_frame_zoom !== this.camera.zoom) {
       GraphControl.replotAll();
     }
-    PlotControl.update_axes(false);
+    update_axes(false);
     if (this.animatable) {
       animate(); // animating function
       animateTime();

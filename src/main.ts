@@ -6,10 +6,10 @@ import { initDOMState } from './dom_control';
 import { initEditorState } from './editor_control';
 import { StorageControl } from './storage_control';
 import { PlotLineMapControl } from './plot_line_map_control';
-import { PlotControl } from './plot_control';
 import { initHydatControl } from './hydat_control';
 import { initHyLaGIControllerState } from './hylagi';
 import { initExampleLoader } from './example_loader';
+import { setBackgroundColor } from './plot_control';
 
 $(document).ready(() => {
   const saved_hydla = StorageControl.loadHydla();
@@ -20,7 +20,6 @@ $(document).ready(() => {
   PlotSettingsControl.init();
   GraphControl.init();
 
-  PlotControl.init(PlotSettingsControl.plot_settings);
   DatGUIControl.init(PlotSettingsControl.plot_settings);
 
   initHydatControl(saved_hydat);
@@ -36,8 +35,8 @@ $(document).ready(() => {
   GraphControl.update2DMode(PlotSettingsControl.plot_settings.twoDimensional);
   PlotSettingsControl.time_stop();
 
-  if (PlotControl.plot_settings.backgroundColor !== undefined) {
-    PlotControl.setBackgroundColor(PlotControl.plot_settings.backgroundColor);
+  if (PlotSettingsControl.plot_settings.backgroundColor !== undefined) {
+    setBackgroundColor(PlotSettingsControl.plot_settings.backgroundColor);
   }
 
   GraphControl.render();
