@@ -1,6 +1,6 @@
 import { PlotLine } from './plot_line';
 import { Hydat } from './hydat';
-import { GraphControl } from './graph_control';
+import { replotAll } from './graph_control';
 import { DatGUIControl } from './dat_gui_control';
 import { HydatControl } from './hydat_control';
 import { StorageControl } from './storage_control';
@@ -96,7 +96,7 @@ export class PlotLineMapControl {
         );
         if (line.settings.x != '' || line.settings.y != '' || line.settings.z != '') line.folder.open();
       }
-      GraphControl.replotAll();
+      replotAll();
     }
 
     if (this.getLength() == 0) {

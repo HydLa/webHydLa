@@ -1,4 +1,4 @@
-import { GraphControl } from './graph_control';
+import { graphControl, update2DMode, renderGraph } from './graph_control';
 import { DatGUIControl } from './dat_gui_control';
 import { NewUI } from './new_ui';
 import { PlotSettingsControl } from './plot_settings';
@@ -18,7 +18,6 @@ $(document).ready(() => {
   initExampleLoader();
 
   PlotSettingsControl.init();
-  GraphControl.init();
 
   DatGUIControl.init(PlotSettingsControl.plot_settings);
 
@@ -26,18 +25,18 @@ $(document).ready(() => {
   initHyLaGIControllerState();
 
   PlotLineMapControl.init();
-  NewUI.init(GraphControl.controls);
+  NewUI.init(graphControl.controls);
   initDOMState();
 
   initEditorState(saved_hydla);
   StorageControl.init();
 
-  GraphControl.update2DMode(PlotSettingsControl.plot_settings.twoDimensional);
+  update2DMode(PlotSettingsControl.plot_settings.twoDimensional);
   PlotSettingsControl.time_stop();
 
   if (PlotSettingsControl.plot_settings.backgroundColor !== undefined) {
     setBackgroundColor(PlotSettingsControl.plot_settings.backgroundColor);
   }
 
-  GraphControl.render();
+  renderGraph();
 });
