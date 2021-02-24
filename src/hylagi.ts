@@ -89,17 +89,20 @@ export function getTimeoutOption(): string {
 
 export function getOptionsValue(): string {
   let options_value = '';
+
   const phase_num = <HTMLInputElement>document.getElementById('phase_num');
   const simulation_time = <HTMLInputElement>document.getElementById('simulation_time');
   const nd_mode_check_box = <HTMLInputElement>document.getElementById('nd_mode_check_box');
   const other_options = <HTMLInputElement>document.getElementById('other_options');
-  if (phase_num.value !== '') options_value += ' -p ' + phase_num.value;
-  if (simulation_time.value !== '') options_value += ' -t ' + simulation_time.value;
+
+  if (phase_num.value !== '') options_value += ` -p ${phase_num.value}`;
+  if (simulation_time.value !== '') options_value += ` -t ${simulation_time.value}`;
   if (phase_num.value === '' && simulation_time.value === '') options_value += ' -p10';
   if (html_mode_check_box.checked) options_value += ' -d --fhtml ';
   if (nd_mode_check_box.checked) options_value += ' --fnd ';
   else options_value += ' --fno-nd ';
   if (other_options.value !== '') options_value += other_options.value;
+
   return options_value;
 }
 
@@ -117,7 +120,7 @@ export function repsonseHyLaGI(response: ResponseBody) {
       break;
     default:
       if (HyLaGIControllerState.running) {
-        showToast('Error message: ' + response.message, 3000, 'red darken-4');
+        showToast(`Error message: ${response.message}`, 3000, 'red darken-4');
         selectLogTab();
         console.error(response);
       } else {

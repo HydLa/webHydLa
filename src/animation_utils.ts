@@ -2,7 +2,7 @@
  * 描画用オブジェクト管理用のデータ構造<br>
  * keyに対してはvalueが複数対応し，valueに対してはkeyが一意に対応するデータを扱う
  * */
-export class MaltiBiMap<K, V> {
+export class MultiBiMap<K, V> {
   private map: Map<K, Set<V>>;
   private reverse: Map<V, K>;
 

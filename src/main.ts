@@ -9,13 +9,13 @@ import { PlotLineMapControl } from './plot_line_map_control';
 import { PlotControl } from './plot_control';
 import { initHydatControl } from './hydat_control';
 import { initHyLaGIControllerState } from './hylagi';
-import { ExampleLoader } from './example_loader';
+import { initExampleLoader } from './example_loader';
 
 $(document).ready(() => {
   const saved_hydla = StorageControl.loadHydla();
   const saved_hydat = StorageControl.loadHydat();
 
-  ExampleLoader.init();
+  initExampleLoader();
 
   PlotSettingsControl.init();
   GraphControl.init();
