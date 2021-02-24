@@ -66,8 +66,8 @@ export function sendHydla(hydla: string) {
   };
 }
 
-/* build form data */
 export function sendToHyLaGI(hydla: string) {
+  /* build form data */
   const form = new FormData();
   form.append('hydla_code', hydla);
   form.append('hylagi_option', getOptionsValue());
@@ -76,7 +76,7 @@ export function sendToHyLaGI(hydla: string) {
   const xmlhr = new XMLHttpRequest();
   xmlhr.open('POST', 'hydat.cgi');
   xmlhr.onload = () => {
-    repsonseHyLaGI(JSON.parse(xmlhr.responseText));
+    responseHyLaGI(JSON.parse(xmlhr.responseText));
   };
   xmlhr.send(form);
 }
@@ -106,8 +106,8 @@ export function getOptionsValue(): string {
   return options_value;
 }
 
-/* Response to HyLaGI */
-export function repsonseHyLaGI(response: ResponseBody) {
+/* Response from HyLaGI */
+export function responseHyLaGI(response: ResponseBody) {
   switch (response.error) {
     case 0:
       showToast('Simulation was successful.', 1000, '');
