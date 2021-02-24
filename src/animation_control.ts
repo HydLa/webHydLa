@@ -1,7 +1,7 @@
 import { PlotLine } from './plot_line';
 import { startPreloader, showToast } from './dom_control';
 import * as THREE from 'three';
-import { GraphControl } from './graph_control';
+import { graphControl, renderGraph_three_js } from './graph_control';
 import { HydatParameter, HydatParameterInterval, HydatPhase } from './hydat';
 import { RGB, Triplet } from './plot_utils';
 import { HydatControl } from './hydat_control';
@@ -9,6 +9,8 @@ import { parse, Construct, Constant } from './parse';
 import { MultiBiMap } from './animation_utils';
 import { PlotSettingsControl } from './plot_settings';
 import { checkAndStopPreloader, phase_to_line_vectors, resetPlotStartTime } from './plot_control';
+
+let faces: THREE.Mesh[];
 
 /**
  * 描画用オブジェクトの計算，描画，削除を担当
@@ -191,8 +193,8 @@ function add_line(
 
   const lines: THREE.Vector3[] = [];
   const linesGeometry = new THREE.Geometry();
-  const scaledWidth = (0.5 * width) / GraphControl.camera.zoom;
-  const dottedLength = 10.0 / GraphControl.camera.zoom;
+  const scaledWidth = (0.5 * width) / graphControl.camera.zoom;
+  const dottedLength = 10.0 / graphControl.camera.zoom;
   const material = useLine
     ? new THREE.LineBasicMaterial({ color: color })
     : new THREE.MeshBasicMaterial({ color: color });
@@ -222,7 +224,7 @@ function add_line(
     animationControlState.dynamic_lines[animationControlState.array] = tmp_dynamic_line;
 
   const three_line = useLine ? make_line(lines, material, true) : new THREE.Mesh(linesGeometry, material);
-  if (!PlotSettingsControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
+  if (!PlotSettingsControl.plot_settings.dynamicDraw) graphControl.scene.add(three_line);
 
   if (!line.plot) {
     throw new Error('unexpected: line.plot is undefined');
@@ -307,7 +309,7 @@ function add_sphere(current_param_idx: number, color: number[]) {
   const s_geometry = new THREE.SphereBufferGeometry(0.1);
   const sphere = new THREE.Mesh(s_geometry, new THREE.MeshBasicMaterial({ color: color[current_param_idx] }));
   sphere.position.set(0, 0, 0);
-  GraphControl.scene.add(sphere);
+  graphControl.scene.add(sphere);
   animationControlState.plot_animate[animationControlState.array] = sphere;
 }
 
@@ -455,7 +457,7 @@ export function remove_plot(line: PlotLine) {
   if (line.plot !== undefined) {
     let i: number;
     for (i = 0; i < line.plot.length; i++) {
-      GraphControl.scene.remove(line.plot[i]);
+      graphControl.scene.remove(line.plot[i]);
     }
     delete line.plot[i];
   }
@@ -466,7 +468,7 @@ export function remove_plot(line: PlotLine) {
 function remove_mesh(line: THREE.Mesh[] | undefined) {
   if (line !== undefined) {
     for (let i = 0; i < line.length; i++) {
-      GraphControl.scene.remove(line[i]);
+      graphControl.scene.remove(line[i]);
       delete line[i];
     }
     line.length = 0;
@@ -520,10 +522,10 @@ function check_parameter_condition(
  * parameterがfixed: false, range: trueの時に描画する面を作成
  */
 export function makeRanges() {
-  if (GraphControl.face_a != undefined) {
-    remove_mesh(GraphControl.face_a);
+  if (faces != undefined) {
+    remove_mesh(faces);
   }
-  GraphControl.face_a = [];
+  faces = [];
   if (animationControlState.animation_line.length != 0) {
     for (let j = 0; j < animationControlState.animation_line.length - 1; j++) {
       const face_geometry = new THREE.Geometry();
@@ -556,17 +558,17 @@ export function makeRanges() {
           opacity: 0.5,
         })
       );
-      GraphControl.scene.add(faceMesh);
-      GraphControl.face_a.push(faceMesh);
+      graphControl.scene.add(faceMesh);
+      faces.push(faceMesh);
     }
-    GraphControl.render_three_js();
+    renderGraph_three_js();
   }
 }
 
 /** i番目のdrawn dynamic lineを消す */
 function remove_ith_drawn_dynamic_line(i: number) {
   for (const l of animationControlState.drawn_dynamic_lines[i]) {
-    GraphControl.scene.remove(l);
+    graphControl.scene.remove(l);
   }
   animationControlState.drawn_dynamic_lines[i] = [];
 }
@@ -616,12 +618,12 @@ function draw_dynamic_lines() {
         // PP
         // これまで追加した線を取り除き，代わりにマージ済みの線を追加する
         remove_ith_drawn_dynamic_line(i);
-        GraphControl.scene.add(animationControlState.accumulative_merged_lines[i][tmp_amli]);
+        graphControl.scene.add(animationControlState.accumulative_merged_lines[i][tmp_amli]);
         animationControlState.drawn_dynamic_lines[i].push(animationControlState.accumulative_merged_lines[i][tmp_amli]);
         tmp_amli++;
       } else if (j + 1 < animationControlState.time) {
         // IP
-        GraphControl.scene.add(animationControlState.dynamic_lines[i][j]);
+        graphControl.scene.add(animationControlState.dynamic_lines[i][j]);
         animationControlState.drawn_dynamic_lines[i].push(animationControlState.dynamic_lines[i][j]);
       } else {
         // timeより未来の線は書かない
@@ -645,7 +647,7 @@ export function animate() {
     if (animationControlState.time > animationControlState.maxlen - 1) {
       animationControlState.time = 0;
     }
-    for (const sphere of GraphControl.scene.children) {
+    for (const sphere of graphControl.scene.children) {
       if (animationControlState.animation_line[arr] === undefined) {
         continue;
       }
@@ -682,7 +684,7 @@ export function animate() {
     }
 
     animationControlState.time_prev = animationControlState.time;
-    GraphControl.render_three_js();
+    renderGraph_three_js();
   }
 }
 

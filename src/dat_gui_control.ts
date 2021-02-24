@@ -1,5 +1,5 @@
 import * as dat from 'dat.gui';
-import { GraphControl } from './graph_control';
+import { graphControl, updateRotate, update2DMode, replotAll } from './graph_control';
 import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plot_settings';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { HydatParameter, HydatParameterPoint } from './hydat';
@@ -32,7 +32,7 @@ export class DatGUIControl {
       .step(0.001)
       .name('plot interval')
       .onChange(() => {
-        GraphControl.replotAll();
+        replotAll();
         PlotSettingsControl.saveToWebStorage();
       });
     dat_gui
@@ -40,7 +40,7 @@ export class DatGUIControl {
       .step(1)
       .name('line width')
       .onChange(() => {
-        GraphControl.replotAll();
+        replotAll();
         PlotSettingsControl.saveToWebStorage();
       });
     dat_gui
@@ -54,21 +54,21 @@ export class DatGUIControl {
       .add(plot_settings, 'twoDimensional')
       .name('XY-mode')
       .onChange(() => {
-        GraphControl.update2DMode(plot_settings.twoDimensional);
+        update2DMode(plot_settings.twoDimensional);
         PlotSettingsControl.saveToWebStorage();
       });
     dat_gui
       .add(plot_settings, 'autoRotate')
       .name('auto rotate')
       .onChange(() => {
-        GraphControl.updateRotate(plot_settings.autoRotate);
+        updateRotate(plot_settings.autoRotate);
         PlotSettingsControl.saveToWebStorage();
       });
     dat_gui
       .add(plot_settings, 'dynamicDraw')
       .name('dynamic draw')
       .onChange(() => {
-        GraphControl.replotAll();
+        replotAll();
         PlotSettingsControl.saveToWebStorage();
       });
     dat_gui
@@ -137,7 +137,7 @@ export class DatGUIControl {
         .add(DatGUIControl.plot_settings.parameter_condition[key], 'value', min_par_value, max_par_value)
         .name(key);
       parameter_item.onChange(() => {
-        GraphControl.replotAll();
+        replotAll();
       });
       parameter_item.step(step);
 
@@ -157,10 +157,10 @@ export class DatGUIControl {
             .step(step)
             .setValue((min_par_value + max_par_value) / 2);
         }
-        GraphControl.replotAll();
+        replotAll();
       });
       mode_item_range.onChange(() => {
-        GraphControl.range_mode = DatGUIControl.plot_settings.parameter_condition![key_copy].range;
+        graphControl.range_mode = DatGUIControl.plot_settings.parameter_condition![key_copy].range;
       });
     }
     if (pars.size > 0) this.parameter_folder.open();
