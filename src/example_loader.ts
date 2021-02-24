@@ -46,8 +46,8 @@ async function getFilenames() {
 async function loadContents() {
   const filename = getSelectedFilename();
   if (filename === null) return;
-  const content = getContent(filename);
-  EditorControl.editor.setValue(await content);
+  const content = await getContent(filename);
+  EditorControl.editor.setValue(content);
 }
 
 function getSelectedFilename() {
