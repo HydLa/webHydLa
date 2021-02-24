@@ -35,7 +35,7 @@ async function getFilenames() {
   const json = await res.json();
   // 例題ディレクトリからHydLaプログラムのファイル名を取得
   for (const f of json) {
-    if (f.name.indexOf('.hydla') != -1) {
+    if (isHydlaFile(f.name)) {
       filenames.push(f.name);
     }
   }
@@ -53,8 +53,11 @@ async function loadContents() {
 function getSelectedFilename() {
   const selected = document.getElementsByClassName('selected');
   let fileindex = -1;
-  for (let i = 0; i < selected.length; i++)
-    if ((<string>selected[i].textContent).indexOf('.hydla') != -1) fileindex = i;
+  for (let i = 0; i < selected.length; i++) {
+    if (isHydlaFile(<string>selected[i].textContent)) {
+      fileindex = i;
+    }
+  }
   if (fileindex == -1) return null;
   return selected[fileindex].textContent;
 }
@@ -66,4 +69,8 @@ async function getContent(filename: string) {
   const encoded_content = json.content.replace(/\n/g, '');
   const content = atob(encoded_content);
   return content;
+}
+
+function isHydlaFile(s: string) {
+  return s.indexOf('.hydla') != -1;
 }
