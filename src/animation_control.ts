@@ -1,18 +1,20 @@
 import { PlotLine } from './plot_line';
-import { PlotControl } from './plot_control';
 import { startPreloader, showToast } from './dom_control';
 import * as THREE from 'three';
 import { GraphControl } from './graph_control';
-import { HydatException, HydatParameter, HydatParameterInterval, HydatPhase } from './hydat';
+import { HydatParameter, HydatParameterInterval, HydatPhase } from './hydat';
 import { RGB, Triplet } from './plot_utils';
 import { HydatControl } from './hydat_control';
 import { parse, Construct, Constant } from './parse';
 import { MultiBiMap } from './animation_utils';
+import { PlotSettingsControl } from './plot_settings';
+import { checkAndStopPreloader, divideParameter, phase_to_line_vectors, resetPlotStartTime } from './plot_control';
 
 /**
  * 描画用オブジェクトの計算，描画，削除を担当
  */
 interface AnimationControlState {
+  array: number;
   current_line_vec_animation: THREE.Vector3[];
   maxlen: number;
   /** ボールの軌道のリスト */
@@ -46,6 +48,7 @@ interface AnimationControlState {
 }
 
 export const animationControlState: AnimationControlState = {
+  array: -1,
   current_line_vec_animation: [],
   maxlen: 0,
   animation_line: [],
@@ -91,21 +94,21 @@ function add_plot(line: PlotLine) {
   if (HydatControl.current_hydat === undefined) {
     throw new Error('current_hydat is undefined');
   }
-  const dt = PlotControl.plot_settings.plotInterval;
+  const dt = PlotSettingsControl.plot_settings.plotInterval;
   const phase = HydatControl.current_hydat.first_phases[0];
-  const parameter_condition_list = PlotControl.divideParameter(HydatControl.current_hydat.parameters);
+  const parameter_condition_list = divideParameter(HydatControl.current_hydat.parameters);
   const color = getColors(parameter_condition_list.length, line.color_angle);
   line.plot_information = {
     phase_index_array: [{ phase: phase, index: 0 }],
     axes: axes,
     line: line,
-    width: PlotControl.plot_settings.lineWidth,
+    width: PlotSettingsControl.plot_settings.lineWidth,
     color: color,
     dt: dt,
     parameter_condition_list: parameter_condition_list,
   };
   startPreloader();
-  PlotControl.array = -1;
+  animationControlState.array = -1;
   animationControlState.animation_line = [];
   animationControlState.maxlen = 0;
   if (line.plot_ready == undefined)
@@ -147,9 +150,9 @@ function add_line(
   width: number
 ) {
   const useLine = width === 1;
-  PlotControl.array += 1;
+  animationControlState.array += 1;
 
-  animationControlState.index_array_multibimap.set(line.index, PlotControl.array);
+  animationControlState.index_array_multibimap.set(line.index, animationControlState.array);
 
   const lines: THREE.Vector3[] = [];
   const linesGeometry = new THREE.Geometry();
@@ -160,10 +163,10 @@ function add_line(
     : new THREE.MeshBasicMaterial({ color: color });
 
   const tmp_dynamic_line: any[] = [];
-  if (PlotControl.plot_settings.dynamicDraw) {
-    if (animationControlState.accumulative_merged_lines.length - 1 < PlotControl.array)
+  if (PlotSettingsControl.plot_settings.dynamicDraw) {
+    if (animationControlState.accumulative_merged_lines.length - 1 < animationControlState.array)
       animationControlState.accumulative_merged_lines.push([]);
-    if (animationControlState.dynamic_lines.length - 1 < PlotControl.array)
+    if (animationControlState.dynamic_lines.length - 1 < animationControlState.array)
       animationControlState.dynamic_lines.push([]);
   }
   for (let i = 0; i + 1 < current_line_vec.length; i++) {
@@ -180,17 +183,18 @@ function add_line(
       material
     );
   }
-  if (PlotControl.plot_settings.dynamicDraw) animationControlState.dynamic_lines[PlotControl.array] = tmp_dynamic_line;
+  if (PlotSettingsControl.plot_settings.dynamicDraw)
+    animationControlState.dynamic_lines[animationControlState.array] = tmp_dynamic_line;
 
   const three_line = useLine ? make_line(lines, material, true) : new THREE.Mesh(linesGeometry, material);
-  if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
+  if (!PlotSettingsControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
 
   if (!line.plot) {
     throw new Error('unexpected: line.plot is undefined');
   }
   line.plot.push(three_line);
 
-  animationControlState.animation_line[PlotControl.array] = {
+  animationControlState.animation_line[animationControlState.array] = {
     vecs: animationControlState.current_line_vec_animation,
     color: color,
   };
@@ -225,30 +229,31 @@ function add_line_each_phase(
         lines.push(tmpBegin, tmpEnd);
       } else {
         const l = make_cylinder(tmpBegin, tmpEnd, scaledWidth, material);
-        if (PlotControl.plot_settings.dynamicDraw) tmp_geometry.merge(<any>l.geometry.clone(), l.matrix.clone());
+        if (PlotSettingsControl.plot_settings.dynamicDraw)
+          tmp_geometry.merge(<any>l.geometry.clone(), l.matrix.clone());
         linesGeometry.merge(<any>l.geometry, l.matrix);
       }
     }
-    if (PlotControl.plot_settings.dynamicDraw) {
+    if (PlotSettingsControl.plot_settings.dynamicDraw) {
       const l: any = useLine ? make_line([posBegin, posEnd], material) : new THREE.Mesh(tmp_geometry, material);
       l.isPP = true;
       tmp_dynamic_line.push(l);
 
-      animationControlState.accumulative_merged_lines[PlotControl.array].push(
+      animationControlState.accumulative_merged_lines[animationControlState.array].push(
         useLine ? make_line(lines.concat(), material, true) : new THREE.Mesh(linesGeometry.clone(), material)
       );
     }
   } else if (!posBegin.equals(posEnd)) {
     // IPの各折れ線を追加
     if (useLine) {
-      if (PlotControl.plot_settings.dynamicDraw) {
+      if (PlotSettingsControl.plot_settings.dynamicDraw) {
         const l = make_line([posBegin, posEnd], material);
         tmp_dynamic_line.push(l);
       }
       lines.push(posBegin, posEnd);
     } else {
       const l = make_cylinder(posBegin, posEnd, scaledWidth, material);
-      if (PlotControl.plot_settings.dynamicDraw) tmp_dynamic_line.push(l);
+      if (PlotSettingsControl.plot_settings.dynamicDraw) tmp_dynamic_line.push(l);
       linesGeometry.merge(<any>l.geometry, l.matrix);
     }
   }
@@ -268,7 +273,7 @@ function add_sphere(current_param_idx: number, color: number[]) {
   const sphere = new THREE.Mesh(s_geometry, new THREE.MeshBasicMaterial({ color: color[current_param_idx] }));
   sphere.position.set(0, 0, 0);
   GraphControl.scene.add(sphere);
-  animationControlState.plot_animate[PlotControl.array] = sphere;
+  animationControlState.plot_animate[animationControlState.array] = sphere;
 }
 
 /** dfs to add plot each line */
@@ -288,21 +293,16 @@ export function dfs_each_line(
       if (line.plot_ready) {
         line.plotting = false;
         console.log('Plot is interrupted');
-        PlotControl.PlotStartTime = undefined;
+        resetPlotStartTime();
         return;
       }
 
       // phase_index_array is used to implement dfs without function call.
       let phase_index = phase_index_array[phase_index_array.length - 1]; // top
       let phase = phase_index.phase;
-      const vec = PlotControl.phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, dt);
+      const vec = phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, dt);
       current_line_vec = current_line_vec.concat(vec);
-      const vec_animation = PlotControl.phase_to_line_vectors(
-        phase,
-        parameter_condition_list[current_param_idx],
-        axes,
-        0.01
-      ); // tを0.01刻みで点を取る -> time = t * 100
+      const vec_animation = phase_to_line_vectors(phase, parameter_condition_list[current_param_idx], axes, 0.01); // tを0.01刻みで点を取る -> time = t * 100
       // animationControlState.current_line_vec_animation = animationControlState.current_line_vec_animation.concat(vec_animation);
       for (const v of vec_animation) {
         animationControlState.current_line_vec_animation.push(v.vec);
@@ -339,7 +339,7 @@ export function dfs_each_line(
     console.log(ex.stack);
     showToast(`Plot failed: ${ex.name}(${ex.message})`, 3000, 'red darken-4');
     line.plotting = false;
-    PlotControl.checkAndStopPreloader();
+    checkAndStopPreloader();
   }
 }
 
@@ -398,7 +398,7 @@ function search_next_child(
         // last
         // Plot is completed.
         line.plotting = false;
-        PlotControl.checkAndStopPreloader();
+        checkAndStopPreloader();
         return true;
       } else {
         // 次のparameter conditionで探索しなおす
@@ -638,7 +638,7 @@ export function animate() {
       arr += 1;
     }
 
-    if (PlotControl.plot_settings.dynamicDraw) {
+    if (PlotSettingsControl.plot_settings.dynamicDraw) {
       if (animationControlState.time == 0) {
         remove_drawn_dynamic_lines();
         animationControlState.line_count = 0;

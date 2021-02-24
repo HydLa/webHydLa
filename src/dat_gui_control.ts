@@ -2,9 +2,9 @@ import * as dat from 'dat.gui';
 import { GraphControl } from './graph_control';
 import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plot_settings';
 import { PlotLineMapControl } from './plot_line_map_control';
-import { PlotControl } from './plot_control';
 import { HydatParameter, HydatParameterPoint } from './hydat';
 import { seekAnimation } from './animation_control';
+import { setBackgroundColor, update_axes } from './plot_control';
 
 /** 描画用設定の処理を行う */
 export class DatGUIControl {
@@ -47,7 +47,7 @@ export class DatGUIControl {
       .add(plot_settings, 'scaleLabelVisible')
       .name('show scale label')
       .onChange(() => {
-        PlotControl.update_axes(true);
+        update_axes(true);
         PlotSettingsControl.saveToWebStorage();
       });
     dat_gui
@@ -75,7 +75,7 @@ export class DatGUIControl {
       .addColor(plot_settings, 'backgroundColor')
       .name('background')
       .onChange((value) => {
-        PlotControl.setBackgroundColor(value);
+        setBackgroundColor(value);
         PlotSettingsControl.saveToWebStorage(); /*render_three_js();i*/
       });
     dat_gui_animate
