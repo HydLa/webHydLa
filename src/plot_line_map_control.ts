@@ -3,7 +3,7 @@ import { Hydat } from './hydat';
 import { replotAll } from './graph_control';
 import { DatGUIControl } from './dat_gui_control';
 import { HydatControl } from './hydat_control';
-import { StorageControl } from './storage_control';
+import { saveHydatSettingsToStorage, loadHydatSettingsFromStorage } from './storage_control';
 import { remove_dynamic_line, remove_dynamic_lines, remove_plot } from './animation_control';
 import { PlotSettingsControl } from './plot_settings';
 
@@ -31,7 +31,7 @@ export class PlotLineMapControl {
       remove_plot(line);
     }
     delete HydatControl.settingsForCurrentHydat.plot_line_settings[line.index];
-    StorageControl.saveHydatSettings();
+    saveHydatSettingsToStorage();
     delete this.map[line.index];
   }
   static addNewLine(x_name: string, y_name: string, z_name: string) {
@@ -81,7 +81,7 @@ export class PlotLineMapControl {
     this.removeAllFolders();
     this.reset();
 
-    const str = StorageControl.loadHydatSettings(hydat.name);
+    const str = loadHydatSettingsFromStorage(hydat.name);
     if (str !== null) {
       HydatControl.settingsForCurrentHydat = JSON.parse(str);
       const line_settings = HydatControl.settingsForCurrentHydat.plot_line_settings;

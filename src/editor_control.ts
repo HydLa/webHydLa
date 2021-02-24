@@ -8,7 +8,7 @@ import 'ace-builds/src-noconflict/keybinding-emacs';
 import 'ace-builds/src-noconflict/keybinding-vim';
 
 import { showToast } from './dom_control';
-import { StorageControl } from './storage_control';
+import { saveHydlaToStorage, saveHydlaNameToStorage } from './storage_control';
 import { sendHydla } from './hylagi';
 import { loadHydat } from './hydat_control';
 
@@ -63,7 +63,7 @@ export function initEditorState(saved_hydla: string | null) {
   if (saved_hydla) {
     setEditorHydla(saved_hydla);
   } else {
-    StorageControl.saveHydlaName('bouncing_ball');
+    saveHydlaNameToStorage('bouncing_ball');
     setEditorHydla(default_hydla);
   }
   EditorState.editor.clearSelection();
@@ -121,7 +121,7 @@ export function loadFile() {
           loadHydat(JSON.parse(<string>fr.result));
         };
       } else {
-        StorageControl.saveHydlaName(input_file.name);
+        saveHydlaNameToStorage(input_file.name);
         fr.onload = () => {
           setEditorHydla(<string>fr.result);
         };
@@ -136,7 +136,7 @@ export function loadFile() {
 export function saveHydlaToWebstorage() {
   EditorState.autosave_event_enabled = false;
   EditorState.autosave_changed = false;
-  StorageControl.saveHydla(EditorState.editor.getValue());
+  saveHydlaToStorage(EditorState.editor.getValue());
   showToast('Saved', 1000, '');
 
   setTimeout(() => {

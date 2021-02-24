@@ -10,7 +10,7 @@ import {
 } from './editor_control';
 import { saveHydat } from './hydat_control';
 import { execHyLaGI } from './hylagi';
-import { StorageControl } from './storage_control';
+import { saveThemeToStorage, saveKeyBindingToStorage } from './storage_control';
 
 class DOMState {
   static tabs: Materialize.Tabs;
@@ -47,12 +47,12 @@ export function initDOMState() {
 
   document.getElementById('theme_selector')?.addEventListener('change', (e) => {
     setEditorTheme((e.target as HTMLInputElement).value);
-    StorageControl.saveTheme();
+    saveThemeToStorage();
   });
 
   document.getElementById('key_binding_selector')?.addEventListener('change', (e) => {
     setEditorKeyBinding((e.target as HTMLInputElement).value);
-    StorageControl.saveKeyBinding();
+    saveKeyBindingToStorage();
   });
 
   /* function to close/open input-pane */
