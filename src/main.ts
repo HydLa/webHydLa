@@ -4,7 +4,7 @@ import { NewUI } from './new_ui';
 import { PlotSettingsControl } from './plot_settings';
 import { initDOMState } from './dom_control';
 import { initEditorState } from './editor_control';
-import { StorageControl } from './storage_control';
+import { initStorageControl, loadHydlaFromStorage, loadHydatFromStorage } from './storage_control';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { initHydatControl } from './hydat_control';
 import { initHyLaGIControllerState } from './hylagi';
@@ -12,8 +12,8 @@ import { initExampleLoader } from './example_loader';
 import { setBackgroundColor } from './plot_control';
 
 $(document).ready(() => {
-  const saved_hydla = StorageControl.loadHydla();
-  const saved_hydat = StorageControl.loadHydat();
+  const saved_hydla = loadHydlaFromStorage();
+  const saved_hydat = loadHydatFromStorage();
 
   initExampleLoader();
 
@@ -29,7 +29,7 @@ $(document).ready(() => {
   initDOMState();
 
   initEditorState(saved_hydla);
-  StorageControl.init();
+  initStorageControl();
 
   update2DMode(PlotSettingsControl.plot_settings.twoDimensional);
   PlotSettingsControl.time_stop();
