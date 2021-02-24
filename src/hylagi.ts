@@ -66,8 +66,8 @@ export function sendHydla(hydla: string) {
   };
 }
 
-/* build form data */
 export function sendToHyLaGI(hydla: string) {
+  /* build form data */
   const form = new FormData();
   form.append('hydla_code', hydla);
   form.append('hylagi_option', getOptionsValue());
