@@ -9,7 +9,7 @@ import 'ace-builds/src-noconflict/keybinding-vim';
 
 import { showToast } from './dom_control';
 import { StorageControl } from './storage_control';
-import { HyLaGIController } from './hylagi';
+import { sendHydla } from './hylagi';
 import { loadHydat } from './hydat_control';
 
 /* set default hydla code */
@@ -78,7 +78,7 @@ export function initEditorState(saved_hydla: string | null) {
 }
 
 export function sendEditorHydla() {
-  HyLaGIController.sendHydla(EditorState.editor.getValue());
+  sendHydla(EditorState.editor.getValue());
 }
 
 /*
