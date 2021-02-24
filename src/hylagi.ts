@@ -25,19 +25,18 @@ export function execHyLaGI() {
 
 export function updateHyLaGIExecIcon() {
   const run_button = <HTMLInputElement>document.getElementById('run_button');
+  const elist = Array.from(document.getElementsByClassName('exec-icon'));
   if (HyLaGIControllerState.running) {
     run_button.value = 'KILL'; // for new UI
-    const elist = document.getElementsByClassName('exec-icon');
-    for (let i = 0; i < elist.length; ++i) {
-      elist[i].classList.remove('mdi-content-send');
-      elist[i].classList.add('mdi-content-clear');
+    for (const ei of elist) {
+      ei.classList.remove('mdi-content-send');
+      ei.classList.add('mdi-content-clear');
     }
   } else {
     run_button.value = 'RUN'; // for new UI
-    const elist = document.getElementsByClassName('exec-icon');
-    for (let i = 0; i < elist.length; ++i) {
-      elist[i].classList.add('mdi-content-send');
-      elist[i].classList.remove('mdi-content-clear');
+    for (const ei of elist) {
+      ei.classList.add('mdi-content-send');
+      ei.classList.remove('mdi-content-clear');
     }
   }
 }
@@ -62,16 +61,16 @@ export function sendHydla(hydla: string) {
     const nd_mode_check_box = <HTMLInputElement>document.getElementById('nd_mode_check_box');
     const other_options = <HTMLInputElement>document.getElementById('other_options');
     const timeout_option = <HTMLInputElement>document.getElementById('timeout_option');
-    if (phase_num.value != '') options_value += ' -p ' + phase_num.value;
-    if (simulation_time.value != '') options_value += ' -t ' + simulation_time.value;
-    if (phase_num.value == '' && simulation_time.value == '') options_value += ' -p10';
+    if (phase_num.value !== '') options_value += ' -p ' + phase_num.value;
+    if (simulation_time.value !== '') options_value += ' -t ' + simulation_time.value;
+    if (phase_num.value === '' && simulation_time.value === '') options_value += ' -p10';
     if (html_mode_check_box.checked) options_value += ' -d --fhtml ';
     if (nd_mode_check_box.checked) options_value += ' --fnd ';
     else options_value += ' --fno-nd ';
-    if (other_options.value != '') options_value += other_options.value;
+    if (other_options.value !== '') options_value += other_options.value;
     form.append('hylagi_option', options_value);
     let timeout_value = '';
-    if (timeout_option.value != '') timeout_value = timeout_option.value;
+    if (timeout_option.value !== '') timeout_value = timeout_option.value;
     else timeout_value = '30';
     form.append('timeout_option', timeout_value);
     const xmlhr = new XMLHttpRequest();
