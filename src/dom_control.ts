@@ -9,7 +9,7 @@ import {
   saveHydla,
 } from './editor_control';
 import { saveHydat } from './hydat_control';
-import { HyLaGIController } from './hylagi';
+import { execHyLaGI } from './hylagi';
 import { StorageControl } from './storage_control';
 
 class DOMState {
@@ -123,7 +123,7 @@ export function initDOMState() {
     saveHydat();
   });
   document.getElementById('run_button')?.addEventListener('click', () => {
-    HyLaGIController.exec();
+    execHyLaGI();
   });
   document.getElementById('toggle-input-pane')?.addEventListener('click', () => {
     toggleInputPane();
