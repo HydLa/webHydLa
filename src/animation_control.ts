@@ -433,14 +433,13 @@ export class AnimationControl {
 
   /** parameter_condition_listの値がparameter_mapsの範囲内にあるか */
   static check_parameter_condition(
-    parameter_maps: { [key: string]: HydatParameter }[],
+    parameter_maps: Map<string, HydatParameter>[],
     parameter_condition_list: { [key: string]: Constant }
   ) {
     const epsilon = 0.0001;
     for (const map of parameter_maps) {
       let included = true;
-      for (const key in map) {
-        const p = map[key];
+      for (const [key, p] of map) {
         const c = parameter_condition_list[key];
         if (c === undefined) continue;
         if (p instanceof HydatParameterInterval) {

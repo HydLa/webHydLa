@@ -3,7 +3,7 @@ import { GraphControl } from './graph_control';
 import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plot_settings';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { PlotControl } from './plot_control';
-import { HydatParameter, HydatParameterPoint } from './hydat';
+import { HydatParameter, HydatParameterPoint, Hydat } from './hydat';
 import { AnimationControl } from './animation_control';
 
 /** 描画用設定の処理を行う */
@@ -111,14 +111,13 @@ export class DatGUIControl {
     this.fixLayout();
   }
 
-  static parameter_setting(pars: { [key: string]: HydatParameter }) {
+  static parameter_setting(pars: Map<string, HydatParameter>) {
     for (const item of this.parameter_items) {
       this.parameter_folder.remove(item);
     }
     this.parameter_items = [];
     DatGUIControl.plot_settings.parameter_condition = {};
-    for (const key in pars) {
-      const par = pars[key];
+    for (const [key, par] of pars) {
       const key_copy = key;
       if (par instanceof HydatParameterPoint) return;
 
