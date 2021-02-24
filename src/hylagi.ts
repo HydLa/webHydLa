@@ -1,6 +1,6 @@
-import { DOMControl } from './dom_control';
-import { EditorControl } from './editor_control';
-import { HydatControl } from './hydat_control';
+import { startPreloader, stopPreloader, showToast, selectLogTab } from './dom_control';
+import { sendEditorHydla } from './editor_control';
+import { loadHydat } from './hydat_control';
 import { StorageControl } from './storage_control';
 
 const first_script_element = document.getElementsByTagName('script')[0];
@@ -16,7 +16,7 @@ export class HyLaGIController {
     if (this.running) {
       this.killHyLaGI();
     } else {
-      EditorControl.sendHydLa();
+      sendEditorHydla();
     }
   }
   static updateExecIcon() {
@@ -38,8 +38,8 @@ export class HyLaGIController {
     }
   }
   /* function to submit hydla code to server */
-  static sendHydLa(hydla: string) {
-    DOMControl.startPreloader();
+  static sendHydla(hydla: string) {
+    startPreloader();
     this.running = true;
     this.updateExecIcon();
 
@@ -76,21 +76,21 @@ export class HyLaGIController {
 
         switch (response.error) {
           case 0:
-            DOMControl.showToast('Simulation was successful.', 1000, '');
+            showToast('Simulation was successful.', 1000, '');
             if (response.hydat != undefined) {
               response.hydat.name = StorageControl.loadHydlaName();
-              HydatControl.loadHydat(response.hydat);
+              loadHydat(response.hydat);
             } else {
-              DOMControl.selectLogTab();
+              selectLogTab();
             }
             break;
           default:
             if (this.running) {
-              DOMControl.showToast('Error message: ' + response.message, 3000, 'red darken-4');
-              DOMControl.selectLogTab();
+              showToast('Error message: ' + response.message, 3000, 'red darken-4');
+              selectLogTab();
               console.error(response);
             } else {
-              DOMControl.showToast('Killed HyLaGI', 1000, '');
+              showToast('Killed HyLaGI', 1000, '');
             }
             break;
         }
@@ -128,7 +128,7 @@ export class HyLaGIController {
             output.innerHTML += getEscapedStringForHTML(response.stderr);
           }
         }
-        DOMControl.stopPreloader();
+        stopPreloader();
         this.running = false;
         this.updateExecIcon();
       };

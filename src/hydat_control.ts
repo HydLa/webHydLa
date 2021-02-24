@@ -3,7 +3,7 @@ import { StorageControl } from './storage_control';
 import { modifyNameLabel, clearPlot } from './graph_control';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { PlotControl } from './plot_control';
-import { DOMControl } from './dom_control';
+import { showToast } from './dom_control';
 import { DatGUIControl } from './dat_gui_control';
 
 export class HydatControl {
@@ -16,55 +16,55 @@ export class HydatControl {
       remove: () => void;
     }[];
   };
+}
 
-  static init(saved_hydat: string | null) {
-    if (saved_hydat) {
-      this.loadHydat(JSON.parse(saved_hydat));
-    }
+export function initHydatControl(saved_hydat: string | null) {
+  if (saved_hydat) {
+    loadHydat(JSON.parse(saved_hydat));
   }
+}
 
-  /* function to save Hydat file */
-  static saveHydat() {
-    if (!HydatControl.current_hydat) return;
-    const blob = new Blob([JSON.stringify(HydatControl.current_hydat.raw)]);
-    const object = window.URL.createObjectURL(blob);
-    const d = new Date();
-    const date =
-      d.getFullYear() +
-      '-' +
-      d.getMonth() +
-      1 +
-      '-' +
-      d.getDate() +
-      'T' +
-      d.getHours() +
-      '-' +
-      d.getMinutes() +
-      '-' +
-      d.getSeconds();
-    const a = document.createElement('a');
-    a.href = object;
-    a.download = date + '.hydat';
-    const event = document.createEvent('MouseEvents');
-    event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-    a.dispatchEvent(event);
-  }
+/* function to save Hydat file */
+export function saveHydat() {
+  if (!HydatControl.current_hydat) return;
+  const blob = new Blob([JSON.stringify(HydatControl.current_hydat.raw)]);
+  const object = window.URL.createObjectURL(blob);
+  const d = new Date();
+  const date =
+    d.getFullYear() +
+    '-' +
+    d.getMonth() +
+    1 +
+    '-' +
+    d.getDate() +
+    'T' +
+    d.getHours() +
+    '-' +
+    d.getMinutes() +
+    '-' +
+    d.getSeconds();
+  const a = document.createElement('a');
+  a.href = object;
+  a.download = date + '.hydat';
+  const event = document.createEvent('MouseEvents');
+  event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+  a.dispatchEvent(event);
+}
 
-  static loadHydat(hydat: HydatRaw) {
-    try {
-      StorageControl.saveHydat(hydat);
-      this.current_hydat = new Hydat(hydat);
-      DatGUIControl.parameter_setting(this.current_hydat.parameters);
-      modifyNameLabel(this.current_hydat.name);
-    } catch (e) {
-      console.log(e);
-      console.log(e.stack);
-      DOMControl.showToast('Failed to load hydat: ' + e.name + '(' + e.message + ')', 3000, 'red darken-4');
-    }
-    clearPlot();
-    if (this.current_hydat !== undefined) {
-      PlotLineMapControl.initVariableSelector(this.current_hydat);
-    }
-    PlotControl.update_axes(true);
+export function loadHydat(hydat: HydatRaw) {
+  try {
+    StorageControl.saveHydat(hydat);
+    HydatControl.current_hydat = new Hydat(hydat);
+    DatGUIControl.parameter_setting(HydatControl.current_hydat.parameters);
+    modifyNameLabel(HydatControl.current_hydat.name);
+  } catch (e) {
+    console.log(e);
+    console.log(e.stack);
+    showToast(`Failed to load hydat: ${e.name}(${e.message})`, 3000, 'red darken-4');
   }
+  clearPlot();
+  if (HydatControl.current_hydat !== undefined) {
+    PlotLineMapControl.initVariableSelector(HydatControl.current_hydat);
+  }
+  PlotControl.update_axes(true);
 }

@@ -1,6 +1,6 @@
 import { graphControl, renderGraph_three_js, toScreenPosition } from './graph_control';
 import { PlotLineMapControl } from './plot_line_map_control';
-import { DOMControl } from './dom_control';
+import { showToast, stopPreloader } from './dom_control';
 
 import * as THREE from 'three';
 import { Triplet, RGB, ComparableTriplet, Range } from './plot_utils';
@@ -13,7 +13,6 @@ const axisColorBases = new Triplet<RGB>(new RGB(1.0, 0.3, 0.3), new RGB(0.3, 1.0
 
 export class PlotControl {
   static array = -1;
-  static current_line_vec_animation: THREE.Vector3[] = [];
   static PlotStartTime: number | undefined;
 
   static axisColors = new Triplet<string>('#FF8080', '#80FF80', '#8080FF');
@@ -111,11 +110,11 @@ export class PlotControl {
     if (!PlotLineMapControl.isAllReady()) return;
     const current_time = new Date().getTime();
     if (PlotControl.PlotStartTime === undefined || current_time - PlotControl.PlotStartTime >= 1000) {
-      DOMControl.showToast('Plot finished.', 1000, 'blue');
+      showToast('Plot finished.', 1000, 'blue');
     }
     PlotControl.PlotStartTime = undefined;
     graphControl.renderer.render(graphControl.scene, graphControl.camera);
-    DOMControl.stopPreloader();
+    stopPreloader();
   }
   static update_axes(force: boolean) {
     const ranges = PlotControl.getRangesOfFrustum(graphControl.camera);
