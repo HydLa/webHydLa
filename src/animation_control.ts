@@ -167,7 +167,7 @@ function add_line(
       animationControlState.dynamic_lines.push([]);
   }
   for (let i = 0; i + 1 < current_line_vec.length; i++) {
-    add_line_sub(
+    add_line_each_phase(
       current_line_vec[i].vec,
       current_line_vec[i + 1].vec,
       current_line_vec[i + 1].isPP,
@@ -199,7 +199,7 @@ function add_line(
   }
 }
 
-function add_line_sub(
+function add_line_each_phase(
   posBegin: THREE.Vector3,
   posEnd: THREE.Vector3,
   endIsPP: boolean,
@@ -319,7 +319,7 @@ export function dfs_each_line(
         ++phase_index.index;
         phase = phase_index.phase;
       }
-      const finished = dfs_each_line_sub(
+      const finished = search_next_child(
         phase_index_array,
         axes,
         line,
@@ -343,7 +343,7 @@ export function dfs_each_line(
   }
 }
 
-function dfs_each_line_sub(
+function search_next_child(
   phase_index_array: { phase: HydatPhase; index: number }[],
   axes: Triplet<Construct>,
   line: PlotLine,
