@@ -109,7 +109,7 @@ export function repsonseHyLaGI(response: ResponseBody) {
     case 0:
       showToast('Simulation was successful.', 1000, '');
       if (response.hydat != undefined) {
-        response.hydat.name = StorageControl.loadHydlaName();
+        response.hydat.name = StorageControl.loadHydlaName()!;
         loadHydat(response.hydat);
       } else {
         selectLogTab();
