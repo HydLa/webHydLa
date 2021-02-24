@@ -16,6 +16,7 @@ class DOMState {
   static tabs: Materialize.Tabs;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function initDOMState() {
   Materialize.FormSelect.init(document.querySelectorAll('select'));
   $(window).resize(function () {

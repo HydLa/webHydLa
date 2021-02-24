@@ -302,6 +302,7 @@ export class Constant implements Construct {
   toString() {
     return this.val.toString();
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getValue(env: { [key: string]: Construct }) {
     return this.val;
   }

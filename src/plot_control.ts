@@ -119,6 +119,7 @@ export function update_axes(force: boolean) {
   plotState.prev_ranges = ranges;
 }
 
+// eslint-disable-next-line max-lines-per-function
 function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet<Range> {
   const ranges = new ComparableTriplet<Range>(Range.getEmpty(), Range.getEmpty(), Range.getEmpty());
 
