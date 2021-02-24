@@ -5,7 +5,7 @@
 
 describe('run and draw', () => {
   it('check run', () => {
-    cy.visit('/');
+    cy.visit('/'); // 'http://localhost:5000'の'/'
     cy.contains('RUN').click();
     cy.wait(2000);
   });
