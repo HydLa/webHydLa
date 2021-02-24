@@ -329,40 +329,47 @@ function updateAxisScaleLabel(ranges: ComparableTriplet<Range>) {
   if (!PlotSettingsControl.plot_settings.scaleLabelVisible) return;
   ctx.font = "20px 'Arial'";
 
-  const sub = (range: Range, axisColor: string, embedFunc: (arg: number) => THREE.Vector3) => {
-    const calculateScaleInterval = (range: Range) => {
-      const log = Math.log(range.getInterval()) / Math.log(10);
-      const floor = Math.floor(log);
-      const fractional_part = log - floor;
-      let scale_interval = Math.pow(10, floor) / 5;
-      const log10_5 = 0.69;
-      if (fractional_part > log10_5) scale_interval *= 5;
-      if (scale_interval <= 0) return Number.MAX_VALUE;
-      return scale_interval;
-    };
-    const calculateNumberOfDigits = (interval: number) => {
-      let num = Math.floor(Math.log(interval) / Math.log(10));
-      num = num > 0 ? 0 : -num;
-      num = Math.max(num, 0);
-      num = Math.min(num, 20);
-      return num;
-    };
-    const scale_interval = calculateScaleInterval(range);
-    const fixed = calculateNumberOfDigits(scale_interval);
-    ctx.fillStyle = axisColor;
-    const start = Math.floor(range.min / scale_interval) * scale_interval;
+  updateEachAxis(ctx, ranges.x, plotState.axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
+  updateEachAxis(ctx, ranges.y, plotState.axisColors.y, (arg) => new THREE.Vector3(0, arg, 0));
+  updateEachAxis(ctx, ranges.z, plotState.axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
+}
 
-    for (let i = 0; start + i * scale_interval <= range.max; i++) {
-      const current = start + i * scale_interval;
-      const vec = embedFunc(current);
-      const pos = GraphControl.toScreenPosition(vec);
-      ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
-    }
-  };
+function updateEachAxis(
+  ctx: CanvasRenderingContext2D,
+  range: Range,
+  axisColor: string,
+  embedFunc: (arg: number) => THREE.Vector3
+) {
+  const scale_interval = calculateScaleInterval(range);
+  const fixed = calculateNumberOfDigits(scale_interval);
+  ctx.fillStyle = axisColor;
+  const start = Math.floor(range.min / scale_interval) * scale_interval;
 
-  sub(ranges.x, plotState.axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
-  sub(ranges.y, plotState.axisColors.y, (arg) => new THREE.Vector3(0, arg, 0));
-  sub(ranges.z, plotState.axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
+  for (let i = 0; start + i * scale_interval <= range.max; i++) {
+    const current = start + i * scale_interval;
+    const vec = embedFunc(current);
+    const pos = GraphControl.toScreenPosition(vec);
+    ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
+  }
+}
+
+function calculateScaleInterval(range: Range) {
+  const log = Math.log(range.getInterval()) / Math.log(10);
+  const floor = Math.floor(log);
+  const fractional_part = log - floor;
+  let scale_interval = Math.pow(10, floor) / 5;
+  const log10_5 = 0.69;
+  if (fractional_part > log10_5) scale_interval *= 5;
+  if (scale_interval <= 0) return Number.MAX_VALUE;
+  return scale_interval;
+}
+
+function calculateNumberOfDigits(interval: number) {
+  let num = Math.floor(Math.log(interval) / Math.log(10));
+  num = num > 0 ? 0 : -num;
+  num = Math.max(num, 0);
+  num = Math.min(num, 20);
+  return num;
 }
 
 export function setBackgroundColor(color: string) {
