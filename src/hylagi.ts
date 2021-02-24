@@ -106,8 +106,8 @@ export function getOptionsValue(): string {
   return options_value;
 }
 
-/* Response to HyLaGI */
-export function repsonseHyLaGI(response: ResponseBody) {
+/* Response from HyLaGI */
+export function responseHyLaGI(response: ResponseBody) {
   switch (response.error) {
     case 0:
       showToast('Simulation was successful.', 1000, '');
