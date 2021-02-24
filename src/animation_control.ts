@@ -167,49 +167,18 @@ function add_line(
       animationControlState.dynamic_lines.push([]);
   }
   for (let i = 0; i + 1 < current_line_vec.length; i++) {
-    if (current_line_vec[i + 1].isPP) {
-      const posBegin = current_line_vec[i].vec;
-      const posEnd = current_line_vec[i + 1].vec;
-      const directionVec = posEnd.clone().sub(posBegin);
-      const lineLength = directionVec.length();
-      directionVec.normalize();
-      const numOfDots = lineLength / dottedLength;
-      const tmp_geometry = new THREE.Geometry();
-      for (let j = 1; j + 1 < numOfDots; j += 2) {
-        // 点線の各点を追加
-        const tmpBegin = posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength));
-        const tmpEnd = posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength));
-        if (useLine) {
-          lines.push(tmpBegin, tmpEnd);
-        } else {
-          const l = make_cylinder(tmpBegin, tmpEnd, scaledWidth, material);
-          if (PlotControl.plot_settings.dynamicDraw) tmp_geometry.merge(<any>l.geometry.clone(), l.matrix.clone());
-          linesGeometry.merge(<any>l.geometry, l.matrix);
-        }
-      }
-      if (PlotControl.plot_settings.dynamicDraw) {
-        const l: any = useLine ? make_line([posBegin, posEnd], material) : new THREE.Mesh(tmp_geometry, material);
-        l.isPP = true;
-        tmp_dynamic_line.push(l);
-
-        animationControlState.accumulative_merged_lines[PlotControl.array].push(
-          useLine ? make_line(lines.concat(), material, true) : new THREE.Mesh(linesGeometry.clone(), material)
-        );
-      }
-    } else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) {
-      // IPの各折れ線を追加
-      if (useLine) {
-        if (PlotControl.plot_settings.dynamicDraw) {
-          const l = make_line([current_line_vec[i].vec, current_line_vec[i + 1].vec], material);
-          tmp_dynamic_line.push(l);
-        }
-        lines.push(current_line_vec[i].vec, current_line_vec[i + 1].vec);
-      } else {
-        const l = make_cylinder(current_line_vec[i].vec, current_line_vec[i + 1].vec, scaledWidth, material);
-        if (PlotControl.plot_settings.dynamicDraw) tmp_dynamic_line.push(l);
-        linesGeometry.merge(<any>l.geometry, l.matrix);
-      }
-    }
+    add_line_sub(
+      current_line_vec[i].vec,
+      current_line_vec[i + 1].vec,
+      current_line_vec[i + 1].isPP,
+      scaledWidth,
+      dottedLength,
+      useLine,
+      lines,
+      linesGeometry,
+      tmp_dynamic_line,
+      material
+    );
   }
   if (PlotControl.plot_settings.dynamicDraw) animationControlState.dynamic_lines[PlotControl.array] = tmp_dynamic_line;
 
@@ -227,6 +196,61 @@ function add_line(
   };
   if (animationControlState.maxlen < animationControlState.current_line_vec_animation.length) {
     animationControlState.maxlen = animationControlState.current_line_vec_animation.length;
+  }
+}
+
+function add_line_sub(
+  posBegin: THREE.Vector3,
+  posEnd: THREE.Vector3,
+  endIsPP: boolean,
+  scaledWidth: number,
+  dottedLength: number,
+  useLine: boolean,
+  lines: THREE.Vector3[],
+  linesGeometry: THREE.Geometry,
+  tmp_dynamic_line: any[],
+  material: THREE.Material
+) {
+  if (endIsPP) {
+    const directionVec = posEnd.clone().sub(posBegin);
+    const lineLength = directionVec.length();
+    directionVec.normalize();
+    const numOfDots = lineLength / dottedLength;
+    const tmp_geometry = new THREE.Geometry();
+    for (let j = 1; j + 1 < numOfDots; j += 2) {
+      // 点線の各点を追加
+      const tmpBegin = posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength));
+      const tmpEnd = posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength));
+      if (useLine) {
+        lines.push(tmpBegin, tmpEnd);
+      } else {
+        const l = make_cylinder(tmpBegin, tmpEnd, scaledWidth, material);
+        if (PlotControl.plot_settings.dynamicDraw) tmp_geometry.merge(<any>l.geometry.clone(), l.matrix.clone());
+        linesGeometry.merge(<any>l.geometry, l.matrix);
+      }
+    }
+    if (PlotControl.plot_settings.dynamicDraw) {
+      const l: any = useLine ? make_line([posBegin, posEnd], material) : new THREE.Mesh(tmp_geometry, material);
+      l.isPP = true;
+      tmp_dynamic_line.push(l);
+
+      animationControlState.accumulative_merged_lines[PlotControl.array].push(
+        useLine ? make_line(lines.concat(), material, true) : new THREE.Mesh(linesGeometry.clone(), material)
+      );
+    }
+  } else if (!posBegin.equals(posEnd)) {
+    // IPの各折れ線を追加
+    if (useLine) {
+      if (PlotControl.plot_settings.dynamicDraw) {
+        const l = make_line([posBegin, posEnd], material);
+        tmp_dynamic_line.push(l);
+      }
+      lines.push(posBegin, posEnd);
+    } else {
+      const l = make_cylinder(posBegin, posEnd, scaledWidth, material);
+      if (PlotControl.plot_settings.dynamicDraw) tmp_dynamic_line.push(l);
+      linesGeometry.merge(<any>l.geometry, l.matrix);
+    }
   }
 }
 
