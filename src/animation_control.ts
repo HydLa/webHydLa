@@ -179,25 +179,21 @@ function add_line(
         // 点線の各点を追加
         const tmpBegin = posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength));
         const tmpEnd = posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength));
-        if (useLine){
-          lines.push(tmpBegin,tmpEnd);
+        if (useLine) {
+          lines.push(tmpBegin, tmpEnd);
         } else {
           const l = make_cylinder(tmpBegin, tmpEnd, scaledWidth, material);
-          if (PlotControl.plot_settings.dynamicDraw)
-            tmp_geometry.merge(<any>l.geometry.clone(), l.matrix.clone());
+          if (PlotControl.plot_settings.dynamicDraw) tmp_geometry.merge(<any>l.geometry.clone(), l.matrix.clone());
           linesGeometry.merge(<any>l.geometry, l.matrix);
         }
       }
       if (PlotControl.plot_settings.dynamicDraw) {
-        const l: any = useLine
-          ? make_line([posBegin, posEnd], material)
-          : new THREE.Mesh(tmp_geometry, material);
+        const l: any = useLine ? make_line([posBegin, posEnd], material) : new THREE.Mesh(tmp_geometry, material);
         l.isPP = true;
         tmp_dynamic_line.push(l);
 
-        animationControlState.accumulative_merged_lines[PlotControl.array].push(useLine
-          ? make_line(lines.concat(), material, true)
-          : new THREE.Mesh(linesGeometry.clone(), material)
+        animationControlState.accumulative_merged_lines[PlotControl.array].push(
+          useLine ? make_line(lines.concat(), material, true) : new THREE.Mesh(linesGeometry.clone(), material)
         );
       }
     } else if (!current_line_vec[i].vec.equals(current_line_vec[i + 1].vec)) {
@@ -217,9 +213,7 @@ function add_line(
   }
   if (PlotControl.plot_settings.dynamicDraw) animationControlState.dynamic_lines[PlotControl.array] = tmp_dynamic_line;
 
-  const three_line = useLine 
-    ? make_line(lines, material, true)
-    : new THREE.Mesh(linesGeometry, material);
+  const three_line = useLine ? make_line(lines, material, true) : new THREE.Mesh(linesGeometry, material);
   if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
 
   if (!line.plot) {
@@ -583,9 +577,7 @@ export function animate() {
         continue;
       }
       if (animationControlState.index_array_multibimap.hasValue(arr)) {
-        sphere.position.copy(
-          animationControlState.animation_line[arr].vecs[animationControlState.time]
-        );
+        sphere.position.copy(animationControlState.animation_line[arr].vecs[animationControlState.time]);
       } else {
         sphere.position.set(0, 0, 0);
       }
