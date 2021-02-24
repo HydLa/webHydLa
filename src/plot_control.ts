@@ -218,33 +218,6 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet
     new THREE.Matrix4().multiplyMatrices(GraphControl.camera.projectionMatrix, GraphControl.camera.matrixWorldInverse)
   );
   frustum = expandFrustum(frustum);
-
-  /// calculate cross point of the plane and three axes(x, y, z).
-  /// The plane is defined by point_a, point_b, point_c and point_d.(The forth parameter is required to determine the range of the plane.)
-  const calculate_intercept = (
-    point_a: THREE.Vector3,
-    point_b: THREE.Vector3,
-    point_c: THREE.Vector3,
-    point_d: THREE.Vector3,
-    frustum: THREE.Frustum
-  ) => {
-    const ab_vec = new THREE.Vector3().subVectors(point_b, point_a);
-    const ac_vec = new THREE.Vector3().subVectors(point_c, point_a);
-    const cross_product = ab_vec.clone().cross(ac_vec);
-    const ret = new THREE.Vector3();
-    const sum = cross_product.x * point_a.x + cross_product.y * point_a.y + cross_product.z * point_a.z;
-    if (cross_product.x == 0) ret.x = 0;
-    else ret.x = sum / cross_product.x;
-    if (cross_product.y == 0) ret.y = 0;
-    else ret.y = sum / cross_product.y;
-    if (cross_product.z == 0) ret.z = 0;
-    else ret.z = sum / cross_product.z;
-
-    if (!frustum.containsPoint(new THREE.Vector3(ret.x, 0, 0))) ret.x = Number.NaN;
-    if (!frustum.containsPoint(new THREE.Vector3(0, ret.y, 0))) ret.y = Number.NaN;
-    if (!frustum.containsPoint(new THREE.Vector3(0, 0, ret.z))) ret.z = Number.NaN;
-    return ret;
-  };
   const intercepts = [
     // top surface
     calculate_intercept(ntr, ftr, ftl, ntl, frustum),
@@ -281,31 +254,59 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet
   return ranges;
 }
 
+/// calculate cross point of the plane and three axes(x, y, z).
+/// The plane is defined by point_a, point_b, point_c and point_d.(The forth parameter is required to determine the range of the plane.)
+function calculate_intercept(
+  point_a: THREE.Vector3,
+  point_b: THREE.Vector3,
+  point_c: THREE.Vector3,
+  point_d: THREE.Vector3,
+  frustum: THREE.Frustum
+) {
+  const ab_vec = new THREE.Vector3().subVectors(point_b, point_a);
+  const ac_vec = new THREE.Vector3().subVectors(point_c, point_a);
+  const cross_product = ab_vec.clone().cross(ac_vec);
+  const ret = new THREE.Vector3();
+  const sum = cross_product.x * point_a.x + cross_product.y * point_a.y + cross_product.z * point_a.z;
+  if (cross_product.x == 0) ret.x = 0;
+  else ret.x = sum / cross_product.x;
+  if (cross_product.y == 0) ret.y = 0;
+  else ret.y = sum / cross_product.y;
+  if (cross_product.z == 0) ret.z = 0;
+  else ret.z = sum / cross_product.z;
+
+  if (!frustum.containsPoint(new THREE.Vector3(ret.x, 0, 0))) ret.x = Number.NaN;
+  if (!frustum.containsPoint(new THREE.Vector3(0, ret.y, 0))) ret.y = Number.NaN;
+  if (!frustum.containsPoint(new THREE.Vector3(0, 0, ret.z))) ret.z = Number.NaN;
+  return ret;
+}
+
 function expandFrustum(orig: THREE.Frustum) {
   const expanded = orig.clone();
-  const expandTwoPlanesOfFrustum = (plane1: THREE.Plane, plane2: THREE.Plane) => {
-    const dot = plane1.normal.dot(plane2.normal);
-    const rate = 1.1;
-
-    if (dot * plane1.constant * plane2.constant > 0) {
-      if (Math.abs(plane1.constant) > Math.abs(plane2.constant)) {
-        plane1.constant *= rate;
-        plane2.constant /= rate;
-      } else {
-        plane1.constant /= rate;
-        plane2.constant *= rate;
-      }
-    } else {
-      plane1.constant *= rate;
-      plane2.constant *= rate;
-    }
-    return;
-  };
 
   expandTwoPlanesOfFrustum(expanded.planes[0], expanded.planes[1]);
   expandTwoPlanesOfFrustum(expanded.planes[2], expanded.planes[3]);
   expandTwoPlanesOfFrustum(expanded.planes[4], expanded.planes[5]);
   return expanded;
+}
+
+function expandTwoPlanesOfFrustum(plane1: THREE.Plane, plane2: THREE.Plane) {
+  const dot = plane1.normal.dot(plane2.normal);
+  const rate = 1.1;
+
+  if (dot * plane1.constant * plane2.constant > 0) {
+    if (Math.abs(plane1.constant) > Math.abs(plane2.constant)) {
+      plane1.constant *= rate;
+      plane2.constant /= rate;
+    } else {
+      plane1.constant /= rate;
+      plane2.constant *= rate;
+    }
+  } else {
+    plane1.constant *= rate;
+    plane2.constant *= rate;
+  }
+  return;
 }
 
 function makeAxis(range: Range, delta: number, color: THREE.Color) {
