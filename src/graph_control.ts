@@ -11,7 +11,7 @@ import { HydatControl } from './hydat_control';
  * いわゆるView
  */
 
-export class GraphControl {
+class GraphControl {
   scene: THREE.Scene;
   camera: THREE.OrthographicCamera;
   elem: HTMLElement;
@@ -27,8 +27,6 @@ export class GraphControl {
   last_frame_zoom = 1;
 
   resizeLoopCount = 0;
-
-  static face_a: THREE.Mesh[];
 
   constructor() {
     this.scene = new THREE.Scene();
@@ -71,47 +69,7 @@ export class GraphControl {
   }
 }
 
-const graphControl = new GraphControl();
-
-export function initGraphControl() {
-  graphControl.scene = new THREE.Scene();
-
-  // PerspectiveCamera
-  const width = 50;
-  const height = 50;
-
-  // OrthographicCamera
-  const left = width / -2;
-  const right = width / 2;
-  const top = height / 2;
-  const bottom = height / -2;
-  graphControl.camera = new THREE.OrthographicCamera(left, right, top, bottom, -1000, 1000);
-
-  graphControl.camera.position.set(0, 0, 100);
-  graphControl.controls_position0 = new THREE.Vector3(0, 0, 100);
-
-  graphControl.elem = document.getElementById('graph-area')!;
-  graphControl.renderer = new THREE.WebGLRenderer({ antialias: true });
-
-  graphControl.renderer.domElement.style.position = 'absolute';
-  graphControl.renderer.domElement.style.width = '100%';
-  graphControl.renderer.domElement.style.height = '100%';
-
-  graphControl.elem.appendChild(graphControl.renderer.domElement);
-
-  const directionalLight = new THREE.DirectionalLight('#ffffff', 1);
-  directionalLight.position.set(0, 7, 10);
-
-  graphControl.scene.add(directionalLight);
-
-  graphControl.controls = new OrbitControls(graphControl.camera, graphControl.renderer.domElement);
-  graphControl.controls.screenSpacePanning = true;
-
-  //TODO: implement this in more elegant way
-  setTimeout(() => {
-    resizeGraphRenderer();
-  }, 200);
-}
+export const graphControl = new GraphControl();
 
 export function resizeGraphRenderer() {
   if (graphControl.elem.clientWidth > 0 && graphControl.elem.clientHeight > 0) {

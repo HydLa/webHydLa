@@ -2,12 +2,14 @@ import { PlotLine } from './plot_line';
 import { PlotControl } from './plot_control';
 import { DOMControl } from './dom_control';
 import * as THREE from 'three';
-import { GraphControl } from './graph_control';
+import { graphControl, renderGraph_three_js } from './graph_control';
 import { HydatParameter, HydatParameterInterval, HydatPhase } from './hydat';
 import { RGB, Triplet } from './plot_utils';
 import { HydatControl } from './hydat_control';
 import { parse, Construct, Constant } from './parse';
 import { MaltiBiMap } from './animation_utils';
+
+let faces: THREE.Mesh[];
 
 /** 描画用オブジェクトの計算，描画，削除を担当 */
 export class AnimationControl {
@@ -127,8 +129,8 @@ export class AnimationControl {
     AnimationControl.index_array_maltibimap.set(line.index, PlotControl.array);
 
     const linesGeometry = new THREE.Geometry();
-    const scaledWidth = (0.5 * width) / GraphControl.camera.zoom;
-    const dottedLength = 10.0 / GraphControl.camera.zoom;
+    const scaledWidth = (0.5 * width) / graphControl.camera.zoom;
+    const dottedLength = 10.0 / graphControl.camera.zoom;
     const material = new THREE.MeshBasicMaterial({ color: color[current_param_idx] });
 
     const tmp_dynamic_line: any[] = [];
@@ -181,7 +183,7 @@ export class AnimationControl {
     if (PlotControl.plot_settings.dynamicDraw) AnimationControl.dynamic_lines[PlotControl.array] = tmp_dynamic_line;
 
     const three_line = new THREE.Mesh(linesGeometry, material);
-    if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
+    if (!PlotControl.plot_settings.dynamicDraw) graphControl.scene.add(three_line);
 
     if (!line.plot) {
       throw new Error('unexpected: line.plot is undefined');
@@ -201,7 +203,7 @@ export class AnimationControl {
     const s_geometry = new THREE.SphereBufferGeometry(0.1);
     const sphere = new THREE.Mesh(s_geometry, new THREE.MeshBasicMaterial({ color: color[current_param_idx] }));
     sphere.position.set(0, 0, 0);
-    GraphControl.scene.add(sphere);
+    graphControl.scene.add(sphere);
     AnimationControl.plot_animate[PlotControl.array] = sphere;
   }
 
@@ -225,7 +227,7 @@ export class AnimationControl {
     AnimationControl.index_array_maltibimap.set(line.index, PlotControl.array);
 
     const lines: THREE.Vector3[] = [];
-    const dottedLength = 10.0 / GraphControl.camera.zoom;
+    const dottedLength = 10.0 / graphControl.camera.zoom;
     const material = new THREE.LineBasicMaterial({ color: color[current_param_idx] });
 
     const tmp_dynamic_line: any[] = [];
@@ -269,7 +271,7 @@ export class AnimationControl {
     if (PlotControl.plot_settings.dynamicDraw) AnimationControl.dynamic_lines[PlotControl.array] = tmp_dynamic_line;
 
     const three_line = AnimationControl.make_line(lines, material, true);
-    if (!PlotControl.plot_settings.dynamicDraw) GraphControl.scene.add(three_line);
+    if (!PlotControl.plot_settings.dynamicDraw) graphControl.scene.add(three_line);
 
     if (!line.plot) {
       throw new Error('unexpected: line.plot is undefined');
@@ -407,7 +409,7 @@ export class AnimationControl {
     if (line.plot !== undefined) {
       let i: number;
       for (i = 0; i < line.plot.length; i++) {
-        GraphControl.scene.remove(line.plot[i]);
+        graphControl.scene.remove(line.plot[i]);
       }
       delete line.plot[i];
     }
@@ -418,7 +420,7 @@ export class AnimationControl {
   static remove_mesh(line: THREE.Mesh[] | undefined) {
     if (line !== undefined) {
       for (let i = 0; i < line.length; i++) {
-        GraphControl.scene.remove(line[i]);
+        graphControl.scene.remove(line[i]);
         delete line[i];
       }
       line.length = 0;
@@ -471,10 +473,10 @@ export class AnimationControl {
   }
 
   static range_make_all() {
-    if (GraphControl.face_a != undefined) {
-      AnimationControl.remove_mesh(GraphControl.face_a);
+    if (faces != undefined) {
+      AnimationControl.remove_mesh(faces);
     }
-    GraphControl.face_a = [];
+    faces = [];
     if (AnimationControl.animation_line.length != 0) {
       for (let j = 0; j < AnimationControl.animation_line.length - 1; j++) {
         const face_geometry = new THREE.Geometry();
@@ -517,17 +519,17 @@ export class AnimationControl {
             opacity: 0.5,
           })
         );
-        GraphControl.scene.add(face_all);
-        GraphControl.face_a.push(face_all);
+        graphControl.scene.add(face_all);
+        faces.push(face_all);
       }
-      GraphControl.render_three_js();
+      renderGraph_three_js();
     }
   }
 
   /** i番目のdrawn dynamic lineを消す */
   static remove_ith_drawn_dynamic_line(i: number) {
     for (const l of AnimationControl.drawn_dynamic_lines[i]) {
-      GraphControl.scene.remove(l);
+      graphControl.scene.remove(l);
     }
     AnimationControl.drawn_dynamic_lines[i] = [];
   }
@@ -577,12 +579,12 @@ export class AnimationControl {
           // PP
           // これまで追加した線を取り除き，代わりにマージ済みの線を追加する
           AnimationControl.remove_ith_drawn_dynamic_line(i);
-          GraphControl.scene.add(AnimationControl.accumulative_merged_lines[i][tmp_amli]);
+          graphControl.scene.add(AnimationControl.accumulative_merged_lines[i][tmp_amli]);
           AnimationControl.drawn_dynamic_lines[i].push(AnimationControl.accumulative_merged_lines[i][tmp_amli]);
           tmp_amli++;
         } else if (j + 1 < this.time) {
           // IP
-          GraphControl.scene.add(AnimationControl.dynamic_lines[i][j]);
+          graphControl.scene.add(AnimationControl.dynamic_lines[i][j]);
           AnimationControl.drawn_dynamic_lines[i].push(AnimationControl.dynamic_lines[i][j]);
         } else {
           // timeより未来の線は書かない
@@ -606,7 +608,7 @@ export class AnimationControl {
       if (this.time > AnimationControl.maxlen - 1) {
         this.time = 0;
       }
-      for (const sphere of GraphControl.scene.children) {
+      for (const sphere of graphControl.scene.children) {
         if (AnimationControl.animation_line[arr] === undefined) {
           continue;
         }
@@ -647,7 +649,7 @@ export class AnimationControl {
       }
 
       this.time_prev = this.time;
-      GraphControl.render_three_js();
+      renderGraph_three_js();
     }
   }
 

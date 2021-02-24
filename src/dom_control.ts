@@ -1,5 +1,5 @@
 import Materialize from 'materialize-css';
-import { GraphControl } from './graph_control';
+import { resizeGraphRenderer, replotAll, resizeGraphArea, startResizingGraphArea } from './graph_control';
 import { EditorControl } from './editor_control';
 import { HydatControl } from './hydat_control';
 import { HyLaGIController } from './hylagi';
@@ -11,7 +11,7 @@ export class DOMControl {
   static init() {
     Materialize.FormSelect.init(document.querySelectorAll('select'));
     $(window).resize(function () {
-      GraphControl.resizeGraphRenderer();
+      resizeGraphRenderer();
     });
 
     /* initialize materialize components */
@@ -27,10 +27,10 @@ export class DOMControl {
     DOMControl.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
 
     $('fix_button').on('change', function () {
-      GraphControl.replotAll();
+      replotAll();
     });
     $('step_button').on('change', function () {
-      GraphControl.replotAll();
+      replotAll();
     });
 
     document.getElementById('editor_font_size')?.addEventListener('change', (e) => {
@@ -68,7 +68,7 @@ export class DOMControl {
           const diff = e.pageX - initial_x;
           $('#left-pane').width(initial_width + diff);
           $('#editor').width(initial_editor + diff);
-          GraphControl.resizeGraphArea();
+          resizeGraphArea();
           EditorControl.resize();
         })
         .mouseup(() => {
@@ -156,7 +156,7 @@ export class DOMControl {
       tgl.classList.remove('mdi-navigation-chevron-left');
       tgl.classList.add('mdi-navigation-chevron-right');
     }
-    GraphControl.startResizingGraphArea();
+    startResizingGraphArea();
   }
 
   static selectLogTab() {

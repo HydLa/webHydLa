@@ -1,6 +1,6 @@
 import { PlotLineMapControl } from './plot_line_map_control';
 import { DatGUIControl } from './dat_gui_control';
-import { GraphControl } from './graph_control';
+import { replotAll } from './graph_control';
 import { PlotControl } from './plot_control';
 import { AnimationControl } from './animation_control';
 import { HydatControl } from './hydat_control';
@@ -62,7 +62,7 @@ export class PlotLine {
       if (prev === undefined || val != prev) {
         try {
           parse(val);
-          GraphControl.replotAll();
+          replotAll();
         } catch (e) {
           this.updateFolder(false);
         }

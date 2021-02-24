@@ -1,4 +1,4 @@
-import { GraphControl } from './graph_control';
+import { graphControl, renderGraph_three_js, toScreenPosition } from './graph_control';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { DOMControl } from './dom_control';
 
@@ -114,23 +114,23 @@ export class PlotControl {
       DOMControl.showToast('Plot finished.', 1000, 'blue');
     }
     PlotControl.PlotStartTime = undefined;
-    GraphControl.renderer.render(GraphControl.scene, GraphControl.camera);
+    graphControl.renderer.render(graphControl.scene, graphControl.camera);
     DOMControl.stopPreloader();
   }
   static update_axes(force: boolean) {
-    const ranges = PlotControl.getRangesOfFrustum(GraphControl.camera);
+    const ranges = PlotControl.getRangesOfFrustum(graphControl.camera);
     if (force === true || PlotControl.prev_ranges === undefined || !ranges.equals(PlotControl.prev_ranges)) {
       const max_interval_px = 200; // 50 px
       const min_visible_ticks = Math.floor(
-        Math.max(GraphControl.elem.clientWidth, GraphControl.elem.clientHeight) / max_interval_px
+        Math.max(graphControl.elem.clientWidth, graphControl.elem.clientHeight) / max_interval_px
       );
       const min_visible_range = Math.min(ranges.x.getInterval(), ranges.y.getInterval(), ranges.z.getInterval());
       const max_interval = min_visible_range / min_visible_ticks;
 
       if (PlotControl.axisLines !== undefined) {
-        GraphControl.scene.remove(PlotControl.axisLines.x);
-        GraphControl.scene.remove(PlotControl.axisLines.y);
-        GraphControl.scene.remove(PlotControl.axisLines.z);
+        graphControl.scene.remove(PlotControl.axisLines.x);
+        graphControl.scene.remove(PlotControl.axisLines.y);
+        graphControl.scene.remove(PlotControl.axisLines.z);
       }
       let interval = Math.pow(10, Math.floor(Math.log(max_interval) / Math.log(10)));
       interval = 1;
@@ -142,10 +142,10 @@ export class PlotControl {
 
       PlotControl.axisLines.x.rotation.set(0, Math.PI / 2, Math.PI / 2);
       PlotControl.axisLines.y.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
-      GraphControl.scene.add(PlotControl.axisLines.x);
-      GraphControl.scene.add(PlotControl.axisLines.y);
-      GraphControl.scene.add(PlotControl.axisLines.z);
-      GraphControl.render_three_js();
+      graphControl.scene.add(PlotControl.axisLines.x);
+      graphControl.scene.add(PlotControl.axisLines.y);
+      graphControl.scene.add(PlotControl.axisLines.z);
+      renderGraph_three_js();
     }
     PlotControl.updateAxisScaleLabel(ranges);
     PlotControl.prev_ranges = ranges;
@@ -162,7 +162,7 @@ export class PlotControl {
     const wFar = wNear;
 
     const p = camera.position.clone();
-    const l = GraphControl.controls.target.clone();
+    const l = graphControl.controls.target.clone();
     const u = new THREE.Vector3(0, 1, 0);
 
     const d = new THREE.Vector3();
@@ -240,13 +240,13 @@ export class PlotControl {
     fbl.subVectors(fc, uTmp.multiplyScalar(hFar / 2));
     fbl.add(rTmp.multiplyScalar(wFar / 2));
 
-    GraphControl.camera.updateMatrix(); // make sure camera's local matrix is updated
-    GraphControl.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
-    GraphControl.camera.matrixWorldInverse.getInverse(GraphControl.camera.matrixWorld);
+    graphControl.camera.updateMatrix(); // make sure camera's local matrix is updated
+    graphControl.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+    graphControl.camera.matrixWorldInverse.getInverse(graphControl.camera.matrixWorld);
 
     let frustum = new THREE.Frustum();
     frustum.setFromProjectionMatrix(
-      new THREE.Matrix4().multiplyMatrices(GraphControl.camera.projectionMatrix, GraphControl.camera.matrixWorldInverse)
+      new THREE.Matrix4().multiplyMatrices(graphControl.camera.projectionMatrix, graphControl.camera.matrixWorldInverse)
     );
 
     const expandFrustum = (orig: THREE.Frustum) => {
@@ -385,7 +385,7 @@ export class PlotControl {
       for (let i = 0; start + i * scale_interval <= range.max; i++) {
         const current = start + i * scale_interval;
         const vec = embedFunc(current);
-        const pos = GraphControl.toScreenPosition(vec);
+        const pos = toScreenPosition(vec);
         ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
       }
     };
@@ -411,7 +411,7 @@ export class PlotControl {
         ('00' + Math.floor(base.g * brightness).toString(16)).slice(-2) +
         ('00' + Math.floor(base.b * brightness).toString(16)).slice(-2)
     );
-    GraphControl.renderer.setClearColor(color);
+    graphControl.renderer.setClearColor(color);
     PlotControl.update_axes(true);
   }
 }
