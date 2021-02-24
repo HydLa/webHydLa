@@ -5,7 +5,7 @@ import { showToast, stopPreloader } from './dom_control';
 import * as THREE from 'three';
 import { Triplet, RGB, ComparableTriplet, Range } from './plot_utils';
 import { Object3D } from 'three';
-import { HydatParameter, HydatPhase, HydatTimePP, HydatException } from './hydat';
+import { HydatPhase, HydatTimePP, HydatException } from './hydat';
 import { PlotSettingsControl } from './plot_settings';
 import { Construct, Constant } from './parse';
 
@@ -24,41 +24,6 @@ const plotState: PlotState = {
   array: -1,
   axisColors: new Triplet<string>('#FF8080', '#80FF80', '#8080FF'),
 };
-
-export function divideParameter(parameter_map: { [key: string]: HydatParameter }) {
-  let now_parameter_condition_list: { [key: string]: Constant }[] = [{}];
-
-  for (const parameter_name in parameter_map) {
-    const setting = PlotSettingsControl.plot_settings.parameter_condition![parameter_name];
-    if (setting.fixed) {
-      for (let i = 0; i < now_parameter_condition_list.length; i++) {
-        const parameter_value = setting.value;
-        now_parameter_condition_list[i][parameter_name] = new Constant(parameter_value);
-      }
-    } else {
-      const lb = setting.min_value;
-      const ub = setting.max_value;
-      const div = Math.floor(setting.value);
-      const next_parameter_condition_list = [];
-      let deltaP;
-      if (div == 1) {
-        deltaP = ub - lb;
-      } else {
-        deltaP = (ub - lb) / (div - 1);
-      }
-      for (let i = 0; i < now_parameter_condition_list.length; i++) {
-        for (let j = 0; j < div; j++) {
-          const parameter_value = lb + j * deltaP;
-          const tmp_obj = $.extend(true, {}, now_parameter_condition_list[i]); // deep copy
-          tmp_obj[parameter_name] = new Constant(parameter_value);
-          next_parameter_condition_list.push(tmp_obj);
-        }
-      }
-      now_parameter_condition_list = next_parameter_condition_list;
-    }
-  }
-  return now_parameter_condition_list;
-}
 
 export function phase_to_line_vectors(
   phase: HydatPhase,

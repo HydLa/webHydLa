@@ -8,7 +8,7 @@ import { HydatControl } from './hydat_control';
 import { parse, Construct, Constant } from './parse';
 import { MultiBiMap } from './animation_utils';
 import { PlotSettingsControl } from './plot_settings';
-import { checkAndStopPreloader, divideParameter, phase_to_line_vectors, resetPlotStartTime } from './plot_control';
+import { checkAndStopPreloader, phase_to_line_vectors, resetPlotStartTime } from './plot_control';
 
 /**
  * 描画用オブジェクトの計算，描画，削除を担当
@@ -115,6 +115,41 @@ function add_plot(line: PlotLine) {
     requestAnimationFrame(() => {
       line.plotReady();
     });
+}
+
+function divideParameter(parameter_map: { [key: string]: HydatParameter }) {
+  let now_parameter_condition_list: { [key: string]: Constant }[] = [{}];
+
+  for (const parameter_name in parameter_map) {
+    const setting = PlotSettingsControl.plot_settings.parameter_condition![parameter_name];
+    if (setting.fixed) {
+      for (let i = 0; i < now_parameter_condition_list.length; i++) {
+        const parameter_value = setting.value;
+        now_parameter_condition_list[i][parameter_name] = new Constant(parameter_value);
+      }
+    } else {
+      const lb = setting.min_value;
+      const ub = setting.max_value;
+      const div = Math.floor(setting.value);
+      const next_parameter_condition_list = [];
+      let deltaP;
+      if (div == 1) {
+        deltaP = ub - lb;
+      } else {
+        deltaP = (ub - lb) / (div - 1);
+      }
+      for (let i = 0; i < now_parameter_condition_list.length; i++) {
+        for (let j = 0; j < div; j++) {
+          const parameter_value = lb + j * deltaP;
+          const tmp_obj = $.extend(true, {}, now_parameter_condition_list[i]); // deep copy
+          tmp_obj[parameter_name] = new Constant(parameter_value);
+          next_parameter_condition_list.push(tmp_obj);
+        }
+      }
+      now_parameter_condition_list = next_parameter_condition_list;
+    }
+  }
+  return now_parameter_condition_list;
 }
 
 /**
