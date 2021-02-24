@@ -4,7 +4,7 @@ import { PlotLineMapControl } from './plot_line_map_control';
 import { DatGUIControl } from './dat_gui_control';
 import { PlotControl } from './plot_control';
 import { HydatControl } from './hydat_control';
-import { animate, animateTime, animationControlState, getLength, range_make_all } from './animation_control';
+import { animate, animateTime, animationControlState, getLength, makeRanges } from './animation_control';
 
 /**
  * 描画，再描画，クリアなどを行う<br>
@@ -131,7 +131,7 @@ export class GraphControl {
     }
     if (getLength() !== this.a_line) {
       if (GraphControl.range_mode) {
-        range_make_all();
+        makeRanges();
       }
       this.a_line = getLength();
     }

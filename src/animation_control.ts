@@ -435,7 +435,10 @@ function check_parameter_condition(
   return false;
 }
 
-export function range_make_all() {
+/**
+ * parameterがfixed: false, range: trueの時に描画する面を作成
+ */
+export function makeRanges() {
   if (GraphControl.face_a != undefined) {
     remove_mesh(GraphControl.face_a);
   }
@@ -462,7 +465,7 @@ export function range_make_all() {
       }
       face_geometry.computeFaceNormals();
       face_geometry.computeVertexNormals();
-      const face_all = new THREE.Mesh(
+      const faceMesh = new THREE.Mesh(
         face_geometry,
         new THREE.MeshBasicMaterial({
           color: 0xffffff,
@@ -472,8 +475,8 @@ export function range_make_all() {
           opacity: 0.5,
         })
       );
-      GraphControl.scene.add(face_all);
-      GraphControl.face_a.push(face_all);
+      GraphControl.scene.add(faceMesh);
+      GraphControl.face_a.push(faceMesh);
     }
     GraphControl.render_three_js();
   }
