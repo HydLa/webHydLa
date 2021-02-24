@@ -81,27 +81,20 @@ export function sendEditorHydla() {
   HyLaGIController.sendHydla(EditorState.editor.getValue());
 }
 
-/* function to save HydLa file */
+/*
+ * function to save HydLa file
+ * TODO: hydat_control.tsのsaveHydatと共通化
+ */
 export function saveHydla() {
   const blob = new Blob([EditorState.editor.getValue()]);
   const object = window.URL.createObjectURL(blob);
   const d = new Date();
-  const date =
-    d.getFullYear() +
-    '-' +
-    d.getMonth() +
-    1 +
-    '-' +
-    d.getDate() +
-    'T' +
-    d.getHours() +
-    '-' +
-    d.getMinutes() +
-    '-' +
-    d.getSeconds();
+  const date = `${d.getFullYear()}-${
+    d.getMonth() + 1
+  }-${d.getDate()}T${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
   const a = document.createElement('a');
   a.href = object;
-  a.download = date + '.hydla';
+  a.download = `${date}.hydla`;
   const event = document.createEvent('MouseEvents');
   event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
   a.dispatchEvent(event);
