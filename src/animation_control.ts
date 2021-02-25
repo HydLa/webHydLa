@@ -1,4 +1,4 @@
-import { PlotLine } from './plot_line';
+import { updateFolder, plotReady, PlotLine } from './plot_line';
 import { startPreloader, showToast } from './dom_control';
 import * as THREE from 'three';
 import { graphControl, renderGraph_three_js } from './graph_control';
@@ -86,11 +86,11 @@ function add_plot(line: PlotLine) {
   }
   try {
     axes = new Triplet<Construct>(parse(line.settings.x), parse(line.settings.y), parse(line.settings.z));
-    line.updateFolder(true);
+    updateFolder(line, true);
   } catch (e) {
     console.log(e);
     console.log(e.stack);
-    line.updateFolder(false);
+    updateFolder(line, false);
     return;
   }
   if (HydatControl.current_hydat === undefined) {
@@ -115,7 +115,7 @@ function add_plot(line: PlotLine) {
   animationControlState.maxlen = 0;
   if (line.plot_ready == undefined)
     requestAnimationFrame(() => {
-      line.plotReady();
+      plotReady(line);
     });
 }
 
