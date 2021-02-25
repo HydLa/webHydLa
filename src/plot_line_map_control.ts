@@ -8,7 +8,7 @@ import { remove_dynamic_line, remove_dynamic_lines, remove_plot } from './animat
 import { PlotSettingsControl } from './plot_settings';
 
 export class PlotLineMapControl {
-  static map: { [key: number]: PlotLine } = {};
+  static map = new Map<number, PlotLine>();
   static plotLineIndex = 0;
 }
 
@@ -17,12 +17,12 @@ export function initPlotLineMapControl() {
 }
 
 export function reset() {
-  PlotLineMapControl.map = {};
+  PlotLineMapControl.map.clear();
   PlotLineMapControl.plotLineIndex = 0;
 }
 
 export function getLength() {
-  return Object.keys(PlotLineMapControl.map).length;
+  return PlotLineMapControl.map.size;
 }
 
 export function removeLine(line: PlotLine) {
@@ -37,11 +37,11 @@ export function removeLine(line: PlotLine) {
   }
   delete HydatControl.settingsForCurrentHydat.plot_line_settings[line.index];
   saveHydatSettingsToStorage();
-  delete PlotLineMapControl.map[line.index];
+  PlotLineMapControl.map.delete(line.index);
 }
 
 export function addNewLine(x_name: string, y_name: string, z_name: string) {
-  while (PlotLineMapControl.map[PlotLineMapControl.plotLineIndex]) {
+  while (PlotLineMapControl.map.has(PlotLineMapControl.plotLineIndex)) {
     ++PlotLineMapControl.plotLineIndex;
   }
   const line = addNewLineWithIndex(x_name, y_name, z_name, PlotLineMapControl.plotLineIndex);
@@ -52,35 +52,35 @@ export function addNewLine(x_name: string, y_name: string, z_name: string) {
 export function addNewLineWithIndex(x_name: string, y_name: string, z_name: string, index: number) {
   const line = new PlotLine(x_name, y_name, z_name, index);
   DatGUIControl.fixLayout();
-  PlotLineMapControl.map[index] = line;
+  PlotLineMapControl.map.set(index, line);
   return line;
 }
 
 export function removeAllFolders() {
-  for (const i in PlotLineMapControl.map) {
-    PlotLineMapControl.map[i].removeFolder();
+  for (const line of PlotLineMapControl.map.values()) {
+    line.removeFolder();
   }
 }
 
 export function isAllReady() {
-  for (const i in PlotLineMapControl.map) {
-    if (PlotLineMapControl.map[i].plotting || PlotLineMapControl.map[i].plot_ready !== undefined) {
+  for (const line of PlotLineMapControl.map.values()) {
+    if (line.plotting || line.plot_ready !== undefined) {
       return false;
     }
   }
   return true;
 }
 
-//@deprecated
+/** @deprecated */
 export function replot() {
   if (PlotSettingsControl.plot_settings.dynamicDraw) {
     PlotSettingsControl.plot_settings.plotInterval = 0.01;
   }
   remove_dynamic_lines();
 
-  for (const i in PlotLineMapControl.map) {
-    PlotLineMapControl.map[i].color_angle = (parseInt(i) / getLength()) * 360;
-    PlotLineMapControl.map[i].replot();
+  for (const [i, line] of PlotLineMapControl.map.entries()) {
+    line.color_angle = (i / getLength()) * 360;
+    line.replot();
   }
 }
 
