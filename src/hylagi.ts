@@ -82,7 +82,7 @@ export function sendToHyLaGI(hydla: string) {
 }
 
 export function getTimeoutOption(): string {
-  const timeoutOption = <HTMLInputElement>document.getElementById('timeoutOption');
+  const timeoutOption = <HTMLInputElement>document.getElementById('timeout_option');
   if (timeoutOption.value !== '') return timeoutOption.value;
   else return '30';
 }
