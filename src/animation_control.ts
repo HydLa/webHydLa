@@ -123,7 +123,7 @@ function divideParameter(parameter_map: Map<string, HydatParameter>) {
   let now_parameter_condition_list: { [key: string]: Constant }[] = [{}];
 
   for (const parameter_name of parameter_map.keys()) {
-    const setting = PlotSettingsControl.plot_settings.parameter_condition![parameter_name];
+    const setting = PlotSettingsControl.plot_settings.parameter_condition!.get(parameter_name)!;
     if (setting.fixed) {
       for (let i = 0; i < now_parameter_condition_list.length; i++) {
         const parameter_value = setting.value;

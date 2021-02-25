@@ -116,9 +116,8 @@ export class DatGUIControl {
       this.parameter_folder.remove(item);
     }
     this.parameter_items = [];
-    DatGUIControl.plot_settings.parameter_condition = {};
+    DatGUIControl.plot_settings.parameter_condition = new Map();
     for (const [key, par] of pars) {
-      const key_copy = key;
       if (par instanceof HydatParameterPoint) return;
 
       const lower = par.lower_bound.value.getValue({});
@@ -131,24 +130,27 @@ export class DatGUIControl {
       const max_par_value = isFinite(upper) ? upper : lower + 100;
       const step = (max_par_value - min_par_value) / 100;
 
-      DatGUIControl.plot_settings.parameter_condition[key] = new ParameterCondition(min_par_value, max_par_value);
+      DatGUIControl.plot_settings.parameter_condition.set(key, new ParameterCondition(min_par_value, max_par_value));
 
       const parameter_item = this.parameter_folder
-        .add(DatGUIControl.plot_settings.parameter_condition[key], 'value', min_par_value, max_par_value)
+        .add(DatGUIControl.plot_settings.parameter_condition.get(key)!, 'value', min_par_value, max_par_value)
         .name(key);
       parameter_item.onChange(() => {
         replotAll();
       });
       parameter_item.step(step);
 
-      const mode_item = this.parameter_folder.add(DatGUIControl.plot_settings.parameter_condition[key], 'fixed');
-      const mode_item_range = this.parameter_folder.add(DatGUIControl.plot_settings.parameter_condition[key], 'range');
+      const mode_item = this.parameter_folder.add(DatGUIControl.plot_settings.parameter_condition.get(key)!, 'fixed');
+      const mode_item_range = this.parameter_folder.add(
+        DatGUIControl.plot_settings.parameter_condition.get(key)!,
+        'range'
+      );
       this.parameter_items.push(mode_item);
       this.parameter_items.push(mode_item_range);
       this.parameter_items.push(parameter_item);
 
       mode_item.onChange(function () {
-        if (!DatGUIControl.plot_settings.parameter_condition![key_copy].fixed) {
+        if (!DatGUIControl.plot_settings.parameter_condition!.get(key)!.fixed) {
           parameter_item.min(1).max(100).step(1).setValue(5);
         } else {
           parameter_item
@@ -160,7 +162,7 @@ export class DatGUIControl {
         replotAll();
       });
       mode_item_range.onChange(() => {
-        graphControl.range_mode = DatGUIControl.plot_settings.parameter_condition![key_copy].range;
+        graphControl.range_mode = DatGUIControl.plot_settings.parameter_condition!.get(key)!.range;
       });
     }
     if (pars.size > 0) this.parameter_folder.open();
