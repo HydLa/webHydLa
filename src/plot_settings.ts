@@ -33,7 +33,7 @@ export class PlotSettings {
   dynamicDraw: boolean;
   animate: boolean;
   seek: number;
-  parameter_condition: { [key: string]: ParameterCondition } | undefined;
+  parameter_condition: Map<string, ParameterCondition> | undefined;
   parameter_condition_seek: ParameterConditionSeek | undefined;
   constructor(obj: any) {
     this.plotInterval = obj?.plotInterval ?? 0.1;
