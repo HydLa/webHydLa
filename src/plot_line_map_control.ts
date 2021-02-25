@@ -12,10 +12,6 @@ export class PlotLineMapControl {
   static plotLineIndex = 0;
 }
 
-export function initPlotLineMapControl() {
-  /* nop */
-}
-
 export function reset() {
   PlotLineMapControl.map.clear();
   PlotLineMapControl.plotLineIndex = 0;
