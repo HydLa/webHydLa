@@ -93,8 +93,8 @@ export function resizeGraphRenderer() {
 
     graphControl.camera.updateProjectionMatrix();
 
-    const w = $('#scaleLabelWrapper').width()!;
-    const h = $('#scaleLabelWrapper').height()!;
+    const w = $('#scale_label_wrapper').width()!;
+    const h = $('#scale_label_wrapper').height()!;
     $('#scaleLabelCanvas').attr('width', w);
     $('#scaleLabelCanvas').attr('height', h);
     updateAxes(true);
