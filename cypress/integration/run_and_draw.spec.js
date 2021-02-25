@@ -70,9 +70,9 @@ describe('run and draw', () => {
     cy.wait(2000);
 
     cy.contains('add new line').click();
-    cy.get('#dat-gui .folder .folder:nth-child(3) li:nth-child(2) input').type('t');
-    cy.get('#dat-gui .folder .folder:nth-child(3) li:nth-child(3) input').type("y'");
-    cy.get('#dat-gui .folder .folder:nth-child(3) li:nth-child(4) input').type('0{enter}');
+    cy.get('#dat-gui .folder .folder:nth-child(3) li:nth-child(3) input').type('t');
+    cy.get('#dat-gui .folder .folder:nth-child(3) li:nth-child(4) input').type("y'");
+    cy.get('#dat-gui .folder .folder:nth-child(3) li:nth-child(5) input').type('0{enter}');
     cy.wait(1000);
   });
 
