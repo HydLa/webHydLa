@@ -68,7 +68,7 @@ export function savePlotSettingsToStorage(plotSettings: PlotSettings) {
 }
 
 export function loadPlotSettingsFromStorage() {
-  return PlotSettingsControl.parseJSON(storage.getItem('plotSettings'));
+  return PlotSettingsControl.parseJSON(storage.getItem('plot_settings'));
 }
 
 export function saveHydlaNameToStorage(hydlaName: string) {
