@@ -1,7 +1,7 @@
 import * as dat from 'dat.gui';
 import { graphControl, updateRotate, update2DMode, replotAll } from './graph_control';
 import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plot_settings';
-import { PlotLineMapControl } from './plot_line_map_control';
+import { addNewLine } from './plot_line_map_control';
 import { HydatParameter, HydatParameterPoint } from './hydat';
 import { seekAnimation } from './animation_control';
 import { setBackgroundColor, update_axes } from './plot_control';
@@ -22,7 +22,7 @@ export function initDatGUIState(plot_settings: PlotSettings) {
   DatGUIState.plot_settings = plot_settings;
   const add_line_obj = {
     add: function () {
-      const line = PlotLineMapControl.addNewLine('', '', '');
+      const line = addNewLine('', '', '');
       line.folder.open();
     },
   };

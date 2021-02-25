@@ -5,7 +5,6 @@ import { PlotSettingsControl } from './plot_settings';
 import { initDOMState } from './dom_control';
 import { initEditorState } from './editor_control';
 import { initStorageControl, loadHydlaFromStorage, loadHydatFromStorage } from './storage_control';
-import { PlotLineMapControl } from './plot_line_map_control';
 import { initHydatControl } from './hydat_control';
 import { initHyLaGIControllerState } from './hylagi';
 import { initExampleLoader } from './example_loader';
@@ -24,7 +23,6 @@ $(document).ready(() => {
   initHydatControl(saved_hydat);
   initHyLaGIControllerState();
 
-  PlotLineMapControl.init();
   NewUI.init(graphControl.controls);
   initDOMState();
 

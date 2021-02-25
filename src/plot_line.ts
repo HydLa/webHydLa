@@ -1,4 +1,4 @@
-import { PlotLineMapControl } from './plot_line_map_control';
+import { removeLine } from './plot_line_map_control';
 import { DatGUIState } from './dat_gui_control';
 import { replotAll } from './graph_control';
 import { HydatControl } from './hydat_control';
@@ -42,7 +42,7 @@ export class PlotLine {
       y: y_name,
       z: z_name,
       remove: () => {
-        PlotLineMapControl.removeLine(this);
+        removeLine(this);
       },
     };
     this.folder.add(this.settings, 'remove');
