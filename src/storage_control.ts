@@ -76,7 +76,7 @@ export function saveHydlaNameToStorage(hydlaName: string) {
 }
 
 export function loadHydlaNameFromStorage() {
-  return storage.getItem('hydlaName');
+  return storage.getItem('hydla_name');
 }
 
 export function saveHydatSettingsToStorage() {
