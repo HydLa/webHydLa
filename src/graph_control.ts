@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { replotLines } from './plotLineMapControl';
-import { parameterSeekSetting, parameterSeekSettingAnimate } from './datGuiControl';
-import { HydatControl } from './hydatControl';
-import { animate, animateTime, animationControlState, getLength, makeRanges } from './animationControl';
-import { updateAxes } from './plotControl';
+import { replotLines } from './plot_line_map_control';
+import { parameterSeekSetting, parameterSeekSettingAnimate } from './dat_gui_control';
+import { HydatControl } from './hydat_control';
+import { animate, animateTime, animationControlState, getLength, makeRanges } from './animation_control';
+import { updateAxes } from './plot_control';
 
 /**
  * 描画，再描画，クリアなどを行う<br>
@@ -176,8 +176,11 @@ export function updateRotate(autoRotate: boolean) {
 export function update2DMode(twoDimensional: boolean) {
   graphControl.controls.enableRotate = !twoDimensional;
   graphControl.controls.mouseButtons = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     LEFT: twoDimensional ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     MIDDLE: THREE.MOUSE.DOLLY,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     RIGHT: THREE.MOUSE.PAN,
   };
   if (twoDimensional) {

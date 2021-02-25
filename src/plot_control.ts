@@ -1,12 +1,12 @@
-import { graphControl, renderGraphThreeJs, toScreenPosition } from './graphControl';
-import { isAllReady } from './plotLineMapControl';
-import { showToast, stopPreloader } from './domControl';
+import { graphControl, renderGraphThreeJs, toScreenPosition } from './graph_control';
+import { isAllReady } from './plot_line_map_control';
+import { showToast, stopPreloader } from './dom_control';
 
 import * as THREE from 'three';
-import { Triplet, RGB, ComparableTriplet, Range } from './plotUtils';
+import { Triplet, RGB, ComparableTriplet, Range } from './plot_utils';
 import { Object3D } from 'three';
 import { HydatPhase, HydatTimePP, HydatException } from './hydat';
-import { PlotSettingsControl } from './plotSettings';
+import { PlotSettingsControl } from './plot_settings';
 import { ParamCond, Construct, Constant } from './parse';
 
 const axisColorBases = new Triplet<RGB>(new RGB(1.0, 0.3, 0.3), new RGB(0.3, 1.0, 0.3), new RGB(0.3, 0.3, 1.0));
@@ -55,8 +55,9 @@ export function phaseToLineVectors(
     if (!Number.isFinite(startTime) || !Number.isFinite(endTime)) {
       throw new HydatException(`invalid time interval: from ${phase.time.startTime} to ${phase.time.endTime}`);
     }
-    const MINSTEP = 10; // Minimum step of plotting one IP
-    const deltaT = Math.min(maxDeltaT, (endTime - startTime) / MINSTEP);
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const MIN_STEP = 10; // Minimum step of plotting one IP
+    const deltaT = Math.min(maxDeltaT, (endTime - startTime) / MIN_STEP);
     for (t = startTime; t < endTime; t = t + deltaT) {
       env.set('t', new Constant(t));
       line.push({
@@ -361,7 +362,7 @@ function calculateScaleInterval(range: Range) {
   let scaleInterval = Math.pow(10, floor) / 5;
   const log105 = 0.69;
   if (fractionalPart > log105) scaleInterval *= 5;
-  if (scaleInterval <= 0) return Number.MAXVALUE;
+  if (scaleInterval <= 0) return Number.MAX_VALUE;
   return scaleInterval;
 }
 

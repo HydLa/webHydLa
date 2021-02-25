@@ -1,5 +1,5 @@
 import Materialize from 'materialize-css';
-import { resizeGraphRenderer, replotAll, resizeGraphArea, startResizingGraphArea } from './graphControl';
+import { resizeGraphRenderer, replotAll, resizeGraphArea, startResizingGraphArea } from './graph_control';
 import {
   setEditorFontSize,
   setEditorTheme,
@@ -7,10 +7,10 @@ import {
   resizeEditor,
   loadFile,
   saveHydla,
-} from './editorControl';
-import { saveHydat } from './hydatControl';
+} from './editor_control';
+import { saveHydat } from './hydat_control';
 import { execHyLaGI } from './hylagi';
-import { saveThemeToStorage, saveKeyBindingToStorage } from './storageControl';
+import { saveThemeToStorage, saveKeyBindingToStorage } from './storage_control';
 
 class DOMState {
   static tabs: Materialize.Tabs;
@@ -134,8 +134,9 @@ export function initDOMState() {
 export function showToast(message: string, duration: number, classes: string) {
   Materialize.toast({ html: message, displayLength: duration, classes: classes });
   const toastContainer = document.getElementById('toast-container')!;
-  const MAXCHILDRENNUM = 5;
-  for (let i = 0; i < toastContainer.children.length - MAXCHILDRENNUM; i++) {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const MAX_CHILDREN_NUM = 5;
+  for (let i = 0; i < toastContainer.children.length - MAX_CHILDREN_NUM; i++) {
     toastContainer.removeChild(toastContainer.children[i]);
   }
 }

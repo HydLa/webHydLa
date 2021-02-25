@@ -1,10 +1,10 @@
 import * as dat from 'dat.gui';
-import { graphControl, updateRotate, update2DMode, replotAll } from './graphControl';
-import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plotSettings';
-import { addNewLine } from './plotLineMapControl';
+import { graphControl, updateRotate, update2DMode, replotAll } from './graph_control';
+import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plot_settings';
+import { addNewLine } from './plot_line_map_control';
 import { HydatParameter, HydatParameterPoint } from './hydat';
-import { seekAnimation } from './animationControl';
-import { setBackgroundColor, updateAxes } from './plotControl';
+import { seekAnimation } from './animation_control';
+import { setBackgroundColor, updateAxes } from './plot_control';
 
 /** 描画用設定の処理を行う */
 export class DatGUIState {
