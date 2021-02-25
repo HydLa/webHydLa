@@ -90,10 +90,10 @@ export function getTimeoutOption(): string {
 export function getOptionsValue(): string {
   let optionsValue = '';
 
-  const phaseNum = <HTMLInputElement>document.getElementById('phaseNum');
-  const simulationTime = <HTMLInputElement>document.getElementById('simulationTime');
-  const ndModeCheckBox = <HTMLInputElement>document.getElementById('ndModeCheckBox');
-  const otherOptions = <HTMLInputElement>document.getElementById('otherOptions');
+  const phaseNum = <HTMLInputElement>document.getElementById('phase_num');
+  const simulationTime = <HTMLInputElement>document.getElementById('simulation_time');
+  const ndModeCheckBox = <HTMLInputElement>document.getElementById('nd_mode_check_box');
+  const otherOptions = <HTMLInputElement>document.getElementById('other_options');
 
   if (phaseNum.value !== '') optionsValue += ` -p ${phaseNum.value}`;
   if (simulationTime.value !== '') optionsValue += ` -t ${simulationTime.value}`;
