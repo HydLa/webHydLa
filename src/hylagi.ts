@@ -69,9 +69,9 @@ export function sendHydla(hydla: string) {
 export function sendToHyLaGI(hydla: string) {
   /* build form data */
   const form = new FormData();
-  form.append('hydlaCode', hydla);
-  form.append('hylagiOption', getOptionsValue());
-  form.append('timeoutOption', getTimeoutOption());
+  form.append('hydla_code', hydla);
+  form.append('hylagi_option', getOptionsValue());
+  form.append('timeout_option', getTimeoutOption());
 
   const xmlhr = new XMLHttpRequest();
   xmlhr.open('POST', 'hydat.cgi');
