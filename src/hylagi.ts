@@ -5,7 +5,7 @@ import { loadHydlaNameFromStorage } from './storage_control';
 import { HydatRaw } from './hydat';
 
 const firstScriptElement = document.getElementsByTagName('script')[0];
-const htmlModeCheckBox = <HTMLInputElement>document.getElementById('htmlModeCheckBox');
+const htmlModeCheckBox = <HTMLInputElement>document.getElementById('html_mode_check_box');
 
 class HyLaGIControllerState {
   static running = false;
