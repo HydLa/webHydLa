@@ -3,7 +3,7 @@ import { graphControl, updateRotate, update2DMode, replotAll } from './graph_con
 import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plot_settings';
 import { addNewLine } from './plot_line_map_control';
 import { HydatParameter, HydatParameterPoint } from './hydat';
-import { seekAnimation } from './animation_control';
+import { seekAnimation, removeRanges, makeRanges } from './animation_control';
 import { setBackgroundColor, update_axes } from './plot_control';
 
 /** 描画用設定の処理を行う */
@@ -167,6 +167,11 @@ export function parameter_setting(pars: Map<string, HydatParameter>) {
     });
     mode_item_range.onChange(() => {
       graphControl.range_mode = DatGUIState.plot_settings.parameter_condition!.get(key)!.range;
+      if (graphControl.range_mode) {
+        makeRanges();
+      } else {
+        removeRanges();
+      }
     });
   }
 
