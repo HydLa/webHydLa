@@ -1,7 +1,7 @@
 import { Hydat, HydatRaw } from './hydat';
 import { saveHydatToStorage } from './storage_control';
 import { modifyNameLabel, clearPlot } from './graph_control';
-import { PlotLineMapControl } from './plot_line_map_control';
+import { initVariableSelector } from './plot_line_map_control';
 import { showToast } from './dom_control';
 import { DatGUIControl } from './dat_gui_control';
 import { update_axes } from './plot_control';
@@ -64,7 +64,7 @@ export function loadHydat(hydat: HydatRaw) {
   }
   clearPlot();
   if (HydatControl.current_hydat !== undefined) {
-    PlotLineMapControl.initVariableSelector(HydatControl.current_hydat);
+    initVariableSelector(HydatControl.current_hydat);
   }
   update_axes(true);
 }
