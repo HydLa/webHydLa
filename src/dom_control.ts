@@ -38,7 +38,7 @@ export function initDOMState() {
   $('fix_button').on('change', function () {
     replotAll();
   });
-  $('stepButton').on('change', function () {
+  $('step_button').on('change', function () {
     replotAll();
   });
 
