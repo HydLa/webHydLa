@@ -231,11 +231,12 @@ export function parse(value_str: string) {
   return expression(s, 0)[0];
 }
 
-// TODO: { [key: string]: Construct } を Map<string, Construct> で置き換える
+export type Env = Map<string, Construct>;
+export type ParamCond = Map<string, Constant>;
 
 export interface Construct {
   toString(): string;
-  getValue(env: { [key: string]: Construct }): number;
+  getValue(env: Env): number;
 }
 
 interface UnaryConstruct extends Construct {
@@ -252,7 +253,7 @@ export class Plus implements BinaryConstruct {
   toString() {
     return `(${this.lhs.toString()} + ${this.rhs.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return this.lhs.getValue(env) + this.rhs.getValue(env);
   }
 }
@@ -262,7 +263,7 @@ class Subtract implements BinaryConstruct {
   toString() {
     return `(${this.lhs.toString()} - ${this.rhs.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return this.lhs.getValue(env) - this.rhs.getValue(env);
   }
 }
@@ -272,7 +273,7 @@ class Multiply implements BinaryConstruct {
   toString() {
     return `${this.lhs.toString()} * ${this.rhs.toString()}`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return this.lhs.getValue(env) * this.rhs.getValue(env);
   }
 }
@@ -282,7 +283,7 @@ class Divide implements BinaryConstruct {
   toString() {
     return `${this.lhs.toString()} / ${this.rhs.toString()}`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return this.lhs.getValue(env) / this.rhs.getValue(env);
   }
 }
@@ -292,7 +293,7 @@ class Power implements BinaryConstruct {
   toString() {
     return `${this.lhs.toString()} ^ ${this.rhs.toString()}`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.pow(this.lhs.getValue(env), this.rhs.getValue(env));
   }
 }
@@ -303,7 +304,7 @@ export class Constant implements Construct {
     return this.val.toString();
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return this.val;
   }
 }
@@ -313,9 +314,9 @@ class Variable implements Construct {
   toString() {
     return this.name;
   }
-  getValue(env: { [key: string]: Construct }) {
-    if (env[this.name] == undefined) throw new Error(`${this.name} is not defined`);
-    return env[this.name].getValue(env);
+  getValue(env: Env) {
+    if (env.get(this.name) == undefined) throw new Error(`${this.name} is not defined`);
+    return env.get(this.name)!.getValue(env);
   }
 }
 
@@ -324,7 +325,7 @@ class Log implements UnaryConstruct {
   toString() {
     return `log(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.log(this.arg.getValue(env));
   }
 }
@@ -334,7 +335,7 @@ class Sin implements UnaryConstruct {
   toString() {
     return `sin(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.sin(this.arg.getValue(env));
   }
 }
@@ -344,7 +345,7 @@ class Cos implements UnaryConstruct {
   toString() {
     return `cos(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.cos(this.arg.getValue(env));
   }
 }
@@ -354,7 +355,7 @@ class Tan implements UnaryConstruct {
   toString() {
     return `tan(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.tan(this.arg.getValue(env));
   }
 }
@@ -364,7 +365,7 @@ class ArcSin implements UnaryConstruct {
   toString() {
     return `asin(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.asin(this.arg.getValue(env));
   }
 }
@@ -374,7 +375,7 @@ class ArcCos implements UnaryConstruct {
   toString() {
     return `acos(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.acos(this.arg.getValue(env));
   }
 }
@@ -384,7 +385,7 @@ class ArcTan implements UnaryConstruct {
   toString() {
     return `atan(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.atan(this.arg.getValue(env));
   }
 }
@@ -394,7 +395,7 @@ class Sinh implements UnaryConstruct {
   toString() {
     return `sinh(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.sinh(this.arg.getValue(env));
   }
 }
@@ -404,7 +405,7 @@ class Cosh implements UnaryConstruct {
   toString() {
     return `cosh(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.cosh(this.arg.getValue(env));
   }
 }
@@ -414,7 +415,7 @@ class Tanh implements UnaryConstruct {
   toString() {
     return `tanh(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.tanh(this.arg.getValue(env));
   }
 }
@@ -424,7 +425,7 @@ class ArcSinh implements UnaryConstruct {
   toString() {
     return `asinh(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.asinh(this.arg.getValue(env));
   }
 }
@@ -434,7 +435,7 @@ class ArcCosh implements UnaryConstruct {
   toString() {
     return `acosh(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.acosh(this.arg.getValue(env));
   }
 }
@@ -444,7 +445,7 @@ class ArcTanh implements UnaryConstruct {
   toString() {
     return `atanh(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.atanh(this.arg.getValue(env));
   }
 }
@@ -454,7 +455,7 @@ class Floor implements UnaryConstruct {
   toString() {
     return `floor(${this.arg.toString()})`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return Math.floor(this.arg.getValue(env));
   }
 }
@@ -464,7 +465,7 @@ class Negative implements UnaryConstruct {
   toString() {
     return `-${this.arg.toString()}`;
   }
-  getValue(env: { [key: string]: Construct }) {
+  getValue(env: Env) {
     return -this.arg.getValue(env);
   }
 }
