@@ -1,4 +1,4 @@
-import { PlotLine } from './plot_line';
+import { removeFolder, replot, PlotLine } from './plot_line';
 import { Hydat } from './hydat';
 import { replotAll } from './graph_control';
 import { DatGUIControl } from './dat_gui_control';
@@ -50,7 +50,7 @@ export class PlotLineMapControl {
   }
   static removeAllFolders() {
     for (const i in this.map) {
-      this.map[i].removeFolder();
+      removeFolder(this.map[i]);
     }
   }
 
@@ -72,7 +72,7 @@ export class PlotLineMapControl {
 
     for (const i in this.map) {
       this.map[i].color_angle = (parseInt(i) / this.getLength()) * 360;
-      this.map[i].replot();
+      replot(this.map[i]);
     }
   }
 
@@ -107,7 +107,7 @@ export class PlotLineMapControl {
         '0'
       );
       first_line.color_angle = 0;
-      first_line.replot();
+      replot(first_line);
       first_line.folder.open();
     }
 
