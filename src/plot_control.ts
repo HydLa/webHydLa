@@ -1,5 +1,5 @@
 import { graphControl, renderGraph_three_js, toScreenPosition } from './graph_control';
-import { PlotLineMapControl } from './plot_line_map_control';
+import { isAllReady } from './plot_line_map_control';
 import { showToast, stopPreloader } from './dom_control';
 
 import * as THREE from 'three';
@@ -74,7 +74,7 @@ export function phase_to_line_vectors(
 }
 
 export function checkAndStopPreloader() {
-  if (!PlotLineMapControl.isAllReady()) return;
+  if (!isAllReady()) return;
   const current_time = new Date().getTime();
   if (plotState.plotStartTime === undefined || current_time - plotState.plotStartTime >= 1000) {
     showToast('Plot finished.', 1000, 'blue');
