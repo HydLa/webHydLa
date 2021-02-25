@@ -5,8 +5,8 @@ import { HydatControl } from './hydat_control';
 
 const storage = localStorage;
 
-const themeSelector = <HTMLSelectElement>document.getElementById('themeSelector');
-const keyBindingSelector = <HTMLSelectElement>document.getElementById('keyBindingSelector');
+const themeSelector = <HTMLSelectElement>document.getElementById('theme_selector');
+const keyBindingSelector = <HTMLSelectElement>document.getElementById('key_binding_selector');
 
 export function initStorageControl() {
   loadThemeFromStorage();
