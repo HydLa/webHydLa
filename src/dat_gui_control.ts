@@ -120,8 +120,8 @@ export class DatGUIControl {
     for (const [key, par] of pars) {
       if (par instanceof HydatParameterPoint) return;
 
-      const lower = par.lower_bound.value.getValue({});
-      const upper = par.upper_bound.value.getValue({});
+      const lower = par.lower_bound.value.getValue(new Map());
+      const upper = par.upper_bound.value.getValue(new Map());
       if (!isFinite(lower) && !isFinite(upper)) {
         throw new Error('Error: at least one of lower_bound and upper_bound must be finite.');
       }

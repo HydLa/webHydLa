@@ -1,4 +1,4 @@
-import { parse, Construct, Constant, Plus } from './parse';
+import { parse, Env, Construct, Constant, Plus } from './parse';
 
 const isHydatParameterPointRaw = (raw: HydatParameterRaw): raw is HydatParameterPointRaw => {
   return (raw as HydatParameterPointRaw).unique_value !== undefined;
@@ -68,7 +68,7 @@ export interface HydatRaw {
 export class HydatPhase {
   type: 'PP' | 'IP';
   time: HydatTime;
-  variable_map: { [key: string]: Construct };
+  variable_map: Env;
   parameter_maps: Map<string, HydatParameter>[];
   children: HydatPhase[];
   simulation_state: string;
@@ -84,12 +84,12 @@ export class HydatPhase {
       this.time = new HydatTimeIP(phase.time.start_time, phase.time.end_time);
     }
 
-    this.variable_map = {};
+    this.variable_map = new Map();
     for (const key in phase.variable_map) {
       if (phase.variable_map[key].unique_value === undefined) {
         throw new HydatException(`webHydLa doesn't support ununique value in variable maps for ${key}`);
       }
-      this.variable_map[key] = parse(phase.variable_map[key].unique_value /*, phase.variable_map*/);
+      this.variable_map.set(key, parse(phase.variable_map[key].unique_value));
     }
 
     this.parameter_maps = [];
