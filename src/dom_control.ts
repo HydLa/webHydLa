@@ -51,7 +51,7 @@ export function initDOMState() {
     saveThemeToStorage();
   });
 
-  document.getElementById('keyBindingSelector')?.addEventListener('change', (e) => {
+  document.getElementById('key_binding_selector')?.addEventListener('change', (e) => {
     setEditorKeyBinding((e.target as HTMLInputElement).value);
     saveKeyBindingToStorage();
   });
