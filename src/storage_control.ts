@@ -1,12 +1,12 @@
-import { PlotSettings, PlotSettingsControl } from './plot_settings';
+import { PlotSettings, PlotSettingsControl } from './plotSettings';
 import { HydatRaw } from './hydat';
-import { setEditorKeyBinding, setEditorTheme } from './editor_control';
-import { HydatControl } from './hydat_control';
+import { setEditorKeyBinding, setEditorTheme } from './editorControl';
+import { HydatControl } from './hydatControl';
 
 const storage = localStorage;
 
-const theme_selector = <HTMLSelectElement>document.getElementById('theme_selector');
-const key_binding_selector = <HTMLSelectElement>document.getElementById('key_binding_selector');
+const themeSelector = <HTMLSelectElement>document.getElementById('themeSelector');
+const keyBindingSelector = <HTMLSelectElement>document.getElementById('keyBindingSelector');
 
 export function initStorageControl() {
   loadThemeFromStorage();
@@ -14,36 +14,36 @@ export function initStorageControl() {
 }
 
 export function saveKeyBindingToStorage() {
-  const bind_selector = key_binding_selector.value;
-  storage.setItem('key_binding', bind_selector);
+  const bindSelector = keyBindingSelector.value;
+  storage.setItem('keyBinding', bindSelector);
 }
 
 export function loadKeyBindingFromStorage() {
-  const key_binding_setting = storage.getItem('key_binding');
-  if (key_binding_setting !== null) {
-    key_binding_selector.value = key_binding_setting;
+  const keyBindingSetting = storage.getItem('keyBinding');
+  if (keyBindingSetting !== null) {
+    keyBindingSelector.value = keyBindingSetting;
   } else {
-    key_binding_selector.value = key_binding_selector.options[key_binding_selector.selectedIndex].value;
-    storage.setItem('key_binding', key_binding_selector.value);
+    keyBindingSelector.value = keyBindingSelector.options[keyBindingSelector.selectedIndex].value;
+    storage.setItem('keyBinding', keyBindingSelector.value);
   }
-  if (key_binding_selector.value == '') setEditorKeyBinding(null);
-  else setEditorKeyBinding(key_binding_selector.value);
+  if (keyBindingSelector.value == '') setEditorKeyBinding(null);
+  else setEditorKeyBinding(keyBindingSelector.value);
 }
 
 /* function to save theme into Web Storage */
 export function saveThemeToStorage() {
-  const theme = theme_selector.value;
+  const theme = themeSelector.value;
   storage.setItem('theme', theme);
 }
 
 export function loadThemeFromStorage() {
-  const theme_setting = storage.getItem('theme');
-  if (theme_setting !== null) {
-    theme_selector.value = theme_setting;
+  const themeSetting = storage.getItem('theme');
+  if (themeSetting !== null) {
+    themeSelector.value = themeSetting;
   } else {
-    storage.setItem('theme', theme_selector.value);
+    storage.setItem('theme', themeSelector.value);
   }
-  setEditorTheme(theme_selector.value);
+  setEditorTheme(themeSelector.value);
 }
 
 /* function to save HydLa code into Web Storage */
@@ -63,29 +63,29 @@ export function loadHydatFromStorage() {
   return storage.getItem('hydat');
 }
 
-export function savePlotSettingsToStorage(plot_settings: PlotSettings) {
-  storage.setItem('plot_settings', JSON.stringify(plot_settings));
+export function savePlotSettingsToStorage(plotSettings: PlotSettings) {
+  storage.setItem('plotSettings', JSON.stringify(plotSettings));
 }
 
 export function loadPlotSettingsFromStorage() {
-  return PlotSettingsControl.parseJSON(storage.getItem('plot_settings'));
+  return PlotSettingsControl.parseJSON(storage.getItem('plotSettings'));
 }
 
-export function saveHydlaNameToStorage(hydla_name: string) {
-  storage.setItem('hydla_name', hydla_name);
+export function saveHydlaNameToStorage(hydlaName: string) {
+  storage.setItem('hydlaName', hydlaName);
 }
 
 export function loadHydlaNameFromStorage() {
-  return storage.getItem('hydla_name');
+  return storage.getItem('hydlaName');
 }
 
 export function saveHydatSettingsToStorage() {
-  if (HydatControl.current_hydat === undefined) {
-    throw new Error('current_hydat is undefined');
+  if (HydatControl.currentHydat === undefined) {
+    throw new Error('currentHydat is undefined');
   }
-  storage.setItem(HydatControl.current_hydat.name, JSON.stringify(HydatControl.settingsForCurrentHydat));
+  storage.setItem(HydatControl.currentHydat.name, JSON.stringify(HydatControl.settingsForCurrentHydat));
 }
 
-export function loadHydatSettingsFromStorage(hydat_name: string) {
-  return storage.getItem(hydat_name);
+export function loadHydatSettingsFromStorage(hydatName: string) {
+  return storage.getItem(hydatName);
 }

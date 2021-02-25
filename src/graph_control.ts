@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { replotLines } from './plot_line_map_control';
-import { parameterSeekSetting, parameterSeekSettingAnimate } from './dat_gui_control';
-import { HydatControl } from './hydat_control';
-import { animate, animateTime, animationControlState, getLength, makeRanges } from './animation_control';
-import { update_axes } from './plot_control';
+import { replotLines } from './plotLineMapControl';
+import { parameterSeekSetting, parameterSeekSettingAnimate } from './datGuiControl';
+import { HydatControl } from './hydatControl';
+import { animate, animateTime, animationControlState, getLength, makeRanges } from './animationControl';
+import { updateAxes } from './plotControl';
 
 /**
  * 描画，再描画，クリアなどを行う<br>
@@ -18,13 +18,13 @@ class GraphControl {
   controls: OrbitControls;
   renderer: THREE.WebGLRenderer;
   animatable = true;
-  range_mode = false;
+  rangeMode = false;
 
-  controls_position0: THREE.Vector3;
+  controlsPosition0: THREE.Vector3;
 
-  a_line = 1;
-  t_line = 0;
-  last_frame_zoom = 1;
+  aLine = 1;
+  tLine = 0;
+  lastFrameZoom = 1;
 
   resizeLoopCount = 0;
 
@@ -43,7 +43,7 @@ class GraphControl {
     this.camera = new THREE.OrthographicCamera(left, right, top, bottom, -1000, 1000);
 
     this.camera.position.set(0, 0, 100);
-    this.controls_position0 = new THREE.Vector3(0, 0, 100);
+    this.controlsPosition0 = new THREE.Vector3(0, 0, 100);
 
     this.elem = document.getElementById('graph-area')!;
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -78,30 +78,30 @@ export function resizeGraphRenderer() {
 
   if (graphControl.elem.clientWidth > 0 && graphControl.elem.clientHeight > 0) {
     graphControl.renderer.setSize(graphControl.elem.clientWidth, graphControl.elem.clientHeight);
-    const prev_width = graphControl.camera.right - graphControl.camera.left;
-    const prev_height = graphControl.camera.top - graphControl.camera.bottom;
-    let extend_rate;
-    if (prev_width != graphControl.elem.clientWidth) extend_rate = graphControl.elem.clientWidth / prev_width;
-    else extend_rate = graphControl.elem.clientHeight / prev_height;
+    const prevWidth = graphControl.camera.right - graphControl.camera.left;
+    const prevHeight = graphControl.camera.top - graphControl.camera.bottom;
+    let extendRate;
+    if (prevWidth != graphControl.elem.clientWidth) extendRate = graphControl.elem.clientWidth / prevWidth;
+    else extendRate = graphControl.elem.clientHeight / prevHeight;
 
     graphControl.camera.left = -graphControl.elem.clientWidth / 2;
     graphControl.camera.right = graphControl.elem.clientWidth / 2;
     graphControl.camera.top = graphControl.elem.clientHeight / 2;
     graphControl.camera.bottom = -graphControl.elem.clientHeight / 2;
 
-    graphControl.camera.zoom *= extend_rate;
+    graphControl.camera.zoom *= extendRate;
 
     graphControl.camera.updateProjectionMatrix();
 
-    const w = $('#scale_label_wrapper').width()!;
-    const h = $('#scale_label_wrapper').height()!;
+    const w = $('#scaleLabelWrapper').width()!;
+    const h = $('#scaleLabelWrapper').height()!;
     $('#scaleLabelCanvas').attr('width', w);
     $('#scaleLabelCanvas').attr('height', h);
-    update_axes(true);
+    updateAxes(true);
 
     $('#nameLabelCanvas').attr('width', w);
     $('#nameLabelCanvas').attr('height', h);
-    modifyNameLabel(HydatControl.current_hydat?.name);
+    modifyNameLabel(HydatControl.currentHydat?.name);
   }
 }
 
@@ -128,32 +128,32 @@ export function renderGraph() {
     renderGraph();
   });
   graphControl.controls.update();
-  if (graphControl.last_frame_zoom !== graphControl.camera.zoom) {
+  if (graphControl.lastFrameZoom !== graphControl.camera.zoom) {
     replotAll();
   }
-  update_axes(false);
+  updateAxes(false);
   if (graphControl.animatable) {
     animate(); // animating function
     animateTime();
   } else {
     animate();
   }
-  if (getLength() !== graphControl.a_line) {
-    if (graphControl.range_mode) {
+  if (getLength() !== graphControl.aLine) {
+    if (graphControl.rangeMode) {
       makeRanges();
     }
-    graphControl.a_line = getLength();
+    graphControl.aLine = getLength();
   }
-  if (animationControlState.maxlen !== graphControl.t_line) {
-    graphControl.t_line = animationControlState.maxlen;
-    parameterSeekSetting(graphControl.t_line);
+  if (animationControlState.maxlen !== graphControl.tLine) {
+    graphControl.tLine = animationControlState.maxlen;
+    parameterSeekSetting(graphControl.tLine);
   } else if (graphControl.animatable) {
-    parameterSeekSettingAnimate(graphControl.t_line, animationControlState.time);
+    parameterSeekSettingAnimate(graphControl.tLine, animationControlState.time);
   }
-  graphControl.last_frame_zoom = graphControl.camera.zoom;
+  graphControl.lastFrameZoom = graphControl.camera.zoom;
 }
 
-export function renderGraph_three_js() {
+export function renderGraphThreeJs() {
   graphControl.renderer.render(graphControl.scene, graphControl.camera);
 }
 
@@ -181,7 +181,7 @@ export function update2DMode(twoDimensional: boolean) {
     RIGHT: THREE.MOUSE.PAN,
   };
   if (twoDimensional) {
-    graphControl.camera.position.copy(graphControl.controls_position0.clone());
+    graphControl.camera.position.copy(graphControl.controlsPosition0.clone());
     graphControl.controls.target.set(0, 0, 0);
     graphControl.camera.updateMatrix(); // make sure camera's local matrix is updated
     graphControl.camera.updateMatrixWorld(); // make sure camera's world matrix is updated

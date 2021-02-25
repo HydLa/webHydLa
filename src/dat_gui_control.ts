@@ -1,10 +1,10 @@
 import * as dat from 'dat.gui';
-import { graphControl, updateRotate, update2DMode, replotAll } from './graph_control';
-import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plot_settings';
-import { addNewLine } from './plot_line_map_control';
+import { graphControl, updateRotate, update2DMode, replotAll } from './graphControl';
+import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plotSettings';
+import { addNewLine } from './plotLineMapControl';
 import { HydatParameter, HydatParameterPoint } from './hydat';
-import { seekAnimation } from './animation_control';
-import { setBackgroundColor, update_axes } from './plot_control';
+import { seekAnimation } from './animationControl';
+import { setBackgroundColor, updateAxes } from './plotControl';
 
 /** 描画用設定の処理を行う */
 export class DatGUIState {
@@ -48,7 +48,7 @@ export function initDatGUIState(plotSettings: PlotSettings) {
     .add(plotSettings, 'scaleLabelVisible')
     .name('show scale label')
     .onChange(() => {
-      update_axes(true);
+      updateAxes(true);
       PlotSettingsControl.saveToWebStorage();
     });
   datGui
@@ -77,13 +77,13 @@ export function initDatGUIState(plotSettings: PlotSettings) {
     .name('background')
     .onChange((value) => {
       setBackgroundColor(value);
-      PlotSettingsControl.saveToWebStorage(); /*render_three_js();i*/
+      PlotSettingsControl.saveToWebStorage(); /*renderThreeJs();i*/
     });
   datGuiAnimate
     .add(plotSettings, 'animate')
     .name('stop')
     .onChange(() => {
-      PlotSettingsControl.time_stop();
+      PlotSettingsControl.timeStop();
       PlotSettingsControl.saveToWebStorage();
     });
 
@@ -106,7 +106,7 @@ export function initDatGUIState(plotSettings: PlotSettings) {
   datContainerB.style.height = heightArea;
   datContainerB.appendChild(datGuiAnimate.domElement);
 
-  const ndModeCheckBox = <HTMLInputElement>document.getElementById('nd_mode_check_box');
+  const ndModeCheckBox = <HTMLInputElement>document.getElementById('ndModeCheckBox');
   ndModeCheckBox.checked = true;
 
   fixLayout();
@@ -117,33 +117,33 @@ export function parameterSetting(pars: Map<string, HydatParameter>) {
     DatGUIState.parameterFolder.remove(item);
   }
   DatGUIState.parameterItems = [];
-  DatGUIState.plotSettings.parameter_condition = new Map();
+  DatGUIState.plotSettings.parameterCondition = new Map();
   for (const [key, par] of pars) {
     if (par instanceof HydatParameterPoint) return;
 
-    const lower = par.lower_bound.value.getValue(new Map());
-    const upper = par.upper_bound.value.getValue(new Map());
+    const lower = par.lowerBound.value.getValue(new Map());
+    const upper = par.upperBound.value.getValue(new Map());
     if (!isFinite(lower) && !isFinite(upper)) {
-      throw new Error('Error: at least one of lower_bound and upper_bound must be finite.');
+      throw new Error('Error: at least one of lowerBound and upperBound must be finite.');
     }
 
     const minParValue = isFinite(lower) ? lower : upper - 100;
     const maxParValue = isFinite(upper) ? upper : lower + 100;
     const step = (maxParValue - minParValue) / 100;
 
-    DatGUIState.plotSettings.parameter_condition.set(key, new ParameterCondition(minParValue, maxParValue));
+    DatGUIState.plotSettings.parameterCondition.set(key, new ParameterCondition(minParValue, maxParValue));
 
     const parameterItem = DatGUIState.parameterFolder
-      .add(DatGUIState.plotSettings.parameter_condition.get(key)!, 'value', minParValue, maxParValue)
+      .add(DatGUIState.plotSettings.parameterCondition.get(key)!, 'value', minParValue, maxParValue)
       .name(key);
     parameterItem.onChange(() => {
       replotAll();
     });
     parameterItem.step(step);
 
-    const modeItem = DatGUIState.parameterFolder.add(DatGUIState.plotSettings.parameter_condition.get(key)!, 'fixed');
+    const modeItem = DatGUIState.parameterFolder.add(DatGUIState.plotSettings.parameterCondition.get(key)!, 'fixed');
     const modeItemRange = DatGUIState.parameterFolder.add(
-      DatGUIState.plotSettings.parameter_condition.get(key)!,
+      DatGUIState.plotSettings.parameterCondition.get(key)!,
       'range'
     );
     DatGUIState.parameterItems.push(modeItem);
@@ -151,7 +151,7 @@ export function parameterSetting(pars: Map<string, HydatParameter>) {
     DatGUIState.parameterItems.push(parameterItem);
 
     modeItem.onChange(function () {
-      if (!DatGUIState.plotSettings.parameter_condition!.get(key)!.fixed) {
+      if (!DatGUIState.plotSettings.parameterCondition!.get(key)!.fixed) {
         parameterItem.min(1).max(100).step(1).setValue(5);
       } else {
         parameterItem
@@ -163,7 +163,7 @@ export function parameterSetting(pars: Map<string, HydatParameter>) {
       replotAll();
     });
     modeItemRange.onChange(() => {
-      graphControl.range_mode = DatGUIState.plotSettings.parameter_condition!.get(key)!.range;
+      graphControl.rangeMode = DatGUIState.plotSettings.parameterCondition!.get(key)!.range;
     });
   }
 
@@ -182,16 +182,16 @@ export function parameterSeekSetting(lineLen: number) {
   const maxParValue = lineLen - 1;
   const step = 1;
 
-  DatGUIState.plotSettings.parameter_condition_seek = new ParameterConditionSeek(minParValue, maxParValue);
+  DatGUIState.plotSettings.parameterConditionSeek = new ParameterConditionSeek(minParValue, maxParValue);
 
   const parameterItemSeek = DatGUIState.parameterFolderSeek.add(
-    DatGUIState.plotSettings.parameter_condition_seek,
+    DatGUIState.plotSettings.parameterConditionSeek,
     'value',
     minParValue,
     maxParValue
   );
   parameterItemSeek.onChange(() => {
-    seekAnimation(DatGUIState.plotSettings.parameter_condition_seek!.value);
+    seekAnimation(DatGUIState.plotSettings.parameterConditionSeek!.value);
   });
   parameterItemSeek.step(step);
 
@@ -211,22 +211,22 @@ export function parameterSeekSettingAnimate(lineLen: number, timeLine: number) {
   const maxParValue = lineLen;
   const step = 1;
 
-  DatGUIState.plotSettings.parameter_condition_seek = new ParameterConditionSeek(minParValue, maxParValue);
+  DatGUIState.plotSettings.parameterConditionSeek = new ParameterConditionSeek(minParValue, maxParValue);
 
-  const parameter_item_seek = DatGUIState.parameterFolderSeek.add(
-    DatGUIState.plotSettings.parameter_condition_seek,
+  const parameterItemSeek = DatGUIState.parameterFolderSeek.add(
+    DatGUIState.plotSettings.parameterConditionSeek,
     'value',
     minParValue,
     maxParValue
   );
-  parameter_item_seek.onChange(() => {
-    seekAnimation(DatGUIState.plotSettings.parameter_condition_seek!.value);
+  parameterItemSeek.onChange(() => {
+    seekAnimation(DatGUIState.plotSettings.parameterConditionSeek!.value);
   });
-  parameter_item_seek.step(step);
+  parameterItemSeek.step(step);
 
-  DatGUIState.parameterItemsSeek.push(parameter_item_seek);
+  DatGUIState.parameterItemsSeek.push(parameterItemSeek);
 
-  parameter_item_seek.min(minParValue).max(maxParValue).step(step).setValue(timeLine);
+  parameterItemSeek.min(minParValue).max(maxParValue).step(step).setValue(timeLine);
 
   DatGUIState.parameterFolderSeek.open();
 

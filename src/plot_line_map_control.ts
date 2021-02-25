@@ -1,11 +1,11 @@
-import { removeFolder, replot, PlotLine } from './plot_line';
+import { removeFolder, replot, PlotLine } from './plotLine';
 import { Hydat } from './hydat';
-import { replotAll } from './graph_control';
-import { fixLayout, DatGUIState } from './dat_gui_control';
-import { HydatControl } from './hydat_control';
-import { saveHydatSettingsToStorage, loadHydatSettingsFromStorage } from './storage_control';
-import { removeDynamicLine, removeDynamicLines, removePlot } from './animation_control';
-import { PlotSettingsControl } from './plot_settings';
+import { replotAll } from './graphControl';
+import { fixLayout, DatGUIState } from './datGuiControl';
+import { HydatControl } from './hydatControl';
+import { saveHydatSettingsToStorage, loadHydatSettingsFromStorage } from './storageControl';
+import { removeDynamicLine, removeDynamicLines, removePlot } from './animationControl';
+import { PlotSettingsControl } from './plotSettings';
 
 export class PlotLineMapControl {
   static map = new Map<number, PlotLine>();
@@ -26,27 +26,27 @@ export function removeLine(line: PlotLine) {
     return;
   }
   DatGUIState.variableFolder.removeFolder(line.folder);
-  if (PlotSettingsControl.plot_settings.dynamicDraw) {
+  if (PlotSettingsControl.plotSettings.dynamicDraw) {
     removeDynamicLine(line);
   } else {
     removePlot(line);
   }
-  delete HydatControl.settingsForCurrentHydat.plot_line_settings[line.index];
+  delete HydatControl.settingsForCurrentHydat.plotLineSettings[line.index];
   saveHydatSettingsToStorage();
   PlotLineMapControl.map.delete(line.index);
 }
 
-export function addNewLine(x_name: string, y_name: string, z_name: string) {
+export function addNewLine(xName: string, yName: string, zName: string) {
   while (PlotLineMapControl.map.has(PlotLineMapControl.plotLineIndex)) {
     ++PlotLineMapControl.plotLineIndex;
   }
-  const line = addNewLineWithIndex(x_name, y_name, z_name, PlotLineMapControl.plotLineIndex);
+  const line = addNewLineWithIndex(xName, yName, zName, PlotLineMapControl.plotLineIndex);
   ++PlotLineMapControl.plotLineIndex;
   return line;
 }
 
-export function addNewLineWithIndex(x_name: string, y_name: string, z_name: string, index: number) {
-  const line = new PlotLine(x_name, y_name, z_name, index);
+export function addNewLineWithIndex(xName: string, yName: string, zName: string, index: number) {
+  const line = new PlotLine(xName, yName, zName, index);
   fixLayout();
   PlotLineMapControl.map.set(index, line);
   return line;
@@ -60,7 +60,7 @@ export function removeAllFolders() {
 
 export function isAllReady() {
   for (const line of PlotLineMapControl.map.values()) {
-    if (line.plotting || line.plot_ready !== undefined) {
+    if (line.plotting || line.plotReady !== undefined) {
       return false;
     }
   }
@@ -69,13 +69,13 @@ export function isAllReady() {
 
 /** @deprecated */
 export function replotLines() {
-  if (PlotSettingsControl.plot_settings.dynamicDraw) {
-    PlotSettingsControl.plot_settings.plotInterval = 0.01;
+  if (PlotSettingsControl.plotSettings.dynamicDraw) {
+    PlotSettingsControl.plotSettings.plotInterval = 0.01;
   }
   removeDynamicLines();
 
   for (const [i, line] of PlotLineMapControl.map.entries()) {
-    line.color_angle = (i / getLength()) * 360;
+    line.colorAngle = (i / getLength()) * 360;
     replot(line);
   }
 }
@@ -88,26 +88,26 @@ export function initVariableSelector(hydat: Hydat) {
   const str = loadHydatSettingsFromStorage(hydat.name);
   if (str !== null) {
     HydatControl.settingsForCurrentHydat = JSON.parse(str);
-    const line_settings = HydatControl.settingsForCurrentHydat.plot_line_settings;
-    for (const i in line_settings) {
+    const lineSettings = HydatControl.settingsForCurrentHydat.plotLineSettings;
+    for (const i in lineSettings) {
       const index = parseInt(i);
-      if (line_settings[index] === null) continue;
-      const line = addNewLineWithIndex(line_settings[index].x, line_settings[index].y, line_settings[index].z, index);
+      if (lineSettings[index] === null) continue;
+      const line = addNewLineWithIndex(lineSettings[index].x, lineSettings[index].y, lineSettings[index].z, index);
       if (line.settings.x != '' || line.settings.y != '' || line.settings.z != '') line.folder.open();
     }
     replotAll();
   }
 
   if (getLength() == 0) {
-    HydatControl.settingsForCurrentHydat = { plot_line_settings: [] };
-    const first_line = addNewLine(
+    HydatControl.settingsForCurrentHydat = { plotLineSettings: [] };
+    const firstLine = addNewLine(
       't',
-      HydatControl.current_hydat !== undefined ? HydatControl.current_hydat.variables[0] : '',
+      HydatControl.currentHydat !== undefined ? HydatControl.currentHydat.variables[0] : '',
       '0'
     );
-    first_line.color_angle = 0;
-    replot(first_line);
-    first_line.folder.open();
+    firstLine.colorAngle = 0;
+    replot(firstLine);
+    firstLine.folder.open();
   }
 
   DatGUIState.variableFolder.open();

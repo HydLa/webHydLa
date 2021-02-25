@@ -1,4 +1,4 @@
-import { setEditorHydla } from './editor_control';
+import { setEditorHydla } from './editorControl';
 
 /**
  * HyLaGIのレポジトリから例題を取得する
@@ -15,13 +15,13 @@ async function loadExamples() {
 
   // 選択可能な例題に取得したファイル名を追加
   for (const name of filenames) {
-    const select = <HTMLElement>document.getElementById('example_selector');
+    const select = <HTMLElement>document.getElementById('exampleSelector');
     const option = document.createElement('option');
     option.text = name;
     option.value = name;
     select.appendChild(option);
   }
-  (<any>$('#example_selector')).formSelect();
+  (<any>$('#exampleSelector')).formSelect();
 
   document.getElementById('load-examples-button')?.addEventListener('click', () => {
     loadContents();
@@ -66,8 +66,8 @@ async function getContent(filename: string) {
   const url = `${path}/${filename}`;
   const res = await fetch(url);
   const json = await res.json();
-  const encoded_content = json.content.replace(/\n/g, '');
-  const content = atob(encoded_content);
+  const encodedContent = json.content.replace(/\n/g, '');
+  const content = atob(encodedContent);
   return content;
 }
 

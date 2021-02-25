@@ -226,8 +226,8 @@ export function expression(s: string, index: number): [Construct, number] {
   return [lhs, index];
 }
 
-export function parse(value_str: string) {
-  const s = value_str.replace(/\s+/g, '');
+export function parse(valueStr: string) {
+  const s = valueStr.replace(/\s+/g, '');
   return expression(s, 0)[0];
 }
 

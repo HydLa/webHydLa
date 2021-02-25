@@ -1,39 +1,39 @@
-import { graphControl, update2DMode, renderGraph } from './graph_control';
-import { initDatGUIState } from './dat_gui_control';
-import { NewUI } from './new_ui';
-import { PlotSettingsControl } from './plot_settings';
-import { initDOMState } from './dom_control';
-import { initEditorState } from './editor_control';
-import { initStorageControl, loadHydlaFromStorage, loadHydatFromStorage } from './storage_control';
-import { initHydatControl } from './hydat_control';
+import { graphControl, update2DMode, renderGraph } from './graphControl';
+import { initDatGUIState } from './datGuiControl';
+import { NewUI } from './newUi';
+import { PlotSettingsControl } from './plotSettings';
+import { initDOMState } from './domControl';
+import { initEditorState } from './editorControl';
+import { initStorageControl, loadHydlaFromStorage, loadHydatFromStorage } from './storageControl';
+import { initHydatControl } from './hydatControl';
 import { initHyLaGIControllerState } from './hylagi';
-import { initExampleLoader } from './example_loader';
-import { setBackgroundColor } from './plot_control';
+import { initExampleLoader } from './exampleLoader';
+import { setBackgroundColor } from './plotControl';
 
 $(document).ready(() => {
-  const saved_hydla = loadHydlaFromStorage();
-  const saved_hydat = loadHydatFromStorage();
+  const savedHydla = loadHydlaFromStorage();
+  const savedHydat = loadHydatFromStorage();
 
   initExampleLoader();
 
   PlotSettingsControl.init();
 
-  initDatGUIState(PlotSettingsControl.plot_settings);
+  initDatGUIState(PlotSettingsControl.plotSettings);
 
-  initHydatControl(saved_hydat);
+  initHydatControl(savedHydat);
   initHyLaGIControllerState();
 
   NewUI.init(graphControl.controls);
   initDOMState();
 
-  initEditorState(saved_hydla);
+  initEditorState(savedHydla);
   initStorageControl();
 
-  update2DMode(PlotSettingsControl.plot_settings.twoDimensional);
-  PlotSettingsControl.time_stop();
+  update2DMode(PlotSettingsControl.plotSettings.twoDimensional);
+  PlotSettingsControl.timeStop();
 
-  if (PlotSettingsControl.plot_settings.backgroundColor !== undefined) {
-    setBackgroundColor(PlotSettingsControl.plot_settings.backgroundColor);
+  if (PlotSettingsControl.plotSettings.backgroundColor !== undefined) {
+    setBackgroundColor(PlotSettingsControl.plotSettings.backgroundColor);
   }
 
   renderGraph();

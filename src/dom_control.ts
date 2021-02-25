@@ -1,5 +1,5 @@
 import Materialize from 'materialize-css';
-import { resizeGraphRenderer, replotAll, resizeGraphArea, startResizingGraphArea } from './graph_control';
+import { resizeGraphRenderer, replotAll, resizeGraphArea, startResizingGraphArea } from './graphControl';
 import {
   setEditorFontSize,
   setEditorTheme,
@@ -7,10 +7,10 @@ import {
   resizeEditor,
   loadFile,
   saveHydla,
-} from './editor_control';
-import { saveHydat } from './hydat_control';
+} from './editorControl';
+import { saveHydat } from './hydatControl';
 import { execHyLaGI } from './hylagi';
-import { saveThemeToStorage, saveKeyBindingToStorage } from './storage_control';
+import { saveThemeToStorage, saveKeyBindingToStorage } from './storageControl';
 
 class DOMState {
   static tabs: Materialize.Tabs;
@@ -35,32 +35,32 @@ export function initDOMState() {
   Materialize.Modal.init(document.querySelectorAll('.modal'));
   DOMState.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
 
-  $('fix_button').on('change', function () {
+  $('fixButton').on('change', function () {
     replotAll();
   });
-  $('step_button').on('change', function () {
+  $('stepButton').on('change', function () {
     replotAll();
   });
 
-  document.getElementById('editor_font_size')?.addEventListener('change', (e) => {
+  document.getElementById('editorFontSize')?.addEventListener('change', (e) => {
     setEditorFontSize((e.target as HTMLInputElement).valueAsNumber);
   });
 
-  document.getElementById('theme_selector')?.addEventListener('change', (e) => {
+  document.getElementById('themeSelector')?.addEventListener('change', (e) => {
     setEditorTheme((e.target as HTMLInputElement).value);
     saveThemeToStorage();
   });
 
-  document.getElementById('key_binding_selector')?.addEventListener('change', (e) => {
+  document.getElementById('keyBindingSelector')?.addEventListener('change', (e) => {
     setEditorKeyBinding((e.target as HTMLInputElement).value);
     saveKeyBindingToStorage();
   });
 
   /* function to close/open input-pane */
   $('#v-separator').mousedown((e) => {
-    const initial_x = e.pageX;
-    const initial_width = $('#left-pane').width()!;
-    const initial_editor = $('#editor').width()!;
+    const initialX = e.pageX;
+    const initialWidth = $('#left-pane').width()!;
+    const initialEditor = $('#editor').width()!;
     let dragging = true;
     $("<div id='secretdiv'>")
       .css({
@@ -74,9 +74,9 @@ export function initDOMState() {
       .appendTo('body')
       .mousemove((e) => {
         if (!dragging) return;
-        const diff = e.pageX - initial_x;
-        $('#left-pane').width(initial_width + diff);
-        $('#editor').width(initial_editor + diff);
+        const diff = e.pageX - initialX;
+        $('#left-pane').width(initialWidth + diff);
+        $('#editor').width(initialEditor + diff);
         resizeGraphArea();
         resizeEditor();
       })
@@ -88,8 +88,8 @@ export function initDOMState() {
 
   /* function to adjust height of graph-setting-area */
   $('#h-separator').mousedown((e) => {
-    const initial_y = e.pageY;
-    const initial_height = $('#input-pane').height()!;
+    const initialY = e.pageY;
+    const initialHeight = $('#input-pane').height()!;
     let dragging = true;
     $("<div id='secretdiv'>")
       .css({
@@ -103,9 +103,9 @@ export function initDOMState() {
       .appendTo('body')
       .mousemove((e) => {
         if (!dragging) return;
-        const diff = e.pageY - initial_y;
-        $('#input-pane').height(initial_height + diff);
-        $('#editor').height(initial_height + diff);
+        const diff = e.pageY - initialY;
+        $('#input-pane').height(initialHeight + diff);
+        $('#editor').height(initialHeight + diff);
         resizeEditor();
       })
       .mouseup(() => {
@@ -123,7 +123,7 @@ export function initDOMState() {
   document.getElementById('save-hydat')?.addEventListener('click', () => {
     saveHydat();
   });
-  document.getElementById('run_button')?.addEventListener('click', () => {
+  document.getElementById('runButton')?.addEventListener('click', () => {
     execHyLaGI();
   });
   document.getElementById('toggle-input-pane')?.addEventListener('click', () => {
@@ -133,10 +133,10 @@ export function initDOMState() {
 
 export function showToast(message: string, duration: number, classes: string) {
   Materialize.toast({ html: message, displayLength: duration, classes: classes });
-  const toast_container = document.getElementById('toast-container')!;
-  const MAX_CHILDREN_NUM = 5;
-  for (let i = 0; i < toast_container.children.length - MAX_CHILDREN_NUM; i++) {
-    toast_container.removeChild(toast_container.children[i]);
+  const toastContainer = document.getElementById('toast-container')!;
+  const MAXCHILDRENNUM = 5;
+  for (let i = 0; i < toastContainer.children.length - MAXCHILDRENNUM; i++) {
+    toastContainer.removeChild(toastContainer.children[i]);
   }
 }
 

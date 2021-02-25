@@ -1,27 +1,27 @@
 import { parse, Env, Construct, Constant, Plus } from './parse';
 
 const isHydatParameterPointRaw = (raw: HydatParameterRaw): raw is HydatParameterPointRaw => {
-  return (raw as HydatParameterPointRaw).unique_value !== undefined;
+  return (raw as HydatParameterPointRaw).uniqueValue !== undefined;
 };
 
 const isHydatParameterIntervalRaw = (raw: HydatParameterRaw): raw is HydatParameterIntervalRaw => {
-  return (raw as HydatParameterIntervalRaw).lower_bounds !== undefined;
+  return (raw as HydatParameterIntervalRaw).lowerBounds !== undefined;
 };
 
 const isHydatTimePPRaw = (raw: HydatTimeRaw): raw is HydatTimePPRaw => {
-  return (raw as HydatTimePPRaw).time_point !== undefined;
+  return (raw as HydatTimePPRaw).timePoint !== undefined;
 };
 
-const translate_parameter_map = (parameter_map: { [key: string]: HydatParameterRaw }) => {
+const translateParameterMap = (parameterMap: { [key: string]: HydatParameterRaw }) => {
   const map = new Map<string, HydatParameter>();
-  for (const key in parameter_map) {
-    const p = parameter_map[key];
+  for (const key in parameterMap) {
+    const p = parameterMap[key];
     if (isHydatParameterPointRaw(p)) {
-      map.set(key, new HydatParameterPoint(p.unique_value));
+      map.set(key, new HydatParameterPoint(p.uniqueValue));
     } else if (isHydatParameterIntervalRaw(p)) {
-      map.set(key, new HydatParameterInterval(p.lower_bounds, p.upper_bounds));
+      map.set(key, new HydatParameterInterval(p.lowerBounds, p.upperBounds));
     } else {
-      map.set(key, new HydatParameterInterval([p.lower_bound], [p.upper_bound]));
+      map.set(key, new HydatParameterInterval([p.lowerBound], [p.upperBound]));
     }
   }
   return map;
@@ -41,7 +41,7 @@ export class HydatException extends Error {
 
 export class Hydat {
   name: string;
-  first_phases: HydatPhase[];
+  firstPhases: HydatPhase[];
   parameters: Map<string, HydatParameter>;
   variables: string[];
   raw: HydatRaw;
@@ -50,17 +50,17 @@ export class Hydat {
     this.raw = hydat;
     this.name = hydat.name;
     this.variables = hydat.variables;
-    this.first_phases = [];
-    for (const ph of hydat.first_phases) {
-      this.first_phases.push(new HydatPhase(ph));
+    this.firstPhases = [];
+    for (const ph of hydat.firstPhases) {
+      this.firstPhases.push(new HydatPhase(ph));
     }
-    this.parameters = translate_parameter_map(hydat.parameters);
+    this.parameters = translateParameterMap(hydat.parameters);
   }
 }
 
 export interface HydatRaw {
   name: string;
-  first_phases: HydatPhaseRaw[];
+  firstPhases: HydatPhaseRaw[];
   parameters: { [key: string]: HydatParameterRaw }; // Mapにしない（JSON.parseの結果を格納するため）
   variables: string[];
 }
@@ -68,33 +68,33 @@ export interface HydatRaw {
 export class HydatPhase {
   type: 'PP' | 'IP';
   time: HydatTime;
-  variable_map: Env;
-  parameter_maps: Map<string, HydatParameter>[];
+  variableMap: Env;
+  parameterMaps: Map<string, HydatParameter>[];
   children: HydatPhase[];
-  simulation_state: string;
+  simulationState: string;
 
   constructor(phase: HydatPhaseRaw) {
-    this.simulation_state = phase.simulation_state;
+    this.simulationState = phase.simulationState;
     if (isHydatTimePPRaw(phase.time)) {
       // phase.type === "PP"
       this.type = 'PP';
-      this.time = new HydatTimePP(phase.time.time_point);
+      this.time = new HydatTimePP(phase.time.timePoint);
     } else {
       this.type = 'IP';
-      this.time = new HydatTimeIP(phase.time.start_time, phase.time.end_time);
+      this.time = new HydatTimeIP(phase.time.startTime, phase.time.endTime);
     }
 
-    this.variable_map = new Map();
-    for (const key in phase.variable_map) {
-      if (phase.variable_map[key].unique_value === undefined) {
+    this.variableMap = new Map();
+    for (const key in phase.variableMap) {
+      if (phase.variableMap[key].uniqueValue === undefined) {
         throw new HydatException(`webHydLa doesn't support ununique value in variable maps for ${key}`);
       }
-      this.variable_map.set(key, parse(phase.variable_map[key].unique_value));
+      this.variableMap.set(key, parse(phase.variableMap[key].uniqueValue));
     }
 
-    this.parameter_maps = [];
-    for (const map of phase.parameter_maps) {
-      this.parameter_maps.push(translate_parameter_map(map));
+    this.parameterMaps = [];
+    for (const map of phase.parameterMaps) {
+      this.parameterMaps.push(translateParameterMap(map));
     }
 
     this.children = [];
@@ -107,49 +107,49 @@ export class HydatPhase {
 interface HydatPhaseRaw {
   type: string;
   time: HydatTimeRaw;
-  variable_map: { [key: string]: HydatVariableRaw }; // Mapにしない（JSON.parseの結果を格納するため）
-  parameter_maps: { [key: string]: HydatParameterRaw }[]; // Mapにしない（JSON.parseの結果を格納するため）
+  variableMap: { [key: string]: HydatVariableRaw }; // Mapにしない（JSON.parseの結果を格納するため）
+  parameterMaps: { [key: string]: HydatParameterRaw }[]; // Mapにしない（JSON.parseの結果を格納するため）
   children: HydatPhaseRaw[];
-  simulation_state: string;
+  simulationState: string;
 }
 
 export type HydatParameter = HydatParameterPoint | HydatParameterInterval;
 export class HydatParameterPoint {
-  unique_value: Construct;
+  uniqueValue: Construct;
 
-  constructor(unique_value: string) {
-    this.unique_value = parse(unique_value);
+  constructor(uniqueValue: string) {
+    this.uniqueValue = parse(uniqueValue);
   }
 }
 
-// Hydatのlower_bounds/upper_boundsは歴史的理由から配列となっているが、要素数は必ず1個以下である
+// HydatのlowerBounds/upperBoundsは歴史的理由から配列となっているが、要素数は必ず1個以下である
 type Bound = { value: Construct };
 
 export class HydatParameterInterval {
-  lower_bound: Bound;
-  upper_bound: Bound;
+  lowerBound: Bound;
+  upperBound: Bound;
 
-  constructor(lower_bounds: { value: string }[], upper_bounds: { value: string }[]) {
-    switch (lower_bounds.length) {
+  constructor(lowerBounds: { value: string }[], upperBounds: { value: string }[]) {
+    switch (lowerBounds.length) {
       case 0:
-        this.lower_bound = { value: new Constant(-Infinity) };
+        this.lowerBound = { value: new Constant(-Infinity) };
         break;
       case 1:
-        this.lower_bound = { value: parse(lower_bounds[0].value) };
+        this.lowerBound = { value: parse(lowerBounds[0].value) };
         break;
       default:
-        throw new Error(`Error: lower_bounds.length must be 0 or 1, but got ${lower_bounds.length}.`);
+        throw new Error(`Error: lowerBounds.length must be 0 or 1, but got ${lowerBounds.length}.`);
     }
 
-    switch (upper_bounds.length) {
+    switch (upperBounds.length) {
       case 0:
-        this.upper_bound = { value: new Constant(Infinity) };
+        this.upperBound = { value: new Constant(Infinity) };
         break;
       case 1:
-        this.upper_bound = { value: parse(upper_bounds[0].value) };
+        this.upperBound = { value: parse(upperBounds[0].value) };
         break;
       default:
-        throw new Error(`Error: upper_bounds.length must be 0 or 1, but got ${upper_bounds.length}.`);
+        throw new Error(`Error: upperBounds.length must be 0 or 1, but got ${upperBounds.length}.`);
     }
   }
 }
@@ -157,50 +157,50 @@ export class HydatParameterInterval {
 type HydatParameterRaw = HydatParameterPointRaw | HydatParameterIntervalRaw | HydatParameterIntervalRaw2;
 
 interface HydatParameterPointRaw {
-  unique_value: string;
+  uniqueValue: string;
 }
 
 interface HydatParameterIntervalRaw {
-  lower_bounds: { value: string }[];
-  upper_bounds: { value: string }[];
+  lowerBounds: { value: string }[];
+  upperBounds: { value: string }[];
 }
 
 interface HydatParameterIntervalRaw2 {
-  lower_bound: { value: string };
-  upper_bound: { value: string };
+  lowerBound: { value: string };
+  upperBound: { value: string };
 }
 
 type HydatTime = HydatTimePP | HydatTimeIP;
 
 export class HydatTimePP {
-  time_point: Construct;
-  constructor(time_point: string) {
-    this.time_point = parse(time_point);
+  timePoint: Construct;
+  constructor(timePoint: string) {
+    this.timePoint = parse(timePoint);
   }
 }
 
 class HydatTimeIP {
-  start_time: Construct;
-  end_time: Construct;
-  constructor(start_time: string, end_time?: string) {
-    this.start_time = parse(start_time);
-    if (end_time === undefined || end_time === 'Infinity') {
-      this.end_time = new Plus(new Constant(2), this.start_time);
+  startTime: Construct;
+  endTime: Construct;
+  constructor(startTime: string, endTime?: string) {
+    this.startTime = parse(startTime);
+    if (endTime === undefined || endTime === 'Infinity') {
+      this.endTime = new Plus(new Constant(2), this.startTime);
     } else {
-      this.end_time = parse(end_time);
+      this.endTime = parse(endTime);
     }
   }
 }
 
 interface HydatVariableRaw {
-  unique_value: string;
+  uniqueValue: string;
 }
 
 type HydatTimeRaw = HydatTimePPRaw | HydatTimeIPRaw;
 interface HydatTimePPRaw {
-  time_point: string;
+  timePoint: string;
 }
 interface HydatTimeIPRaw {
-  start_time: string;
-  end_time: string;
+  startTime: string;
+  endTime: string;
 }

@@ -94,6 +94,6 @@ export class Range {
   }
 
   static getEmpty() {
-    return new Range(Number.MAX_VALUE, Number.MIN_VALUE);
+    return new Range(Number.MAXVALUE, Number.MINVALUE);
   }
 }

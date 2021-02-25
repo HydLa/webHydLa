@@ -1,14 +1,14 @@
-import { updateFolder, plotReady, PlotLine } from './plot_line';
-import { startPreloader, showToast } from './dom_control';
+import { updateFolder, plotReady, PlotLine } from './plotLine';
+import { startPreloader, showToast } from './domControl';
 import * as THREE from 'three';
-import { graphControl, renderGraph_three_js } from './graph_control';
+import { graphControl, renderGraphThreeJs } from './graphControl';
 import { HydatParameter, HydatParameterInterval, HydatPhase } from './hydat';
-import { RGB, Triplet } from './plot_utils';
-import { HydatControl } from './hydat_control';
+import { RGB, Triplet } from './plotUtils';
+import { HydatControl } from './hydatControl';
 import { parse, ParamCond, Construct, Constant } from './parse';
-import { MultiBiMap } from './animation_utils';
-import { PlotSettingsControl } from './plot_settings';
-import { checkAndStopPreloader, phase_to_line_vectors, resetPlotStartTime } from './plot_control';
+import { MultiBiMap } from './animationUtils';
+import { PlotSettingsControl } from './plotSettings';
+import { checkAndStopPreloader, phaseToLineVectors, resetPlotStartTime } from './plotControl';
 
 let faces: THREE.Mesh[];
 
@@ -39,10 +39,10 @@ interface AnimationControlState {
 
   /**
    * 最適化のために各PPまでの線を累積マージして格納しておく<br>
-   * accumulative_merged_lines[i][j]: i本目の線について2j+1フェーズ目までの線をマージした線
+   * accumulativeMergedLines[i][j]: i本目の線について2j+1フェーズ目までの線をマージした線
    */
   accumulativeMergedLines: any[][];
-  /** accumulative_merged_linesをどこまで追加したか */
+  /** accumulativeMergedLinesをどこまで追加したか */
   amli: number;
 
   /** PlotLine.indexとPlotControl.arrayの対応 */
@@ -93,27 +93,27 @@ function addPlot(line: PlotLine) {
     updateFolder(line, false);
     return;
   }
-  if (HydatControl.current_hydat === undefined) {
-    throw new Error('current_hydat is undefined');
+  if (HydatControl.currentHydat === undefined) {
+    throw new Error('currentHydat is undefined');
   }
-  const dt = PlotSettingsControl.plot_settings.plotInterval;
-  const phase = HydatControl.current_hydat.first_phases[0];
-  const parameterConditionList = divideParameter(HydatControl.current_hydat.parameters);
-  const color = getColors(parameterConditionList.length, line.color_angle);
-  line.plot_information = {
-    phase_index_array: [{ phase: phase, index: 0 }],
+  const dt = PlotSettingsControl.plotSettings.plotInterval;
+  const phase = HydatControl.currentHydat.firstPhases[0];
+  const parameterConditionList = divideParameter(HydatControl.currentHydat.parameters);
+  const color = getColors(parameterConditionList.length, line.colorAngle);
+  line.plotInformation = {
+    phaseIndexArray: [{ phase: phase, index: 0 }],
     axes: axes,
     line: line,
-    width: PlotSettingsControl.plot_settings.lineWidth,
+    width: PlotSettingsControl.plotSettings.lineWidth,
     color: color,
     dt: dt,
-    parameter_condition_list: parameterConditionList,
+    parameterConditionList: parameterConditionList,
   };
   startPreloader();
   animationControlState.array = -1;
   animationControlState.animationLine = [];
   animationControlState.maxlen = 0;
-  if (line.plot_ready == undefined)
+  if (line.plotReady == undefined)
     requestAnimationFrame(() => {
       plotReady(line);
     });
@@ -123,15 +123,15 @@ function divideParameter(parameterMap: Map<string, HydatParameter>) {
   let nowParameterConditionList: ParamCond[] = [new Map()];
 
   for (const parameterName of parameterMap.keys()) {
-    const setting = PlotSettingsControl.plot_settings.parameter_condition!.get(parameterName)!;
+    const setting = PlotSettingsControl.plotSettings.parameterCondition!.get(parameterName)!;
     if (setting.fixed) {
       for (let i = 0; i < nowParameterConditionList.length; i++) {
         const parameterValue = setting.value;
         nowParameterConditionList[i].set(parameterName, new Constant(parameterValue));
       }
     } else {
-      const lb = setting.min_value;
-      const ub = setting.max_value;
+      const lb = setting.minValue;
+      const ub = setting.maxValue;
       const div = Math.floor(setting.value);
       const nextParameterConditionList = [];
       let deltaP;
@@ -200,7 +200,7 @@ function addLine(
     : new THREE.MeshBasicMaterial({ color: color });
 
   const tmpDynamicLine: any[] = [];
-  if (PlotSettingsControl.plot_settings.dynamicDraw) {
+  if (PlotSettingsControl.plotSettings.dynamicDraw) {
     if (animationControlState.accumulativeMergedLines.length - 1 < animationControlState.array)
       animationControlState.accumulativeMergedLines.push([]);
     if (animationControlState.dynamicLines.length - 1 < animationControlState.array)
@@ -220,11 +220,11 @@ function addLine(
       material
     );
   }
-  if (PlotSettingsControl.plot_settings.dynamicDraw)
+  if (PlotSettingsControl.plotSettings.dynamicDraw)
     animationControlState.dynamicLines[animationControlState.array] = tmpDynamicLine;
 
   const threeLine = useLine ? makeLine(lines, material, true) : new THREE.Mesh(linesGeometry, material);
-  if (!PlotSettingsControl.plot_settings.dynamicDraw) graphControl.scene.add(threeLine);
+  if (!PlotSettingsControl.plotSettings.dynamicDraw) graphControl.scene.add(threeLine);
 
   if (!line.plot) {
     throw new Error('unexpected: line.plot is undefined');
@@ -266,11 +266,11 @@ function addLineEachPhase(
         lines.push(tmpBegin, tmpEnd);
       } else {
         const l = makeCylinder(tmpBegin, tmpEnd, scaledWidth, material);
-        if (PlotSettingsControl.plot_settings.dynamicDraw) tmpGeometry.merge(<any>l.geometry.clone(), l.matrix.clone());
+        if (PlotSettingsControl.plotSettings.dynamicDraw) tmpGeometry.merge(<any>l.geometry.clone(), l.matrix.clone());
         linesGeometry.merge(<any>l.geometry, l.matrix);
       }
     }
-    if (PlotSettingsControl.plot_settings.dynamicDraw) {
+    if (PlotSettingsControl.plotSettings.dynamicDraw) {
       const l: any = useLine ? makeLine([posBegin, posEnd], material) : new THREE.Mesh(tmpGeometry, material);
       l.isPP = true;
       tmpDynamicLine.push(l);
@@ -282,14 +282,14 @@ function addLineEachPhase(
   } else if (!posBegin.equals(posEnd)) {
     // IPの各折れ線を追加
     if (useLine) {
-      if (PlotSettingsControl.plot_settings.dynamicDraw) {
+      if (PlotSettingsControl.plotSettings.dynamicDraw) {
         const l = makeLine([posBegin, posEnd], material);
         tmpDynamicLine.push(l);
       }
       lines.push(posBegin, posEnd);
     } else {
       const l = makeCylinder(posBegin, posEnd, scaledWidth, material);
-      if (PlotSettingsControl.plot_settings.dynamicDraw) tmpDynamicLine.push(l);
+      if (PlotSettingsControl.plotSettings.dynamicDraw) tmpDynamicLine.push(l);
       linesGeometry.merge(<any>l.geometry, l.matrix);
     }
   }
@@ -326,20 +326,20 @@ export function dfsEachLine(
 ) {
   try {
     for (;;) {
-      if (line.plot_ready) {
+      if (line.plotReady) {
         line.plotting = false;
         console.log('Plot is interrupted');
         resetPlotStartTime();
         return;
       }
 
-      // phase_index_array is used to implement dfs without function call.
+      // phaseIndexArray is used to implement dfs without function call.
       let phaseIndex = phaseIndexArray[phaseIndexArray.length - 1]; // top
       let phase = phaseIndex.phase;
-      const vec = phase_to_line_vectors(phase, parameterConditionList[currentParamIdx], axes, dt);
+      const vec = phaseToLineVectors(phase, parameterConditionList[currentParamIdx], axes, dt);
       currentLineVec = currentLineVec.concat(vec);
-      const vecAnimation = phase_to_line_vectors(phase, parameterConditionList[currentParamIdx], axes, 0.01); // tを0.01刻みで点を取る -> time = t * 100
-      // animationControlState.current_line_vec_animation = animationControlState.current_line_vec_animation.concat(vec_animation);
+      const vecAnimation = phaseToLineVectors(phase, parameterConditionList[currentParamIdx], axes, 0.01); // tを0.01刻みで点を取る -> time = t * 100
+      // animationControlState.currentLineVecAnimation = animationControlState.currentLineVecAnimation.concat(vecAnimation);
       for (const v of vecAnimation) {
         animationControlState.currentLineVecAnimation.push(v.vec);
       }
@@ -398,16 +398,16 @@ function searchNextChild(
     for (; /* restart searching */ phaseIndex.index < phase.children.length; phaseIndex.index++) {
       const child = phase.children[phaseIndex.index];
       const includedByParameterCondition = checkParameterCondition(
-        child.parameter_maps,
+        child.parameterMaps,
         parameterConditionList[currentParamIdx]
       );
       if (includedByParameterCondition) {
         // パラメータに含まれるchild，つまり描画するべきchildが見つかった
         phaseIndexArray.push({ phase: child, index: 0 }); // start from 0th child
         const currentTime = new Date().getTime();
-        if (currentTime - line.last_plot_time >= 200) {
+        if (currentTime - line.lastPlotTime >= 200) {
           // interrupt searching
-          line.last_plot_time = currentTime;
+          line.lastPlotTime = currentTime;
           // use setTimeout to check event queue
           requestAnimationFrame(function () {
             dfsEachLine(
@@ -429,7 +429,7 @@ function searchNextChild(
     }
 
     // 以下，描画するべきchildが見つからなかった場合
-    // Plot for this current_param_idx is completed.
+    // Plot for this currentParamIdx is completed.
     if (phaseIndexArray.length == 1) {
       if (currentParamIdx == parameterConditionList.length - 1) {
         // last
@@ -481,7 +481,7 @@ export function resetAnimation(line: PlotLine) {
   addPlot(line);
 }
 
-/** parameter_condition_listの値がparameter_mapsの範囲内にあるか */
+/** parameterConditionListの値がparameterMapsの範囲内にあるか */
 function checkParameterCondition(parameterMaps: Map<string, HydatParameter>[], parameterCondition: ParamCond) {
   const epsilon = 0.0001;
   for (const map of parameterMaps) {
@@ -490,15 +490,15 @@ function checkParameterCondition(parameterMaps: Map<string, HydatParameter>[], p
       const c = parameterCondition.get(key);
       if (c === undefined) continue;
       if (p instanceof HydatParameterInterval) {
-        const lb = p.lower_bound.value.getValue(parameterCondition);
-        const ub = p.upper_bound.value.getValue(parameterCondition);
+        const lb = p.lowerBound.value.getValue(parameterCondition);
+        const ub = p.upperBound.value.getValue(parameterCondition);
         if (!(lb <= c.getValue(parameterCondition) + epsilon && ub >= c.getValue(parameterCondition) - epsilon)) {
           included = false;
         }
       } else if (
         !(
-          p.unique_value.getValue(parameterCondition) <= c.getValue(parameterCondition) + epsilon &&
-          p.unique_value.getValue(parameterCondition) >= c.getValue(parameterCondition) - epsilon
+          p.uniqueValue.getValue(parameterCondition) <= c.getValue(parameterCondition) + epsilon &&
+          p.uniqueValue.getValue(parameterCondition) >= c.getValue(parameterCondition) - epsilon
         )
       ) {
         included = false;
@@ -554,7 +554,7 @@ export function makeRanges() {
       graphControl.scene.add(faceMesh);
       faces.push(faceMesh);
     }
-    renderGraph_three_js();
+    renderGraphThreeJs();
   }
 }
 
@@ -667,7 +667,7 @@ export function animate() {
       arr += 1;
     }
 
-    if (PlotSettingsControl.plot_settings.dynamicDraw) {
+    if (PlotSettingsControl.plotSettings.dynamicDraw) {
       if (animationControlState.time == 0) {
         removeDrawnDynamicLines();
         animationControlState.lineCount = 0;
@@ -677,7 +677,7 @@ export function animate() {
     }
 
     animationControlState.timePrev = animationControlState.time;
-    renderGraph_three_js();
+    renderGraphThreeJs();
   }
 }
 
