@@ -19,7 +19,7 @@ export function saveKeyBindingToStorage() {
 }
 
 export function loadKeyBindingFromStorage() {
-  const keyBindingSetting = storage.getItem('keyBinding');
+  const keyBindingSetting = storage.getItem('key_binding');
   if (keyBindingSetting !== null) {
     keyBindingSelector.value = keyBindingSetting;
   } else {
