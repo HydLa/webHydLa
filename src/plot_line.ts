@@ -6,7 +6,7 @@ import { saveHydatSettingsToStorage } from './storage_control';
 import { Triplet } from './plot_utils';
 import { HydatPhase } from './hydat';
 import { parse, ParamCond, Construct } from './parse';
-import { dfs_each_line, resetAnimation } from './animation_control';
+import { dfsEachLine, resetAnimation } from './animation_control';
 import { setPlotStartTimeIfUnset } from './plot_control';
 
 export class PlotLine {
@@ -117,7 +117,7 @@ export function plotReady(plotLine: PlotLine) {
     plotLine.plot_ready = undefined;
     plotLine.last_plot_time = new Date().getTime();
     setPlotStartTimeIfUnset(new Date().getTime());
-    dfs_each_line(
+    dfsEachLine(
       plot_information.phase_index_array,
       plot_information.axes,
       plot_information.line,

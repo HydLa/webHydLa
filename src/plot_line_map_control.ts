@@ -4,7 +4,7 @@ import { replotAll } from './graph_control';
 import { DatGUIControl } from './dat_gui_control';
 import { HydatControl } from './hydat_control';
 import { saveHydatSettingsToStorage, loadHydatSettingsFromStorage } from './storage_control';
-import { remove_dynamic_line, remove_dynamic_lines, remove_plot } from './animation_control';
+import { removeDynamicLine, removeDynamicLines, removePlot } from './animation_control';
 import { PlotSettingsControl } from './plot_settings';
 
 export class PlotLineMapControl {
@@ -27,9 +27,9 @@ export function removeLine(line: PlotLine) {
   }
   DatGUIControl.variable_folder.removeFolder(line.folder);
   if (PlotSettingsControl.plot_settings.dynamicDraw) {
-    remove_dynamic_line(line);
+    removeDynamicLine(line);
   } else {
-    remove_plot(line);
+    removePlot(line);
   }
   delete HydatControl.settingsForCurrentHydat.plot_line_settings[line.index];
   saveHydatSettingsToStorage();
@@ -72,7 +72,7 @@ export function replotLines() {
   if (PlotSettingsControl.plot_settings.dynamicDraw) {
     PlotSettingsControl.plot_settings.plotInterval = 0.01;
   }
-  remove_dynamic_lines();
+  removeDynamicLines();
 
   for (const [i, line] of PlotLineMapControl.map.entries()) {
     line.color_angle = (i / getLength()) * 360;
