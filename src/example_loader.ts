@@ -15,7 +15,7 @@ async function loadExamples() {
 
   // 選択可能な例題に取得したファイル名を追加
   for (const name of filenames) {
-    const select = <HTMLElement>document.getElementById('exampleSelector');
+    const select = <HTMLElement>document.getElementById('example_selector');
     const option = document.createElement('option');
     option.text = name;
     option.value = name;
