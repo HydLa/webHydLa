@@ -139,6 +139,7 @@ export function renderGraph() {
     animate();
   }
   if (getLength() !== graphControl.aLine) {
+    /// rangeの再描画は描画する線の本数が変化した時のみ行う
     if (graphControl.rangeMode) {
       makeRanges();
     }
