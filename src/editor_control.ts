@@ -13,7 +13,7 @@ import { sendHydla } from './hylagi';
 import { loadHydat } from './hydat_control';
 
 /* set default hydla code */
-const defaultHydla = `// a sample hydla code: bouncingParticle.hydla
+const defaultHydla = `// a sample hydla code: bouncing_particle.hydla
 
 INIT <=> y = 10 & y' = 0.
 FALL <=> [](y'' = -10).
