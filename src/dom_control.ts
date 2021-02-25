@@ -35,7 +35,7 @@ export function initDOMState() {
   Materialize.Modal.init(document.querySelectorAll('.modal'));
   DOMState.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
 
-  $('fixButton').on('change', function () {
+  $('fix_button').on('change', function () {
     replotAll();
   });
   $('stepButton').on('change', function () {
