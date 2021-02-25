@@ -1,5 +1,5 @@
 import { graphControl, update2DMode, renderGraph } from './graph_control';
-import { DatGUIControl } from './dat_gui_control';
+import { initDatGUIState } from './dat_gui_control';
 import { NewUI } from './new_ui';
 import { PlotSettingsControl } from './plot_settings';
 import { initDOMState } from './dom_control';
@@ -18,7 +18,7 @@ $(document).ready(() => {
 
   PlotSettingsControl.init();
 
-  DatGUIControl.init(PlotSettingsControl.plot_settings);
+  initDatGUIState(PlotSettingsControl.plot_settings);
 
   initHydatControl(saved_hydat);
   initHyLaGIControllerState();

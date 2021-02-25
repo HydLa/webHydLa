@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { replotLines } from './plot_line_map_control';
-import { DatGUIControl } from './dat_gui_control';
+import { parameter_seek_setting, parameter_seek_setting_animate } from './dat_gui_control';
 import { HydatControl } from './hydat_control';
 import { animate, animateTime, animationControlState, getLength, makeRanges } from './animation_control';
 import { update_axes } from './plot_control';
@@ -146,9 +146,9 @@ export function renderGraph() {
   }
   if (animationControlState.maxlen !== graphControl.t_line) {
     graphControl.t_line = animationControlState.maxlen;
-    DatGUIControl.parameter_seek_setting(graphControl.t_line);
+    parameter_seek_setting(graphControl.t_line);
   } else if (graphControl.animatable) {
-    DatGUIControl.parameter_seek_setting_animate(graphControl.t_line, animationControlState.time);
+    parameter_seek_setting_animate(graphControl.t_line, animationControlState.time);
   }
   graphControl.last_frame_zoom = graphControl.camera.zoom;
 }
