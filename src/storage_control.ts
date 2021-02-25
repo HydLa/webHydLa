@@ -64,7 +64,7 @@ export function loadHydatFromStorage() {
 }
 
 export function savePlotSettingsToStorage(plotSettings: PlotSettings) {
-  storage.setItem('plotSettings', JSON.stringify(plotSettings));
+  storage.setItem('plot_settings', JSON.stringify(plotSettings));
 }
 
 export function loadPlotSettingsFromStorage() {
