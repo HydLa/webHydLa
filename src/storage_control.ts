@@ -24,7 +24,7 @@ export function loadKeyBindingFromStorage() {
     keyBindingSelector.value = keyBindingSetting;
   } else {
     keyBindingSelector.value = keyBindingSelector.options[keyBindingSelector.selectedIndex].value;
-    storage.setItem('keyBinding', keyBindingSelector.value);
+    storage.setItem('key_binding', keyBindingSelector.value);
   }
   if (keyBindingSelector.value == '') setEditorKeyBinding(null);
   else setEditorKeyBinding(keyBindingSelector.value);
