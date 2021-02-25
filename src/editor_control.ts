@@ -63,7 +63,7 @@ export function initEditorState(savedHydla: string | null) {
   if (savedHydla) {
     setEditorHydla(savedHydla);
   } else {
-    saveHydlaNameToStorage('bouncingBall');
+    saveHydlaNameToStorage('bouncing_ball');
     setEditorHydla(defaultHydla);
   }
   EditorState.editor.clearSelection();
