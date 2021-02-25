@@ -143,7 +143,6 @@ function divideParameter(parameter_map: Map<string, HydatParameter>) {
       for (let i = 0; i < now_parameter_condition_list.length; i++) {
         for (let j = 0; j < div; j++) {
           const parameter_value = lb + j * deltaP;
-          console.log(now_parameter_condition_list[i]);
           const tmp_obj = new Map([...now_parameter_condition_list[i]]);
           tmp_obj.set(parameter_name, new Constant(parameter_value));
           next_parameter_condition_list.push(tmp_obj);
@@ -483,27 +482,23 @@ export function resetAnimation(line: PlotLine) {
 }
 
 /** parameter_condition_listの値がparameter_mapsの範囲内にあるか */
-function check_parameter_condition(parameter_maps: Map<string, HydatParameter>[], parameter_condition_list: ParamCond) {
+function check_parameter_condition(parameter_maps: Map<string, HydatParameter>[], parameter_condition: ParamCond) {
   const epsilon = 0.0001;
   for (const map of parameter_maps) {
     let included = true;
     for (const [key, p] of map) {
-      const c = parameter_condition_list.get(key);
+      const c = parameter_condition.get(key);
       if (c === undefined) continue;
       if (p instanceof HydatParameterInterval) {
-        const lb = p.lower_bound.value.getValue(parameter_condition_list);
-        const ub = p.upper_bound.value.getValue(parameter_condition_list);
-        if (
-          !(
-            lb <= c.getValue(parameter_condition_list) + epsilon && ub >= c.getValue(parameter_condition_list) - epsilon
-          )
-        ) {
+        const lb = p.lower_bound.value.getValue(parameter_condition);
+        const ub = p.upper_bound.value.getValue(parameter_condition);
+        if (!(lb <= c.getValue(parameter_condition) + epsilon && ub >= c.getValue(parameter_condition) - epsilon)) {
           included = false;
         }
       } else if (
         !(
-          p.unique_value.getValue(parameter_condition_list) <= c.getValue(parameter_condition_list) + epsilon &&
-          p.unique_value.getValue(parameter_condition_list) >= c.getValue(parameter_condition_list) - epsilon
+          p.unique_value.getValue(parameter_condition) <= c.getValue(parameter_condition) + epsilon &&
+          p.unique_value.getValue(parameter_condition) >= c.getValue(parameter_condition) - epsilon
         )
       ) {
         included = false;
