@@ -360,8 +360,8 @@ function calculateScaleInterval(range: Range) {
   const floor = Math.floor(log);
   const fractionalPart = log - floor;
   let scaleInterval = Math.pow(10, floor) / 5;
-  const log105 = 0.69;
-  if (fractionalPart > log105) scaleInterval *= 5;
+  const log10_5 = 0.69;
+  if (fractionalPart > log10_5) scaleInterval *= 5;
   if (scaleInterval <= 0) return Number.MAX_VALUE;
   return scaleInterval;
 }
