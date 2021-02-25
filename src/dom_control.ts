@@ -46,7 +46,7 @@ export function initDOMState() {
     setEditorFontSize((e.target as HTMLInputElement).valueAsNumber);
   });
 
-  document.getElementById('themeSelector')?.addEventListener('change', (e) => {
+  document.getElementById('theme_selector')?.addEventListener('change', (e) => {
     setEditorTheme((e.target as HTMLInputElement).value);
     saveThemeToStorage();
   });
