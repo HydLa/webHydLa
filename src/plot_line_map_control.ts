@@ -54,7 +54,7 @@ export function addNewLineWithIndex(x_name: string, y_name: string, z_name: stri
 
 export function removeAllFolders() {
   for (const line of PlotLineMapControl.map.values()) {
-    line.removeFolder();
+    removeFolder(line);
   }
 }
 
@@ -68,7 +68,7 @@ export function isAllReady() {
 }
 
 /** @deprecated */
-export function replot() {
+export function replotLines() {
   if (PlotSettingsControl.plot_settings.dynamicDraw) {
     PlotSettingsControl.plot_settings.plotInterval = 0.01;
   }
@@ -76,7 +76,7 @@ export function replot() {
 
   for (const [i, line] of PlotLineMapControl.map.entries()) {
     line.color_angle = (i / getLength()) * 360;
-    line.replot();
+    replot(line);
   }
 }
 
@@ -106,7 +106,7 @@ export function initVariableSelector(hydat: Hydat) {
       '0'
     );
     first_line.color_angle = 0;
-    first_line.replot();
+    replot(first_line);
     first_line.folder.open();
   }
 
