@@ -42,7 +42,7 @@ export function initDOMState() {
     replotAll();
   });
 
-  document.getElementById('editorFontSize')?.addEventListener('change', (e) => {
+  document.getElementById('editor_font_size')?.addEventListener('change', (e) => {
     setEditorFontSize((e.target as HTMLInputElement).valueAsNumber);
   });
 
