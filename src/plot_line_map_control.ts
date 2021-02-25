@@ -1,4 +1,4 @@
-import { PlotLine } from './plot_line';
+import { removeFolder, replot, PlotLine } from './plot_line';
 import { Hydat } from './hydat';
 import { replotAll } from './graph_control';
 import { DatGUIControl } from './dat_gui_control';

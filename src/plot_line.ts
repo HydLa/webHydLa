@@ -35,7 +35,7 @@ export class PlotLine {
 
   constructor(x_name: string, y_name: string, z_name: string, index: number) {
     this.index = index;
-    this.name = 'plot' + this.index;
+    this.name = `plot${this.index}`;
     this.folder = DatGUIControl.variable_folder.addFolder(this.name);
     this.settings = {
       x: x_name,
@@ -45,88 +45,89 @@ export class PlotLine {
         removeLine(this);
       },
     };
-    this.x_item = this.folder.add(this.settings, 'x');
-    this.x_item.onChange(this.getUpdateFunction(this.x_item));
-    this.y_item = this.folder.add(this.settings, 'y');
-    this.y_item.onChange(this.getUpdateFunction(this.y_item));
-    this.z_item = this.folder.add(this.settings, 'z');
     this.folder.add(this.settings, 'remove');
-    this.z_item.onChange(this.getUpdateFunction(this.z_item));
-  }
 
-  getUpdateFunction(item: dat.GUIController) {
-    let prev: string;
-    return () => {
-      this.last_edited_input = <HTMLInputElement>item.domElement.firstChild;
-      const val = (<HTMLInputElement>item.domElement.firstChild).value;
-      if (prev === undefined || val != prev) {
-        try {
-          parse(val);
-          replotAll();
-        } catch (e) {
-          this.updateFolder(false);
-        }
-      }
-      prev = val;
-    };
+    this.x_item = this.folder.add(this.settings, 'x');
+    this.x_item.onChange(getUpdateFunction(this, this.x_item));
+    this.y_item = this.folder.add(this.settings, 'y');
+    this.y_item.onChange(getUpdateFunction(this, this.y_item));
+    this.z_item = this.folder.add(this.settings, 'z');
+    this.z_item.onChange(getUpdateFunction(this, this.z_item));
   }
+}
 
-  updateFolder(succeeded: boolean) {
-    if (succeeded) {
-      const color_on_correct = '#303030';
-      (<HTMLInputElement>this.x_item.domElement.firstChild).style.backgroundColor = (<HTMLInputElement>(
-        this.y_item.domElement.firstChild
-      )).style.backgroundColor = (<HTMLInputElement>(
-        this.z_item.domElement.firstChild
-      )).style.backgroundColor = color_on_correct;
-    } else {
-      const elm = this.last_edited_input;
-      if (elm === undefined) return;
-      elm.style.backgroundColor = '#A00000';
-    }
-  }
-
-  removeFolder() {
-    this.folder.close();
-    DatGUIControl.variable_folder.removeFolder(this.folder);
-  }
-
-  replot() {
-    resetAnimation(this);
-    if (this.settings.x != '' && this.settings.y != '' && this.settings.z != '') {
-      if (this.remain === undefined) {
-        HydatControl.settingsForCurrentHydat.plot_line_settings[this.index] = this.settings;
-        saveHydatSettingsToStorage();
+export function getUpdateFunction(plotLine: PlotLine, item: dat.GUIController) {
+  let prev: string;
+  return () => {
+    plotLine.last_edited_input = <HTMLInputElement>item.domElement.firstChild;
+    const val = (<HTMLInputElement>item.domElement.firstChild).value;
+    if (prev === undefined || val !== prev) {
+      try {
+        parse(val);
+        replotAll();
+      } catch (e) {
+        updateFolder(plotLine, false);
       }
     }
-  }
+    prev = val;
+  };
+}
 
-  plotReady() {
-    const plot_information = this.plot_information;
-    if (!plot_information) {
-      throw new Error('unexpected: plot_information is undefined');
+export function updateFolder(plotLine: PlotLine, succeeded: boolean) {
+  if (succeeded) {
+    const color_on_correct = '#303030';
+    (<HTMLInputElement>plotLine.x_item.domElement.firstChild).style.backgroundColor = (<HTMLInputElement>(
+      plotLine.y_item.domElement.firstChild
+    )).style.backgroundColor = (<HTMLInputElement>(
+      plotLine.z_item.domElement.firstChild
+    )).style.backgroundColor = color_on_correct;
+  } else {
+    const elm = plotLine.last_edited_input;
+    if (elm === undefined) return;
+    elm.style.backgroundColor = '#A00000';
+  }
+}
+
+export function removeFolder(plotLine: PlotLine) {
+  plotLine.folder.close();
+  DatGUIControl.variable_folder.removeFolder(plotLine.folder);
+}
+
+export function replot(plotLine: PlotLine) {
+  resetAnimation(plotLine);
+  if (plotLine.settings.x !== '' && plotLine.settings.y !== '' && plotLine.settings.z !== '') {
+    if (plotLine.remain === undefined) {
+      HydatControl.settingsForCurrentHydat.plot_line_settings[plotLine.index] = plotLine.settings;
+      saveHydatSettingsToStorage();
     }
-    if (plot_information.line.plotting) {
-      this.plot_ready = requestAnimationFrame(() => {
-        this.plotReady();
-      });
-    } else {
-      this.plotting = true;
-      this.plot_ready = undefined;
-      this.last_plot_time = new Date().getTime();
-      setPlotStartTimeIfUnset(new Date().getTime());
-      dfs_each_line(
-        plot_information.phase_index_array,
-        plot_information.axes,
-        plot_information.line,
-        plot_information.width,
-        plot_information.color,
-        plot_information.dt,
-        plot_information.parameter_condition_list,
-        0,
-        []
-      );
-    }
+  }
+}
+
+export function plotReady(plotLine: PlotLine) {
+  const plot_information = plotLine.plot_information;
+  if (!plot_information) {
+    throw new Error('unexpected: plot_information is undefined');
+  }
+  if (plot_information.line.plotting) {
+    plotLine.plot_ready = requestAnimationFrame(() => {
+      plotReady(plotLine);
+    });
+  } else {
+    plotLine.plotting = true;
+    plotLine.plot_ready = undefined;
+    plotLine.last_plot_time = new Date().getTime();
+    setPlotStartTimeIfUnset(new Date().getTime());
+    dfs_each_line(
+      plot_information.phase_index_array,
+      plot_information.axes,
+      plot_information.line,
+      plot_information.width,
+      plot_information.color,
+      plot_information.dt,
+      plot_information.parameter_condition_list,
+      0,
+      []
+    );
   }
 }
 
