@@ -123,7 +123,7 @@ export function initDOMState() {
   document.getElementById('save-hydat')?.addEventListener('click', () => {
     saveHydat();
   });
-  document.getElementById('runButton')?.addEventListener('click', () => {
+  document.getElementById('run_button')?.addEventListener('click', () => {
     execHyLaGI();
   });
   document.getElementById('toggle-input-pane')?.addEventListener('click', () => {
