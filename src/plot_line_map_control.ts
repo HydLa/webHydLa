@@ -25,7 +25,7 @@ export function removeLine(line: PlotLine) {
   if (getLength() <= 1) {
     return;
   }
-  DatGUIState.variable_folder.removeFolder(line.folder);
+  DatGUIState.variableFolder.removeFolder(line.folder);
   if (PlotSettingsControl.plot_settings.dynamicDraw) {
     removeDynamicLine(line);
   } else {
@@ -110,5 +110,5 @@ export function initVariableSelector(hydat: Hydat) {
     first_line.folder.open();
   }
 
-  DatGUIState.variable_folder.open();
+  DatGUIState.variableFolder.open();
 }
