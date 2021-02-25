@@ -61,7 +61,7 @@ export class Hydat {
 export interface HydatRaw {
   name: string;
   first_phases: HydatPhaseRaw[];
-  parameters: { [key: string]: HydatParameterRaw };
+  parameters: { [key: string]: HydatParameterRaw }; // Mapにしない（JSON.parseの結果を格納するため）
   variables: string[];
 }
 
@@ -107,8 +107,8 @@ export class HydatPhase {
 interface HydatPhaseRaw {
   type: string;
   time: HydatTimeRaw;
-  variable_map: { [key: string]: HydatVariableRaw };
-  parameter_maps: { [key: string]: HydatParameterRaw }[];
+  variable_map: { [key: string]: HydatVariableRaw }; // Mapにしない（JSON.parseの結果を格納するため）
+  parameter_maps: { [key: string]: HydatParameterRaw }[]; // Mapにしない（JSON.parseの結果を格納するため）
   children: HydatPhaseRaw[];
   simulation_state: string;
 }
