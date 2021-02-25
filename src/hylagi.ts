@@ -34,7 +34,7 @@ export function execHyLaGI() {
 }
 
 export function updateHyLaGIExecIcon() {
-  const runButton = <HTMLInputElement>document.getElementById('runButton');
+  const runButton = <HTMLInputElement>document.getElementById('run_button');
   const elist = Array.from(document.getElementsByClassName('exec-icon'));
   if (HyLaGIControllerState.running) {
     runButton.value = 'KILL'; // for new UI
