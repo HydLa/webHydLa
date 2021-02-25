@@ -15,7 +15,7 @@ export function initStorageControl() {
 
 export function saveKeyBindingToStorage() {
   const bindSelector = keyBindingSelector.value;
-  storage.setItem('keyBinding', bindSelector);
+  storage.setItem('key_binding', bindSelector);
 }
 
 export function loadKeyBindingFromStorage() {
