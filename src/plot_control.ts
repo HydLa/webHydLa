@@ -360,6 +360,7 @@ function calculateScaleInterval(range: Range) {
   const floor = Math.floor(log);
   const fractionalPart = log - floor;
   let scaleInterval = Math.pow(10, floor) / 5;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const log10_5 = 0.69;
   if (fractionalPart > log10_5) scaleInterval *= 5;
   if (scaleInterval <= 0) return Number.MAX_VALUE;

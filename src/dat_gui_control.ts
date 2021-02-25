@@ -26,9 +26,9 @@ export function initDatGUIState(plotSettings: PlotSettings) {
       line.folder.open();
     },
   };
-  const datGui = new dat.GUI({ autoPlace: false, load: localStorage });
-  const datGuiAnimate = new dat.GUI({ autoPlace: false, load: localStorage });
-  datGui
+  const datGUI = new dat.GUI({ autoPlace: false, load: localStorage });
+  const datGUIAnimate = new dat.GUI({ autoPlace: false, load: localStorage });
+  datGUI
     .add(plotSettings, 'plotInterval', 0.01, 1)
     .step(0.001)
     .name('plot interval')
@@ -36,7 +36,7 @@ export function initDatGUIState(plotSettings: PlotSettings) {
       replotAll();
       PlotSettingsControl.saveToWebStorage();
     });
-  datGui
+  datGUI
     .add(plotSettings, 'lineWidth', 1, 10)
     .step(1)
     .name('line width')
@@ -44,42 +44,42 @@ export function initDatGUIState(plotSettings: PlotSettings) {
       replotAll();
       PlotSettingsControl.saveToWebStorage();
     });
-  datGui
+  datGUI
     .add(plotSettings, 'scaleLabelVisible')
     .name('show scale label')
     .onChange(() => {
       updateAxes(true);
       PlotSettingsControl.saveToWebStorage();
     });
-  datGui
+  datGUI
     .add(plotSettings, 'twoDimensional')
     .name('XY-mode')
     .onChange(() => {
       update2DMode(plotSettings.twoDimensional);
       PlotSettingsControl.saveToWebStorage();
     });
-  datGui
+  datGUI
     .add(plotSettings, 'autoRotate')
     .name('auto rotate')
     .onChange(() => {
       updateRotate(plotSettings.autoRotate);
       PlotSettingsControl.saveToWebStorage();
     });
-  datGui
+  datGUI
     .add(plotSettings, 'dynamicDraw')
     .name('dynamic draw')
     .onChange(() => {
       replotAll();
       PlotSettingsControl.saveToWebStorage();
     });
-  datGui
+  datGUI
     .addColor(plotSettings, 'backgroundColor')
     .name('background')
     .onChange((value) => {
       setBackgroundColor(value);
       PlotSettingsControl.saveToWebStorage(); /*renderThreeJs();i*/
     });
-  datGuiAnimate
+  datGUIAnimate
     .add(plotSettings, 'animate')
     .name('stop')
     .onChange(() => {
@@ -87,24 +87,24 @@ export function initDatGUIState(plotSettings: PlotSettings) {
       PlotSettingsControl.saveToWebStorage();
     });
 
-  datGui.domElement.style.zIndex = '2';
-  datGuiAnimate.domElement.style.zIndex = '3';
-  datGuiAnimate.domElement.style['position'] = 'absolute';
-  datGuiAnimate.domElement.style['bottom'] = '50px';
+  datGUI.domElement.style.zIndex = '2';
+  datGUIAnimate.domElement.style.zIndex = '3';
+  datGUIAnimate.domElement.style['position'] = 'absolute';
+  datGUIAnimate.domElement.style['bottom'] = '50px';
 
   const heightArea = $('#graph-area').css('height');
 
-  DatGUIState.parameterFolder = datGui.addFolder('parameters');
-  DatGUIState.parameterFolderSeek = datGuiAnimate.addFolder('seek');
-  datGui.add(addLineObj, 'add').name('add new line');
-  DatGUIState.variableFolder = datGui.addFolder('variables');
+  DatGUIState.parameterFolder = datGUI.addFolder('parameters');
+  DatGUIState.parameterFolderSeek = datGUIAnimate.addFolder('seek');
+  datGUI.add(addLineObj, 'add').name('add new line');
+  DatGUIState.variableFolder = datGUI.addFolder('variables');
 
   const datContainer = document.getElementById('dat-gui')!;
-  datContainer.appendChild(datGui.domElement);
+  datContainer.appendChild(datGUI.domElement);
 
   const datContainerB = document.getElementById('dat-gui-bottom')!;
   datContainerB.style.height = heightArea;
-  datContainerB.appendChild(datGuiAnimate.domElement);
+  datContainerB.appendChild(datGUIAnimate.domElement);
 
   const ndModeCheckBox = <HTMLInputElement>document.getElementById('ndModeCheckBox');
   ndModeCheckBox.checked = true;
@@ -164,7 +164,7 @@ export function parameterSetting(pars: Map<string, HydatParameter>) {
     });
     modeItemRange.onChange(() => {
       graphControl.rangeMode = DatGUIState.plotSettings.parameterCondition!.get(key)!.range;
-      if (graphControl.range_mode) {
+      if (graphControl.rangeMode) {
         makeRanges();
       } else {
         removeRanges();

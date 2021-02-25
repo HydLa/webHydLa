@@ -596,9 +596,9 @@ export function removeDynamicLines() {
 
 export function removeRanges() {
   if (faces != undefined) {
-    remove_mesh(faces);
+    removeMesh(faces);
   }
-  renderGraph_three_js();
+  renderGraphThreeJs();
 }
 
 /** 現在時刻以下の線をsceneに追加する */
