@@ -58,7 +58,7 @@ export function sendHydla(hydla: string) {
   updateHyLaGIExecIcon();
 
   const hr = new XMLHttpRequest();
-  hr.open('GET', 'startSession');
+  hr.open('GET', 'start_session');
   hr.send(null);
 
   hr.onload = () => {
