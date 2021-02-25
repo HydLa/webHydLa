@@ -21,7 +21,7 @@ async function loadExamples() {
     option.value = name;
     select.appendChild(option);
   }
-  (<any>$('#exampleSelector')).formSelect();
+  (<any>$('#example_selector')).formSelect();
 
   document.getElementById('load-examples-button')?.addEventListener('click', () => {
     loadContents();
