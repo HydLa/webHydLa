@@ -35,8 +35,8 @@ export function phaseToLineVectors(
   let t;
   if (
     phase.simulationState != 'SIMULATED' &&
-    phase.simulationState != 'TIMELIMIT' &&
-    phase.simulationState != 'STEPLIMIT'
+    phase.simulationState != 'TIME_LIMIT' &&
+    phase.simulationState != 'STEP_LIMIT'
   ) {
     return line;
   }
