@@ -72,7 +72,7 @@ export function loadPlotSettingsFromStorage() {
 }
 
 export function saveHydlaNameToStorage(hydlaName: string) {
-  storage.setItem('hydlaName', hydlaName);
+  storage.setItem('hydla_name', hydlaName);
 }
 
 export function loadHydlaNameFromStorage() {
