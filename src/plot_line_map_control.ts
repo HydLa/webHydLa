@@ -1,7 +1,7 @@
 import { removeFolder, replot, PlotLine } from './plot_line';
 import { Hydat } from './hydat';
 import { replotAll } from './graph_control';
-import { DatGUIControl } from './dat_gui_control';
+import { fixLayout, DatGUIState } from './dat_gui_control';
 import { HydatControl } from './hydat_control';
 import { saveHydatSettingsToStorage, loadHydatSettingsFromStorage } from './storage_control';
 import { remove_dynamic_line, remove_dynamic_lines, remove_plot } from './animation_control';
@@ -24,7 +24,7 @@ export class PlotLineMapControl {
     if (this.getLength() <= 1) {
       return;
     }
-    DatGUIControl.variable_folder.removeFolder(line.folder);
+    DatGUIState.variable_folder.removeFolder(line.folder);
     if (PlotSettingsControl.plot_settings.dynamicDraw) {
       remove_dynamic_line(line);
     } else {
@@ -44,7 +44,7 @@ export class PlotLineMapControl {
   }
   static addNewLineWithIndex(x_name: string, y_name: string, z_name: string, index: number) {
     const line = new PlotLine(x_name, y_name, z_name, index);
-    DatGUIControl.fixLayout();
+    fixLayout();
     this.map[index] = line;
     return line;
   }
@@ -111,6 +111,6 @@ export class PlotLineMapControl {
       first_line.folder.open();
     }
 
-    DatGUIControl.variable_folder.open();
+    DatGUIState.variable_folder.open();
   }
 }

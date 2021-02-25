@@ -3,7 +3,7 @@ import { saveHydatToStorage } from './storage_control';
 import { modifyNameLabel, clearPlot } from './graph_control';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { showToast } from './dom_control';
-import { DatGUIControl } from './dat_gui_control';
+import { parameter_setting } from './dat_gui_control';
 import { update_axes } from './plot_control';
 
 export class HydatControl {
@@ -55,7 +55,7 @@ export function loadHydat(hydat: HydatRaw) {
   try {
     saveHydatToStorage(hydat);
     HydatControl.current_hydat = new Hydat(hydat);
-    DatGUIControl.parameter_setting(HydatControl.current_hydat.parameters);
+    parameter_setting(HydatControl.current_hydat.parameters);
     modifyNameLabel(HydatControl.current_hydat.name);
   } catch (e) {
     console.log(e);
