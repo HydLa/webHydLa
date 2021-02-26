@@ -2,13 +2,13 @@
 // hydatのkeyがsnake_caseのため，Rawのプロパティもsnake_case
 
 import { parse, Env, Construct, Constant, Plus } from './parse';
-import { saveHydatToStorage } from './storage';
-import { modifyNameLabel, clearPlot } from './graph';
-import { initVariableSelector } from './plotLineMap';
-import { showToast } from './dom';
-import { parameterSetting } from './datGUI';
-import { updateAxes } from './plot';
-import { saveFile } from './editor';
+import { saveHydatToStorage } from '../storage';
+import { modifyNameLabel, clearPlot } from '../graph/graph';
+import { initVariableSelector } from '../graph/plotLineMap';
+import { parameterSetting } from '../graph/datGUI';
+import { updateAxes } from '../graph/plot';
+import { showToast } from '../UI/dom';
+import { saveFile } from '../editor/editor';
 
 export class HydatState {
   static currentHydat: Hydat | undefined;

@@ -2,9 +2,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { replotLines } from './plotLineMap';
 import { parameterSeekSetting, parameterSeekSettingAnimate } from './datGUI';
-import { HydatState } from './hydat';
 import { animate, animateTime, animationState, getLength, makeRanges } from './animation';
 import { updateAxes } from './plot';
+import { HydatState } from '../hydat/hydat';
 
 /**
  * 描画，再描画，クリアなどを行う<br>

@@ -1,6 +1,6 @@
-import { PlotSettings, PlotSettingsControl } from './plotSettings';
-import { HydatState, HydatRaw } from './hydat';
-import { setEditorKeyBinding, setEditorTheme } from './editor';
+import { PlotSettings, PlotSettingsControl } from './graph/plotSettings';
+import { HydatState, HydatRaw } from './hydat/hydat';
+import { setEditorKeyBinding, setEditorTheme } from './editor/editor';
 
 const storage = localStorage;
 

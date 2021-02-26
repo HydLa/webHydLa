@@ -1,13 +1,13 @@
-import { updateFolder, plotReady, PlotLine } from './plotLine';
-import { startPreloader, showToast } from './dom';
 import * as THREE from 'three';
+import { updateFolder, plotReady, PlotLine } from './plotLine';
 import { graphState, renderGraphThreeJs } from './graph';
-import { HydatState, HydatParameter, HydatParameterInterval, HydatPhase } from './hydat';
 import { RGB, Triplet } from './plotUtils';
-import { parse, ParamCond, Construct, Constant } from './parse';
 import { MultiBiMap } from './animationUtils';
 import { PlotSettingsControl } from './plotSettings';
 import { checkAndStopPreloader, phaseToLineVectors, resetPlotStartTime } from './plot';
+import { startPreloader, showToast } from '../UI/dom';
+import { HydatState, HydatParameter, HydatParameterInterval, HydatPhase } from '../hydat/hydat';
+import { parse, ParamCond, Construct, Constant } from '../hydat/parse';
 
 let faces: THREE.Mesh[];
 

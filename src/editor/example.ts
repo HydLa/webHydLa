@@ -1,4 +1,4 @@
-import { setEditorHydla } from './editor';
+import { setEditorHydla } from '../editor/editor';
 
 /**
  * HyLaGIのレポジトリから例題を取得する

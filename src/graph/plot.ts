@@ -1,13 +1,12 @@
+import * as THREE from 'three';
+import { Object3D } from 'three';
 import { graphState, renderGraphThreeJs, toScreenPosition } from './graph';
 import { isAllReady } from './plotLineMap';
-import { showToast, stopPreloader } from './dom';
-
-import * as THREE from 'three';
 import { Triplet, RGB, ComparableTriplet, Range } from './plotUtils';
-import { Object3D } from 'three';
-import { HydatPhase, HydatTimePP, HydatException } from './hydat';
 import { PlotSettingsControl } from './plotSettings';
-import { ParamCond, Construct, Constant } from './parse';
+import { showToast, stopPreloader } from '../UI/dom';
+import { HydatPhase, HydatTimePP, HydatException } from '../hydat/hydat';
+import { ParamCond, Construct, Constant } from '../hydat/parse';
 
 const axisColorBases = new Triplet<RGB>(new RGB(1.0, 0.3, 0.3), new RGB(0.3, 1.0, 0.3), new RGB(0.3, 0.3, 1.0));
 

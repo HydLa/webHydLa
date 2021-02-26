@@ -1,10 +1,10 @@
 import { removeFolder, replot, PlotLine } from './plotLine';
-import { HydatState, Hydat } from './hydat';
 import { replotAll } from './graph';
 import { fixLayout, DatGUIState } from './datGUI';
-import { saveHydatSettingsToStorage, loadHydatSettingsFromStorage } from './storage';
 import { removeDynamicLine, removeDynamicLines, removePlot } from './animation';
 import { PlotSettingsControl } from './plotSettings';
+import { saveHydatSettingsToStorage, loadHydatSettingsFromStorage } from '../storage';
+import { HydatState, Hydat } from '../hydat/hydat';
 
 export class PlotLineMapState {
   static map = new Map<number, PlotLine>();

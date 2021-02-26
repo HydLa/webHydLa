@@ -2,9 +2,9 @@ import * as dat from 'dat.gui';
 import { graphState, updateRotate, update2DMode, replotAll } from './graph';
 import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plotSettings';
 import { addNewLine } from './plotLineMap';
-import { HydatParameter, HydatParameterPoint } from './hydat';
 import { seekAnimation, removeRanges, makeRanges } from './animation';
 import { setBackgroundColor, updateAxes } from './plot';
+import { HydatParameter, HydatParameterPoint } from '../hydat/hydat';
 
 /** 描画用設定の処理を行う */
 export class DatGUIState {

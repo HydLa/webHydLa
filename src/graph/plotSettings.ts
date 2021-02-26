@@ -1,6 +1,6 @@
-import { loadPlotSettingsFromStorage, savePlotSettingsToStorage } from './storage';
 import { graphState } from './graph';
 import { seekAnimation } from './animation';
+import { loadPlotSettingsFromStorage, savePlotSettingsToStorage } from '../storage';
 
 export class PlotSettingsControl {
   static plotSettings: PlotSettings;
