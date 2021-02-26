@@ -2,6 +2,55 @@
 // hydatのkeyがsnake_caseのため，Rawのプロパティもsnake_case
 
 import { parse, Env, Construct, Constant, Plus } from './parse';
+import { saveHydatToStorage } from '../storage';
+import { modifyNameLabel, clearPlot } from '../graph/graph';
+import { initVariableSelector } from '../graph/plotLineMap';
+import { parameterSetting } from '../graph/datGUI';
+import { updateAxes } from '../graph/plot';
+import { showToast } from '../UI/dom';
+import { saveFile } from '../editor/editor';
+
+export class HydatState {
+  static currentHydat: Hydat | undefined;
+  static settingsForCurrentHydat: {
+    plotLineSettings: {
+      x: string;
+      y: string;
+      z: string;
+      remove: () => void;
+    }[];
+  };
+}
+
+export function initHydatState(savedHydat: string | null) {
+  if (savedHydat) {
+    loadHydat(JSON.parse(savedHydat));
+  }
+}
+
+/* function to save Hydat file */
+export function saveHydat() {
+  if (!HydatState.currentHydat) return;
+  saveFile('hydat', JSON.stringify(HydatState.currentHydat.raw));
+}
+
+export function loadHydat(hydat: HydatRaw) {
+  try {
+    saveHydatToStorage(hydat);
+    HydatState.currentHydat = new Hydat(hydat);
+    parameterSetting(HydatState.currentHydat.parameters);
+    modifyNameLabel(HydatState.currentHydat.name);
+  } catch (e) {
+    console.log(e);
+    console.log(e.stack);
+    showToast(`Failed to load hydat: ${e.name}(${e.message})`, 3000, 'red darken-4');
+  }
+  clearPlot();
+  if (HydatState.currentHydat !== undefined) {
+    initVariableSelector(HydatState.currentHydat);
+  }
+  updateAxes(true);
+}
 
 const isHydatParameterPointRaw = (raw: HydatParameterRaw): raw is HydatParameterPointRaw => {
   return (raw as HydatParameterPointRaw).unique_value !== undefined;

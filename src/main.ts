@@ -1,33 +1,33 @@
-import { graphControl, update2DMode, renderGraph } from './graph_control';
-import { initDatGUIState } from './dat_gui_control';
-import { NewUI } from './new_ui';
-import { PlotSettingsControl } from './plot_settings';
-import { initDOMState } from './dom_control';
-import { initEditorState } from './editor_control';
-import { initStorageControl, loadHydlaFromStorage, loadHydatFromStorage } from './storage_control';
-import { initHydatControl } from './hydat_control';
-import { initHyLaGIControllerState } from './hylagi';
-import { initExampleLoader } from './example_loader';
-import { setBackgroundColor } from './plot_control';
+import { graphState, update2DMode, renderGraph } from './graph/graph';
+import { initDatGUIState } from './graph/datGUI';
+import { PlotSettingsControl } from './graph/plotSettings';
+import { setBackgroundColor } from './graph/plot';
+import { initDOMState } from './UI/dom';
+import { NewUI } from './UI/newUI';
+import { initEditorState } from './editor/editor';
+import { initHyLaGIControllerState } from './editor/hylagi';
+import { initExample } from './editor/example';
+import { initHydatState } from './hydat/hydat';
+import { initStorage, loadHydlaFromStorage, loadHydatFromStorage } from './storage';
 
 $(document).ready(() => {
   const savedHydla = loadHydlaFromStorage();
   const savedHydat = loadHydatFromStorage();
 
-  initExampleLoader();
+  initExample();
 
   PlotSettingsControl.init();
 
   initDatGUIState(PlotSettingsControl.plotSettings);
 
-  initHydatControl(savedHydat);
+  initHydatState(savedHydat);
   initHyLaGIControllerState();
 
-  NewUI.init(graphControl.controls);
+  NewUI.init(graphState.controls);
   initDOMState();
 
   initEditorState(savedHydla);
-  initStorageControl();
+  initStorage();
 
   update2DMode(PlotSettingsControl.plotSettings.twoDimensional);
   PlotSettingsControl.timeStop();

@@ -1,8 +1,7 @@
-import { startPreloader, stopPreloader, showToast, selectLogTab } from './dom_control';
-import { sendEditorHydla } from './editor_control';
-import { loadHydat } from './hydat_control';
-import { loadHydlaNameFromStorage } from './storage_control';
-import { HydatRaw } from './hydat';
+import { startPreloader, stopPreloader, showToast, selectLogTab } from '../UI/dom';
+import { sendEditorHydla } from '../editor/editor';
+import { loadHydlaNameFromStorage } from '../storage';
+import { loadHydat, HydatRaw } from '../hydat/hydat';
 
 const firstScriptElement = document.getElementsByTagName('script')[0];
 const htmlModeCheckBox = <HTMLInputElement>document.getElementById('html_mode_check_box');
