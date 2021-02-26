@@ -516,7 +516,9 @@ function check_parameter_condition(parameter_maps: Map<string, HydatParameter>[]
  * parameterがfixed: false, range: trueの時に描画する面を作成
  */
 export function makeRanges() {
-  removeRanges();
+  if (faces != undefined) {
+    remove_mesh(faces);
+  }
   faces = [];
   if (animationControlState.animation_line.length != 0) {
     for (let j = 0; j < animationControlState.animation_line.length - 1; j++) {
@@ -593,13 +595,6 @@ export function remove_dynamic_lines() {
   }
   animationControlState.dynamic_lines = [];
   animationControlState.accumulative_merged_lines = [];
-}
-
-export function removeRanges() {
-  if (faces != undefined) {
-    remove_mesh(faces);
-  }
-  renderGraph_three_js();
 }
 
 /** 現在時刻以下の線をsceneに追加する */
