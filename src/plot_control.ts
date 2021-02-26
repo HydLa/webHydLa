@@ -1,4 +1,4 @@
-import { graphControl, renderGraph_three_js, toScreenPosition } from './graph_control';
+import { GraphControl } from './graph_control';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { showToast, stopPreloader } from './dom_control';
 
@@ -81,24 +81,24 @@ export function checkAndStopPreloader() {
     showToast('Plot finished.', 1000, 'blue');
   }
   resetPlotStartTime();
-  graphControl.renderer.render(graphControl.scene, graphControl.camera);
+  GraphControl.renderer.render(GraphControl.scene, GraphControl.camera);
   stopPreloader();
 }
 
 export function update_axes(force: boolean) {
-  const ranges = getRangesOfFrustum(graphControl.camera);
+  const ranges = getRangesOfFrustum(GraphControl.camera);
   if (force === true || plotState.prev_ranges === undefined || !ranges.equals(plotState.prev_ranges)) {
     const max_interval_px = 200; // 50 px
     const min_visible_ticks = Math.floor(
-      Math.max(graphControl.elem.clientWidth, graphControl.elem.clientHeight) / max_interval_px
+      Math.max(GraphControl.elem.clientWidth, GraphControl.elem.clientHeight) / max_interval_px
     );
     const min_visible_range = Math.min(ranges.x.getInterval(), ranges.y.getInterval(), ranges.z.getInterval());
     const max_interval = min_visible_range / min_visible_ticks;
 
     if (plotState.axisLines !== undefined) {
-      graphControl.scene.remove(plotState.axisLines.x);
-      graphControl.scene.remove(plotState.axisLines.y);
-      graphControl.scene.remove(plotState.axisLines.z);
+      GraphControl.scene.remove(plotState.axisLines.x);
+      GraphControl.scene.remove(plotState.axisLines.y);
+      GraphControl.scene.remove(plotState.axisLines.z);
     }
     let interval = Math.pow(10, Math.floor(Math.log(max_interval) / Math.log(10)));
     interval = 1;
@@ -110,10 +110,10 @@ export function update_axes(force: boolean) {
 
     plotState.axisLines.x.rotation.set(0, Math.PI / 2, Math.PI / 2);
     plotState.axisLines.y.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
-    graphControl.scene.add(plotState.axisLines.x);
-    graphControl.scene.add(plotState.axisLines.y);
-    graphControl.scene.add(plotState.axisLines.z);
-    renderGraph_three_js();
+    GraphControl.scene.add(plotState.axisLines.x);
+    GraphControl.scene.add(plotState.axisLines.y);
+    GraphControl.scene.add(plotState.axisLines.z);
+    GraphControl.render_three_js();
   }
   updateAxisScaleLabel(ranges);
   plotState.prev_ranges = ranges;
@@ -131,7 +131,7 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet
   const wFar = wNear;
 
   const p = camera.position.clone();
-  const l = graphControl.controls.target.clone();
+  const l = GraphControl.controls.target.clone();
   const u = new THREE.Vector3(0, 1, 0);
 
   const d = new THREE.Vector3();
@@ -209,13 +209,13 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet
   fbl.subVectors(fc, uTmp.multiplyScalar(hFar / 2));
   fbl.add(rTmp.multiplyScalar(wFar / 2));
 
-  graphControl.camera.updateMatrix(); // make sure camera's local matrix is updated
-  graphControl.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
-  graphControl.camera.matrixWorldInverse.getInverse(graphControl.camera.matrixWorld);
+  GraphControl.camera.updateMatrix(); // make sure camera's local matrix is updated
+  GraphControl.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+  GraphControl.camera.matrixWorldInverse.getInverse(GraphControl.camera.matrixWorld);
 
   let frustum = new THREE.Frustum();
   frustum.setFromProjectionMatrix(
-    new THREE.Matrix4().multiplyMatrices(graphControl.camera.projectionMatrix, graphControl.camera.matrixWorldInverse)
+    new THREE.Matrix4().multiplyMatrices(GraphControl.camera.projectionMatrix, GraphControl.camera.matrixWorldInverse)
   );
   frustum = expandFrustum(frustum);
   const intercepts = [
@@ -349,7 +349,7 @@ function updateEachAxis(
   for (let i = 0; start + i * scale_interval <= range.max; i++) {
     const current = start + i * scale_interval;
     const vec = embedFunc(current);
-    const pos = toScreenPosition(vec);
+    const pos = GraphControl.toScreenPosition(vec);
     ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
   }
 }
@@ -395,7 +395,7 @@ export function setBackgroundColor(color: string) {
         .toString(16)
         .padStart(2, '0')
   );
-  graphControl.renderer.setClearColor(color);
+  GraphControl.renderer.setClearColor(color);
   update_axes(true);
 }
 

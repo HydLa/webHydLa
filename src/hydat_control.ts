@@ -1,6 +1,6 @@
 import { Hydat, HydatRaw } from './hydat';
 import { StorageControl } from './storage_control';
-import { modifyNameLabel, clearPlot } from './graph_control';
+import { GraphControl } from './graph_control';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { showToast } from './dom_control';
 import { DatGUIControl } from './dat_gui_control';
@@ -56,13 +56,13 @@ export function loadHydat(hydat: HydatRaw) {
     StorageControl.saveHydat(hydat);
     HydatControl.current_hydat = new Hydat(hydat);
     DatGUIControl.parameter_setting(HydatControl.current_hydat.parameters);
-    modifyNameLabel(HydatControl.current_hydat.name);
+    GraphControl.modifyNameLabel(HydatControl.current_hydat.name);
   } catch (e) {
     console.log(e);
     console.log(e.stack);
     showToast(`Failed to load hydat: ${e.name}(${e.message})`, 3000, 'red darken-4');
   }
-  clearPlot();
+  GraphControl.clearPlot();
   if (HydatControl.current_hydat !== undefined) {
     PlotLineMapControl.initVariableSelector(HydatControl.current_hydat);
   }
