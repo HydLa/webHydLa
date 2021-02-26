@@ -1,24 +1,23 @@
-import { removeFolder, replot, PlotLine } from './plot_line';
-import { Hydat } from './hydat';
-import { replotAll } from './graph_control';
-import { fixLayout, DatGUIState } from './dat_gui_control';
-import { HydatControl } from './hydat_control';
-import { saveHydatSettingsToStorage, loadHydatSettingsFromStorage } from './storage_control';
-import { removeDynamicLine, removeDynamicLines, removePlot } from './animation_control';
-import { PlotSettingsControl } from './plot_settings';
+import { removeFolder, replot, PlotLine } from './plotLine';
+import { replotAll } from './graph';
+import { fixLayout, DatGUIState } from './datGUI';
+import { removeDynamicLine, removeDynamicLines, removePlot } from './animation';
+import { PlotSettingsControl } from './plotSettings';
+import { saveHydatSettingsToStorage, loadHydatSettingsFromStorage } from '../storage';
+import { HydatState, Hydat } from '../hydat/hydat';
 
-export class PlotLineMapControl {
+export class PlotLineMapState {
   static map = new Map<number, PlotLine>();
   static plotLineIndex = 0;
 }
 
 export function reset() {
-  PlotLineMapControl.map.clear();
-  PlotLineMapControl.plotLineIndex = 0;
+  PlotLineMapState.map.clear();
+  PlotLineMapState.plotLineIndex = 0;
 }
 
 export function getLength() {
-  return PlotLineMapControl.map.size;
+  return PlotLineMapState.map.size;
 }
 
 export function removeLine(line: PlotLine) {
@@ -31,35 +30,35 @@ export function removeLine(line: PlotLine) {
   } else {
     removePlot(line);
   }
-  delete HydatControl.settingsForCurrentHydat.plotLineSettings[line.index];
+  delete HydatState.settingsForCurrentHydat.plotLineSettings[line.index];
   saveHydatSettingsToStorage();
-  PlotLineMapControl.map.delete(line.index);
+  PlotLineMapState.map.delete(line.index);
 }
 
 export function addNewLine(xName: string, yName: string, zName: string) {
-  while (PlotLineMapControl.map.has(PlotLineMapControl.plotLineIndex)) {
-    ++PlotLineMapControl.plotLineIndex;
+  while (PlotLineMapState.map.has(PlotLineMapState.plotLineIndex)) {
+    ++PlotLineMapState.plotLineIndex;
   }
-  const line = addNewLineWithIndex(xName, yName, zName, PlotLineMapControl.plotLineIndex);
-  ++PlotLineMapControl.plotLineIndex;
+  const line = addNewLineWithIndex(xName, yName, zName, PlotLineMapState.plotLineIndex);
+  ++PlotLineMapState.plotLineIndex;
   return line;
 }
 
 export function addNewLineWithIndex(xName: string, yName: string, zName: string, index: number) {
   const line = new PlotLine(xName, yName, zName, index);
   fixLayout();
-  PlotLineMapControl.map.set(index, line);
+  PlotLineMapState.map.set(index, line);
   return line;
 }
 
 export function removeAllFolders() {
-  for (const line of PlotLineMapControl.map.values()) {
+  for (const line of PlotLineMapState.map.values()) {
     removeFolder(line);
   }
 }
 
 export function isAllReady() {
-  for (const line of PlotLineMapControl.map.values()) {
+  for (const line of PlotLineMapState.map.values()) {
     if (line.plotting || line.plotReady !== undefined) {
       return false;
     }
@@ -74,7 +73,7 @@ export function replotLines() {
   }
   removeDynamicLines();
 
-  for (const [i, line] of PlotLineMapControl.map.entries()) {
+  for (const [i, line] of PlotLineMapState.map.entries()) {
     line.colorAngle = (i / getLength()) * 360;
     replot(line);
   }
@@ -87,8 +86,8 @@ export function initVariableSelector(hydat: Hydat) {
 
   const str = loadHydatSettingsFromStorage(hydat.name);
   if (str !== null) {
-    HydatControl.settingsForCurrentHydat = JSON.parse(str);
-    const lineSettings = HydatControl.settingsForCurrentHydat.plotLineSettings;
+    HydatState.settingsForCurrentHydat = JSON.parse(str);
+    const lineSettings = HydatState.settingsForCurrentHydat.plotLineSettings;
     for (const i in lineSettings) {
       const index = parseInt(i);
       if (lineSettings[index] === null) continue;
@@ -99,10 +98,10 @@ export function initVariableSelector(hydat: Hydat) {
   }
 
   if (getLength() == 0) {
-    HydatControl.settingsForCurrentHydat = { plotLineSettings: [] };
+    HydatState.settingsForCurrentHydat = { plotLineSettings: [] };
     const firstLine = addNewLine(
       't',
-      HydatControl.currentHydat !== undefined ? HydatControl.currentHydat.variables[0] : '',
+      HydatState.currentHydat !== undefined ? HydatState.currentHydat.variables[0] : '',
       '0'
     );
     firstLine.colorAngle = 0;

@@ -1,21 +1,20 @@
-import { updateFolder, plotReady, PlotLine } from './plot_line';
-import { startPreloader, showToast } from './dom_control';
 import * as THREE from 'three';
-import { graphControl, renderGraphThreeJs } from './graph_control';
-import { HydatParameter, HydatParameterInterval, HydatPhase } from './hydat';
-import { RGB, Triplet } from './plot_utils';
-import { HydatControl } from './hydat_control';
-import { parse, ParamCond, Construct, Constant } from './parse';
-import { MultiBiMap } from './animation_utils';
-import { PlotSettingsControl } from './plot_settings';
-import { checkAndStopPreloader, phaseToLineVectors, resetPlotStartTime } from './plot_control';
+import { updateFolder, plotReady, PlotLine } from './plotLine';
+import { graphState, renderGraphThreeJs } from './graph';
+import { RGB, Triplet } from './plotUtils';
+import { MultiBiMap } from './animationUtils';
+import { PlotSettingsControl } from './plotSettings';
+import { checkAndStopPreloader, phaseToLineVectors, resetPlotStartTime } from './plot';
+import { startPreloader, showToast } from '../UI/dom';
+import { HydatState, HydatParameter, HydatParameterInterval, HydatPhase } from '../hydat/hydat';
+import { parse, ParamCond, Construct, Constant } from '../hydat/parse';
 
 let faces: THREE.Mesh[];
 
 /**
  * 描画用オブジェクトの計算，描画，削除を担当
  */
-interface AnimationControlState {
+interface AnimationState {
   array: number;
   currentLineVecAnimation: THREE.Vector3[];
   maxlen: number;
@@ -49,7 +48,7 @@ interface AnimationControlState {
   indexArrayMultibimap: MultiBiMap<number, number>;
 }
 
-export const animationControlState: AnimationControlState = {
+export const animationState: AnimationState = {
   array: -1,
   currentLineVecAnimation: [],
   maxlen: 0,
@@ -93,12 +92,12 @@ function addPlot(line: PlotLine) {
     updateFolder(line, false);
     return;
   }
-  if (HydatControl.currentHydat === undefined) {
+  if (HydatState.currentHydat === undefined) {
     throw new Error('currentHydat is undefined');
   }
   const dt = PlotSettingsControl.plotSettings.plotInterval;
-  const phase = HydatControl.currentHydat.firstPhases[0];
-  const parameterConditionList = divideParameter(HydatControl.currentHydat.parameters);
+  const phase = HydatState.currentHydat.firstPhases[0];
+  const parameterConditionList = divideParameter(HydatState.currentHydat.parameters);
   const color = getColors(parameterConditionList.length, line.colorAngle);
   line.plotInformation = {
     phaseIndexArray: [{ phase: phase, index: 0 }],
@@ -110,9 +109,9 @@ function addPlot(line: PlotLine) {
     parameterConditionList: parameterConditionList,
   };
   startPreloader();
-  animationControlState.array = -1;
-  animationControlState.animationLine = [];
-  animationControlState.maxlen = 0;
+  animationState.array = -1;
+  animationState.animationLine = [];
+  animationState.maxlen = 0;
   if (line.plotReady == undefined)
     requestAnimationFrame(() => {
       plotReady(line);
@@ -187,24 +186,23 @@ function addLine(
   width: number
 ) {
   const useLine = width === 1;
-  animationControlState.array += 1;
+  animationState.array += 1;
 
-  animationControlState.indexArrayMultibimap.set(line.index, animationControlState.array);
+  animationState.indexArrayMultibimap.set(line.index, animationState.array);
 
   const lines: THREE.Vector3[] = [];
   const linesGeometry = new THREE.Geometry();
-  const scaledWidth = (0.5 * width) / graphControl.camera.zoom;
-  const dottedLength = 10.0 / graphControl.camera.zoom;
+  const scaledWidth = (0.5 * width) / graphState.camera.zoom;
+  const dottedLength = 10.0 / graphState.camera.zoom;
   const material = useLine
     ? new THREE.LineBasicMaterial({ color: color })
     : new THREE.MeshBasicMaterial({ color: color });
 
   const tmpDynamicLine: any[] = [];
   if (PlotSettingsControl.plotSettings.dynamicDraw) {
-    if (animationControlState.accumulativeMergedLines.length - 1 < animationControlState.array)
-      animationControlState.accumulativeMergedLines.push([]);
-    if (animationControlState.dynamicLines.length - 1 < animationControlState.array)
-      animationControlState.dynamicLines.push([]);
+    if (animationState.accumulativeMergedLines.length - 1 < animationState.array)
+      animationState.accumulativeMergedLines.push([]);
+    if (animationState.dynamicLines.length - 1 < animationState.array) animationState.dynamicLines.push([]);
   }
   for (let i = 0; i + 1 < currentLineVec.length; i++) {
     addLineEachPhase(
@@ -220,23 +218,22 @@ function addLine(
       material
     );
   }
-  if (PlotSettingsControl.plotSettings.dynamicDraw)
-    animationControlState.dynamicLines[animationControlState.array] = tmpDynamicLine;
+  if (PlotSettingsControl.plotSettings.dynamicDraw) animationState.dynamicLines[animationState.array] = tmpDynamicLine;
 
   const threeLine = useLine ? makeLine(lines, material, true) : new THREE.Mesh(linesGeometry, material);
-  if (!PlotSettingsControl.plotSettings.dynamicDraw) graphControl.scene.add(threeLine);
+  if (!PlotSettingsControl.plotSettings.dynamicDraw) graphState.scene.add(threeLine);
 
   if (!line.plot) {
     throw new Error('unexpected: line.plot is undefined');
   }
   line.plot.push(threeLine);
 
-  animationControlState.animationLine[animationControlState.array] = {
-    vecs: animationControlState.currentLineVecAnimation,
+  animationState.animationLine[animationState.array] = {
+    vecs: animationState.currentLineVecAnimation,
     color: color,
   };
-  if (animationControlState.maxlen < animationControlState.currentLineVecAnimation.length) {
-    animationControlState.maxlen = animationControlState.currentLineVecAnimation.length;
+  if (animationState.maxlen < animationState.currentLineVecAnimation.length) {
+    animationState.maxlen = animationState.currentLineVecAnimation.length;
   }
 }
 
@@ -275,7 +272,7 @@ function addLineEachPhase(
       l.isPP = true;
       tmpDynamicLine.push(l);
 
-      animationControlState.accumulativeMergedLines[animationControlState.array].push(
+      animationState.accumulativeMergedLines[animationState.array].push(
         useLine ? makeLine(lines.concat(), material, true) : new THREE.Mesh(linesGeometry.clone(), material)
       );
     }
@@ -308,8 +305,8 @@ function addSphere(currentParamIdx: number, color: number[]) {
   const sGeometry = new THREE.SphereBufferGeometry(0.1);
   const sphere = new THREE.Mesh(sGeometry, new THREE.MeshBasicMaterial({ color: color[currentParamIdx] }));
   sphere.position.set(0, 0, 0);
-  graphControl.scene.add(sphere);
-  animationControlState.plotAnimate[animationControlState.array] = sphere;
+  graphState.scene.add(sphere);
+  animationState.plotAnimate[animationState.array] = sphere;
 }
 
 /** dfs to add plot each line */
@@ -339,9 +336,9 @@ export function dfsEachLine(
       const vec = phaseToLineVectors(phase, parameterConditionList[currentParamIdx], axes, dt);
       currentLineVec = currentLineVec.concat(vec);
       const vecAnimation = phaseToLineVectors(phase, parameterConditionList[currentParamIdx], axes, 0.01); // tを0.01刻みで点を取る -> time = t * 100
-      // animationControlState.currentLineVecAnimation = animationControlState.currentLineVecAnimation.concat(vecAnimation);
+      // animationState.currentLineVecAnimation = animationState.currentLineVecAnimation.concat(vecAnimation);
       for (const v of vecAnimation) {
-        animationControlState.currentLineVecAnimation.push(v.vec);
+        animationState.currentLineVecAnimation.push(v.vec);
       }
       if (phase.children.length == 0) {
         // on leaves
@@ -349,7 +346,7 @@ export function dfsEachLine(
         addSphere(currentParamIdx, color);
 
         currentLineVec = [];
-        animationControlState.currentLineVecAnimation = [];
+        animationState.currentLineVecAnimation = [];
         phaseIndexArray.pop();
         phaseIndex = phaseIndexArray[phaseIndexArray.length - 1];
         ++phaseIndex.index;
@@ -457,18 +454,18 @@ export function removePlot(line: PlotLine) {
   if (line.plot !== undefined) {
     let i: number;
     for (i = 0; i < line.plot.length; i++) {
-      graphControl.scene.remove(line.plot[i]);
+      graphState.scene.remove(line.plot[i]);
     }
     delete line.plot[i];
   }
-  animationControlState.indexArrayMultibimap.deleteKey(line.index);
+  animationState.indexArrayMultibimap.deleteKey(line.index);
   line.plot = [];
 }
 
 function removeMesh(line: THREE.Mesh[] | undefined) {
   if (line !== undefined) {
     for (let i = 0; i < line.length; i++) {
-      graphControl.scene.remove(line[i]);
+      graphState.scene.remove(line[i]);
       delete line[i];
     }
     line.length = 0;
@@ -477,7 +474,7 @@ function removeMesh(line: THREE.Mesh[] | undefined) {
 
 export function resetAnimation(line: PlotLine) {
   removePlot(line);
-  removeMesh(animationControlState.plotAnimate);
+  removeMesh(animationState.plotAnimate);
   addPlot(line);
 }
 
@@ -517,19 +514,19 @@ function checkParameterCondition(parameterMaps: Map<string, HydatParameter>[], p
 export function makeRanges() {
   removeRanges();
   faces = [];
-  if (animationControlState.animationLine.length != 0) {
-    for (let j = 0; j < animationControlState.animationLine.length - 1; j++) {
+  if (animationState.animationLine.length != 0) {
+    for (let j = 0; j < animationState.animationLine.length - 1; j++) {
       const faceGeometry = new THREE.Geometry();
       let timeR = 0;
-      for (let i = 0; i < animationControlState.maxlen; i++) {
-        if (animationControlState.animationLine[j].vecs[timeR] == undefined) {
+      for (let i = 0; i < animationState.maxlen; i++) {
+        if (animationState.animationLine[j].vecs[timeR] == undefined) {
           break;
-        } else if (animationControlState.animationLine[j + 1].vecs[timeR] == undefined) {
+        } else if (animationState.animationLine[j + 1].vecs[timeR] == undefined) {
           break;
         } else {
           faceGeometry.vertices.push(
-            animationControlState.animationLine[j].vecs[timeR].clone(),
-            animationControlState.animationLine[j + 1].vecs[timeR].clone()
+            animationState.animationLine[j].vecs[timeR].clone(),
+            animationState.animationLine[j + 1].vecs[timeR].clone()
           );
         }
         timeR++;
@@ -549,7 +546,7 @@ export function makeRanges() {
           opacity: 0.5,
         })
       );
-      graphControl.scene.add(faceMesh);
+      graphState.scene.add(faceMesh);
       faces.push(faceMesh);
     }
     renderGraphThreeJs();
@@ -558,40 +555,40 @@ export function makeRanges() {
 
 /** i番目のdrawn dynamic lineを消す */
 function removeIthDrawnDynamicLine(i: number) {
-  for (const l of animationControlState.drawnDynamicLines[i]) {
-    graphControl.scene.remove(l);
+  for (const l of animationState.drawnDynamicLines[i]) {
+    graphState.scene.remove(l);
   }
-  animationControlState.drawnDynamicLines[i] = [];
+  animationState.drawnDynamicLines[i] = [];
 }
 
 /** 全てのdrawn dynamic lineを消す */
 function removeDrawnDynamicLines() {
-  for (let i = 0; i < animationControlState.drawnDynamicLines.length; i++) {
+  for (let i = 0; i < animationState.drawnDynamicLines.length; i++) {
     removeIthDrawnDynamicLine(i);
   }
-  animationControlState.drawnDynamicLines = [];
+  animationState.drawnDynamicLines = [];
 }
 
 function removeIthDynamicLine(i: number) {
   removeIthDrawnDynamicLine(i);
-  animationControlState.dynamicLines[i] = [];
-  animationControlState.accumulativeMergedLines[i] = [];
-  animationControlState.indexArrayMultibimap.deleteValue(i);
+  animationState.dynamicLines[i] = [];
+  animationState.accumulativeMergedLines[i] = [];
+  animationState.indexArrayMultibimap.deleteValue(i);
 }
 
 export function removeDynamicLine(line: PlotLine) {
-  if (animationControlState.indexArrayMultibimap.hasKey(line.index)) {
-    const values = animationControlState.indexArrayMultibimap.getValue(line.index);
+  if (animationState.indexArrayMultibimap.hasKey(line.index)) {
+    const values = animationState.indexArrayMultibimap.getValue(line.index);
     values.forEach((i) => removeIthDynamicLine(i));
   }
 }
 
 export function removeDynamicLines() {
-  for (let i = 0; i < animationControlState.drawnDynamicLines.length; i++) {
+  for (let i = 0; i < animationState.drawnDynamicLines.length; i++) {
     removeIthDynamicLine(i);
   }
-  animationControlState.dynamicLines = [];
-  animationControlState.accumulativeMergedLines = [];
+  animationState.dynamicLines = [];
+  animationState.accumulativeMergedLines = [];
 }
 
 export function removeRanges() {
@@ -603,26 +600,26 @@ export function removeRanges() {
 
 /** 現在時刻以下の線をsceneに追加する */
 function drawDynamicLines() {
-  let tmpLineCount = animationControlState.lineCount;
-  let tmpAmli = animationControlState.amli;
-  for (let i = 0; i < animationControlState.dynamicLines.length; i++) {
-    if (animationControlState.dynamicLines[i].length == 0) continue;
-    if (animationControlState.drawnDynamicLines.length - 1 < i) animationControlState.drawnDynamicLines.push([]);
-    tmpLineCount = animationControlState.lineCount;
-    tmpAmli = animationControlState.amli;
-    for (let j = tmpLineCount; j < animationControlState.dynamicLines[i].length; j++) {
+  let tmpLineCount = animationState.lineCount;
+  let tmpAmli = animationState.amli;
+  for (let i = 0; i < animationState.dynamicLines.length; i++) {
+    if (animationState.dynamicLines[i].length == 0) continue;
+    if (animationState.drawnDynamicLines.length - 1 < i) animationState.drawnDynamicLines.push([]);
+    tmpLineCount = animationState.lineCount;
+    tmpAmli = animationState.amli;
+    for (let j = tmpLineCount; j < animationState.dynamicLines[i].length; j++) {
       // 差分のみ追加
-      if ('isPP' in animationControlState.dynamicLines[i][j]) {
+      if ('isPP' in animationState.dynamicLines[i][j]) {
         // PP
         // これまで追加した線を取り除き，代わりにマージ済みの線を追加する
         removeIthDrawnDynamicLine(i);
-        graphControl.scene.add(animationControlState.accumulativeMergedLines[i][tmpAmli]);
-        animationControlState.drawnDynamicLines[i].push(animationControlState.accumulativeMergedLines[i][tmpAmli]);
+        graphState.scene.add(animationState.accumulativeMergedLines[i][tmpAmli]);
+        animationState.drawnDynamicLines[i].push(animationState.accumulativeMergedLines[i][tmpAmli]);
         tmpAmli++;
-      } else if (j + 1 < animationControlState.time) {
+      } else if (j + 1 < animationState.time) {
         // IP
-        graphControl.scene.add(animationControlState.dynamicLines[i][j]);
-        animationControlState.drawnDynamicLines[i].push(animationControlState.dynamicLines[i][j]);
+        graphState.scene.add(animationState.dynamicLines[i][j]);
+        animationState.drawnDynamicLines[i].push(animationState.dynamicLines[i][j]);
       } else {
         // timeより未来の線は書かない
         break;
@@ -630,8 +627,8 @@ function drawDynamicLines() {
       tmpLineCount++;
     }
   }
-  animationControlState.lineCount = tmpLineCount;
-  animationControlState.amli = tmpAmli;
+  animationState.lineCount = tmpLineCount;
+  animationState.amli = tmpAmli;
 }
 
 /**
@@ -639,14 +636,14 @@ function drawDynamicLines() {
  * dynamic drawモードなら線も動的に追加する
  */
 export function animate() {
-  if (animationControlState.timePrev !== animationControlState.time) {
-    animationControlState.plotAnimate = [];
+  if (animationState.timePrev !== animationState.time) {
+    animationState.plotAnimate = [];
     let arr = 0;
-    if (animationControlState.time > animationControlState.maxlen - 1) {
-      animationControlState.time = 0;
+    if (animationState.time > animationState.maxlen - 1) {
+      animationState.time = 0;
     }
-    for (const sphere of graphControl.scene.children) {
-      if (animationControlState.animationLine[arr] === undefined) {
+    for (const sphere of graphState.scene.children) {
+      if (animationState.animationLine[arr] === undefined) {
         continue;
       }
 
@@ -656,46 +653,46 @@ export function animate() {
         continue;
       }
       if (!(sphere.geometry instanceof THREE.SphereBufferGeometry)) continue;
-      if (animationControlState.time === 0) {
-        sphere.material.color.set(animationControlState.animationLine[arr].color);
+      if (animationState.time === 0) {
+        sphere.material.color.set(animationState.animationLine[arr].color);
       }
-      if (animationControlState.time > animationControlState.animationLine[arr].vecs.length - 1) {
+      if (animationState.time > animationState.animationLine[arr].vecs.length - 1) {
         arr++;
         continue;
       }
-      if (animationControlState.indexArrayMultibimap.hasValue(arr)) {
-        sphere.position.copy(animationControlState.animationLine[arr].vecs[animationControlState.time]);
+      if (animationState.indexArrayMultibimap.hasValue(arr)) {
+        sphere.position.copy(animationState.animationLine[arr].vecs[animationState.time]);
       } else {
         sphere.position.set(0, 0, 0);
       }
-      animationControlState.plotAnimate[arr] = sphere;
+      animationState.plotAnimate[arr] = sphere;
       arr += 1;
     }
 
     if (PlotSettingsControl.plotSettings.dynamicDraw) {
-      if (animationControlState.time == 0) {
+      if (animationState.time == 0) {
         removeDrawnDynamicLines();
-        animationControlState.lineCount = 0;
-        animationControlState.amli = 0;
+        animationState.lineCount = 0;
+        animationState.amli = 0;
       }
       drawDynamicLines();
     }
 
-    animationControlState.timePrev = animationControlState.time;
+    animationState.timePrev = animationState.time;
     renderGraphThreeJs();
   }
 }
 
 export function animateTime() {
-  animationControlState.time++;
+  animationState.time++;
 }
 
 export function getLength() {
-  return animationControlState.animationLine.length;
+  return animationState.animationLine.length;
 }
 
 /** 指定時刻にシーク（移動）する */
 export function seekAnimation(time: number) {
-  animationControlState.time = time;
+  animationState.time = time;
   animate();
 }
