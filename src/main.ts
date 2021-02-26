@@ -1,44 +1,40 @@
-import { GraphControl } from './graph_control';
-import { DatGUIControl } from './dat_gui_control';
-import { NewUI } from './new_ui';
-import { PlotSettingsControl } from './plot_settings';
-import { DOMControl } from './dom_control';
-import { EditorControl } from './editor_control';
-import { StorageControl } from './storage_control';
-import { PlotLineMapControl } from './plot_line_map_control';
-import { PlotControl } from './plot_control';
-import { HydatControl } from './hydat_control';
-import { HyLaGIController } from './hylagi';
-import { ExampleLoader } from './example_loader';
+import { graphState, update2DMode, renderGraph } from './graph/graph';
+import { initDatGUIState } from './graph/datGUI';
+import { PlotSettingsControl } from './graph/plotSettings';
+import { setBackgroundColor } from './graph/plot';
+import { initDOMState } from './UI/dom';
+import { NewUI } from './UI/newUI';
+import { initEditorState } from './editor/editor';
+import { initHyLaGIControllerState } from './editor/hylagi';
+import { initExample } from './editor/example';
+import { initHydatState } from './hydat/hydat';
+import { initStorage, loadHydlaFromStorage, loadHydatFromStorage } from './storage';
 
 $(document).ready(() => {
-  const saved_hydla = StorageControl.loadHydla();
-  const saved_hydat = StorageControl.loadHydat();
+  const savedHydla = loadHydlaFromStorage();
+  const savedHydat = loadHydatFromStorage();
 
-  ExampleLoader.init();
+  initExample();
 
   PlotSettingsControl.init();
-  GraphControl.init();
 
-  PlotControl.init(PlotSettingsControl.plot_settings);
-  DatGUIControl.init(PlotSettingsControl.plot_settings);
+  initDatGUIState(PlotSettingsControl.plotSettings);
 
-  HydatControl.init(saved_hydat);
-  HyLaGIController.init();
+  initHydatState(savedHydat);
+  initHyLaGIControllerState();
 
-  PlotLineMapControl.init();
-  NewUI.init(GraphControl.controls);
-  DOMControl.init();
+  NewUI.init(graphState.controls);
+  initDOMState();
 
-  EditorControl.init(saved_hydla);
-  StorageControl.init();
+  initEditorState(savedHydla);
+  initStorage();
 
-  GraphControl.update2DMode(PlotSettingsControl.plot_settings.twoDimensional);
-  PlotSettingsControl.time_stop();
+  update2DMode(PlotSettingsControl.plotSettings.twoDimensional);
+  PlotSettingsControl.timeStop();
 
-  if (PlotControl.plot_settings.backgroundColor !== undefined) {
-    PlotControl.setBackgroundColor(PlotControl.plot_settings.backgroundColor);
+  if (PlotSettingsControl.plotSettings.backgroundColor !== undefined) {
+    setBackgroundColor(PlotSettingsControl.plotSettings.backgroundColor);
   }
 
-  GraphControl.render();
+  renderGraph();
 });

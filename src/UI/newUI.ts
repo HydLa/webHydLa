@@ -3,20 +3,20 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 // below are functions added for new UI
 
-const key_shift = 16;
-const key_ctr = 17;
-const key_alt = 18;
-const key_meta_l = 91;
+const keyShift = 16;
+const keyCtr = 17;
+const keyAlt = 18;
+const keyMetaL = 91;
 
 export class NewUI {
   static init(controls: OrbitControls) {
-    let in_graph_area: boolean;
+    let inGraphArea: boolean;
     $('#graph-area').hover(
       () => {
-        in_graph_area = true;
+        inGraphArea = true;
       },
       function () {
-        in_graph_area = false;
+        inGraphArea = false;
         $('#scroll-message').css('opacity', '0');
       }
     );
@@ -24,7 +24,7 @@ export class NewUI {
     let timeout: NodeJS.Timeout;
     $('body').scroll(function () {
       clearTimeout(timeout);
-      if (in_graph_area == true) {
+      if (inGraphArea == true) {
         $('#scroll-message').css('opacity', '0.65');
         timeout = setTimeout(function () {
           $('#scroll-message').css('opacity', '0');
@@ -34,7 +34,7 @@ export class NewUI {
 
     document.addEventListener('keydown', (e) => {
       if (!e) return;
-      if (e.keyCode === key_shift || e.keyCode === key_ctr || e.keyCode === key_alt || e.keyCode === key_meta_l) {
+      if (e.keyCode === keyShift || e.keyCode === keyCtr || e.keyCode === keyAlt || e.keyCode === keyMetaL) {
         this.enableZoom(controls);
         $('#scroll-message').css('opacity', '0');
       }
@@ -42,7 +42,7 @@ export class NewUI {
 
     document.addEventListener('keyup', (e) => {
       if (!e) return;
-      if (e.keyCode === key_shift || e.keyCode === key_ctr || e.keyCode === key_alt || e.keyCode === key_meta_l) {
+      if (e.keyCode === keyShift || e.keyCode === keyCtr || e.keyCode === keyAlt || e.keyCode === keyMetaL) {
         this.disableZoom(controls);
       }
     });
