@@ -1,7 +1,7 @@
 import Materialize from 'materialize-css';
 import { GraphControl } from './graph_control';
 import { EditorControl } from './editor_control';
-import { saveHydat } from './hydat_control';
+import { HydatControl } from './hydat_control';
 import { HyLaGIController } from './hylagi';
 import { StorageControl } from './storage_control';
 
@@ -113,7 +113,7 @@ export function init() {
     EditorControl.saveHydla();
   });
   document.getElementById('save-hydat')?.addEventListener('click', () => {
-    saveHydat();
+    HydatControl.saveHydat();
   });
   document.getElementById('run_button')?.addEventListener('click', () => {
     HyLaGIController.exec();
