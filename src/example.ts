@@ -1,4 +1,4 @@
-import { setEditorHydla } from './editorControl';
+import { setEditorHydla } from './editor';
 
 /**
  * HyLaGIのレポジトリから例題を取得する
@@ -6,7 +6,7 @@ import { setEditorHydla } from './editorControl';
 
 const path = new URL('https://api.github.com/repos/HydLa/HyLaGI/contents/examples');
 
-export function initExampleLoader() {
+export function initExample() {
   loadExamples();
 }
 

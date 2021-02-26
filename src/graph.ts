@@ -1,17 +1,17 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { replotLines } from './plotLineMapControl';
-import { parameterSeekSetting, parameterSeekSettingAnimate } from './datGUIControl';
-import { HydatControl } from './hydatControl';
-import { animate, animateTime, animationControlState, getLength, makeRanges } from './animationControl';
-import { updateAxes } from './plotControl';
+import { replotLines } from './plotLineMap';
+import { parameterSeekSetting, parameterSeekSettingAnimate } from './datGUI';
+import { HydatState } from './hydat';
+import { animate, animateTime, animationState, getLength, makeRanges } from './animation';
+import { updateAxes } from './plot';
 
 /**
  * 描画，再描画，クリアなどを行う<br>
  * いわゆるView
  */
 
-class GraphControl {
+class GraphState {
   scene: THREE.Scene;
   camera: THREE.OrthographicCamera;
   elem: HTMLElement;
@@ -69,29 +69,29 @@ class GraphControl {
   }
 }
 
-export const graphControl = new GraphControl();
+export const graphState = new GraphState();
 
 export function resizeGraphRenderer() {
   /**
    * ウィンドウサイズを変更した際, 座標空間も同様に拡大/縮小されるようにカメラ位置の調整等を行う
    */
 
-  if (graphControl.elem.clientWidth > 0 && graphControl.elem.clientHeight > 0) {
-    graphControl.renderer.setSize(graphControl.elem.clientWidth, graphControl.elem.clientHeight);
-    const prevWidth = graphControl.camera.right - graphControl.camera.left;
-    const prevHeight = graphControl.camera.top - graphControl.camera.bottom;
+  if (graphState.elem.clientWidth > 0 && graphState.elem.clientHeight > 0) {
+    graphState.renderer.setSize(graphState.elem.clientWidth, graphState.elem.clientHeight);
+    const prevWidth = graphState.camera.right - graphState.camera.left;
+    const prevHeight = graphState.camera.top - graphState.camera.bottom;
     let extendRate;
-    if (prevWidth != graphControl.elem.clientWidth) extendRate = graphControl.elem.clientWidth / prevWidth;
-    else extendRate = graphControl.elem.clientHeight / prevHeight;
+    if (prevWidth != graphState.elem.clientWidth) extendRate = graphState.elem.clientWidth / prevWidth;
+    else extendRate = graphState.elem.clientHeight / prevHeight;
 
-    graphControl.camera.left = -graphControl.elem.clientWidth / 2;
-    graphControl.camera.right = graphControl.elem.clientWidth / 2;
-    graphControl.camera.top = graphControl.elem.clientHeight / 2;
-    graphControl.camera.bottom = -graphControl.elem.clientHeight / 2;
+    graphState.camera.left = -graphState.elem.clientWidth / 2;
+    graphState.camera.right = graphState.elem.clientWidth / 2;
+    graphState.camera.top = graphState.elem.clientHeight / 2;
+    graphState.camera.bottom = -graphState.elem.clientHeight / 2;
 
-    graphControl.camera.zoom *= extendRate;
+    graphState.camera.zoom *= extendRate;
 
-    graphControl.camera.updateProjectionMatrix();
+    graphState.camera.updateProjectionMatrix();
 
     const w = $('#scale_label_wrapper').width()!;
     const h = $('#scale_label_wrapper').height()!;
@@ -101,7 +101,7 @@ export function resizeGraphRenderer() {
 
     $('#nameLabelCanvas').attr('width', w);
     $('#nameLabelCanvas').attr('height', h);
-    modifyNameLabel(HydatControl.currentHydat?.name);
+    modifyNameLabel(HydatState.currentHydat?.name);
   }
 }
 
@@ -127,42 +127,42 @@ export function renderGraph() {
   requestAnimationFrame(() => {
     renderGraph();
   });
-  graphControl.controls.update();
-  if (graphControl.lastFrameZoom !== graphControl.camera.zoom) {
+  graphState.controls.update();
+  if (graphState.lastFrameZoom !== graphState.camera.zoom) {
     replotAll();
   }
   updateAxes(false);
-  if (graphControl.animatable) {
+  if (graphState.animatable) {
     animate(); // animating function
     animateTime();
   } else {
     animate();
   }
-  if (getLength() !== graphControl.aLine) {
+  if (getLength() !== graphState.aLine) {
     /// rangeの再描画は描画する線の本数が変化した時のみ行う
-    if (graphControl.rangeMode) {
+    if (graphState.rangeMode) {
       makeRanges();
     }
-    graphControl.aLine = getLength();
+    graphState.aLine = getLength();
   }
-  if (animationControlState.maxlen !== graphControl.tLine) {
-    graphControl.tLine = animationControlState.maxlen;
-    parameterSeekSetting(graphControl.tLine);
-  } else if (graphControl.animatable) {
-    parameterSeekSettingAnimate(graphControl.tLine, animationControlState.time);
+  if (animationState.maxlen !== graphState.tLine) {
+    graphState.tLine = animationState.maxlen;
+    parameterSeekSetting(graphState.tLine);
+  } else if (graphState.animatable) {
+    parameterSeekSettingAnimate(graphState.tLine, animationState.time);
   }
-  graphControl.lastFrameZoom = graphControl.camera.zoom;
+  graphState.lastFrameZoom = graphState.camera.zoom;
 }
 
 export function renderGraphThreeJs() {
-  graphControl.renderer.render(graphControl.scene, graphControl.camera);
+  graphState.renderer.render(graphState.scene, graphState.camera);
 }
 
 export function toScreenPosition(pos: THREE.Vector3) {
-  const widthHalf = 0.5 * graphControl.renderer.getContext().canvas.width;
-  const heightHalf = 0.5 * graphControl.renderer.getContext().canvas.height;
+  const widthHalf = 0.5 * graphState.renderer.getContext().canvas.width;
+  const heightHalf = 0.5 * graphState.renderer.getContext().canvas.height;
 
-  pos.project(graphControl.camera);
+  pos.project(graphState.camera);
 
   return {
     x: pos.x * widthHalf + widthHalf,
@@ -171,12 +171,12 @@ export function toScreenPosition(pos: THREE.Vector3) {
 }
 
 export function updateRotate(autoRotate: boolean) {
-  graphControl.controls.autoRotate = autoRotate;
+  graphState.controls.autoRotate = autoRotate;
 }
 
 export function update2DMode(twoDimensional: boolean) {
-  graphControl.controls.enableRotate = !twoDimensional;
-  graphControl.controls.mouseButtons = {
+  graphState.controls.enableRotate = !twoDimensional;
+  graphState.controls.mouseButtons = {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     LEFT: twoDimensional ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE,
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -185,37 +185,37 @@ export function update2DMode(twoDimensional: boolean) {
     RIGHT: THREE.MOUSE.PAN,
   };
   if (twoDimensional) {
-    graphControl.camera.position.copy(graphControl.controlsPosition0.clone());
-    graphControl.controls.target.set(0, 0, 0);
-    graphControl.camera.updateMatrix(); // make sure camera's local matrix is updated
-    graphControl.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+    graphState.camera.position.copy(graphState.controlsPosition0.clone());
+    graphState.controls.target.set(0, 0, 0);
+    graphState.camera.updateMatrix(); // make sure camera's local matrix is updated
+    graphState.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
   }
 }
 
 export function startResizingGraphArea() {
-  graphControl.resizeLoopCount = 0;
+  graphState.resizeLoopCount = 0;
   setTimeout(() => {
     resizeGraphArea();
   }, 10);
 }
 
 export function resizeGraphArea() {
-  graphControl.resizeLoopCount++;
+  graphState.resizeLoopCount++;
   resizeGraphRenderer();
   //TODO: do this without timer
-  if (graphControl.resizeLoopCount < 80)
+  if (graphState.resizeLoopCount < 80)
     setTimeout(() => {
       resizeGraphArea();
     }, 10);
 }
 
 export function clearPlot() {
-  graphControl.scene = new THREE.Scene();
+  graphState.scene = new THREE.Scene();
   // TODO: 複数のプロットが存在するときの描画範囲について考える
   // TODO: 設定を変更した時に動的に変更が反映されるようにする
 }
 
 export function replotAll() {
   replotLines();
-  animationControlState.time = 0;
+  animationState.time = 0;
 }

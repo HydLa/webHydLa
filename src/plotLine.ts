@@ -1,13 +1,12 @@
-import { removeLine } from './plotLineMapControl';
-import { DatGUIState } from './datGUIControl';
-import { replotAll } from './graphControl';
-import { HydatControl } from './hydatControl';
-import { saveHydatSettingsToStorage } from './storageControl';
+import { removeLine } from './plotLineMap';
+import { DatGUIState } from './datGUI';
+import { replotAll } from './graph';
+import { saveHydatSettingsToStorage } from './storage';
 import { Triplet } from './plotUtils';
-import { HydatPhase } from './hydat';
+import { HydatState, HydatPhase } from './hydat';
 import { parse, ParamCond, Construct } from './parse';
-import { dfsEachLine, resetAnimation } from './animationControl';
-import { setPlotStartTimeIfUnset } from './plotControl';
+import { dfsEachLine, resetAnimation } from './animation';
+import { setPlotStartTimeIfUnset } from './plot';
 
 export class PlotLine {
   index: number;
@@ -97,7 +96,7 @@ export function replot(plotLine: PlotLine) {
   resetAnimation(plotLine);
   if (plotLine.settings.x !== '' && plotLine.settings.y !== '' && plotLine.settings.z !== '') {
     if (plotLine.remain === undefined) {
-      HydatControl.settingsForCurrentHydat.plotLineSettings[plotLine.index] = plotLine.settings;
+      HydatState.settingsForCurrentHydat.plotLineSettings[plotLine.index] = plotLine.settings;
       saveHydatSettingsToStorage();
     }
   }

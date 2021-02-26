@@ -7,10 +7,10 @@ import 'ace-builds/src-noconflict/theme-clouds';
 import 'ace-builds/src-noconflict/keybinding-emacs';
 import 'ace-builds/src-noconflict/keybinding-vim';
 
-import { showToast } from './domControl';
-import { saveHydlaToStorage, saveHydlaNameToStorage } from './storageControl';
+import { showToast } from './dom';
+import { saveHydlaToStorage, saveHydlaNameToStorage } from './storage';
 import { sendHydla } from './hylagi';
-import { loadHydat } from './hydatControl';
+import { loadHydat } from './hydat';
 
 /* set default hydla code */
 const defaultHydla = `// a sample hydla code: bouncing_particle.hydla

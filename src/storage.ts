@@ -1,14 +1,13 @@
 import { PlotSettings, PlotSettingsControl } from './plotSettings';
-import { HydatRaw } from './hydat';
-import { setEditorKeyBinding, setEditorTheme } from './editorControl';
-import { HydatControl } from './hydatControl';
+import { HydatState, HydatRaw } from './hydat';
+import { setEditorKeyBinding, setEditorTheme } from './editor';
 
 const storage = localStorage;
 
 const themeSelector = <HTMLSelectElement>document.getElementById('theme_selector');
 const keyBindingSelector = <HTMLSelectElement>document.getElementById('key_binding_selector');
 
-export function initStorageControl() {
+export function initStorage() {
   loadThemeFromStorage();
   loadKeyBindingFromStorage();
 }
@@ -80,10 +79,10 @@ export function loadHydlaNameFromStorage() {
 }
 
 export function saveHydatSettingsToStorage() {
-  if (HydatControl.currentHydat === undefined) {
+  if (HydatState.currentHydat === undefined) {
     throw new Error('currentHydat is undefined');
   }
-  storage.setItem(HydatControl.currentHydat.name, JSON.stringify(HydatControl.settingsForCurrentHydat));
+  storage.setItem(HydatState.currentHydat.name, JSON.stringify(HydatState.settingsForCurrentHydat));
 }
 
 export function loadHydatSettingsFromStorage(hydatName: string) {
