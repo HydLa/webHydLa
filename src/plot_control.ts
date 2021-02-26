@@ -23,10 +23,10 @@ export class PlotControl {
   static init(plot_settings: PlotSettings) {
     this.plot_settings = plot_settings;
   }
-  static divideParameter(parameter_map: Map<string, HydatParameter>) {
+  static divideParameter(parameter_map: { [key: string]: HydatParameter }) {
     let now_parameter_condition_list: { [key: string]: Constant }[] = [{}];
 
-    for (const parameter_name of parameter_map.keys()) {
+    for (const parameter_name in parameter_map) {
       const setting = PlotControl.plot_settings.parameter_condition![parameter_name];
       if (setting.fixed) {
         for (let i = 0; i < now_parameter_condition_list.length; i++) {

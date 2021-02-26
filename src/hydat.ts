@@ -13,15 +13,15 @@ const isHydatTimePPRaw = (raw: HydatTimeRaw): raw is HydatTimePPRaw => {
 };
 
 const translate_parameter_map = (parameter_map: { [key: string]: HydatParameterRaw }) => {
-  const map = new Map<string, HydatParameter>();
+  const map: { [key: string]: HydatParameter } = {};
   for (const key in parameter_map) {
     const p = parameter_map[key];
     if (isHydatParameterPointRaw(p)) {
-      map.set(key, new HydatParameterPoint(p.unique_value));
+      map[key] = new HydatParameterPoint(p.unique_value);
     } else if (isHydatParameterIntervalRaw(p)) {
-      map.set(key, new HydatParameterInterval(p.lower_bounds, p.upper_bounds));
+      map[key] = new HydatParameterInterval(p.lower_bounds, p.upper_bounds);
     } else {
-      map.set(key, new HydatParameterInterval([p.lower_bound], [p.upper_bound]));
+      map[key] = new HydatParameterInterval([p.lower_bound], [p.upper_bound]);
     }
   }
   return map;
@@ -42,7 +42,7 @@ export class HydatException extends Error {
 export class Hydat {
   name: string;
   first_phases: HydatPhase[];
-  parameters: Map<string, HydatParameter>;
+  parameters: { [key: string]: HydatParameter };
   variables: string[];
   raw: HydatRaw;
 
@@ -69,7 +69,7 @@ export class HydatPhase {
   type: 'PP' | 'IP';
   time: HydatTime;
   variable_map: { [key: string]: Construct };
-  parameter_maps: Map<string, HydatParameter>[];
+  parameter_maps: { [key: string]: HydatParameter }[];
   children: HydatPhase[];
   simulation_state: string;
 

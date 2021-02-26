@@ -111,13 +111,14 @@ export class DatGUIControl {
     this.fixLayout();
   }
 
-  static parameter_setting(pars: Map<string, HydatParameter>) {
+  static parameter_setting(pars: { [key: string]: HydatParameter }) {
     for (const item of this.parameter_items) {
       this.parameter_folder.remove(item);
     }
     this.parameter_items = [];
     DatGUIControl.plot_settings.parameter_condition = {};
-    for (const [key, par] of pars) {
+    for (const key in pars) {
+      const par = pars[key];
       const key_copy = key;
       if (par instanceof HydatParameterPoint) return;
 
@@ -163,7 +164,7 @@ export class DatGUIControl {
         GraphControl.range_mode = DatGUIControl.plot_settings.parameter_condition![key_copy].range;
       });
     }
-    if (pars.size > 0) this.parameter_folder.open();
+    if (Object.keys(pars).length > 0) this.parameter_folder.open();
     else this.parameter_folder.close();
     this.fixLayout();
   }
