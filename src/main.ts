@@ -1,14 +1,14 @@
-import { graphControl, update2DMode, renderGraph } from './graph_control';
-import { initDatGUIState } from './dat_gui_control';
-import { NewUI } from './new_ui';
-import { PlotSettingsControl } from './plot_settings';
-import { initDOMState } from './dom_control';
-import { initEditorState } from './editor_control';
-import { initStorageControl, loadHydlaFromStorage, loadHydatFromStorage } from './storage_control';
-import { initHydatControl } from './hydat_control';
+import { graphControl, update2DMode, renderGraph } from './graphControl';
+import { initDatGUIState } from './datGUIControl';
+import { NewUI } from './newUI';
+import { PlotSettingsControl } from './plotSettings';
+import { initDOMState } from './domControl';
+import { initEditorState } from './editorControl';
+import { initStorageControl, loadHydlaFromStorage, loadHydatFromStorage } from './storageControl';
+import { initHydatControl } from './hydatControl';
 import { initHyLaGIControllerState } from './hylagi';
-import { initExampleLoader } from './example_loader';
-import { setBackgroundColor } from './plot_control';
+import { initExampleLoader } from './exampleLoader';
+import { setBackgroundColor } from './plotControl';
 
 $(document).ready(() => {
   const savedHydla = loadHydlaFromStorage();

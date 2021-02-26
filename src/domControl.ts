@@ -1,5 +1,5 @@
 import Materialize from 'materialize-css';
-import { resizeGraphRenderer, replotAll, resizeGraphArea, startResizingGraphArea } from './graph_control';
+import { resizeGraphRenderer, replotAll, resizeGraphArea, startResizingGraphArea } from './graphControl';
 import {
   setEditorFontSize,
   setEditorTheme,
@@ -7,10 +7,10 @@ import {
   resizeEditor,
   loadFile,
   saveHydla,
-} from './editor_control';
-import { saveHydat } from './hydat_control';
+} from './editorControl';
+import { saveHydat } from './hydatControl';
 import { execHyLaGI } from './hylagi';
-import { saveThemeToStorage, saveKeyBindingToStorage } from './storage_control';
+import { saveThemeToStorage, saveKeyBindingToStorage } from './storageControl';
 
 class DOMState {
   static tabs: Materialize.Tabs;

@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { replotLines } from './plot_line_map_control';
-import { parameterSeekSetting, parameterSeekSettingAnimate } from './dat_gui_control';
-import { HydatControl } from './hydat_control';
-import { animate, animateTime, animationControlState, getLength, makeRanges } from './animation_control';
-import { updateAxes } from './plot_control';
+import { replotLines } from './plotLineMapControl';
+import { parameterSeekSetting, parameterSeekSettingAnimate } from './datGUIControl';
+import { HydatControl } from './hydatControl';
+import { animate, animateTime, animationControlState, getLength, makeRanges } from './animationControl';
+import { updateAxes } from './plotControl';
 
 /**
  * 描画，再描画，クリアなどを行う<br>

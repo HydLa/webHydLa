@@ -1,7 +1,7 @@
-import { startPreloader, stopPreloader, showToast, selectLogTab } from './dom_control';
-import { sendEditorHydla } from './editor_control';
-import { loadHydat } from './hydat_control';
-import { loadHydlaNameFromStorage } from './storage_control';
+import { startPreloader, stopPreloader, showToast, selectLogTab } from './domControl';
+import { sendEditorHydla } from './editorControl';
+import { loadHydat } from './hydatControl';
+import { loadHydlaNameFromStorage } from './storageControl';
 import { HydatRaw } from './hydat';
 
 const firstScriptElement = document.getElementsByTagName('script')[0];

@@ -1,11 +1,11 @@
 import { Hydat, HydatRaw } from './hydat';
-import { saveHydatToStorage } from './storage_control';
-import { modifyNameLabel, clearPlot } from './graph_control';
-import { initVariableSelector } from './plot_line_map_control';
-import { showToast } from './dom_control';
-import { parameterSetting } from './dat_gui_control';
-import { updateAxes } from './plot_control';
-import { saveFile } from './editor_control';
+import { saveHydatToStorage } from './storageControl';
+import { modifyNameLabel, clearPlot } from './graphControl';
+import { initVariableSelector } from './plotLineMapControl';
+import { showToast } from './domControl';
+import { parameterSetting } from './datGUIControl';
+import { updateAxes } from './plotControl';
+import { saveFile } from './editorControl';
 
 export class HydatControl {
   static currentHydat: Hydat | undefined;

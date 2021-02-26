@@ -1,11 +1,11 @@
-import { removeFolder, replot, PlotLine } from './plot_line';
+import { removeFolder, replot, PlotLine } from './plotLine';
 import { Hydat } from './hydat';
-import { replotAll } from './graph_control';
-import { fixLayout, DatGUIState } from './dat_gui_control';
-import { HydatControl } from './hydat_control';
-import { saveHydatSettingsToStorage, loadHydatSettingsFromStorage } from './storage_control';
-import { removeDynamicLine, removeDynamicLines, removePlot } from './animation_control';
-import { PlotSettingsControl } from './plot_settings';
+import { replotAll } from './graphControl';
+import { fixLayout, DatGUIState } from './datGUIControl';
+import { HydatControl } from './hydatControl';
+import { saveHydatSettingsToStorage, loadHydatSettingsFromStorage } from './storageControl';
+import { removeDynamicLine, removeDynamicLines, removePlot } from './animationControl';
+import { PlotSettingsControl } from './plotSettings';
 
 export class PlotLineMapControl {
   static map = new Map<number, PlotLine>();

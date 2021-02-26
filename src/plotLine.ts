@@ -1,13 +1,13 @@
-import { removeLine } from './plot_line_map_control';
-import { DatGUIState } from './dat_gui_control';
-import { replotAll } from './graph_control';
-import { HydatControl } from './hydat_control';
-import { saveHydatSettingsToStorage } from './storage_control';
-import { Triplet } from './plot_utils';
+import { removeLine } from './plotLineMapControl';
+import { DatGUIState } from './datGUIControl';
+import { replotAll } from './graphControl';
+import { HydatControl } from './hydatControl';
+import { saveHydatSettingsToStorage } from './storageControl';
+import { Triplet } from './plotUtils';
 import { HydatPhase } from './hydat';
 import { parse, ParamCond, Construct } from './parse';
-import { dfsEachLine, resetAnimation } from './animation_control';
-import { setPlotStartTimeIfUnset } from './plot_control';
+import { dfsEachLine, resetAnimation } from './animationControl';
+import { setPlotStartTimeIfUnset } from './plotControl';
 
 export class PlotLine {
   index: number;
