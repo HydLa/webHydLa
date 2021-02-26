@@ -3,22 +3,22 @@ import { graphControl } from './graph_control';
 import { seekAnimation } from './animation_control';
 
 export class PlotSettingsControl {
-  static plot_settings: PlotSettings;
+  static plotSettings: PlotSettings;
   static init() {
-    this.plot_settings = loadPlotSettingsFromStorage();
+    this.plotSettings = loadPlotSettingsFromStorage();
   }
   static parseJSON(json: string | null) {
     return new PlotSettings(JSON.parse(json ?? '{}'));
   }
   static saveToWebStorage() {
-    savePlotSettingsToStorage(this.plot_settings);
+    savePlotSettingsToStorage(this.plotSettings);
   }
-  static time_stop() {
-    graphControl.animatable = !this.plot_settings.animate;
+  static timeStop() {
+    graphControl.animatable = !this.plotSettings.animate;
   }
   static seek() {
-    //if(plot_settings.animate)
-    seekAnimation(this.plot_settings.seek);
+    //if(plotSettings.animate)
+    seekAnimation(this.plotSettings.seek);
   }
 }
 
@@ -33,8 +33,8 @@ export class PlotSettings {
   dynamicDraw: boolean;
   animate: boolean;
   seek: number;
-  parameter_condition: Map<string, ParameterCondition> | undefined;
-  parameter_condition_seek: ParameterConditionSeek | undefined;
+  parameterCondition: Map<string, ParameterCondition> | undefined;
+  parameterConditionSeek: ParameterConditionSeek | undefined;
   constructor(obj: any) {
     this.plotInterval = obj?.plotInterval ?? 0.1;
     this.backgroundColor = obj?.backgroundColor ?? '#000000';
@@ -52,27 +52,27 @@ export class ParameterCondition {
   fixed: boolean;
   range: boolean;
   value: number;
-  min_value: number;
-  max_value: number;
+  minValue: number;
+  maxValue: number;
 
-  constructor(min_par_value: number, max_par_value: number) {
+  constructor(minParValue: number, maxParValue: number) {
     this.fixed = true;
     this.range = false;
-    this.value = (min_par_value + max_par_value) / 2;
-    this.min_value = min_par_value;
-    this.max_value = max_par_value;
+    this.value = (minParValue + maxParValue) / 2;
+    this.minValue = minParValue;
+    this.maxValue = maxParValue;
   }
 }
 
 export class ParameterConditionSeek {
   stop: boolean;
   value: number;
-  min_value: number;
-  max_value: number;
-  constructor(min_par_value: number, max_par_value: number) {
+  minValue: number;
+  maxValue: number;
+  constructor(minParValue: number, maxParValue: number) {
     this.stop = false;
-    this.value = (min_par_value + max_par_value) / 2;
-    this.min_value = min_par_value;
-    this.max_value = max_par_value;
+    this.value = (minParValue + maxParValue) / 2;
+    this.minValue = minParValue;
+    this.maxValue = maxParValue;
   }
 }

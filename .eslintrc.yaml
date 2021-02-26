@@ -29,3 +29,22 @@ rules:
   '@typescript-eslint/no-non-null-assertion': off
   no-unreachable: error
   no-undef: error
+  max-lines-per-function:
+    - warn
+    - 100
+  '@typescript-eslint/naming-convention':
+    - warn
+    - selector:
+        - variable
+        - function
+        - parameter
+        - property
+        - method
+      format:
+        - camelCase
+    - selector:
+        - class
+        - interface
+        - typeAlias
+      format:
+        - PascalCase

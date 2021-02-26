@@ -3,13 +3,13 @@ import { saveHydatToStorage } from './storage_control';
 import { modifyNameLabel, clearPlot } from './graph_control';
 import { initVariableSelector } from './plot_line_map_control';
 import { showToast } from './dom_control';
-import { parameter_setting } from './dat_gui_control';
-import { update_axes } from './plot_control';
+import { parameterSetting } from './dat_gui_control';
+import { updateAxes } from './plot_control';
 
 export class HydatControl {
-  static current_hydat: Hydat | undefined;
+  static currentHydat: Hydat | undefined;
   static settingsForCurrentHydat: {
-    plot_line_settings: {
+    plotLineSettings: {
       x: string;
       y: string;
       z: string;
@@ -18,16 +18,16 @@ export class HydatControl {
   };
 }
 
-export function initHydatControl(saved_hydat: string | null) {
-  if (saved_hydat) {
-    loadHydat(JSON.parse(saved_hydat));
+export function initHydatControl(savedHydat: string | null) {
+  if (savedHydat) {
+    loadHydat(JSON.parse(savedHydat));
   }
 }
 
 /* function to save Hydat file */
 export function saveHydat() {
-  if (!HydatControl.current_hydat) return;
-  const blob = new Blob([JSON.stringify(HydatControl.current_hydat.raw)]);
+  if (!HydatControl.currentHydat) return;
+  const blob = new Blob([JSON.stringify(HydatControl.currentHydat.raw)]);
   const object = window.URL.createObjectURL(blob);
   const d = new Date();
   const date =
@@ -54,17 +54,17 @@ export function saveHydat() {
 export function loadHydat(hydat: HydatRaw) {
   try {
     saveHydatToStorage(hydat);
-    HydatControl.current_hydat = new Hydat(hydat);
-    parameter_setting(HydatControl.current_hydat.parameters);
-    modifyNameLabel(HydatControl.current_hydat.name);
+    HydatControl.currentHydat = new Hydat(hydat);
+    parameterSetting(HydatControl.currentHydat.parameters);
+    modifyNameLabel(HydatControl.currentHydat.name);
   } catch (e) {
     console.log(e);
     console.log(e.stack);
     showToast(`Failed to load hydat: ${e.name}(${e.message})`, 3000, 'red darken-4');
   }
   clearPlot();
-  if (HydatControl.current_hydat !== undefined) {
-    initVariableSelector(HydatControl.current_hydat);
+  if (HydatControl.currentHydat !== undefined) {
+    initVariableSelector(HydatControl.currentHydat);
   }
-  update_axes(true);
+  updateAxes(true);
 }

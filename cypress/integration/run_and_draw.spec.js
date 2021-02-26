@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
 
