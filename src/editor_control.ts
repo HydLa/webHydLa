@@ -81,20 +81,20 @@ export function sendEditorHydla() {
   sendHydla(EditorState.editor.getValue());
 }
 
-/*
- * function to save HydLa file
- * TODO: hydatControl.tsのsaveHydatと共通化
- */
 export function saveHydla() {
-  const blob = new Blob([EditorState.editor.getValue()]);
+  saveFile('hydla', EditorState.editor.getValue());
+}
+
+export function saveFile(extension: string, content: string) {
+  const blob = new Blob([content]);
   const object = window.URL.createObjectURL(blob);
   const d = new Date();
-  const date = `${d.getFullYear()}-${
+  const timestamp = `${d.getFullYear()}-${
     d.getMonth() + 1
   }-${d.getDate()}T${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
   const a = document.createElement('a');
   a.href = object;
-  a.download = `${date}.hydla`;
+  a.download = `${timestamp}.${extension}`;
   const event = document.createEvent('MouseEvents');
   event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
   a.dispatchEvent(event);
