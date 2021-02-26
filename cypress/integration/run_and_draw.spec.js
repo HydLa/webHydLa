@@ -86,4 +86,27 @@ describe('run and draw', () => {
     cy.get('#dat-gui > div > ul > li:nth-child(2) input').type('{selectall}{del}3{enter}');
     cy.wait(5000);
   });
+
+  it('check example and parameter', () => {
+    cy.visit('/');
+
+    cy.contains('Save/Load').click();
+    cy.contains('Examples').click();
+    cy.get('#modal_examples input').click();
+    cy.contains('bouncing_particle_rp.hydla').click();
+    cy.get('#modal_examples').contains('Load').click();
+
+    cy.contains('RUN').click();
+    cy.get('#dat-gui .folder .folder:nth-child(2) li:nth-child(4) input').type('{selectall}{del}ht{enter}');
+    cy.wait(1000);
+
+    cy.contains('fixed').click();
+    cy.wait(1000);
+    cy.contains('range').click();
+    cy.wait(1000);
+    cy.contains('range').click();
+    cy.wait(1000);
+    cy.contains('fixed').click();
+    cy.wait(1000);
+  });
 });
