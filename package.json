@@ -13,9 +13,7 @@
     "test": "jest",
     "doc": "typedoc --out doc src",
     "lint": "eslint src",
-    "format": "eslint --fix src && prettier --write src",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "format": "eslint --fix src && prettier --write src"
   },
   "repository": {
     "type": "git",
