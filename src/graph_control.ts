@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { replotLines } from './plot_line_map_control';
+import { PlotLineMapControl } from './plot_line_map_control';
 import { DatGUIControl } from './dat_gui_control';
 import { HydatControl } from './hydat_control';
 import { animate, animateTime, animationControlState, getLength, makeRanges } from './animation_control';
@@ -212,6 +212,6 @@ export function clearPlot() {
 }
 
 export function replotAll() {
-  replotLines();
+  PlotLineMapControl.replot();
   animationControlState.time = 0;
 }
