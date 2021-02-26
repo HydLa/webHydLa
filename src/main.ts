@@ -8,7 +8,7 @@ import { StorageControl } from './storage_control';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { PlotControl } from './plot_control';
 import { initHydatControl } from './hydat_control';
-import { initHyLaGIControllerState } from './hylagi';
+import { HyLaGIController } from './hylagi';
 import { initExampleLoader } from './example_loader';
 
 $(document).ready(() => {
@@ -24,7 +24,7 @@ $(document).ready(() => {
   DatGUIControl.init(PlotSettingsControl.plot_settings);
 
   initHydatControl(saved_hydat);
-  initHyLaGIControllerState();
+  HyLaGIController.init();
 
   PlotLineMapControl.init();
   NewUI.init(GraphControl.controls);
