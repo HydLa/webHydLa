@@ -5,6 +5,7 @@ import { initVariableSelector } from './plot_line_map_control';
 import { showToast } from './dom_control';
 import { parameterSetting } from './dat_gui_control';
 import { updateAxes } from './plot_control';
+import { saveFile } from './editor_control';
 
 export class HydatControl {
   static currentHydat: Hydat | undefined;
@@ -27,28 +28,7 @@ export function initHydatControl(savedHydat: string | null) {
 /* function to save Hydat file */
 export function saveHydat() {
   if (!HydatControl.currentHydat) return;
-  const blob = new Blob([JSON.stringify(HydatControl.currentHydat.raw)]);
-  const object = window.URL.createObjectURL(blob);
-  const d = new Date();
-  const date =
-    d.getFullYear() +
-    '-' +
-    d.getMonth() +
-    1 +
-    '-' +
-    d.getDate() +
-    'T' +
-    d.getHours() +
-    '-' +
-    d.getMinutes() +
-    '-' +
-    d.getSeconds();
-  const a = document.createElement('a');
-  a.href = object;
-  a.download = date + '.hydat';
-  const event = document.createEvent('MouseEvents');
-  event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-  a.dispatchEvent(event);
+  saveFile('hydat', JSON.stringify(HydatControl.currentHydat.raw));
 }
 
 export function loadHydat(hydat: HydatRaw) {
