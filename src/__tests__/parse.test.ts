@@ -1,4 +1,4 @@
-import { parse, Env, Constant } from '../hydat/parse';
+import { parse, Env, Constant } from '../parse';
 
 test('Constant(1)=1', () => {
   const one = new Constant(1);

@@ -7,10 +7,10 @@ import 'ace-builds/src-noconflict/theme-clouds';
 import 'ace-builds/src-noconflict/keybinding-emacs';
 import 'ace-builds/src-noconflict/keybinding-vim';
 
-import { showToast } from '../UI/dom';
-import { saveHydlaToStorage, saveHydlaNameToStorage } from '../storage';
-import { sendHydla } from '../editor/hylagi';
-import { loadHydat } from '../hydat/hydat';
+import { showToast } from './dom_control';
+import { saveHydlaToStorage, saveHydlaNameToStorage } from './storage_control';
+import { sendHydla } from './hylagi';
+import { loadHydat } from './hydat_control';
 
 /* set default hydla code */
 const defaultHydla = `// a sample hydla code: bouncing_particle.hydla
@@ -81,20 +81,20 @@ export function sendEditorHydla() {
   sendHydla(EditorState.editor.getValue());
 }
 
+/*
+ * function to save HydLa file
+ * TODO: hydatControl.tsのsaveHydatと共通化
+ */
 export function saveHydla() {
-  saveFile('hydla', EditorState.editor.getValue());
-}
-
-export function saveFile(extension: string, content: string) {
-  const blob = new Blob([content]);
+  const blob = new Blob([EditorState.editor.getValue()]);
   const object = window.URL.createObjectURL(blob);
   const d = new Date();
-  const timestamp = `${d.getFullYear()}-${
+  const date = `${d.getFullYear()}-${
     d.getMonth() + 1
   }-${d.getDate()}T${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
   const a = document.createElement('a');
   a.href = object;
-  a.download = `${timestamp}.${extension}`;
+  a.download = `${date}.hydla`;
   const event = document.createEvent('MouseEvents');
   event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
   a.dispatchEvent(event);

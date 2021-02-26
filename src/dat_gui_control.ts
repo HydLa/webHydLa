@@ -1,10 +1,10 @@
 import * as dat from 'dat.gui';
-import { graphState, updateRotate, update2DMode, replotAll } from './graph';
-import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plotSettings';
-import { addNewLine } from './plotLineMap';
-import { seekAnimation, removeRanges, makeRanges } from './animation';
-import { setBackgroundColor, updateAxes } from './plot';
-import { HydatParameter, HydatParameterPoint } from '../hydat/hydat';
+import { graphControl, updateRotate, update2DMode, replotAll } from './graph_control';
+import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditionSeek } from './plot_settings';
+import { addNewLine } from './plot_line_map_control';
+import { HydatParameter, HydatParameterPoint } from './hydat';
+import { seekAnimation, removeRanges, makeRanges } from './animation_control';
+import { setBackgroundColor, updateAxes } from './plot_control';
 
 /** 描画用設定の処理を行う */
 export class DatGUIState {
@@ -163,8 +163,8 @@ export function parameterSetting(pars: Map<string, HydatParameter>) {
       replotAll();
     });
     modeItemRange.onChange(() => {
-      graphState.rangeMode = DatGUIState.plotSettings.parameterCondition!.get(key)!.range;
-      if (graphState.rangeMode) {
+      graphControl.rangeMode = DatGUIState.plotSettings.parameterCondition!.get(key)!.range;
+      if (graphControl.rangeMode) {
         makeRanges();
       } else {
         removeRanges();

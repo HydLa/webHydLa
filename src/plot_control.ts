@@ -1,12 +1,13 @@
+import { graphControl, renderGraphThreeJs, toScreenPosition } from './graph_control';
+import { isAllReady } from './plot_line_map_control';
+import { showToast, stopPreloader } from './dom_control';
+
 import * as THREE from 'three';
+import { Triplet, RGB, ComparableTriplet, Range } from './plot_utils';
 import { Object3D } from 'three';
-import { graphState, renderGraphThreeJs, toScreenPosition } from './graph';
-import { isAllReady } from './plotLineMap';
-import { Triplet, RGB, ComparableTriplet, Range } from './plotUtils';
-import { PlotSettingsControl } from './plotSettings';
-import { showToast, stopPreloader } from '../UI/dom';
-import { HydatPhase, HydatTimePP, HydatException } from '../hydat/hydat';
-import { ParamCond, Construct, Constant } from '../hydat/parse';
+import { HydatPhase, HydatTimePP, HydatException } from './hydat';
+import { PlotSettingsControl } from './plot_settings';
+import { ParamCond, Construct, Constant } from './parse';
 
 const axisColorBases = new Triplet<RGB>(new RGB(1.0, 0.3, 0.3), new RGB(0.3, 1.0, 0.3), new RGB(0.3, 0.3, 1.0));
 
@@ -80,24 +81,24 @@ export function checkAndStopPreloader() {
     showToast('Plot finished.', 1000, 'blue');
   }
   resetPlotStartTime();
-  graphState.renderer.render(graphState.scene, graphState.camera);
+  graphControl.renderer.render(graphControl.scene, graphControl.camera);
   stopPreloader();
 }
 
 export function updateAxes(force: boolean) {
-  const ranges = getRangesOfFrustum(graphState.camera);
+  const ranges = getRangesOfFrustum(graphControl.camera);
   if (force === true || plotState.prevRanges === undefined || !ranges.equals(plotState.prevRanges)) {
     const maxIntervalPx = 200; // 50 px
     const minVisibleTicks = Math.floor(
-      Math.max(graphState.elem.clientWidth, graphState.elem.clientHeight) / maxIntervalPx
+      Math.max(graphControl.elem.clientWidth, graphControl.elem.clientHeight) / maxIntervalPx
     );
     const minVisibleRange = Math.min(ranges.x.getInterval(), ranges.y.getInterval(), ranges.z.getInterval());
     const maxInterval = minVisibleRange / minVisibleTicks;
 
     if (plotState.axisLines !== undefined) {
-      graphState.scene.remove(plotState.axisLines.x);
-      graphState.scene.remove(plotState.axisLines.y);
-      graphState.scene.remove(plotState.axisLines.z);
+      graphControl.scene.remove(plotState.axisLines.x);
+      graphControl.scene.remove(plotState.axisLines.y);
+      graphControl.scene.remove(plotState.axisLines.z);
     }
     let interval = Math.pow(10, Math.floor(Math.log(maxInterval) / Math.log(10)));
     interval = 1;
@@ -109,9 +110,9 @@ export function updateAxes(force: boolean) {
 
     plotState.axisLines.x.rotation.set(0, Math.PI / 2, Math.PI / 2);
     plotState.axisLines.y.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
-    graphState.scene.add(plotState.axisLines.x);
-    graphState.scene.add(plotState.axisLines.y);
-    graphState.scene.add(plotState.axisLines.z);
+    graphControl.scene.add(plotState.axisLines.x);
+    graphControl.scene.add(plotState.axisLines.y);
+    graphControl.scene.add(plotState.axisLines.z);
     renderGraphThreeJs();
   }
   updateAxisScaleLabel(ranges);
@@ -131,7 +132,7 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet
   const wFar = wNear;
 
   const p = camera.position.clone();
-  const l = graphState.controls.target.clone();
+  const l = graphControl.controls.target.clone();
   const u = new THREE.Vector3(0, 1, 0);
 
   const d = new THREE.Vector3();
@@ -209,13 +210,13 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet
   fbl.subVectors(fc, uTmp.multiplyScalar(hFar / 2));
   fbl.add(rTmp.multiplyScalar(wFar / 2));
 
-  graphState.camera.updateMatrix(); // make sure camera's local matrix is updated
-  graphState.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
-  graphState.camera.matrixWorldInverse.getInverse(graphState.camera.matrixWorld);
+  graphControl.camera.updateMatrix(); // make sure camera's local matrix is updated
+  graphControl.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+  graphControl.camera.matrixWorldInverse.getInverse(graphControl.camera.matrixWorld);
 
   let frustum = new THREE.Frustum();
   frustum.setFromProjectionMatrix(
-    new THREE.Matrix4().multiplyMatrices(graphState.camera.projectionMatrix, graphState.camera.matrixWorldInverse)
+    new THREE.Matrix4().multiplyMatrices(graphControl.camera.projectionMatrix, graphControl.camera.matrixWorldInverse)
   );
   frustum = expandFrustum(frustum);
   const intercepts = [
@@ -396,7 +397,7 @@ export function setBackgroundColor(color: string) {
         .toString(16)
         .padStart(2, '0')
   );
-  graphState.renderer.setClearColor(color);
+  graphControl.renderer.setClearColor(color);
   updateAxes(true);
 }
 

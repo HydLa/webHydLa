@@ -1,6 +1,6 @@
-import { graphState } from './graph';
-import { seekAnimation } from './animation';
-import { loadPlotSettingsFromStorage, savePlotSettingsToStorage } from '../storage';
+import { loadPlotSettingsFromStorage, savePlotSettingsToStorage } from './storage_control';
+import { graphControl } from './graph_control';
+import { seekAnimation } from './animation_control';
 
 export class PlotSettingsControl {
   static plotSettings: PlotSettings;
@@ -14,7 +14,7 @@ export class PlotSettingsControl {
     savePlotSettingsToStorage(this.plotSettings);
   }
   static timeStop() {
-    graphState.animatable = !this.plotSettings.animate;
+    graphControl.animatable = !this.plotSettings.animate;
   }
   static seek() {
     //if(plotSettings.animate)
