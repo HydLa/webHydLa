@@ -2,10 +2,10 @@ import { PlotLine } from './plot_line';
 import { Hydat } from './hydat';
 import { GraphControl } from './graph_control';
 import { DatGUIControl } from './dat_gui_control';
+import { AnimationControl } from './animation_control';
 import { HydatControl } from './hydat_control';
 import { StorageControl } from './storage_control';
 import { PlotControl } from './plot_control';
-import { remove_dynamic_line, remove_dynamic_lines, remove_plot } from './animation_control';
 
 export class PlotLineMapControl {
   static map: { [key: number]: PlotLine } = {};
@@ -26,9 +26,9 @@ export class PlotLineMapControl {
     }
     DatGUIControl.variable_folder.removeFolder(line.folder);
     if (PlotControl.plot_settings.dynamicDraw) {
-      remove_dynamic_line(line);
+      AnimationControl.remove_dynamic_line(line);
     } else {
-      remove_plot(line);
+      AnimationControl.remove_plot(line);
     }
     delete HydatControl.settingsForCurrentHydat.plot_line_settings[line.index];
     StorageControl.saveHydatSettings();
@@ -68,7 +68,7 @@ export class PlotLineMapControl {
     if (PlotControl.plot_settings.dynamicDraw) {
       PlotControl.plot_settings.plotInterval = 0.01;
     }
-    remove_dynamic_lines();
+    AnimationControl.remove_dynamic_lines();
 
     for (const i in this.map) {
       this.map[i].color_angle = (parseInt(i) / this.getLength()) * 360;

@@ -2,12 +2,12 @@ import { PlotLineMapControl } from './plot_line_map_control';
 import { DatGUIControl } from './dat_gui_control';
 import { GraphControl } from './graph_control';
 import { PlotControl } from './plot_control';
+import { AnimationControl } from './animation_control';
 import { HydatControl } from './hydat_control';
 import { StorageControl } from './storage_control';
 import { Triplet } from './plot_utils';
 import { HydatPhase } from './hydat';
 import { parse, Construct, Constant } from './parse';
-import { dfs_each_line, resetAnimation } from './animation_control';
 
 export class PlotLine {
   index: number;
@@ -92,7 +92,7 @@ export class PlotLine {
   }
 
   replot() {
-    resetAnimation(this);
+    AnimationControl.reset(this);
     if (this.settings.x != '' && this.settings.y != '' && this.settings.z != '') {
       if (this.remain === undefined) {
         HydatControl.settingsForCurrentHydat.plot_line_settings[this.index] = this.settings;
@@ -115,7 +115,7 @@ export class PlotLine {
       this.plot_ready = undefined;
       this.last_plot_time = new Date().getTime();
       if (PlotControl.PlotStartTime === undefined) PlotControl.PlotStartTime = new Date().getTime();
-      dfs_each_line(
+      AnimationControl.dfs_each_line(
         plot_information.phase_index_array,
         plot_information.axes,
         plot_information.line,

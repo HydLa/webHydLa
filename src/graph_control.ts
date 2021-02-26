@@ -3,8 +3,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { PlotLineMapControl } from './plot_line_map_control';
 import { DatGUIControl } from './dat_gui_control';
 import { PlotControl } from './plot_control';
+import { AnimationControl } from './animation_control';
 import { HydatControl } from './hydat_control';
-import { animate, animateTime, animationControlState, getLength, makeRanges } from './animation_control';
 
 /**
  * 描画，再描画，クリアなどを行う<br>
@@ -124,22 +124,22 @@ export class GraphControl {
     }
     PlotControl.update_axes(false);
     if (this.animatable) {
-      animate(); // animating function
-      animateTime();
+      AnimationControl.animate(); // animating function
+      AnimationControl.animateTime();
     } else {
-      animate();
+      AnimationControl.animate();
     }
-    if (getLength() !== this.a_line) {
+    if (AnimationControl.getLength() !== this.a_line) {
       if (GraphControl.range_mode) {
-        makeRanges();
+        AnimationControl.range_make_all();
       }
-      this.a_line = getLength();
+      this.a_line = AnimationControl.getLength();
     }
-    if (animationControlState.maxlen !== this.t_line) {
-      this.t_line = animationControlState.maxlen;
+    if (AnimationControl.maxlen !== this.t_line) {
+      this.t_line = AnimationControl.maxlen;
       DatGUIControl.parameter_seek_setting(this.t_line);
     } else if (this.animatable) {
-      DatGUIControl.parameter_seek_setting_animate(this.t_line, animationControlState.time);
+      DatGUIControl.parameter_seek_setting_animate(this.t_line, AnimationControl.time);
     }
     this.last_frame_zoom = this.camera.zoom;
   }
@@ -204,6 +204,6 @@ export class GraphControl {
 
   static replotAll() {
     PlotLineMapControl.replot();
-    animationControlState.time = 0;
+    AnimationControl.time = 0;
   }
 }
