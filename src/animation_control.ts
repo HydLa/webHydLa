@@ -356,8 +356,7 @@ export function dfs_each_line(
         ++phase_index.index;
         phase = phase_index.phase;
       }
-      let finished: boolean;
-      [current_param_idx, finished] = search_next_child(
+      const finished = search_next_child(
         phase_index_array,
         axes,
         line,
@@ -393,7 +392,7 @@ function search_next_child(
   current_line_vec: { vec: THREE.Vector3; isPP: boolean }[],
   phase_index: { phase: HydatPhase; index: number },
   phase: HydatPhase
-): [number, boolean] {
+) {
   for (;;) {
     // search next child to plot
     for (; /* restart searching */ phase_index.index < phase.children.length; phase_index.index++) {
@@ -423,9 +422,9 @@ function search_next_child(
               current_line_vec
             );
           });
-          return [current_param_idx, true];
+          return true;
         }
-        return [current_param_idx, false]; // go to child
+        return false; // go to child
       }
     }
 
@@ -437,12 +436,12 @@ function search_next_child(
         // Plot is completed.
         line.plotting = false;
         checkAndStopPreloader();
-        return [current_param_idx, true];
+        return true;
       } else {
         // 次のparameter conditionで探索しなおす
         ++current_param_idx;
         phase_index_array[0].index = 0;
-        return [current_param_idx, false];
+        break;
       }
     } else {
       // go to parent phase
