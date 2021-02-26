@@ -1,17 +1,17 @@
-import { loadPlotSettingsFromStorage, savePlotSettingsToStorage } from './storage_control';
+import { StorageControl } from './storage_control';
 import { graphControl } from './graph_control';
 import { seekAnimation } from './animation_control';
 
 export class PlotSettingsControl {
   static plot_settings: PlotSettings;
   static init() {
-    this.plot_settings = loadPlotSettingsFromStorage();
+    this.plot_settings = StorageControl.loadPlotSettings();
   }
   static parseJSON(json: string | null) {
     return new PlotSettings(JSON.parse(json ?? '{}'));
   }
   static saveToWebStorage() {
-    savePlotSettingsToStorage(this.plot_settings);
+    StorageControl.savePlotSettings(this.plot_settings);
   }
   static time_stop() {
     graphControl.animatable = !this.plot_settings.animate;

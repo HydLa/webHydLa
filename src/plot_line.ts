@@ -2,7 +2,7 @@ import { PlotLineMapControl } from './plot_line_map_control';
 import { DatGUIControl } from './dat_gui_control';
 import { replotAll } from './graph_control';
 import { HydatControl } from './hydat_control';
-import { saveHydatSettingsToStorage } from './storage_control';
+import { StorageControl } from './storage_control';
 import { Triplet } from './plot_utils';
 import { HydatPhase } from './hydat';
 import { parse, Construct, Constant } from './parse';
@@ -96,7 +96,7 @@ export class PlotLine {
     if (this.settings.x != '' && this.settings.y != '' && this.settings.z != '') {
       if (this.remain === undefined) {
         HydatControl.settingsForCurrentHydat.plot_line_settings[this.index] = this.settings;
-        saveHydatSettingsToStorage();
+        StorageControl.saveHydatSettings();
       }
     }
   }
