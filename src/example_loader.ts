@@ -66,8 +66,8 @@ async function getContent(filename: string) {
   const url = `${path}/${filename}`;
   const res = await fetch(url);
   const json = await res.json();
-  const encoded_content = json.content.replace(/\n/g, '');
-  const content = atob(encoded_content);
+  const encodedContent = json.content.replace(/\n/g, '');
+  const content = atob(encodedContent);
   return content;
 }
 

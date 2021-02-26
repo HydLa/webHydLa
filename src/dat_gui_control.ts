@@ -4,170 +4,167 @@ import { PlotSettings, PlotSettingsControl, ParameterCondition, ParameterConditi
 import { addNewLine } from './plot_line_map_control';
 import { HydatParameter, HydatParameterPoint } from './hydat';
 import { seekAnimation, removeRanges, makeRanges } from './animation_control';
-import { setBackgroundColor, update_axes } from './plot_control';
+import { setBackgroundColor, updateAxes } from './plot_control';
 
 /** 描画用設定の処理を行う */
 export class DatGUIState {
-  static parameter_folder: dat.GUI;
-  static variable_folder: dat.GUI;
-  static parameter_folder_seek: dat.GUI;
+  static parameterFolder: dat.GUI;
+  static variableFolder: dat.GUI;
+  static parameterFolderSeek: dat.GUI;
 
-  static parameter_items: dat.GUIController[] = [];
-  static parameter_items_seek: dat.GUIController[] = [];
+  static parameterItems: dat.GUIController[] = [];
+  static parameterItemsSeek: dat.GUIController[] = [];
 
-  static plot_settings: PlotSettings;
+  static plotSettings: PlotSettings;
 }
 
-export function initDatGUIState(plot_settings: PlotSettings) {
-  DatGUIState.plot_settings = plot_settings;
-  const add_line_obj = {
+export function initDatGUIState(plotSettings: PlotSettings) {
+  DatGUIState.plotSettings = plotSettings;
+  const addLineObj = {
     add: function () {
       const line = addNewLine('', '', '');
       line.folder.open();
     },
   };
-  const dat_gui = new dat.GUI({ autoPlace: false, load: localStorage });
-  const dat_gui_animate = new dat.GUI({ autoPlace: false, load: localStorage });
-  dat_gui
-    .add(plot_settings, 'plotInterval', 0.01, 1)
+  const datGUI = new dat.GUI({ autoPlace: false, load: localStorage });
+  const datGUIAnimate = new dat.GUI({ autoPlace: false, load: localStorage });
+  datGUI
+    .add(plotSettings, 'plotInterval', 0.01, 1)
     .step(0.001)
     .name('plot interval')
     .onChange(() => {
       replotAll();
       PlotSettingsControl.saveToWebStorage();
     });
-  dat_gui
-    .add(plot_settings, 'lineWidth', 1, 10)
+  datGUI
+    .add(plotSettings, 'lineWidth', 1, 10)
     .step(1)
     .name('line width')
     .onChange(() => {
       replotAll();
       PlotSettingsControl.saveToWebStorage();
     });
-  dat_gui
-    .add(plot_settings, 'scaleLabelVisible')
+  datGUI
+    .add(plotSettings, 'scaleLabelVisible')
     .name('show scale label')
     .onChange(() => {
-      update_axes(true);
+      updateAxes(true);
       PlotSettingsControl.saveToWebStorage();
     });
-  dat_gui
-    .add(plot_settings, 'twoDimensional')
+  datGUI
+    .add(plotSettings, 'twoDimensional')
     .name('XY-mode')
     .onChange(() => {
-      update2DMode(plot_settings.twoDimensional);
+      update2DMode(plotSettings.twoDimensional);
       PlotSettingsControl.saveToWebStorage();
     });
-  dat_gui
-    .add(plot_settings, 'autoRotate')
+  datGUI
+    .add(plotSettings, 'autoRotate')
     .name('auto rotate')
     .onChange(() => {
-      updateRotate(plot_settings.autoRotate);
+      updateRotate(plotSettings.autoRotate);
       PlotSettingsControl.saveToWebStorage();
     });
-  dat_gui
-    .add(plot_settings, 'dynamicDraw')
+  datGUI
+    .add(plotSettings, 'dynamicDraw')
     .name('dynamic draw')
     .onChange(() => {
       replotAll();
       PlotSettingsControl.saveToWebStorage();
     });
-  dat_gui
-    .addColor(plot_settings, 'backgroundColor')
+  datGUI
+    .addColor(plotSettings, 'backgroundColor')
     .name('background')
     .onChange((value) => {
       setBackgroundColor(value);
-      PlotSettingsControl.saveToWebStorage(); /*render_three_js();i*/
+      PlotSettingsControl.saveToWebStorage(); /*renderThreeJs();i*/
     });
-  dat_gui_animate
-    .add(plot_settings, 'animate')
+  datGUIAnimate
+    .add(plotSettings, 'animate')
     .name('stop')
     .onChange(() => {
-      PlotSettingsControl.time_stop();
+      PlotSettingsControl.timeStop();
       PlotSettingsControl.saveToWebStorage();
     });
 
-  dat_gui.domElement.style.zIndex = '2';
-  dat_gui_animate.domElement.style.zIndex = '3';
-  dat_gui_animate.domElement.style['position'] = 'absolute';
-  dat_gui_animate.domElement.style['bottom'] = '50px';
+  datGUI.domElement.style.zIndex = '2';
+  datGUIAnimate.domElement.style.zIndex = '3';
+  datGUIAnimate.domElement.style['position'] = 'absolute';
+  datGUIAnimate.domElement.style['bottom'] = '50px';
 
-  const height_area = $('#graph-area').css('height');
+  const heightArea = $('#graph-area').css('height');
 
-  DatGUIState.parameter_folder = dat_gui.addFolder('parameters');
-  DatGUIState.parameter_folder_seek = dat_gui_animate.addFolder('seek');
-  dat_gui.add(add_line_obj, 'add').name('add new line');
-  DatGUIState.variable_folder = dat_gui.addFolder('variables');
+  DatGUIState.parameterFolder = datGUI.addFolder('parameters');
+  DatGUIState.parameterFolderSeek = datGUIAnimate.addFolder('seek');
+  datGUI.add(addLineObj, 'add').name('add new line');
+  DatGUIState.variableFolder = datGUI.addFolder('variables');
 
-  const dat_container = document.getElementById('dat-gui')!;
-  dat_container.appendChild(dat_gui.domElement);
+  const datContainer = document.getElementById('dat-gui')!;
+  datContainer.appendChild(datGUI.domElement);
 
-  const dat_container_b = document.getElementById('dat-gui-bottom')!;
-  dat_container_b.style.height = height_area;
-  dat_container_b.appendChild(dat_gui_animate.domElement);
+  const datContainerB = document.getElementById('dat-gui-bottom')!;
+  datContainerB.style.height = heightArea;
+  datContainerB.appendChild(datGUIAnimate.domElement);
 
-  const nd_mode_check_box = <HTMLInputElement>document.getElementById('nd_mode_check_box');
-  nd_mode_check_box.checked = true;
+  const ndModeCheckBox = <HTMLInputElement>document.getElementById('nd_mode_check_box');
+  ndModeCheckBox.checked = true;
 
   fixLayout();
 }
 
-export function parameter_setting(pars: Map<string, HydatParameter>) {
-  for (const item of DatGUIState.parameter_items) {
-    DatGUIState.parameter_folder.remove(item);
+export function parameterSetting(pars: Map<string, HydatParameter>) {
+  for (const item of DatGUIState.parameterItems) {
+    DatGUIState.parameterFolder.remove(item);
   }
-  DatGUIState.parameter_items = [];
-  DatGUIState.plot_settings.parameter_condition = new Map();
+  DatGUIState.parameterItems = [];
+  DatGUIState.plotSettings.parameterCondition = new Map();
   for (const [key, par] of pars) {
     if (par instanceof HydatParameterPoint) return;
 
-    const lower = par.lower_bound.value.getValue(new Map());
-    const upper = par.upper_bound.value.getValue(new Map());
+    const lower = par.lowerBound.value.getValue(new Map());
+    const upper = par.upperBound.value.getValue(new Map());
     if (!isFinite(lower) && !isFinite(upper)) {
-      throw new Error('Error: at least one of lower_bound and upper_bound must be finite.');
+      throw new Error('Error: at least one of lowerBound and upperBound must be finite.');
     }
 
-    const min_par_value = isFinite(lower) ? lower : upper - 100;
-    const max_par_value = isFinite(upper) ? upper : lower + 100;
-    const step = (max_par_value - min_par_value) / 100;
+    const minParValue = isFinite(lower) ? lower : upper - 100;
+    const maxParValue = isFinite(upper) ? upper : lower + 100;
+    const step = (maxParValue - minParValue) / 100;
 
-    DatGUIState.plot_settings.parameter_condition.set(key, new ParameterCondition(min_par_value, max_par_value));
+    DatGUIState.plotSettings.parameterCondition.set(key, new ParameterCondition(minParValue, maxParValue));
 
-    const parameter_item = DatGUIState.parameter_folder
-      .add(DatGUIState.plot_settings.parameter_condition.get(key)!, 'value', min_par_value, max_par_value)
+    const parameterItem = DatGUIState.parameterFolder
+      .add(DatGUIState.plotSettings.parameterCondition.get(key)!, 'value', minParValue, maxParValue)
       .name(key);
-    parameter_item.onChange(() => {
+    parameterItem.onChange(() => {
       replotAll();
     });
-    parameter_item.step(step);
+    parameterItem.step(step);
 
-    const mode_item = DatGUIState.parameter_folder.add(
-      DatGUIState.plot_settings.parameter_condition.get(key)!,
-      'fixed'
-    );
-    const mode_item_range = DatGUIState.parameter_folder.add(
-      DatGUIState.plot_settings.parameter_condition.get(key)!,
+    const modeItem = DatGUIState.parameterFolder.add(DatGUIState.plotSettings.parameterCondition.get(key)!, 'fixed');
+    const modeItemRange = DatGUIState.parameterFolder.add(
+      DatGUIState.plotSettings.parameterCondition.get(key)!,
       'range'
     );
-    DatGUIState.parameter_items.push(mode_item);
-    DatGUIState.parameter_items.push(mode_item_range);
-    DatGUIState.parameter_items.push(parameter_item);
+    DatGUIState.parameterItems.push(modeItem);
+    DatGUIState.parameterItems.push(modeItemRange);
+    DatGUIState.parameterItems.push(parameterItem);
 
-    mode_item.onChange(function () {
-      if (!DatGUIState.plot_settings.parameter_condition!.get(key)!.fixed) {
-        parameter_item.min(1).max(100).step(1).setValue(5);
+    modeItem.onChange(function () {
+      if (!DatGUIState.plotSettings.parameterCondition!.get(key)!.fixed) {
+        parameterItem.min(1).max(100).step(1).setValue(5);
       } else {
-        parameter_item
-          .min(min_par_value)
-          .max(max_par_value)
+        parameterItem
+          .min(minParValue)
+          .max(maxParValue)
           .step(step)
-          .setValue((min_par_value + max_par_value) / 2);
+          .setValue((minParValue + maxParValue) / 2);
       }
       replotAll();
     });
-    mode_item_range.onChange(() => {
-      graphControl.range_mode = DatGUIState.plot_settings.parameter_condition!.get(key)!.range;
-      if (graphControl.range_mode) {
+    modeItemRange.onChange(() => {
+      graphControl.rangeMode = DatGUIState.plotSettings.parameterCondition!.get(key)!.range;
+      if (graphControl.rangeMode) {
         makeRanges();
       } else {
         removeRanges();
@@ -175,76 +172,76 @@ export function parameter_setting(pars: Map<string, HydatParameter>) {
     });
   }
 
-  if (pars.size > 0) DatGUIState.parameter_folder.open();
-  else DatGUIState.parameter_folder.close();
+  if (pars.size > 0) DatGUIState.parameterFolder.open();
+  else DatGUIState.parameterFolder.close();
 
   fixLayout();
 }
 
-export function parameter_seek_setting(line_len: number) {
-  for (const item of DatGUIState.parameter_items_seek) {
-    DatGUIState.parameter_folder_seek.remove(item);
+export function parameterSeekSetting(lineLen: number) {
+  for (const item of DatGUIState.parameterItemsSeek) {
+    DatGUIState.parameterFolderSeek.remove(item);
   }
-  DatGUIState.parameter_items_seek = [];
-  const min_par_value = 0;
-  const max_par_value = line_len - 1;
+  DatGUIState.parameterItemsSeek = [];
+  const minParValue = 0;
+  const maxParValue = lineLen - 1;
   const step = 1;
 
-  DatGUIState.plot_settings.parameter_condition_seek = new ParameterConditionSeek(min_par_value, max_par_value);
+  DatGUIState.plotSettings.parameterConditionSeek = new ParameterConditionSeek(minParValue, maxParValue);
 
-  const parameter_item_seek = DatGUIState.parameter_folder_seek.add(
-    DatGUIState.plot_settings.parameter_condition_seek,
+  const parameterItemSeek = DatGUIState.parameterFolderSeek.add(
+    DatGUIState.plotSettings.parameterConditionSeek,
     'value',
-    min_par_value,
-    max_par_value
+    minParValue,
+    maxParValue
   );
-  parameter_item_seek.onChange(() => {
-    seekAnimation(DatGUIState.plot_settings.parameter_condition_seek!.value);
+  parameterItemSeek.onChange(() => {
+    seekAnimation(DatGUIState.plotSettings.parameterConditionSeek!.value);
   });
-  parameter_item_seek.step(step);
+  parameterItemSeek.step(step);
 
-  DatGUIState.parameter_items_seek.push(parameter_item_seek);
+  DatGUIState.parameterItemsSeek.push(parameterItemSeek);
 
-  DatGUIState.parameter_folder_seek.open();
+  DatGUIState.parameterFolderSeek.open();
 
   fixLayout();
 }
 
-export function parameter_seek_setting_animate(line_len: number, time_line: number) {
-  for (const item of DatGUIState.parameter_items_seek) {
-    DatGUIState.parameter_folder_seek.remove(item);
+export function parameterSeekSettingAnimate(lineLen: number, timeLine: number) {
+  for (const item of DatGUIState.parameterItemsSeek) {
+    DatGUIState.parameterFolderSeek.remove(item);
   }
-  DatGUIState.parameter_items_seek = [];
-  const min_par_value = 0;
-  const max_par_value = line_len;
+  DatGUIState.parameterItemsSeek = [];
+  const minParValue = 0;
+  const maxParValue = lineLen;
   const step = 1;
 
-  DatGUIState.plot_settings.parameter_condition_seek = new ParameterConditionSeek(min_par_value, max_par_value);
+  DatGUIState.plotSettings.parameterConditionSeek = new ParameterConditionSeek(minParValue, maxParValue);
 
-  const parameter_item_seek = DatGUIState.parameter_folder_seek.add(
-    DatGUIState.plot_settings.parameter_condition_seek,
+  const parameterItemSeek = DatGUIState.parameterFolderSeek.add(
+    DatGUIState.plotSettings.parameterConditionSeek,
     'value',
-    min_par_value,
-    max_par_value
+    minParValue,
+    maxParValue
   );
-  parameter_item_seek.onChange(() => {
-    seekAnimation(DatGUIState.plot_settings.parameter_condition_seek!.value);
+  parameterItemSeek.onChange(() => {
+    seekAnimation(DatGUIState.plotSettings.parameterConditionSeek!.value);
   });
-  parameter_item_seek.step(step);
+  parameterItemSeek.step(step);
 
-  DatGUIState.parameter_items_seek.push(parameter_item_seek);
+  DatGUIState.parameterItemsSeek.push(parameterItemSeek);
 
-  parameter_item_seek.min(min_par_value).max(max_par_value).step(step).setValue(time_line);
+  parameterItemSeek.min(minParValue).max(maxParValue).step(step).setValue(timeLine);
 
-  DatGUIState.parameter_folder_seek.open();
+  DatGUIState.parameterFolderSeek.open();
 
   fixLayout();
 }
 
 export function fixLayout() {
   // to avoid layout collapsion of dat gui
-  const dg_c_inputs = $('.dg .c input[type=text]');
-  for (const input of dg_c_inputs) {
+  const dgCInputs = $('.dg .c input[type=text]');
+  for (const input of dgCInputs) {
     input.style.height = '100%';
   }
 
