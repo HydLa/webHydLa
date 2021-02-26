@@ -1,5 +1,5 @@
 import { startPreloader, stopPreloader, showToast, selectLogTab } from './dom_control';
-import { sendEditorHydla } from './editor_control';
+import { EditorControl } from './editor_control';
 import { loadHydat } from './hydat_control';
 import { StorageControl } from './storage_control';
 
@@ -16,7 +16,7 @@ export class HyLaGIController {
     if (this.running) {
       this.killHyLaGI();
     } else {
-      sendEditorHydla();
+      EditorControl.sendHydLa();
     }
   }
   static updateExecIcon() {
@@ -38,7 +38,7 @@ export class HyLaGIController {
     }
   }
   /* function to submit hydla code to server */
-  static sendHydla(hydla: string) {
+  static sendHydLa(hydla: string) {
     startPreloader();
     this.running = true;
     this.updateExecIcon();

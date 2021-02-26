@@ -1,22 +1,15 @@
 import Materialize from 'materialize-css';
 import { GraphControl } from './graph_control';
-import {
-  setEditorFontSize,
-  setEditorTheme,
-  setEditorKeyBinding,
-  resizeEditor,
-  loadFile,
-  saveHydla,
-} from './editor_control';
+import { EditorControl } from './editor_control';
 import { saveHydat } from './hydat_control';
 import { HyLaGIController } from './hylagi';
 import { StorageControl } from './storage_control';
 
-class DOMState {
+class DOMControlState {
   static tabs: Materialize.Tabs;
 }
 
-export function initDOMState() {
+export function init() {
   Materialize.FormSelect.init(document.querySelectorAll('select'));
   $(window).resize(function () {
     GraphControl.resizeGraphRenderer();
@@ -32,7 +25,7 @@ export function initDOMState() {
     hover: false,
   });
   Materialize.Modal.init(document.querySelectorAll('.modal'));
-  DOMState.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
+  DOMControlState.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
 
   $('fix_button').on('change', function () {
     GraphControl.replotAll();
@@ -42,16 +35,16 @@ export function initDOMState() {
   });
 
   document.getElementById('editor_font_size')?.addEventListener('change', (e) => {
-    setEditorFontSize((e.target as HTMLInputElement).valueAsNumber);
+    EditorControl.setFontSize((e.target as HTMLInputElement).valueAsNumber);
   });
 
   document.getElementById('theme_selector')?.addEventListener('change', (e) => {
-    setEditorTheme((e.target as HTMLInputElement).value);
+    EditorControl.setTheme((e.target as HTMLInputElement).value);
     StorageControl.saveTheme();
   });
 
   document.getElementById('key_binding_selector')?.addEventListener('change', (e) => {
-    setEditorKeyBinding((e.target as HTMLInputElement).value);
+    EditorControl.setKeyBinding((e.target as HTMLInputElement).value);
     StorageControl.saveKeyBinding();
   });
 
@@ -77,7 +70,7 @@ export function initDOMState() {
         $('#left-pane').width(initial_width + diff);
         $('#editor').width(initial_editor + diff);
         GraphControl.resizeGraphArea();
-        resizeEditor();
+        EditorControl.resize();
       })
       .mouseup(() => {
         dragging = false;
@@ -105,7 +98,7 @@ export function initDOMState() {
         const diff = e.pageY - initial_y;
         $('#input-pane').height(initial_height + diff);
         $('#editor').height(initial_height + diff);
-        resizeEditor();
+        EditorControl.resize();
       })
       .mouseup(() => {
         dragging = false;
@@ -114,10 +107,10 @@ export function initDOMState() {
   });
 
   document.getElementById('load-file')?.addEventListener('click', () => {
-    loadFile();
+    EditorControl.loadFile();
   });
   document.getElementById('save-hydla')?.addEventListener('click', () => {
-    saveHydla();
+    EditorControl.saveHydla();
   });
   document.getElementById('save-hydat')?.addEventListener('click', () => {
     saveHydat();
@@ -167,5 +160,5 @@ export function toggleInputPane() {
 }
 
 export function selectLogTab() {
-  DOMState.tabs.select('output-area');
+  DOMControlState.tabs.select('output-area');
 }
