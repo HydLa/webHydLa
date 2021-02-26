@@ -1,6 +1,6 @@
 import { GraphControl } from './graph_control';
 import { PlotLineMapControl } from './plot_line_map_control';
-import { showToast, stopPreloader } from './dom_control';
+import { DOMControl } from './dom_control';
 
 import * as THREE from 'three';
 import { Triplet, RGB, ComparableTriplet, Range } from './plot_utils';
@@ -111,11 +111,11 @@ export class PlotControl {
     if (!PlotLineMapControl.isAllReady()) return;
     const current_time = new Date().getTime();
     if (PlotControl.PlotStartTime === undefined || current_time - PlotControl.PlotStartTime >= 1000) {
-      showToast('Plot finished.', 1000, 'blue');
+      DOMControl.showToast('Plot finished.', 1000, 'blue');
     }
     PlotControl.PlotStartTime = undefined;
     GraphControl.renderer.render(GraphControl.scene, GraphControl.camera);
-    stopPreloader();
+    DOMControl.stopPreloader();
   }
   static update_axes(force: boolean) {
     const ranges = PlotControl.getRangesOfFrustum(GraphControl.camera);

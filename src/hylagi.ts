@@ -1,4 +1,4 @@
-import { startPreloader, stopPreloader, showToast, selectLogTab } from './dom_control';
+import { DOMControl } from './dom_control';
 import { EditorControl } from './editor_control';
 import { HydatControl } from './hydat_control';
 import { StorageControl } from './storage_control';
@@ -39,7 +39,7 @@ export class HyLaGIController {
   }
   /* function to submit hydla code to server */
   static sendHydLa(hydla: string) {
-    startPreloader();
+    DOMControl.startPreloader();
     this.running = true;
     this.updateExecIcon();
 
@@ -76,21 +76,21 @@ export class HyLaGIController {
 
         switch (response.error) {
           case 0:
-            showToast('Simulation was successful.', 1000, '');
+            DOMControl.showToast('Simulation was successful.', 1000, '');
             if (response.hydat != undefined) {
               response.hydat.name = StorageControl.loadHydlaName();
               HydatControl.loadHydat(response.hydat);
             } else {
-              selectLogTab();
+              DOMControl.selectLogTab();
             }
             break;
           default:
             if (this.running) {
-              showToast('Error message: ' + response.message, 3000, 'red darken-4');
-              selectLogTab();
+              DOMControl.showToast('Error message: ' + response.message, 3000, 'red darken-4');
+              DOMControl.selectLogTab();
               console.error(response);
             } else {
-              showToast('Killed HyLaGI', 1000, '');
+              DOMControl.showToast('Killed HyLaGI', 1000, '');
             }
             break;
         }
@@ -128,7 +128,7 @@ export class HyLaGIController {
             output.innerHTML += getEscapedStringForHTML(response.stderr);
           }
         }
-        stopPreloader();
+        DOMControl.stopPreloader();
         this.running = false;
         this.updateExecIcon();
       };

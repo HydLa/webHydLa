@@ -2,7 +2,7 @@ import { GraphControl } from './graph_control';
 import { DatGUIControl } from './dat_gui_control';
 import { NewUI } from './new_ui';
 import { PlotSettingsControl } from './plot_settings';
-import { init as DOMControl_init } from './dom_control';
+import { DOMControl } from './dom_control';
 import { EditorControl } from './editor_control';
 import { StorageControl } from './storage_control';
 import { PlotLineMapControl } from './plot_line_map_control';
@@ -28,7 +28,7 @@ $(document).ready(() => {
 
   PlotLineMapControl.init();
   NewUI.init(GraphControl.controls);
-  DOMControl_init();
+  DOMControl.init();
 
   EditorControl.init(saved_hydla);
   StorageControl.init();
