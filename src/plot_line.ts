@@ -1,5 +1,5 @@
 import { removeLine } from './plot_line_map_control';
-import { DatGUIState } from './dat_gui_control';
+import { DatGUIControl } from './dat_gui_control';
 import { replotAll } from './graph_control';
 import { HydatControl } from './hydat_control';
 import { saveHydatSettingsToStorage } from './storage_control';
@@ -36,7 +36,7 @@ export class PlotLine {
   constructor(x_name: string, y_name: string, z_name: string, index: number) {
     this.index = index;
     this.name = `plot${this.index}`;
-    this.folder = DatGUIState.variable_folder.addFolder(this.name);
+    this.folder = DatGUIControl.variable_folder.addFolder(this.name);
     this.settings = {
       x: x_name,
       y: y_name,
@@ -90,7 +90,7 @@ export function updateFolder(plotLine: PlotLine, succeeded: boolean) {
 
 export function removeFolder(plotLine: PlotLine) {
   plotLine.folder.close();
-  DatGUIState.variable_folder.removeFolder(plotLine.folder);
+  DatGUIControl.variable_folder.removeFolder(plotLine.folder);
 }
 
 export function replot(plotLine: PlotLine) {
