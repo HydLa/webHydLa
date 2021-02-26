@@ -16,7 +16,6 @@ class DOMState {
   static tabs: Materialize.Tabs;
 }
 
-// eslint-disable-next-line max-lines-per-function
 export function initDOMState() {
   Materialize.FormSelect.init(document.querySelectorAll('select'));
   $(window).resize(function () {
@@ -58,9 +57,9 @@ export function initDOMState() {
 
   /* function to close/open input-pane */
   $('#v-separator').mousedown((e) => {
-    const initialX = e.pageX;
-    const initialWidth = $('#left-pane').width()!;
-    const initialEditor = $('#editor').width()!;
+    const initial_x = e.pageX;
+    const initial_width = $('#left-pane').width()!;
+    const initial_editor = $('#editor').width()!;
     let dragging = true;
     $("<div id='secretdiv'>")
       .css({
@@ -74,9 +73,9 @@ export function initDOMState() {
       .appendTo('body')
       .mousemove((e) => {
         if (!dragging) return;
-        const diff = e.pageX - initialX;
-        $('#left-pane').width(initialWidth + diff);
-        $('#editor').width(initialEditor + diff);
+        const diff = e.pageX - initial_x;
+        $('#left-pane').width(initial_width + diff);
+        $('#editor').width(initial_editor + diff);
         resizeGraphArea();
         resizeEditor();
       })
@@ -88,8 +87,8 @@ export function initDOMState() {
 
   /* function to adjust height of graph-setting-area */
   $('#h-separator').mousedown((e) => {
-    const initialY = e.pageY;
-    const initialHeight = $('#input-pane').height()!;
+    const initial_y = e.pageY;
+    const initial_height = $('#input-pane').height()!;
     let dragging = true;
     $("<div id='secretdiv'>")
       .css({
@@ -103,9 +102,9 @@ export function initDOMState() {
       .appendTo('body')
       .mousemove((e) => {
         if (!dragging) return;
-        const diff = e.pageY - initialY;
-        $('#input-pane').height(initialHeight + diff);
-        $('#editor').height(initialHeight + diff);
+        const diff = e.pageY - initial_y;
+        $('#input-pane').height(initial_height + diff);
+        $('#editor').height(initial_height + diff);
         resizeEditor();
       })
       .mouseup(() => {
@@ -133,11 +132,10 @@ export function initDOMState() {
 
 export function showToast(message: string, duration: number, classes: string) {
   Materialize.toast({ html: message, displayLength: duration, classes: classes });
-  const toastContainer = document.getElementById('toast-container')!;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const toast_container = document.getElementById('toast-container')!;
   const MAX_CHILDREN_NUM = 5;
-  for (let i = 0; i < toastContainer.children.length - MAX_CHILDREN_NUM; i++) {
-    toastContainer.removeChild(toastContainer.children[i]);
+  for (let i = 0; i < toast_container.children.length - MAX_CHILDREN_NUM; i++) {
+    toast_container.removeChild(toast_container.children[i]);
   }
 }
 

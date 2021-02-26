@@ -1,4 +1,4 @@
-import { graphControl, renderGraphThreeJs, toScreenPosition } from './graph_control';
+import { graphControl, renderGraph_three_js, toScreenPosition } from './graph_control';
 import { isAllReady } from './plot_line_map_control';
 import { showToast, stopPreloader } from './dom_control';
 
@@ -16,7 +16,7 @@ interface PlotState {
   plotStartTime?: number;
 
   axisColors: Triplet<string>;
-  prevRanges?: ComparableTriplet<Range>;
+  prev_ranges?: ComparableTriplet<Range>;
   axisLines?: Triplet<THREE.Object3D>;
 }
 
@@ -25,47 +25,46 @@ const plotState: PlotState = {
   axisColors: new Triplet<string>('#FF8080', '#80FF80', '#8080FF'),
 };
 
-export function phaseToLineVectors(
+export function phase_to_line_vectors(
   phase: HydatPhase,
-  parameterCondition: ParamCond,
+  parameter_condition: ParamCond,
   axis: Triplet<Construct>,
   maxDeltaT: number
 ) {
   const line: { vec: THREE.Vector3; isPP: boolean }[] = [];
   let t;
   if (
-    phase.simulationState != 'SIMULATED' &&
-    phase.simulationState != 'TIME_LIMIT' &&
-    phase.simulationState != 'STEP_LIMIT'
+    phase.simulation_state != 'SIMULATED' &&
+    phase.simulation_state != 'TIME_LIMIT' &&
+    phase.simulation_state != 'STEP_LIMIT'
   ) {
     return line;
   }
 
-  const env = new Map([...parameterCondition, ...phase.variableMap]);
+  const env = new Map([...parameter_condition, ...phase.variable_map]);
 
   if (phase.time instanceof HydatTimePP) {
-    env.set('t', phase.time.timePoint);
+    env.set('t', phase.time.time_point);
     line.push({
       vec: new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)),
       isPP: true,
     });
   } else {
-    const startTime = phase.time.startTime.getValue(env);
-    const endTime = phase.time.endTime.getValue(env);
-    if (!Number.isFinite(startTime) || !Number.isFinite(endTime)) {
-      throw new HydatException(`invalid time interval: from ${phase.time.startTime} to ${phase.time.endTime}`);
+    const start_time = phase.time.start_time.getValue(env);
+    const end_time = phase.time.end_time.getValue(env);
+    if (!Number.isFinite(start_time) || !Number.isFinite(end_time)) {
+      throw new HydatException(`invalid time interval: from ${phase.time.start_time} to ${phase.time.end_time}`);
     }
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     const MIN_STEP = 10; // Minimum step of plotting one IP
-    const deltaT = Math.min(maxDeltaT, (endTime - startTime) / MIN_STEP);
-    for (t = startTime; t < endTime; t = t + deltaT) {
+    const delta_t = Math.min(maxDeltaT, (end_time - start_time) / MIN_STEP);
+    for (t = start_time; t < end_time; t = t + delta_t) {
       env.set('t', new Constant(t));
       line.push({
         vec: new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)),
         isPP: false,
       });
     }
-    env.set('t', new Constant(endTime));
+    env.set('t', new Constant(end_time));
     line.push({
       vec: new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)),
       isPP: false,
@@ -76,8 +75,8 @@ export function phaseToLineVectors(
 
 export function checkAndStopPreloader() {
   if (!isAllReady()) return;
-  const currentTime = new Date().getTime();
-  if (plotState.plotStartTime === undefined || currentTime - plotState.plotStartTime >= 1000) {
+  const current_time = new Date().getTime();
+  if (plotState.plotStartTime === undefined || current_time - plotState.plotStartTime >= 1000) {
     showToast('Plot finished.', 1000, 'blue');
   }
   resetPlotStartTime();
@@ -85,22 +84,22 @@ export function checkAndStopPreloader() {
   stopPreloader();
 }
 
-export function updateAxes(force: boolean) {
+export function update_axes(force: boolean) {
   const ranges = getRangesOfFrustum(graphControl.camera);
-  if (force === true || plotState.prevRanges === undefined || !ranges.equals(plotState.prevRanges)) {
-    const maxIntervalPx = 200; // 50 px
-    const minVisibleTicks = Math.floor(
-      Math.max(graphControl.elem.clientWidth, graphControl.elem.clientHeight) / maxIntervalPx
+  if (force === true || plotState.prev_ranges === undefined || !ranges.equals(plotState.prev_ranges)) {
+    const max_interval_px = 200; // 50 px
+    const min_visible_ticks = Math.floor(
+      Math.max(graphControl.elem.clientWidth, graphControl.elem.clientHeight) / max_interval_px
     );
-    const minVisibleRange = Math.min(ranges.x.getInterval(), ranges.y.getInterval(), ranges.z.getInterval());
-    const maxInterval = minVisibleRange / minVisibleTicks;
+    const min_visible_range = Math.min(ranges.x.getInterval(), ranges.y.getInterval(), ranges.z.getInterval());
+    const max_interval = min_visible_range / min_visible_ticks;
 
     if (plotState.axisLines !== undefined) {
       graphControl.scene.remove(plotState.axisLines.x);
       graphControl.scene.remove(plotState.axisLines.y);
       graphControl.scene.remove(plotState.axisLines.z);
     }
-    let interval = Math.pow(10, Math.floor(Math.log(maxInterval) / Math.log(10)));
+    let interval = Math.pow(10, Math.floor(Math.log(max_interval) / Math.log(10)));
     interval = 1;
     plotState.axisLines = new Triplet<Object3D>(
       makeAxis(ranges.x, interval, new THREE.Color(plotState.axisColors.x)),
@@ -113,13 +112,12 @@ export function updateAxes(force: boolean) {
     graphControl.scene.add(plotState.axisLines.x);
     graphControl.scene.add(plotState.axisLines.y);
     graphControl.scene.add(plotState.axisLines.z);
-    renderGraphThreeJs();
+    renderGraph_three_js();
   }
   updateAxisScaleLabel(ranges);
-  plotState.prevRanges = ranges;
+  plotState.prev_ranges = ranges;
 }
 
-// eslint-disable-next-line max-lines-per-function
 function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet<Range> {
   const ranges = new ComparableTriplet<Range>(Range.getEmpty(), Range.getEmpty(), Range.getEmpty());
 
@@ -139,12 +137,12 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet
   d.subVectors(l, p);
   d.normalize();
 
-  const crossD = u.clone();
-  crossD.cross(d);
-  const rotateAxis = crossD.clone();
-  rotateAxis.normalize();
+  const cross_d = u.clone();
+  cross_d.cross(d);
+  const rotate_axis = cross_d.clone();
+  rotate_axis.normalize();
   const dot = u.dot(d);
-  u.applyAxisAngle(rotateAxis, Math.acos(dot) - Math.PI / 2);
+  u.applyAxisAngle(rotate_axis, Math.acos(dot) - Math.PI / 2);
 
   const r = new THREE.Vector3();
   r.crossVectors(u, d);
@@ -221,33 +219,33 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet
   frustum = expandFrustum(frustum);
   const intercepts = [
     // top surface
-    calculateIntercept(ntr, ftr, ftl, ntl, frustum),
+    calculate_intercept(ntr, ftr, ftl, ntl, frustum),
     // right surface
-    calculateIntercept(ntr, nbr, fbr, ftr, frustum),
+    calculate_intercept(ntr, nbr, fbr, ftr, frustum),
     // bottom surface
-    calculateIntercept(nbr, nbl, fbl, fbr, frustum),
+    calculate_intercept(nbr, nbl, fbl, fbr, frustum),
     // left surface
-    calculateIntercept(ntl, nbl, fbl, ftl, frustum),
+    calculate_intercept(ntl, nbl, fbl, ftl, frustum),
     // near surface
-    calculateIntercept(ntl, ntr, nbr, nbl, frustum),
+    calculate_intercept(ntl, ntr, nbr, nbl, frustum),
     // far surface
-    calculateIntercept(ftl, ftr, fbr, fbl, frustum),
+    calculate_intercept(ftl, ftr, fbr, fbl, frustum),
   ];
 
   const epsilon = 1e-8;
-  const visibleX = Math.abs(d.y) + Math.abs(d.z) > epsilon,
-    visibleY = Math.abs(d.z) + Math.abs(d.x) > epsilon,
-    visibleZ = Math.abs(d.x) + Math.abs(d.y) > epsilon;
+  const visible_x = Math.abs(d.y) + Math.abs(d.z) > epsilon,
+    visible_y = Math.abs(d.z) + Math.abs(d.x) > epsilon,
+    visible_z = Math.abs(d.x) + Math.abs(d.y) > epsilon;
   for (const ic of intercepts) {
-    if (visibleX && !isNaN(ic.x)) {
+    if (visible_x && !isNaN(ic.x)) {
       ranges.x.min = Math.min(ranges.x.min, ic.x);
       ranges.x.max = Math.max(ranges.x.max, ic.x);
     }
-    if (visibleY && !isNaN(ic.y)) {
+    if (visible_y && !isNaN(ic.y)) {
       ranges.y.min = Math.min(ranges.y.min, ic.y);
       ranges.y.max = Math.max(ranges.y.max, ic.y);
     }
-    if (visibleZ && !isNaN(ic.z)) {
+    if (visible_z && !isNaN(ic.z)) {
       ranges.z.min = Math.min(ranges.z.min, ic.z);
       ranges.z.max = Math.max(ranges.z.max, ic.z);
     }
@@ -256,25 +254,25 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet
 }
 
 /// calculate cross point of the plane and three axes(x, y, z).
-/// The plane is defined by pointA, pointB, pointC and pointD.(The forth parameter is required to determine the range of the plane.)
-function calculateIntercept(
-  pointA: THREE.Vector3,
-  pointB: THREE.Vector3,
-  pointC: THREE.Vector3,
-  pointD: THREE.Vector3,
+/// The plane is defined by point_a, point_b, point_c and point_d.(The forth parameter is required to determine the range of the plane.)
+function calculate_intercept(
+  point_a: THREE.Vector3,
+  point_b: THREE.Vector3,
+  point_c: THREE.Vector3,
+  point_d: THREE.Vector3,
   frustum: THREE.Frustum
 ) {
-  const abVec = new THREE.Vector3().subVectors(pointB, pointA);
-  const acVec = new THREE.Vector3().subVectors(pointC, pointA);
-  const crossProduct = abVec.clone().cross(acVec);
+  const ab_vec = new THREE.Vector3().subVectors(point_b, point_a);
+  const ac_vec = new THREE.Vector3().subVectors(point_c, point_a);
+  const cross_product = ab_vec.clone().cross(ac_vec);
   const ret = new THREE.Vector3();
-  const sum = crossProduct.x * pointA.x + crossProduct.y * pointA.y + crossProduct.z * pointA.z;
-  if (crossProduct.x == 0) ret.x = 0;
-  else ret.x = sum / crossProduct.x;
-  if (crossProduct.y == 0) ret.y = 0;
-  else ret.y = sum / crossProduct.y;
-  if (crossProduct.z == 0) ret.z = 0;
-  else ret.z = sum / crossProduct.z;
+  const sum = cross_product.x * point_a.x + cross_product.y * point_a.y + cross_product.z * point_a.z;
+  if (cross_product.x == 0) ret.x = 0;
+  else ret.x = sum / cross_product.x;
+  if (cross_product.y == 0) ret.y = 0;
+  else ret.y = sum / cross_product.y;
+  if (cross_product.z == 0) ret.z = 0;
+  else ret.z = sum / cross_product.z;
 
   if (!frustum.containsPoint(new THREE.Vector3(ret.x, 0, 0))) ret.x = Number.NaN;
   if (!frustum.containsPoint(new THREE.Vector3(0, ret.y, 0))) ret.y = Number.NaN;
@@ -315,9 +313,9 @@ function makeAxis(range: Range, delta: number, color: THREE.Color) {
   const material = new THREE.LineBasicMaterial({ vertexColors: true });
   geometry.vertices.push(new THREE.Vector3(0, 0, range.min), new THREE.Vector3(0, 0, range.max));
   geometry.colors.push(color, color);
-  const gridObj = new THREE.Object3D();
-  gridObj.add(new THREE.LineSegments(geometry, material));
-  return gridObj;
+  const grid_obj = new THREE.Object3D();
+  grid_obj.add(new THREE.LineSegments(geometry, material));
+  return grid_obj;
 }
 
 function updateAxisScaleLabel(ranges: ComparableTriplet<Range>) {
@@ -328,7 +326,7 @@ function updateAxisScaleLabel(ranges: ComparableTriplet<Range>) {
 
   const ctx = canvas.getContext('2d')!;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (!PlotSettingsControl.plotSettings.scaleLabelVisible) return;
+  if (!PlotSettingsControl.plot_settings.scaleLabelVisible) return;
   ctx.font = "20px 'Arial'";
 
   updateEachAxis(ctx, ranges.x, plotState.axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
@@ -342,13 +340,13 @@ function updateEachAxis(
   axisColor: string,
   embedFunc: (arg: number) => THREE.Vector3
 ) {
-  const scaleInterval = calculateScaleInterval(range);
-  const fixed = calculateNumberOfDigits(scaleInterval);
+  const scale_interval = calculateScaleInterval(range);
+  const fixed = calculateNumberOfDigits(scale_interval);
   ctx.fillStyle = axisColor;
-  const start = Math.floor(range.min / scaleInterval) * scaleInterval;
+  const start = Math.floor(range.min / scale_interval) * scale_interval;
 
-  for (let i = 0; start + i * scaleInterval <= range.max; i++) {
-    const current = start + i * scaleInterval;
+  for (let i = 0; start + i * scale_interval <= range.max; i++) {
+    const current = start + i * scale_interval;
     const vec = embedFunc(current);
     const pos = toScreenPosition(vec);
     ctx.fillText(current.toFixed(fixed), pos.x, pos.y);
@@ -358,13 +356,12 @@ function updateEachAxis(
 function calculateScaleInterval(range: Range) {
   const log = Math.log(range.getInterval()) / Math.log(10);
   const floor = Math.floor(log);
-  const fractionalPart = log - floor;
-  let scaleInterval = Math.pow(10, floor) / 5;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const fractional_part = log - floor;
+  let scale_interval = Math.pow(10, floor) / 5;
   const log10_5 = 0.69;
-  if (fractionalPart > log10_5) scaleInterval *= 5;
-  if (scaleInterval <= 0) return Number.MAX_VALUE;
-  return scaleInterval;
+  if (fractional_part > log10_5) scale_interval *= 5;
+  if (scale_interval <= 0) return Number.MAX_VALUE;
+  return scale_interval;
 }
 
 function calculateNumberOfDigits(interval: number) {
@@ -376,12 +373,12 @@ function calculateNumberOfDigits(interval: number) {
 }
 
 export function setBackgroundColor(color: string) {
-  let colorVal = parseInt('0x' + color.substr(1));
-  const b = colorVal % 256;
-  colorVal /= 256;
-  const g = colorVal % 256;
-  colorVal /= 256;
-  const r = colorVal;
+  let color_val = parseInt('0x' + color.substr(1));
+  const b = color_val % 256;
+  color_val /= 256;
+  const g = color_val % 256;
+  color_val /= 256;
+  const r = color_val;
   const brightness = Math.min(255, 256 - Math.max(r, g, b));
 
   plotState.axisColors = axisColorBases.map(
@@ -398,7 +395,7 @@ export function setBackgroundColor(color: string) {
         .padStart(2, '0')
   );
   graphControl.renderer.setClearColor(color);
-  updateAxes(true);
+  update_axes(true);
 }
 
 export function resetPlotStartTime() {

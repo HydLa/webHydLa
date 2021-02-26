@@ -6,7 +6,7 @@ import { saveHydatSettingsToStorage } from './storage_control';
 import { Triplet } from './plot_utils';
 import { HydatPhase } from './hydat';
 import { parse, ParamCond, Construct } from './parse';
-import { dfsEachLine, resetAnimation } from './animation_control';
+import { dfs_each_line, resetAnimation } from './animation_control';
 import { setPlotStartTimeIfUnset } from './plot_control';
 
 export class PlotLine {
@@ -19,47 +19,47 @@ export class PlotLine {
     z: string;
     remove: () => void;
   };
-  xItem: dat.GUIController;
-  yItem: dat.GUIController;
-  zItem: dat.GUIController;
+  x_item: dat.GUIController;
+  y_item: dat.GUIController;
+  z_item: dat.GUIController;
   remain: boolean | undefined;
-  colorAngle = 0;
-  lastEditedInput: HTMLInputElement | undefined;
+  color_angle = 0;
+  last_edited_input: HTMLInputElement | undefined;
   plotting = false;
-  plotReady: number | undefined;
-  plotInformation: PlotInformation | undefined;
+  plot_ready: number | undefined;
+  plot_information: PlotInformation | undefined;
 
-  lastPlotTime = 0;
+  last_plot_time = 0;
 
   plot: (THREE.Mesh | THREE.Line)[] | undefined;
 
-  constructor(xName: string, yName: string, zName: string, index: number) {
+  constructor(x_name: string, y_name: string, z_name: string, index: number) {
     this.index = index;
     this.name = `plot${this.index}`;
-    this.folder = DatGUIState.variableFolder.addFolder(this.name);
+    this.folder = DatGUIState.variable_folder.addFolder(this.name);
     this.settings = {
-      x: xName,
-      y: yName,
-      z: zName,
+      x: x_name,
+      y: y_name,
+      z: z_name,
       remove: () => {
         removeLine(this);
       },
     };
     this.folder.add(this.settings, 'remove');
 
-    this.xItem = this.folder.add(this.settings, 'x');
-    this.xItem.onChange(getUpdateFunction(this, this.xItem));
-    this.yItem = this.folder.add(this.settings, 'y');
-    this.yItem.onChange(getUpdateFunction(this, this.yItem));
-    this.zItem = this.folder.add(this.settings, 'z');
-    this.zItem.onChange(getUpdateFunction(this, this.zItem));
+    this.x_item = this.folder.add(this.settings, 'x');
+    this.x_item.onChange(getUpdateFunction(this, this.x_item));
+    this.y_item = this.folder.add(this.settings, 'y');
+    this.y_item.onChange(getUpdateFunction(this, this.y_item));
+    this.z_item = this.folder.add(this.settings, 'z');
+    this.z_item.onChange(getUpdateFunction(this, this.z_item));
   }
 }
 
 export function getUpdateFunction(plotLine: PlotLine, item: dat.GUIController) {
   let prev: string;
   return () => {
-    plotLine.lastEditedInput = <HTMLInputElement>item.domElement.firstChild;
+    plotLine.last_edited_input = <HTMLInputElement>item.domElement.firstChild;
     const val = (<HTMLInputElement>item.domElement.firstChild).value;
     if (prev === undefined || val !== prev) {
       try {
@@ -75,14 +75,14 @@ export function getUpdateFunction(plotLine: PlotLine, item: dat.GUIController) {
 
 export function updateFolder(plotLine: PlotLine, succeeded: boolean) {
   if (succeeded) {
-    const colorOnCorrect = '#303030';
-    (<HTMLInputElement>plotLine.xItem.domElement.firstChild).style.backgroundColor = (<HTMLInputElement>(
-      plotLine.yItem.domElement.firstChild
+    const color_on_correct = '#303030';
+    (<HTMLInputElement>plotLine.x_item.domElement.firstChild).style.backgroundColor = (<HTMLInputElement>(
+      plotLine.y_item.domElement.firstChild
     )).style.backgroundColor = (<HTMLInputElement>(
-      plotLine.zItem.domElement.firstChild
-    )).style.backgroundColor = colorOnCorrect;
+      plotLine.z_item.domElement.firstChild
+    )).style.backgroundColor = color_on_correct;
   } else {
-    const elm = plotLine.lastEditedInput;
+    const elm = plotLine.last_edited_input;
     if (elm === undefined) return;
     elm.style.backgroundColor = '#A00000';
   }
@@ -90,41 +90,41 @@ export function updateFolder(plotLine: PlotLine, succeeded: boolean) {
 
 export function removeFolder(plotLine: PlotLine) {
   plotLine.folder.close();
-  DatGUIState.variableFolder.removeFolder(plotLine.folder);
+  DatGUIState.variable_folder.removeFolder(plotLine.folder);
 }
 
 export function replot(plotLine: PlotLine) {
   resetAnimation(plotLine);
   if (plotLine.settings.x !== '' && plotLine.settings.y !== '' && plotLine.settings.z !== '') {
     if (plotLine.remain === undefined) {
-      HydatControl.settingsForCurrentHydat.plotLineSettings[plotLine.index] = plotLine.settings;
+      HydatControl.settingsForCurrentHydat.plot_line_settings[plotLine.index] = plotLine.settings;
       saveHydatSettingsToStorage();
     }
   }
 }
 
 export function plotReady(plotLine: PlotLine) {
-  const plotInformation = plotLine.plotInformation;
-  if (!plotInformation) {
-    throw new Error('unexpected: plotInformation is undefined');
+  const plot_information = plotLine.plot_information;
+  if (!plot_information) {
+    throw new Error('unexpected: plot_information is undefined');
   }
-  if (plotInformation.line.plotting) {
-    plotLine.plotReady = requestAnimationFrame(() => {
+  if (plot_information.line.plotting) {
+    plotLine.plot_ready = requestAnimationFrame(() => {
       plotReady(plotLine);
     });
   } else {
     plotLine.plotting = true;
-    plotLine.plotReady = undefined;
-    plotLine.lastPlotTime = new Date().getTime();
+    plotLine.plot_ready = undefined;
+    plotLine.last_plot_time = new Date().getTime();
     setPlotStartTimeIfUnset(new Date().getTime());
-    dfsEachLine(
-      plotInformation.phaseIndexArray,
-      plotInformation.axes,
-      plotInformation.line,
-      plotInformation.width,
-      plotInformation.color,
-      plotInformation.dt,
-      plotInformation.parameterConditionList,
+    dfs_each_line(
+      plot_information.phase_index_array,
+      plot_information.axes,
+      plot_information.line,
+      plot_information.width,
+      plot_information.color,
+      plot_information.dt,
+      plot_information.parameter_condition_list,
       0,
       []
     );
@@ -132,11 +132,11 @@ export function plotReady(plotLine: PlotLine) {
 }
 
 interface PlotInformation {
-  phaseIndexArray: { phase: HydatPhase; index: number }[];
+  phase_index_array: { phase: HydatPhase; index: number }[];
   axes: Triplet<Construct>;
   line: PlotLine;
   width: number;
   color: number[];
   dt: number;
-  parameterConditionList: ParamCond[];
+  parameter_condition_list: ParamCond[];
 }

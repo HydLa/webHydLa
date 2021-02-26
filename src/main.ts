@@ -11,29 +11,29 @@ import { initExampleLoader } from './example_loader';
 import { setBackgroundColor } from './plot_control';
 
 $(document).ready(() => {
-  const savedHydla = loadHydlaFromStorage();
-  const savedHydat = loadHydatFromStorage();
+  const saved_hydla = loadHydlaFromStorage();
+  const saved_hydat = loadHydatFromStorage();
 
   initExampleLoader();
 
   PlotSettingsControl.init();
 
-  initDatGUIState(PlotSettingsControl.plotSettings);
+  initDatGUIState(PlotSettingsControl.plot_settings);
 
-  initHydatControl(savedHydat);
+  initHydatControl(saved_hydat);
   initHyLaGIControllerState();
 
   NewUI.init(graphControl.controls);
   initDOMState();
 
-  initEditorState(savedHydla);
+  initEditorState(saved_hydla);
   initStorageControl();
 
-  update2DMode(PlotSettingsControl.plotSettings.twoDimensional);
-  PlotSettingsControl.timeStop();
+  update2DMode(PlotSettingsControl.plot_settings.twoDimensional);
+  PlotSettingsControl.time_stop();
 
-  if (PlotSettingsControl.plotSettings.backgroundColor !== undefined) {
-    setBackgroundColor(PlotSettingsControl.plotSettings.backgroundColor);
+  if (PlotSettingsControl.plot_settings.backgroundColor !== undefined) {
+    setBackgroundColor(PlotSettingsControl.plot_settings.backgroundColor);
   }
 
   renderGraph();

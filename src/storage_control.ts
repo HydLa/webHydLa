@@ -5,8 +5,8 @@ import { HydatControl } from './hydat_control';
 
 const storage = localStorage;
 
-const themeSelector = <HTMLSelectElement>document.getElementById('theme_selector');
-const keyBindingSelector = <HTMLSelectElement>document.getElementById('key_binding_selector');
+const theme_selector = <HTMLSelectElement>document.getElementById('theme_selector');
+const key_binding_selector = <HTMLSelectElement>document.getElementById('key_binding_selector');
 
 export function initStorageControl() {
   loadThemeFromStorage();
@@ -14,36 +14,36 @@ export function initStorageControl() {
 }
 
 export function saveKeyBindingToStorage() {
-  const bindSelector = keyBindingSelector.value;
-  storage.setItem('key_binding', bindSelector);
+  const bind_selector = key_binding_selector.value;
+  storage.setItem('key_binding', bind_selector);
 }
 
 export function loadKeyBindingFromStorage() {
-  const keyBindingSetting = storage.getItem('key_binding');
-  if (keyBindingSetting !== null) {
-    keyBindingSelector.value = keyBindingSetting;
+  const key_binding_setting = storage.getItem('key_binding');
+  if (key_binding_setting !== null) {
+    key_binding_selector.value = key_binding_setting;
   } else {
-    keyBindingSelector.value = keyBindingSelector.options[keyBindingSelector.selectedIndex].value;
-    storage.setItem('key_binding', keyBindingSelector.value);
+    key_binding_selector.value = key_binding_selector.options[key_binding_selector.selectedIndex].value;
+    storage.setItem('key_binding', key_binding_selector.value);
   }
-  if (keyBindingSelector.value == '') setEditorKeyBinding(null);
-  else setEditorKeyBinding(keyBindingSelector.value);
+  if (key_binding_selector.value == '') setEditorKeyBinding(null);
+  else setEditorKeyBinding(key_binding_selector.value);
 }
 
 /* function to save theme into Web Storage */
 export function saveThemeToStorage() {
-  const theme = themeSelector.value;
+  const theme = theme_selector.value;
   storage.setItem('theme', theme);
 }
 
 export function loadThemeFromStorage() {
-  const themeSetting = storage.getItem('theme');
-  if (themeSetting !== null) {
-    themeSelector.value = themeSetting;
+  const theme_setting = storage.getItem('theme');
+  if (theme_setting !== null) {
+    theme_selector.value = theme_setting;
   } else {
-    storage.setItem('theme', themeSelector.value);
+    storage.setItem('theme', theme_selector.value);
   }
-  setEditorTheme(themeSelector.value);
+  setEditorTheme(theme_selector.value);
 }
 
 /* function to save HydLa code into Web Storage */
@@ -63,16 +63,16 @@ export function loadHydatFromStorage() {
   return storage.getItem('hydat');
 }
 
-export function savePlotSettingsToStorage(plotSettings: PlotSettings) {
-  storage.setItem('plot_settings', JSON.stringify(plotSettings));
+export function savePlotSettingsToStorage(plot_settings: PlotSettings) {
+  storage.setItem('plot_settings', JSON.stringify(plot_settings));
 }
 
 export function loadPlotSettingsFromStorage() {
   return PlotSettingsControl.parseJSON(storage.getItem('plot_settings'));
 }
 
-export function saveHydlaNameToStorage(hydlaName: string) {
-  storage.setItem('hydla_name', hydlaName);
+export function saveHydlaNameToStorage(hydla_name: string) {
+  storage.setItem('hydla_name', hydla_name);
 }
 
 export function loadHydlaNameFromStorage() {
@@ -80,12 +80,12 @@ export function loadHydlaNameFromStorage() {
 }
 
 export function saveHydatSettingsToStorage() {
-  if (HydatControl.currentHydat === undefined) {
-    throw new Error('currentHydat is undefined');
+  if (HydatControl.current_hydat === undefined) {
+    throw new Error('current_hydat is undefined');
   }
-  storage.setItem(HydatControl.currentHydat.name, JSON.stringify(HydatControl.settingsForCurrentHydat));
+  storage.setItem(HydatControl.current_hydat.name, JSON.stringify(HydatControl.settingsForCurrentHydat));
 }
 
-export function loadHydatSettingsFromStorage(hydatName: string) {
-  return storage.getItem(hydatName);
+export function loadHydatSettingsFromStorage(hydat_name: string) {
+  return storage.getItem(hydat_name);
 }

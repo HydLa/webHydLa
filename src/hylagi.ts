@@ -4,12 +4,12 @@ import { loadHydat } from './hydat_control';
 import { loadHydlaNameFromStorage } from './storage_control';
 import { HydatRaw } from './hydat';
 
-const firstScriptElement = document.getElementsByTagName('script')[0];
-const htmlModeCheckBox = <HTMLInputElement>document.getElementById('html_mode_check_box');
+const first_script_element = document.getElementsByTagName('script')[0];
+const html_mode_check_box = <HTMLInputElement>document.getElementById('html_mode_check_box');
 
 class HyLaGIControllerState {
   static running = false;
-  static dynamicScriptElements: HTMLElement[];
+  static dynamic_script_elements: HTMLElement[];
 }
 
 /* The type for the response from HyLaGI */
@@ -22,7 +22,7 @@ interface ResponseBody {
 }
 
 export function initHyLaGIControllerState() {
-  HyLaGIControllerState.dynamicScriptElements = [];
+  HyLaGIControllerState.dynamic_script_elements = [];
 }
 
 export function execHyLaGI() {
@@ -34,16 +34,16 @@ export function execHyLaGI() {
 }
 
 export function updateHyLaGIExecIcon() {
-  const runButton = <HTMLInputElement>document.getElementById('run_button');
+  const run_button = <HTMLInputElement>document.getElementById('run_button');
   const elist = Array.from(document.getElementsByClassName('exec-icon'));
   if (HyLaGIControllerState.running) {
-    runButton.value = 'KILL'; // for new UI
+    run_button.value = 'KILL'; // for new UI
     for (const ei of elist) {
       ei.classList.remove('mdi-content-send');
       ei.classList.add('mdi-content-clear');
     }
   } else {
-    runButton.value = 'RUN'; // for new UI
+    run_button.value = 'RUN'; // for new UI
     for (const ei of elist) {
       ei.classList.add('mdi-content-send');
       ei.classList.remove('mdi-content-clear');
@@ -82,28 +82,28 @@ export function sendToHyLaGI(hydla: string) {
 }
 
 export function getTimeoutOption(): string {
-  const timeoutOption = <HTMLInputElement>document.getElementById('timeout_option');
-  if (timeoutOption.value !== '') return timeoutOption.value;
+  const timeout_option = <HTMLInputElement>document.getElementById('timeout_option');
+  if (timeout_option.value !== '') return timeout_option.value;
   else return '30';
 }
 
 export function getOptionsValue(): string {
-  let optionsValue = '';
+  let options_value = '';
 
-  const phaseNum = <HTMLInputElement>document.getElementById('phase_num');
-  const simulationTime = <HTMLInputElement>document.getElementById('simulation_time');
-  const ndModeCheckBox = <HTMLInputElement>document.getElementById('nd_mode_check_box');
-  const otherOptions = <HTMLInputElement>document.getElementById('other_options');
+  const phase_num = <HTMLInputElement>document.getElementById('phase_num');
+  const simulation_time = <HTMLInputElement>document.getElementById('simulation_time');
+  const nd_mode_check_box = <HTMLInputElement>document.getElementById('nd_mode_check_box');
+  const other_options = <HTMLInputElement>document.getElementById('other_options');
 
-  if (phaseNum.value !== '') optionsValue += ` -p ${phaseNum.value}`;
-  if (simulationTime.value !== '') optionsValue += ` -t ${simulationTime.value}`;
-  if (phaseNum.value === '' && simulationTime.value === '') optionsValue += ' -p10';
-  if (htmlModeCheckBox.checked) optionsValue += ' -d --fhtml ';
-  if (ndModeCheckBox.checked) optionsValue += ' --fnd ';
-  else optionsValue += ' --fno-nd ';
-  if (otherOptions.value !== '') optionsValue += otherOptions.value;
+  if (phase_num.value !== '') options_value += ` -p ${phase_num.value}`;
+  if (simulation_time.value !== '') options_value += ` -t ${simulation_time.value}`;
+  if (phase_num.value === '' && simulation_time.value === '') options_value += ' -p10';
+  if (html_mode_check_box.checked) options_value += ' -d --fhtml ';
+  if (nd_mode_check_box.checked) options_value += ' --fnd ';
+  else options_value += ' --fno-nd ';
+  if (other_options.value !== '') options_value += other_options.value;
 
-  return optionsValue;
+  return options_value;
 }
 
 /* Response from HyLaGI */
@@ -139,12 +139,12 @@ export function responseHyLaGI(response: ResponseBody) {
 export function renderOutput(response: ResponseBody) {
   const output = document.getElementById('output-initial')!;
   output.innerHTML = '';
-  for (const elem of HyLaGIControllerState.dynamicScriptElements) {
+  for (const elem of HyLaGIControllerState.dynamic_script_elements) {
     elem.parentNode!.removeChild(elem);
   }
-  HyLaGIControllerState.dynamicScriptElements = [];
+  HyLaGIControllerState.dynamic_script_elements = [];
 
-  if (htmlModeCheckBox.checked) {
+  if (html_mode_check_box.checked) {
     if (response.stdout != undefined) {
       output.innerHTML += response.stdout;
     }
@@ -158,13 +158,13 @@ export function renderOutput(response: ResponseBody) {
       }
       const newScript = document.createElement('script');
       newScript.innerHTML = scriptNode.innerHTML;
-      HyLaGIControllerState.dynamicScriptElements.push(
-        firstScriptElement.parentNode!.insertBefore(newScript, firstScriptElement)
+      HyLaGIControllerState.dynamic_script_elements.push(
+        first_script_element.parentNode!.insertBefore(newScript, first_script_element)
       );
     }
   } else {
-    const getEscapedStringForHTML = (origString: string) =>
-      origString.replace(/\n/gm, '<br/>').replace(/\s/gm, '&nbsp;');
+    const getEscapedStringForHTML = (orig_string: string) =>
+      orig_string.replace(/\n/gm, '<br/>').replace(/\s/gm, '&nbsp;');
     if (response.stdout != undefined) {
       output.innerHTML += getEscapedStringForHTML(response.stdout);
     }

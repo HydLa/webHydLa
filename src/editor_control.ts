@@ -13,7 +13,7 @@ import { sendHydla } from './hylagi';
 import { loadHydat } from './hydat_control';
 
 /* set default hydla code */
-const defaultHydla = `// a sample hydla code: bouncing_particle.hydla
+const default_hydla = `// a sample hydla code: bouncing_particle.hydla
 
 INIT <=> y = 10 & y' = 0.
 FALL <=> [](y'' = -10).
@@ -26,11 +26,11 @@ INIT, FALL << BOUNCE.
 
 class EditorState {
   static editor: ace.Ace.Editor;
-  static autosaveEventEnabled = true;
-  static autosaveChanged = false;
+  static autosave_event_enabled = true;
+  static autosave_changed = false;
 }
 
-export function initEditorState(savedHydla: string | null) {
+export function initEditorState(saved_hydla: string | null) {
   /* ID="editor" な div をエディタにする */
   EditorState.editor = ace.edit('editor');
 
@@ -60,19 +60,19 @@ export function initEditorState(savedHydla: string | null) {
   });
 
   /* load saved hydla code if it exist */
-  if (savedHydla) {
-    setEditorHydla(savedHydla);
+  if (saved_hydla) {
+    setEditorHydla(saved_hydla);
   } else {
     saveHydlaNameToStorage('bouncing_ball');
-    setEditorHydla(defaultHydla);
+    setEditorHydla(default_hydla);
   }
   EditorState.editor.clearSelection();
 
   EditorState.editor.on('change', () => {
-    if (EditorState.autosaveEventEnabled) {
+    if (EditorState.autosave_event_enabled) {
       saveHydlaToWebstorage();
     } else {
-      EditorState.autosaveChanged = true;
+      EditorState.autosave_changed = true;
     }
   });
 }
@@ -83,7 +83,7 @@ export function sendEditorHydla() {
 
 /*
  * function to save HydLa file
- * TODO: hydatControl.tsのsaveHydatと共通化
+ * TODO: hydat_control.tsのsaveHydatと共通化
  */
 export function saveHydla() {
   const blob = new Blob([EditorState.editor.getValue()]);
@@ -111,17 +111,17 @@ export function loadFile() {
       if (!i.files) {
         throw new Error('unexpected: i.files is undefined');
       }
-      const inputFile = i.files[0];
+      const input_file = i.files[0];
       const fr = new FileReader();
-      fr.readAsText(inputFile);
-      const splittedStrs = inputFile.name.split('.');
-      const ext = splittedStrs[splittedStrs.length - 1].toLowerCase();
+      fr.readAsText(input_file);
+      const splitted_strs = input_file.name.split('.');
+      const ext = splitted_strs[splitted_strs.length - 1].toLowerCase();
       if (ext == 'hydat') {
         fr.onload = () => {
           loadHydat(JSON.parse(<string>fr.result));
         };
       } else {
-        saveHydlaNameToStorage(inputFile.name);
+        saveHydlaNameToStorage(input_file.name);
         fr.onload = () => {
           setEditorHydla(<string>fr.result);
         };
@@ -134,16 +134,16 @@ export function loadFile() {
 
 /* function to save HydLa code into Web Storage */
 export function saveHydlaToWebstorage() {
-  EditorState.autosaveEventEnabled = false;
-  EditorState.autosaveChanged = false;
+  EditorState.autosave_event_enabled = false;
+  EditorState.autosave_changed = false;
   saveHydlaToStorage(EditorState.editor.getValue());
   showToast('Saved', 1000, '');
 
   setTimeout(() => {
-    if (EditorState.autosaveChanged) {
+    if (EditorState.autosave_changed) {
       saveHydlaToWebstorage();
     } else {
-      EditorState.autosaveEventEnabled = true;
+      EditorState.autosave_event_enabled = true;
     }
   }, 5000);
 }
