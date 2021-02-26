@@ -5,7 +5,7 @@ import { HydatControl } from './hydat_control';
 import { saveHydatSettingsToStorage } from './storage_control';
 import { Triplet } from './plot_utils';
 import { HydatPhase } from './hydat';
-import { parse, ParamCond, Construct } from './parse';
+import { parse, Construct, Constant } from './parse';
 import { dfs_each_line, resetAnimation } from './animation_control';
 import { setPlotStartTimeIfUnset } from './plot_control';
 
@@ -137,5 +137,5 @@ interface PlotInformation {
   width: number;
   color: number[];
   dt: number;
-  parameter_condition_list: ParamCond[];
+  parameter_condition_list: { [key: string]: Constant }[];
 }

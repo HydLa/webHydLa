@@ -5,7 +5,7 @@ import { graphControl, renderGraph_three_js } from './graph_control';
 import { HydatParameter, HydatParameterInterval, HydatPhase } from './hydat';
 import { RGB, Triplet } from './plot_utils';
 import { HydatControl } from './hydat_control';
-import { parse, ParamCond, Construct, Constant } from './parse';
+import { parse, Construct, Constant } from './parse';
 import { MultiBiMap } from './animation_utils';
 import { PlotSettingsControl } from './plot_settings';
 import { checkAndStopPreloader, phase_to_line_vectors, resetPlotStartTime } from './plot_control';
@@ -120,14 +120,14 @@ function add_plot(line: PlotLine) {
 }
 
 function divideParameter(parameter_map: Map<string, HydatParameter>) {
-  let now_parameter_condition_list: ParamCond[] = [new Map()];
+  let now_parameter_condition_list: { [key: string]: Constant }[] = [{}];
 
   for (const parameter_name of parameter_map.keys()) {
-    const setting = PlotSettingsControl.plot_settings.parameter_condition!.get(parameter_name)!;
+    const setting = PlotSettingsControl.plot_settings.parameter_condition![parameter_name];
     if (setting.fixed) {
       for (let i = 0; i < now_parameter_condition_list.length; i++) {
         const parameter_value = setting.value;
-        now_parameter_condition_list[i].set(parameter_name, new Constant(parameter_value));
+        now_parameter_condition_list[i][parameter_name] = new Constant(parameter_value);
       }
     } else {
       const lb = setting.min_value;
@@ -143,8 +143,8 @@ function divideParameter(parameter_map: Map<string, HydatParameter>) {
       for (let i = 0; i < now_parameter_condition_list.length; i++) {
         for (let j = 0; j < div; j++) {
           const parameter_value = lb + j * deltaP;
-          const tmp_obj = new Map([...now_parameter_condition_list[i]]);
-          tmp_obj.set(parameter_name, new Constant(parameter_value));
+          const tmp_obj = $.extend(true, {}, now_parameter_condition_list[i]); // deep copy
+          tmp_obj[parameter_name] = new Constant(parameter_value);
           next_parameter_condition_list.push(tmp_obj);
         }
       }
@@ -321,7 +321,7 @@ export function dfs_each_line(
   width: number,
   color: number[],
   dt: number,
-  parameter_condition_list: ParamCond[],
+  parameter_condition_list: { [key: string]: Constant }[],
   current_param_idx: number,
   current_line_vec: { vec: THREE.Vector3; isPP: boolean }[]
 ) {
@@ -388,7 +388,7 @@ function search_next_child(
   width: number,
   color: number[],
   dt: number,
-  parameter_condition_list: ParamCond[],
+  parameter_condition_list: { [key: string]: Constant }[],
   current_param_idx: number,
   current_line_vec: { vec: THREE.Vector3; isPP: boolean }[],
   phase_index: { phase: HydatPhase; index: number },
@@ -483,23 +483,30 @@ export function resetAnimation(line: PlotLine) {
 }
 
 /** parameter_condition_listの値がparameter_mapsの範囲内にあるか */
-function check_parameter_condition(parameter_maps: Map<string, HydatParameter>[], parameter_condition: ParamCond) {
+function check_parameter_condition(
+  parameter_maps: Map<string, HydatParameter>[],
+  parameter_condition_list: { [key: string]: Constant }
+) {
   const epsilon = 0.0001;
   for (const map of parameter_maps) {
     let included = true;
     for (const [key, p] of map) {
-      const c = parameter_condition.get(key);
+      const c = parameter_condition_list[key];
       if (c === undefined) continue;
       if (p instanceof HydatParameterInterval) {
-        const lb = p.lower_bound.value.getValue(parameter_condition);
-        const ub = p.upper_bound.value.getValue(parameter_condition);
-        if (!(lb <= c.getValue(parameter_condition) + epsilon && ub >= c.getValue(parameter_condition) - epsilon)) {
+        const lb = p.lower_bound.value.getValue(parameter_condition_list);
+        const ub = p.upper_bound.value.getValue(parameter_condition_list);
+        if (
+          !(
+            lb <= c.getValue(parameter_condition_list) + epsilon && ub >= c.getValue(parameter_condition_list) - epsilon
+          )
+        ) {
           included = false;
         }
       } else if (
         !(
-          p.unique_value.getValue(parameter_condition) <= c.getValue(parameter_condition) + epsilon &&
-          p.unique_value.getValue(parameter_condition) >= c.getValue(parameter_condition) - epsilon
+          p.unique_value.getValue(parameter_condition_list) <= c.getValue(parameter_condition_list) + epsilon &&
+          p.unique_value.getValue(parameter_condition_list) >= c.getValue(parameter_condition_list) - epsilon
         )
       ) {
         included = false;

@@ -7,7 +7,7 @@ import { Triplet, RGB, ComparableTriplet, Range } from './plot_utils';
 import { Object3D } from 'three';
 import { HydatPhase, HydatTimePP, HydatException } from './hydat';
 import { PlotSettingsControl } from './plot_settings';
-import { ParamCond, Construct, Constant } from './parse';
+import { Construct, Constant } from './parse';
 
 const axisColorBases = new Triplet<RGB>(new RGB(1.0, 0.3, 0.3), new RGB(0.3, 1.0, 0.3), new RGB(0.3, 0.3, 1.0));
 
@@ -27,7 +27,7 @@ const plotState: PlotState = {
 
 export function phase_to_line_vectors(
   phase: HydatPhase,
-  parameter_condition: ParamCond,
+  parameter_condition_list: { [key: string]: Constant },
   axis: Triplet<Construct>,
   maxDeltaT: number
 ) {
@@ -41,10 +41,11 @@ export function phase_to_line_vectors(
     return line;
   }
 
-  const env = new Map([...parameter_condition, ...phase.variable_map]);
+  const env: { [key: string]: Construct } = {};
+  $.extend(env, parameter_condition_list, phase.variable_map);
 
   if (phase.time instanceof HydatTimePP) {
-    env.set('t', phase.time.time_point);
+    env.t = phase.time.time_point;
     line.push({
       vec: new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)),
       isPP: true,
@@ -58,13 +59,13 @@ export function phase_to_line_vectors(
     const MIN_STEP = 10; // Minimum step of plotting one IP
     const delta_t = Math.min(maxDeltaT, (end_time - start_time) / MIN_STEP);
     for (t = start_time; t < end_time; t = t + delta_t) {
-      env.set('t', new Constant(t));
+      env.t = new Constant(t);
       line.push({
         vec: new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)),
         isPP: false,
       });
     }
-    env.set('t', new Constant(end_time));
+    env.t = new Constant(end_time);
     line.push({
       vec: new THREE.Vector3(axis.x.getValue(env), axis.y.getValue(env), axis.z.getValue(env)),
       isPP: false,
