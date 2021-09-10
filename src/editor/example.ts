@@ -65,5 +65,5 @@ async function getContent(filename: string) {
 }
 
 function isHydlaFile(s: string) {
-  return s.indexOf('.hydla') != -1;
+  return s.endsWith('.hydla');
 }
