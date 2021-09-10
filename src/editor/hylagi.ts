@@ -161,14 +161,12 @@ export function renderOutput(response: ResponseBody) {
         firstScriptElement.parentNode!.insertBefore(newScript, firstScriptElement)
       );
     }
-  } else {
-    const getEscapedStringForHTML = (origString: string) =>
-      origString.replace(/\n/gm, '<br/>').replace(/\s/gm, '&nbsp;');
+  } else { // html モードにチェックが入っていない場合は，プレーンテキストで表示する
     if (response.stdout != undefined) {
-      output.innerHTML += getEscapedStringForHTML(response.stdout);
+      output.innerText = response.stdout;
     }
     if (response.stderr != undefined) {
-      output.innerHTML += getEscapedStringForHTML(response.stderr);
+      output.innerText += response.stderr;
     }
   }
 }
