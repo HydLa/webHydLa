@@ -2,6 +2,8 @@ html, body{
 	height: 100%;
 	width: 100%;
 	overflow-x: hidden;
+	background-color: #222;
+	color: #bbb;
 }
 
 
@@ -13,7 +15,6 @@ html, body{
 	display: block;
 	position: static;
 	font-family: Arial, Helvetica, sans-serif;
-	color: #000000;
 	text-align: center;
 	margin: 30px;
 }
@@ -40,12 +41,12 @@ html, body{
 	right: 0;
 	margin: auto;
 	height: 500px;
-	width: 80%;
+	width: 95%;
 }
 #menu_bar {
 	position: relative;
 	height: 50px;
-	background-color: #000;
+	background-color: #111;
 	padding: 6px;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
@@ -65,7 +66,7 @@ html, body{
 #simulation_settings {
 	position: relative;
 	display: inline-flex;
-	background-color: black;
+	background-color: #111;
 	color: white;
 	max-height: 100px;
 	width: 100%;
@@ -89,11 +90,12 @@ html, body{
 	font-size: initial!important;
 	margin: initial!important;
 	margin-left: 5px!important;
-	padding: initial!important;
+	padding: 3px!important;
 	box-shadow: initial!important;
 	box-sizing: initial!important;
 	transition: initial!important;
 	color: white !important;
+	text-align: right;
 }
 #other_options {
 	width: 120px!important;
@@ -165,7 +167,7 @@ input[type="checkbox"] {
 	-webkit-transform: translateY(-50%) translateX(-50%);
   	transform: translateY(-50%) translateX(-50%);
 
-  	background-color: black;
+  	background-color: #222;
   	border-radius: 30px;
   	padding: 20px;
   	/*padding: 10px;*/
