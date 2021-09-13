@@ -20,17 +20,18 @@ export class DatGUIState {
 
 export function initDatGUIState(plotSettings: PlotSettings) {
   DatGUIState.plotSettings = plotSettings;
+  // add new line
   const addLineObj = {
     add: function () {
       const line = addNewLine('', '', '');
       line.folder.open();
     },
   };
-  const datGUI = new dat.GUI({ autoPlace: false, load: localStorage });
+  const datGUI = new dat.GUI({ autoPlace: false, load: localStorage }); // webHydLaの左側全体
   const datGUIAnimate = new dat.GUI({ autoPlace: false, load: localStorage });
   datGUI
     .add(plotSettings, 'plotInterval', 0.01, 1)
-    .step(0.001)
+    .step(0.001) // 数値がこの値で変動できる
     .name('plot interval')
     .onChange(() => {
       replotAll();
@@ -87,6 +88,7 @@ export function initDatGUIState(plotSettings: PlotSettings) {
       PlotSettingsControl.saveToWebStorage();
     });
 
+  // ブラウザを縮めた時にどちらが上にくるか
   datGUI.domElement.style.zIndex = '2';
   datGUIAnimate.domElement.style.zIndex = '3';
   datGUIAnimate.domElement.style['position'] = 'absolute';
@@ -94,18 +96,22 @@ export function initDatGUIState(plotSettings: PlotSettings) {
 
   const heightArea = $('#graph-area').css('height');
 
+  // フォルダの追加
   DatGUIState.parameterFolder = datGUI.addFolder('parameters');
   DatGUIState.parameterFolderSeek = datGUIAnimate.addFolder('seek');
   datGUI.add(addLineObj, 'add').name('add new line');
   DatGUIState.variableFolder = datGUI.addFolder('variables');
 
+  // 上
   const datContainer = document.getElementById('dat-gui')!;
   datContainer.appendChild(datGUI.domElement);
 
+  // 下
   const datContainerB = document.getElementById('dat-gui-bottom')!;
   datContainerB.style.height = heightArea;
   datContainerB.appendChild(datGUIAnimate.domElement);
 
+  // ND mode(何故ここ？)
   const ndModeCheckBox = <HTMLInputElement>document.getElementById('nd_mode_check_box');
   ndModeCheckBox.checked = true;
 
