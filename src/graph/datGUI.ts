@@ -86,6 +86,7 @@ export function initDatGUIState(plotSettings: PlotSettings) {
   datGUI
     .addColor(plotSettings, 'backgroundColor')
     .name('background')
+    .setValue('#101010')
     .onChange((value) => {
       setBackgroundColor(value);
       PlotSettingsControl.saveToWebStorage(); /*renderThreeJs();i*/
