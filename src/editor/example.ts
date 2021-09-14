@@ -50,6 +50,7 @@ async function loadContents() {
   setEditorHydla(content);
 }
 
+// 選択された Hydla ファイルの中から最後のファイル名を返す（通常1つしか選択できない）
 function getSelectedFilename() {
   const selected = document.getElementsByClassName('selected');
   let fileindex = -1;
@@ -62,6 +63,7 @@ function getSelectedFilename() {
   return selected[fileindex].textContent;
 }
 
+// Base64 の仕様で 76 文字で改行されてしまうので改行記号を取り除く
 async function getContent(filename: string) {
   const url = `${path}/${filename}`;
   const res = await fetch(url);
