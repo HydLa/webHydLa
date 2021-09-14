@@ -18,6 +18,7 @@ export class DatGUIState {
   static plotSettings: PlotSettings;
 }
 
+/** 初期化 */
 export function initDatGUIState(plotSettings: PlotSettings) {
   DatGUIState.plotSettings = plotSettings;
   // add new line
@@ -125,8 +126,10 @@ export function parameterSetting(pars: Map<string, HydatParameter>) {
   DatGUIState.parameterItems = [];
   DatGUIState.plotSettings.parameterCondition = new Map();
   for (const [key, par] of pars) {
+    // PPなら終了？
     if (par instanceof HydatParameterPoint) return;
 
+    // IPの話？
     const lower = par.lowerBound.value.getValue(new Map());
     const upper = par.upperBound.value.getValue(new Map());
     if (!isFinite(lower) && !isFinite(upper)) {
