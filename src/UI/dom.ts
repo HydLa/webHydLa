@@ -1,3 +1,5 @@
+// functions of buttons and load effect
+
 import Materialize from 'materialize-css';
 import { resizeGraphRenderer, replotAll, resizeGraphArea, startResizingGraphArea } from '../graph/graph';
 import {
@@ -28,19 +30,19 @@ export function initDOMState() {
     constrainWidth: true,
     hover: false,
   });
-  Materialize.Dropdown.init(document.querySelectorAll('.axis-dropdown-button'), {
+  /*Materialize.Dropdown.init(document.querySelectorAll('.axis-dropdown-button'), {
     constrainWidth: false,
     hover: false,
-  });
+  });*/
   Materialize.Modal.init(document.querySelectorAll('.modal'));
   DOMState.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
 
-  $('fix_button').on('change', function () {
+  /*$('fix_button').on('change', function () {
     replotAll();
   });
   $('step_button').on('change', function () {
     replotAll();
-  });
+  });*/
 
   document.getElementById('editor_font_size')?.addEventListener('change', (e) => {
     setEditorFontSize((e.target as HTMLInputElement).valueAsNumber);
@@ -57,7 +59,7 @@ export function initDOMState() {
   });
 
   /* function to close/open input-pane */
-  $('#v-separator').mousedown((e) => {
+  /*$('#v-separator').mousedown((e) => {
     const initialX = e.pageX;
     const initialWidth = $('#left-pane').width()!;
     const initialEditor = $('#editor').width()!;
@@ -84,10 +86,10 @@ export function initDOMState() {
         dragging = false;
         $('#secretdiv').remove();
       });
-  });
+  });*/
 
   /* function to adjust height of graph-setting-area */
-  $('#h-separator').mousedown((e) => {
+  /*$('#h-separator').mousedown((e) => {
     const initialY = e.pageY;
     const initialHeight = $('#input-pane').height()!;
     let dragging = true;
@@ -112,7 +114,7 @@ export function initDOMState() {
         dragging = false;
         $('#secretdiv').remove();
       });
-  });
+  });*/
 
   document.getElementById('load-file')?.addEventListener('click', () => {
     loadFile();
@@ -126,9 +128,9 @@ export function initDOMState() {
   document.getElementById('run_button')?.addEventListener('click', () => {
     execHyLaGI();
   });
-  document.getElementById('toggle-input-pane')?.addEventListener('click', () => {
+  /*document.getElementById('toggle-input-pane')?.addEventListener('click', () => {
     toggleInputPane();
-  });
+  });*/
 }
 
 export function showToast(message: string, duration: number, classes: string) {
@@ -153,7 +155,7 @@ export function stopPreloader() {
   document.getElementById('output-preloader')!.classList.add('hide');
 }
 
-export function toggleInputPane() {
+/*export function toggleInputPane() {
   const elm = document.getElementById('left-pane')!;
   const tgl = document.getElementById('v-toggle-icon')!;
   if (elm.getAttribute('style')) {
@@ -166,7 +168,7 @@ export function toggleInputPane() {
     tgl.classList.add('mdi-navigation-chevron-right');
   }
   startResizingGraphArea();
-}
+}*/
 
 export function selectLogTab() {
   DOMState.tabs.select('output-area');
