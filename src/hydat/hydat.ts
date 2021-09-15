@@ -40,7 +40,7 @@ export function saveHydat() {
   saveFile('hydat', JSON.stringify(HydatState.currentHydat.raw));
 }
 
-export function loadHydat(hydat: HydatRaw) {  　　　　//currentHydatとwebHydLaのグラフ表示の更新
+export function loadHydat(hydat: HydatRaw) {             //currentHydatとwebHydLaのグラフ表示の更新
   try {
     saveHydatToStorage(hydat);
     HydatState.currentHydat = new Hydat(hydat);
