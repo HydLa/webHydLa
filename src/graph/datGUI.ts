@@ -243,7 +243,7 @@ export function parameterSeekSetting(lineLen: number) {
   fixLayout();
 }
 /**
- * paramterSeekSettingの引数が1つ増えたやつ(目的は謎)
+ * parameterSeekSettingの引数が1つ増えたやつ(目的は謎)
  * @param lineLen tの100分の1を1とした数値？
  * @param timeLine tの100分の1を1とした数値？
  */
