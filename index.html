@@ -72,16 +72,18 @@
 					<a href="https://github.com/HydLa/webHydLa/actions?query=workflow:CI"><img src="https://github.com/HydLa/webHydLa/workflows/CI/badge.svg" alt="CI"></a>
 					<img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square" alt="code style: prettier">
 				<img src="https://img.shields.io/badge/license-MIT-blue" alt="license: MIT"></p>
-				<p>Provided at <a href="http://webhydla.ueda.info.waseda.ac.jp">http://webhydla.ueda.info.waseda.ac.jp</a></p>
-				<p><img src="https://user-images.githubusercontent.com/39757050/101180365-d3b45980-368e-11eb-8590-e4fb5bef7aae.png" alt="Editor">
-				<img src="https://user-images.githubusercontent.com/39757050/101180368-d57e1d00-368e-11eb-970f-5f6fd012c1f5.png" alt="3D visualization"></p>
+				<p><a href="http://webhydla.ueda.info.waseda.ac.jp">View Demo</a></p>
+				<p><a href="http://webhydla.ueda.info.waseda.ac.jp"><img src="https://user-images.githubusercontent.com/39757050/101180365-d3b45980-368e-11eb-8590-e4fb5bef7aae.png" alt="Editor"></a>
+				<a href="http://webhydla.ueda.info.waseda.ac.jp"><img src="https://user-images.githubusercontent.com/39757050/101180368-d57e1d00-368e-11eb-970f-5f6fd012c1f5.png" alt="3D visualization"></a></p>
 				<a href="#build-by-yourself" id="build-by-yourself" style="color: inherit; text-decoration: none;">
 					<h2>Build by yourself</h2>
 				</a>
+				<pre><code class="language-sh">git <span class="hljs-built_in">clone</span> https://github.com/HydLa/webHydLa.git
+<span class="hljs-built_in">cd</span> webHydLa</code></pre>
 				<a href="#on-docker" id="on-docker" style="color: inherit; text-decoration: none;">
 					<h3>On Docker</h3>
 				</a>
-				<p>Exec <code>docker-compose up</code> and open <a href="http://0.0.0.0:5000/">http://0.0.0.0:5000/</a></p>
+				<p>Execute <code>docker-compose up</code> and open <a href="http://0.0.0.0:5000/">http://0.0.0.0:5000/</a></p>
 				<a href="#locally" id="locally" style="color: inherit; text-decoration: none;">
 					<h3>Locally</h3>
 				</a>
@@ -99,31 +101,35 @@
 				<a href="#build-and-start-the-server" id="build-and-start-the-server" style="color: inherit; text-decoration: none;">
 					<h4>Build and Start the Server</h4>
 				</a>
-				<ul>
-					<li>Install packages and build from source with following commands.<pre><code>/webHydLa<span class="hljs-variable">$ </span>pip install -r requirements.txt
-/webHydLa<span class="hljs-variable">$ </span>npm install
-/webHydLa<span class="hljs-variable">$ </span>npm run build</code></pre>
+				<ol>
+					<li>Install packages and build from source with following commands.<pre><code class="language-sh">pip3 install -r requirements.txt
+npm install
+npm run build</code></pre>
 					</li>
-					<li>The session of webHydLa is encrypted with a secret key.<br>To set the key, run a command such as,<pre><code>/webHydLa$ <span class="hljs-keyword">cat</span> /dev/urandom | LC_CTYPE=C <span class="hljs-keyword">tr</span> -dc <span class="hljs-string">&#x27;a-zA-Z0-9&#x27;</span> | <span class="hljs-keyword">fold</span> -<span class="hljs-keyword">w</span> <span class="hljs-number">10</span> | head -<span class="hljs-number">1</span> &gt; secret_key</code></pre>
+					<li>The session of webHydLa is encrypted with a secret key.
+						To set the key, run a command such as,<pre><code class="language-sh">cat /dev/urandom | LC_CTYPE=C tr -dc <span class="hljs-string">&#x27;a-zA-Z0-9&#x27;</span> | fold -w 10 | head -1 &gt; secret_key</code></pre>
 					</li>
-					<li>Execute server.py, then webHydLa will start on <a href="http://0.0.0.0:5000/">http://0.0.0.0:5000/</a>.<br>(If the port has been already in use, it will use another port.)</li>
-				</ul>
+					<li>Execute <code>server.py</code>, then webHydLa will start on <a href="http://0.0.0.0:5000/">http://0.0.0.0:5000/</a>.
+						(If the port has been already in use, it will use another port.)<pre><code class="language-sh">python3 serve.py</code></pre>
+					</li>
+				</ol>
 				<a href="#lint" id="lint" style="color: inherit; text-decoration: none;">
 					<h2>Lint</h2>
 				</a>
-				<pre><code>/webHydLa$ npm <span class="hljs-keyword">run</span><span class="bash"> lint</span></code></pre>
+				<pre><code class="language-sh">npm run lint</code></pre>
 				<a href="#format" id="format" style="color: inherit; text-decoration: none;">
 					<h2>Format</h2>
 				</a>
-				<pre><code>/webHydLa$ npm <span class="hljs-keyword">run</span><span class="bash"> format</span></code></pre>
+				<pre><code class="language-sh">npm run format</code></pre>
 				<a href="#test" id="test" style="color: inherit; text-decoration: none;">
 					<h2>Test</h2>
 				</a>
-				<pre><code>/webHydLa$ <span class="hljs-built_in">npm</span> t</code></pre>
+				<pre><code class="language-sh">npm t</code></pre>
 				<a href="#generate-document" id="generate-document" style="color: inherit; text-decoration: none;">
 					<h2>Generate Document</h2>
 				</a>
-				<pre><code>/webHydLa$ npm <span class="hljs-keyword">run</span><span class="bash"> doc</span></code></pre>
+				<pre><code class="language-sh">npm run doc</code></pre>
+				<p><a href="https://hydla.github.io/webHydLa/">Here is the generated document</a></p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
