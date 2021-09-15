@@ -65,3 +65,4 @@ Exec `docker-compose up` and open http://0.0.0.0:5000/
 ```
 /webHydLa$ npm run doc
 ```
+[Here is the generated document](https://hydla.github.io/webHydLa/doc/)
