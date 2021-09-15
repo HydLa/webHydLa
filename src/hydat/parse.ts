@@ -1,5 +1,5 @@
-const isAlpha = RegExp.prototype.test.bind(/^[A-Za-z]$/);
-const isDigit = RegExp.prototype.test.bind(/^[0-9]$/);
+const isAlpha = (c: string) => /^[A-Za-z]$/.test(c);
+const isDigit = (c: string) => /^[0-9]$/.test(c);
 
 const isAlDig = (c: string) => isAlpha(c) || isDigit(c);
 
