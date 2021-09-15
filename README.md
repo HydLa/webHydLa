@@ -6,16 +6,23 @@
 ![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)
 ![license: MIT](https://img.shields.io/badge/license-MIT-blue)
 
-Provided at http://webhydla.ueda.info.waseda.ac.jp
 
-![Editor](https://user-images.githubusercontent.com/39757050/101180365-d3b45980-368e-11eb-8590-e4fb5bef7aae.png)
-![3D visualization](https://user-images.githubusercontent.com/39757050/101180368-d57e1d00-368e-11eb-970f-5f6fd012c1f5.png)
+[View Demo](http://webhydla.ueda.info.waseda.ac.jp)
+
+[![Editor](https://user-images.githubusercontent.com/39757050/101180365-d3b45980-368e-11eb-8590-e4fb5bef7aae.png)](http://webhydla.ueda.info.waseda.ac.jp)
+[![3D visualization](https://user-images.githubusercontent.com/39757050/101180368-d57e1d00-368e-11eb-970f-5f6fd012c1f5.png)](http://webhydla.ueda.info.waseda.ac.jp)
+
 
 ## Build by yourself
 
+```sh
+git clone https://github.com/HydLa/webHydLa.git
+cd webHydLa
+```
+
 ### On Docker
 
-Exec `docker-compose up` and open http://0.0.0.0:5000/
+Execute `docker-compose up` and open <http://0.0.0.0:5000/>
 
 ### Locally
 
@@ -28,40 +35,44 @@ Exec `docker-compose up` and open http://0.0.0.0:5000/
 
 #### Build and Start the Server
 
-- Install packages and build from source with following commands.
-  ```
-  /webHydLa$ pip install -r requirements.txt
-  /webHydLa$ npm install
-  /webHydLa$ npm run build
-  ```
-- The session of webHydLa is encrypted with a secret key.  
-  To set the key, run a command such as,
-  ```
-  /webHydLa$ cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 10 | head -1 > secret_key
-  ```
-- Execute server.py, then webHydLa will start on http://0.0.0.0:5000/.  
-  (If the port has been already in use, it will use another port.)
+1. Install packages and build from source with following commands.
+   ```sh
+   pip3 install -r requirements.txt
+   npm install
+   npm run build
+   ```
+2. The session of webHydLa is encrypted with a secret key.
+   To set the key, run a command such as,
+   ```sh
+   cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 10 | head -1 > secret_key
+   ```
+3. Execute `server.py`, then webHydLa will start on <http://0.0.0.0:5000/>.
+   (If the port has been already in use, it will use another port.)
+   ```sh
+   python3 serve.py
+   ```
 
 ## Lint
 
-```
-/webHydLa$ npm run lint
+```sh
+npm run lint
 ```
 
 ## Format
 
-```
-/webHydLa$ npm run format
+```sh
+npm run format
 ```
 
 ## Test
 
-```
-/webHydLa$ npm t
+```sh
+npm t
 ```
 
 ## Generate Document
 
+```sh
+npm run doc
 ```
-/webHydLa$ npm run doc
-```
+[Here is the generated document](https://hydla.github.io/webHydLa/)
