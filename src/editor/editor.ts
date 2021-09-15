@@ -68,6 +68,9 @@ export function initEditorState(savedHydla: string | null) {
   }
   EditorState.editor.clearSelection();
 
+  /* auto save が行われてから5秒間は auto save されないので、
+   * 変更があったということだけを記録しておく
+   */
   EditorState.editor.on('change', () => {
     if (EditorState.autosaveEventEnabled) {
       saveHydlaToWebstorage();
@@ -133,6 +136,7 @@ export function loadFile() {
 }
 
 /* function to save HydLa code into Web Storage */
+/* auto save されてから5秒間は auto save しないようにする */
 export function saveHydlaToWebstorage() {
   EditorState.autosaveEventEnabled = false;
   EditorState.autosaveChanged = false;
