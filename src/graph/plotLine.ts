@@ -8,18 +8,26 @@ import { saveHydatSettingsToStorage } from '../storage';
 import { HydatState, HydatPhase } from '../hydat/hydat';
 import { parse, ParamCond, Construct } from '../hydat/parse';
 
+/** variablesフォルダの中身のパネルのためのクラス */
 export class PlotLine {
+  /** plotの番号(0から) */
   index: number;
+  /** plot<index> */
   name: string;
+  /** plotフォルダ */
   folder: dat.GUI;
+  /** plotごとのx軸, y軸, z軸とremoveボタン */
   settings: {
     x: string;
     y: string;
     z: string;
     remove: () => void;
   };
+  /** x軸にあてる変数を入力する欄 */
   xItem: dat.GUIController;
+  /** y軸にあてる変数を入力する欄 */
   yItem: dat.GUIController;
+  /** z軸にあてる変数を入力する欄 */
   zItem: dat.GUIController;
   remain: boolean | undefined;
   colorAngle = 0;
@@ -55,6 +63,12 @@ export class PlotLine {
   }
 }
 
+/**
+ * 
+ * @param plotLine プロット
+ * @param item 変数入力欄
+ * @returns 
+ */
 export function getUpdateFunction(plotLine: PlotLine, item: dat.GUIController) {
   let prev: string;
   return () => {
@@ -72,6 +86,12 @@ export function getUpdateFunction(plotLine: PlotLine, item: dat.GUIController) {
   };
 }
 
+/**
+ * 正しい入力とそうでないときで入力欄の色を変えたい
+ * @param plotLine 
+ * @param succeeded 
+ * @returns 
+ */
 export function updateFolder(plotLine: PlotLine, succeeded: boolean) {
   if (succeeded) {
     const colorOnCorrect = '#303030';
@@ -87,13 +107,22 @@ export function updateFolder(plotLine: PlotLine, succeeded: boolean) {
   }
 }
 
+/**
+ * plotフォルダの削除
+ * @param plotLine プロット
+ */
 export function removeFolder(plotLine: PlotLine) {
   plotLine.folder.close();
   DatGUIState.variableFolder.removeFolder(plotLine.folder);
 }
 
+/**
+ * リプロット
+ * @param plotLine プロット
+ */
 export function replot(plotLine: PlotLine) {
   resetAnimation(plotLine);
+  // hydatへの操作?
   if (plotLine.settings.x !== '' && plotLine.settings.y !== '' && plotLine.settings.z !== '') {
     if (plotLine.remain === undefined) {
       HydatState.settingsForCurrentHydat.plotLineSettings[plotLine.index] = plotLine.settings;
@@ -102,6 +131,10 @@ export function replot(plotLine: PlotLine) {
   }
 }
 
+/**
+ * わからない
+ * @param plotLine プロット
+ */
 export function plotReady(plotLine: PlotLine) {
   const plotInformation = plotLine.plotInformation;
   if (!plotInformation) {
@@ -130,12 +163,20 @@ export function plotReady(plotLine: PlotLine) {
   }
 }
 
+/** プロットの情報 */
 interface PlotInformation {
+  /** わからない */
   phaseIndexArray: { phase: HydatPhase; index: number }[];
+  /** x, y, z軸 */
   axes: Triplet<Construct>;
+  /** プロット */
   line: PlotLine;
+  /** プロットの幅 */
   width: number;
+  /** プロットの色 */
   color: number[];
+  /** わからない */
   dt: number;
+  /** わからない */
   parameterConditionList: ParamCond[];
 }
