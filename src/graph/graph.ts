@@ -108,7 +108,9 @@ export function resizeGraphRenderer() {
 export function modifyNameLabel(name: string | undefined) {
   /**
    * 座標画面の左下部に現在動かしているファイル名を表示（open controls に隠れる位置）
+   * TODO: example のソースコードを読み込んだときにファイル名が表示されていない（bouncing_ball になる）
    */
+
   let text = '';
   if (!(name == undefined || name == null)) {
     text = name;
@@ -123,6 +125,7 @@ export function modifyNameLabel(name: string | undefined) {
   ctx.fillStyle = '#FFFFFF';
   ctx.fillText(text, 0, canvas.height - 50);
 }
+
 export function renderGraph() {
   requestAnimationFrame(() => {
     renderGraph();
@@ -132,6 +135,7 @@ export function renderGraph() {
     replotAll();
   }
   updateAxes(false);
+  // animatable は、stop のチェックボックスのオンオフ
   if (graphState.animatable) {
     animate(); // animating function
     animateTime();
@@ -145,6 +149,7 @@ export function renderGraph() {
     }
     graphState.aLine = getLength();
   }
+  // maxlen は webhydla の value バー の最大時間
   if (animationState.maxlen !== graphState.tLine) {
     graphState.tLine = animationState.maxlen;
     parameterSeekSetting(graphState.tLine);
@@ -158,6 +163,7 @@ export function renderGraphThreeJs() {
   graphState.renderer.render(graphState.scene, graphState.camera);
 }
 
+// plot.ts にあるべき（そこからしか呼ばれていない）
 export function toScreenPosition(pos: THREE.Vector3) {
   const widthHalf = 0.5 * graphState.renderer.getContext().canvas.width;
   const heightHalf = 0.5 * graphState.renderer.getContext().canvas.height;
@@ -174,6 +180,8 @@ export function updateRotate(autoRotate: boolean) {
   graphState.controls.autoRotate = autoRotate;
 }
 
+
+// x-y mode が変更されたときに呼ばれる
 export function update2DMode(twoDimensional: boolean) {
   graphState.controls.enableRotate = !twoDimensional;
   graphState.controls.mouseButtons = {
@@ -184,6 +192,7 @@ export function update2DMode(twoDimensional: boolean) {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     RIGHT: THREE.MOUSE.PAN,
   };
+  // x-y mode になったときに、カメラを初期位置に戻す
   if (twoDimensional) {
     graphState.camera.position.copy(graphState.controlsPosition0.clone());
     graphState.controls.target.set(0, 0, 0);
@@ -192,6 +201,7 @@ export function update2DMode(twoDimensional: boolean) {
   }
 }
 
+// TODO: 使用されていない関数
 export function startResizingGraphArea() {
   graphState.resizeLoopCount = 0;
   setTimeout(() => {
@@ -199,6 +209,7 @@ export function startResizingGraphArea() {
   }, 10);
 }
 
+// TODO: 使用されていない関数
 export function resizeGraphArea() {
   graphState.resizeLoopCount++;
   resizeGraphRenderer();
@@ -213,6 +224,7 @@ export function clearPlot() {
   graphState.scene = new THREE.Scene();
   // TODO: 複数のプロットが存在するときの描画範囲について考える
   // TODO: 設定を変更した時に動的に変更が反映されるようにする
+  // TODO: directionalLight が生成されていない。 
 }
 
 export function replotAll() {
