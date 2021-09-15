@@ -6,7 +6,7 @@
 ![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)
 ![license: MIT](https://img.shields.io/badge/license-MIT-blue)
 
-Provided at http://webhydla.ueda.info.waseda.ac.jp
+Provided at <http://webhydla.ueda.info.waseda.ac.jp>
 
 ![Editor](https://user-images.githubusercontent.com/39757050/101180365-d3b45980-368e-11eb-8590-e4fb5bef7aae.png)
 ![3D visualization](https://user-images.githubusercontent.com/39757050/101180368-d57e1d00-368e-11eb-970f-5f6fd012c1f5.png)
@@ -15,7 +15,7 @@ Provided at http://webhydla.ueda.info.waseda.ac.jp
 
 ### On Docker
 
-Exec `docker-compose up` and open http://0.0.0.0:5000/
+Exec `docker-compose up` and open <http://0.0.0.0:5000/>
 
 ### Locally
 
