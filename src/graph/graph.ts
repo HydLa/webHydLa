@@ -93,12 +93,14 @@ export function resizeGraphRenderer() {
 
     graphState.camera.updateProjectionMatrix();
 
+    // 軸の数字を表示するために上からかぶせるキャンバスのサイズ調整
     const w = $('#scale_label_wrapper').width()!;
     const h = $('#scale_label_wrapper').height()!;
     $('#scaleLabelCanvas').attr('width', w);
     $('#scaleLabelCanvas').attr('height', h);
     updateAxes(true);
 
+    // ファイル名を表示するために上からかぶせるキャンバスのサイズ調整
     $('#nameLabelCanvas').attr('width', w);
     $('#nameLabelCanvas').attr('height', h);
     modifyNameLabel(HydatState.currentHydat?.name);
