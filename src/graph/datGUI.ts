@@ -107,9 +107,6 @@ export function initDatGUIState(plotSettings: PlotSettings) {
   datContainerB.style.height = heightArea;
   datContainerB.appendChild(datGUIAnimate.domElement);
 
-  const ndModeCheckBox = <HTMLInputElement>document.getElementById('nd_mode_check_box');
-  ndModeCheckBox.checked = true;
-
   fixLayout();
 }
 
