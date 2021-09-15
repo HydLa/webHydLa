@@ -29,18 +29,11 @@ async function loadExamples() {
 }
 
 async function getFilenames() {
-  const filenames: string[] = [];
-
   const res = await fetch(path.toString());
   const json = await res.json();
-  // 例題ディレクトリからHydLaプログラムのファイル名を取得
-  for (const f of json) {
-    if (isHydlaFile(f.name)) {
-      filenames.push(f.name);
-    }
-  }
 
-  return filenames;
+  // 例題ディレクトリからHydLaプログラムのファイル名を取得
+  return [...json].map(f => f.name).filter(isHydlaFile);
 }
 
 async function loadContents() {
@@ -74,5 +67,5 @@ async function getContent(filename: string) {
 }
 
 function isHydlaFile(s: string) {
-  return s.indexOf('.hydla') != -1;
+  return s.endsWith('.hydla');
 }
