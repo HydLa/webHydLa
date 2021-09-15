@@ -297,13 +297,16 @@ input[type="checkbox"] {
 }
 
 
-#nameLabelCanvas{
-	position:absolute;
-	top: 0px;
-	z-index: 2;
+/* グラフエリア左下のファイル名の表示 */
+#file-name {
+	position: absolute;
+	bottom: 5px;
+	left: 5px;
+	z-index: 1;
 	pointer-events: none;
+	font-size: 18px;
+	color: #555;
 }
-
 
 /*over-ride materialize.css*/
 .tabs .tab a {
