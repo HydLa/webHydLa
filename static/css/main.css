@@ -95,11 +95,23 @@ html, body{
 	box-sizing: initial!important;
 	transition: initial!important;
 	color: white !important;
-	text-align: right;
 }
 #other_options {
 	width: 120px!important;
 }
+/* input[type=number] の右側に出てくる数値を上下させる矢印のボタンは邪魔なので隠す */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
 input[type="checkbox"] {
 	background-color: #555!important;
 	border: initial!important;
@@ -339,4 +351,13 @@ input[type="checkbox"] {
 #modal_examples {
 	width: 50%;
   height: 40%;
+}
+
+
+/* HTML モードのスタイリング */
+/* html 出力での結果は独自の css を当てているため，背景色は真っ白になっている．
+   仕方がないので，とりあえず文字色を黒色にしておいた．
+ */
+details {
+    color: #333;
 }
