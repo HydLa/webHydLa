@@ -1,3 +1,9 @@
+// This program contains definitions of hydat.
+// This also defines functions that save/load a hydat (file).
+
+// ~Rawクラスは、JSON.parseの結果受け取りとsaveFileへの引数渡し用のクラスと見られる
+// webHydLa用に整形したものが、Rawが取れたクラス
+
 /* eslint-disable @typescript-eslint/naming-convention */
 // hydatのkeyがsnake_caseのため，Rawのプロパティもsnake_case
 
@@ -34,7 +40,7 @@ export function saveHydat() {
   saveFile('hydat', JSON.stringify(HydatState.currentHydat.raw));
 }
 
-export function loadHydat(hydat: HydatRaw) {
+export function loadHydat(hydat: HydatRaw) {  　　　　//currentHydatとwebHydLaのグラフ表示の更新
   try {
     saveHydatToStorage(hydat);
     HydatState.currentHydat = new Hydat(hydat);
@@ -64,6 +70,8 @@ const isHydatTimePPRaw = (raw: HydatTimeRaw): raw is HydatTimePPRaw => {
   return (raw as HydatTimePPRaw).time_point !== undefined;
 };
 
+// JSON形式mapからJavaScript形式mapへの変換
+// TODO : else if節とelse節がどちらも必要なものなのかの確認
 const translateParameterMap = (parameterMap: { [key: string]: HydatParameterRaw }) => {
   const map = new Map<string, HydatParameter>();
   for (const key in parameterMap) {
@@ -206,6 +214,7 @@ export class HydatParameterInterval {
   }
 }
 
+// TODO : HydatParameterIntervalRawとHydatParameterIntervalRaw2が両方とも必要なのかの確認
 type HydatParameterRaw = HydatParameterPointRaw | HydatParameterIntervalRaw | HydatParameterIntervalRaw2;
 
 interface HydatParameterPointRaw {
