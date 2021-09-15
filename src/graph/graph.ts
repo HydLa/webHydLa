@@ -99,33 +99,18 @@ export function resizeGraphRenderer() {
     $('#scaleLabelCanvas').attr('width', w);
     $('#scaleLabelCanvas').attr('height', h);
     updateAxes(true);
-
-    // ファイル名を表示するために上からかぶせるキャンバスのサイズ調整
-    $('#nameLabelCanvas').attr('width', w);
-    $('#nameLabelCanvas').attr('height', h);
-    modifyNameLabel(HydatState.currentHydat?.name);
   }
 }
 
+/**
+ * 座標画面の左下部に現在動かしているファイル名を表示
+ * TODO: example のソースコードを読み込んだときにファイル名が表示されていない（bouncing_ball になる）
+ */
 export function modifyNameLabel(name: string | undefined) {
-  /**
-   * 座標画面の左下部に現在動かしているファイル名を表示（open controls に隠れる位置）
-   * TODO: example のソースコードを読み込んだときにファイル名が表示されていない（bouncing_ball になる）
-   */
-
-  let text = '';
-  if (!(name == undefined || name == null)) {
-    text = name;
+  const fileNameElement = <HTMLElement>document.getElementById('file-name');
+  if (name !== undefined) {
+    fileNameElement.innerText = name;
   }
-  const canvas = <HTMLCanvasElement>document.getElementById('nameLabelCanvas');
-  if (!canvas || !canvas.getContext) {
-    return false;
-  }
-  const ctx = canvas.getContext('2d')!;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.font = "20px 'Arial'";
-  ctx.fillStyle = '#FFFFFF';
-  ctx.fillText(text, 0, canvas.height - 50);
 }
 
 export function renderGraph() {

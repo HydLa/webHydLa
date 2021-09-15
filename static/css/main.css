@@ -265,12 +265,20 @@ input[type="checkbox"] {
 	top: 1em;
 	left: 1em;
 	z-index: 3;
+	height: 90%;
+	overflow-y: scroll;
 }
 #dat-gui-bottom{
 	position: absolute;
 	bottom: 1em;
-	left: 1em;
+	right: 1em;
 	z-index: 3;
+	width: 245px;
+	/* dat.gui のデフォルトは 245px らしい．
+	 * right: 1em; で右側からの距離を指定するときに width が初期値（ゼロ）だと，
+	 * パネルの位置が，パネルの右端「= パネルの左端」が右から 1em となってしまい，
+	 * パネルの大部分が隠れてしまうため，width をはじめから指定している
+	 */
 }
 
 #scale_label_wrapper{
@@ -289,13 +297,16 @@ input[type="checkbox"] {
 }
 
 
-#nameLabelCanvas{
-	position:absolute;
-	top: 0px;
-	z-index: 2;
+/* グラフエリア左下のファイル名の表示 */
+#file-name {
+	position: absolute;
+	bottom: 5px;
+	left: 5px;
+	z-index: 1;
 	pointer-events: none;
+	font-size: 18px;
+	color: #555;
 }
-
 
 /*over-ride materialize.css*/
 .tabs .tab a {
