@@ -1,3 +1,8 @@
+/**
+ * ローカルストレージに保存してある設定を呼び出したり、ローカルストレージに保存したりする。
+ * web ページを離れても戻ったら再度同じ設定が呼び出される。
+ */
+
 import { PlotSettings, PlotSettingsControl } from './graph/plotSettings';
 import { HydatState, HydatRaw } from './hydat/hydat';
 import { setEditorKeyBinding, setEditorTheme } from './editor/editor';
