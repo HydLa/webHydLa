@@ -110,10 +110,7 @@ export class Hydat {
     this.raw = hydat;
     this.name = hydat.name;
     this.variables = hydat.variables;
-    this.firstPhases = [];
-    for (const ph of hydat.first_phases) {
-      this.firstPhases.push(new HydatPhase(ph));
-    }
+    this.firstPhases = hydat.first_phases.map(ph => new HydatPhase(ph));
     this.parameters = translateParameterMap(hydat.parameters);
   }
 }
@@ -152,15 +149,8 @@ export class HydatPhase {
       this.variableMap.set(key, parse(phase.variable_map[key].unique_value));
     }
 
-    this.parameterMaps = [];
-    for (const map of phase.parameter_maps) {
-      this.parameterMaps.push(translateParameterMap(map));
-    }
-
-    this.children = [];
-    for (const c of phase.children) {
-      this.children.push(new HydatPhase(c));
-    }
+    this.parameterMaps = phase.parameter_maps.map(translateParameterMap);
+    this.children = phase.children.map(c => new HydatPhase(c));
   }
 }
 
