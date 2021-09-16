@@ -456,7 +456,6 @@ export function removePlot(line: PlotLine) {
     for (i = 0; i < line.plot.length; i++) {
       graphState.scene.remove(line.plot[i]);
     }
-    delete line.plot[i];
   }
   animationState.indexArrayMultibimap.deleteKey(line.index);
   line.plot = [];
@@ -466,9 +465,8 @@ function removeMesh(line: THREE.Mesh[] | undefined) {
   if (line !== undefined) {
     for (let i = 0; i < line.length; i++) {
       graphState.scene.remove(line[i]);
-      delete line[i];
     }
-    line.length = 0;
+    line = [];
   }
 }
 

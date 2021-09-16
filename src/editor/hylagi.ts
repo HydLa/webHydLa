@@ -1,3 +1,8 @@
+/**
+ * サーバーとのやり取りをするためのコード
+ * Hylagi にコードを送ったり、受け取ったデータを表示する
+ */
+
 import { startPreloader, stopPreloader, showToast, selectLogTab } from '../UI/dom';
 import { sendEditorHydla } from '../editor/editor';
 import { loadHydlaNameFromStorage } from '../storage';
@@ -32,6 +37,7 @@ export function execHyLaGI() {
   }
 }
 
+/* 今は exec_icon は使われていない様子 */
 export function updateHyLaGIExecIcon() {
   const runButton = <HTMLInputElement>document.getElementById('run_button');
   const elist = Array.from(document.getElementsByClassName('exec-icon'));
@@ -80,6 +86,7 @@ export function sendToHyLaGI(hydla: string) {
   xmlhr.send(form);
 }
 
+/* timeout オプションは空でなければそのまま代入してしまうため、数字以外の文字が入っても通ってしまう */
 export function getTimeoutOption(): string {
   const timeoutOption = <HTMLInputElement>document.getElementById('timeout_option');
   if (timeoutOption.value !== '') return timeoutOption.value;
