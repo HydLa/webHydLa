@@ -3,12 +3,11 @@
 */
 
 import Materialize from 'materialize-css';
-import { resizeGraphRenderer, replotAll, resizeGraphArea, startResizingGraphArea } from '../graph/graph';
+import { resizeGraphRenderer } from '../graph/graph';
 import {
   setEditorFontSize,
   setEditorTheme,
   setEditorKeyBinding,
-  resizeEditor,
   loadFile,
   saveHydla,
 } from '../editor/editor';
@@ -73,13 +72,13 @@ export function showToast(message: string, duration: number, classes: string) {
   }
 }
 
-/* function to start preloader */
+/** function to start preloader */
 export function startPreloader() {
   document.getElementById('graph-preloader')!.classList.remove('hide');
   document.getElementById('output-preloader')!.classList.remove('hide');
 }
 
-/* function called when graph is drawn */
+/** function called when graph is drawn */
 export function stopPreloader() {
   document.getElementById('graph-preloader')!.classList.add('hide');
   document.getElementById('output-preloader')!.classList.add('hide');

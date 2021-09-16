@@ -8,7 +8,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 const keyShift = 16;
 const keyCtr = 17;
 const keyAlt = 18;
-const keyMetaL = 91; //windows button
+/** Windos の場合は windows button */
+const keyMetaL = 91;
 
 export class NewUI {
   static init(controls: OrbitControls) {
@@ -54,12 +55,14 @@ export class NewUI {
 
   static enableZoom(controls: OrbitControls) {
     controls.enableZoom = true;
-    $('body').css('overflow-y', 'hidden');  //side scroll bar hidden
+    // set side scroll bar hidden
+    $('body').css('overflow-y', 'hidden');
   }
 
   static disableZoom(controls: OrbitControls) {
     controls.enableZoom = false;
-    $('body').css('overflow-y', 'visible'); //side scroll bar visible
+    // set side scroll bar visible
+    $('body').css('overflow-y', 'visible');
   }
 
   static initScrollZoom(controls: OrbitControls) {
