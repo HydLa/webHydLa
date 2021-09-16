@@ -1,4 +1,5 @@
 import { setEditorHydla } from '../editor/editor';
+import { modifyNameLabel } from '../graph/graph';
 
 /**
  * HyLaGIのレポジトリから例題を取得する
@@ -41,6 +42,7 @@ async function loadContents() {
   if (filename === null) return;
   const content = await getContent(filename);
   setEditorHydla(content);
+  modifyNameLabel(filename);
 }
 
 // 選択された Hydla ファイルの中から最後のファイル名を返す（通常1つしか選択できない）
