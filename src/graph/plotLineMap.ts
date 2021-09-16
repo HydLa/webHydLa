@@ -66,7 +66,6 @@ export function isAllReady() {
   return true;
 }
 
-/** @deprecated */
 export function replotLines() {
   if (PlotSettingsControl.plotSettings.dynamicDraw) {
     PlotSettingsControl.plotSettings.plotInterval = 0.01;

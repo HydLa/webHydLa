@@ -2,6 +2,8 @@ html, body{
 	height: 100%;
 	width: 100%;
 	overflow-x: hidden;
+	background-color: #222;
+	color: #bbb;
 }
 
 
@@ -13,7 +15,6 @@ html, body{
 	display: block;
 	position: static;
 	font-family: Arial, Helvetica, sans-serif;
-	color: #000000;
 	text-align: center;
 	margin: 30px;
 }
@@ -40,12 +41,12 @@ html, body{
 	right: 0;
 	margin: auto;
 	height: 500px;
-	width: 80%;
+	width: 95%;
 }
 #menu_bar {
 	position: relative;
 	height: 50px;
-	background-color: #000;
+	background-color: #111;
 	padding: 6px;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
@@ -65,7 +66,7 @@ html, body{
 #simulation_settings {
 	position: relative;
 	display: inline-flex;
-	background-color: black;
+	background-color: #111;
 	color: white;
 	max-height: 100px;
 	width: 100%;
@@ -89,7 +90,7 @@ html, body{
 	font-size: initial!important;
 	margin: initial!important;
 	margin-left: 5px!important;
-	padding: initial!important;
+	padding: 3px!important;
 	box-shadow: initial!important;
 	box-sizing: initial!important;
 	transition: initial!important;
@@ -98,6 +99,19 @@ html, body{
 #other_options {
 	width: 120px!important;
 }
+/* input[type=number] の右側に出てくる数値を上下させる矢印のボタンは邪魔なので隠す */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
 input[type="checkbox"] {
 	background-color: #555!important;
 	border: initial!important;
@@ -165,7 +179,7 @@ input[type="checkbox"] {
 	-webkit-transform: translateY(-50%) translateX(-50%);
   	transform: translateY(-50%) translateX(-50%);
 
-  	background-color: black;
+  	background-color: #222;
   	border-radius: 30px;
   	padding: 20px;
   	/*padding: 10px;*/
@@ -251,12 +265,20 @@ input[type="checkbox"] {
 	top: 1em;
 	left: 1em;
 	z-index: 3;
+	height: 90%;
+	overflow-y: scroll;
 }
 #dat-gui-bottom{
 	position: absolute;
 	bottom: 1em;
-	left: 1em;
+	right: 1em;
 	z-index: 3;
+	width: 245px;
+	/* dat.gui のデフォルトは 245px らしい．
+	 * right: 1em; で右側からの距離を指定するときに width が初期値（ゼロ）だと，
+	 * パネルの位置が，パネルの右端「= パネルの左端」が右から 1em となってしまい，
+	 * パネルの大部分が隠れてしまうため，width をはじめから指定している
+	 */
 }
 
 #scale_label_wrapper{
@@ -275,13 +297,16 @@ input[type="checkbox"] {
 }
 
 
-#nameLabelCanvas{
-	position:absolute;
-	top: 0px;
-	z-index: 2;
+/* グラフエリア左下のファイル名の表示 */
+#file-name {
+	position: absolute;
+	bottom: 5px;
+	left: 5px;
+	z-index: 1;
 	pointer-events: none;
+	font-size: 18px;
+	color: #555;
 }
-
 
 /*over-ride materialize.css*/
 .tabs .tab a {
@@ -337,4 +362,13 @@ input[type="checkbox"] {
 #modal_examples {
 	width: 50%;
   height: 40%;
+}
+
+
+/* HTML モードのスタイリング */
+/* html 出力での結果は独自の css を当てているため，背景色は真っ白になっている．
+   仕方がないので，とりあえず文字色を黒色にしておいた．
+ */
+details {
+    color: #333;
 }
