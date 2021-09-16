@@ -64,10 +64,10 @@ export class PlotLine {
 }
 
 /**
- * 
+ *
  * @param plotLine プロット
  * @param item 変数入力欄
- * @returns 
+ * @returns
  */
 export function getUpdateFunction(plotLine: PlotLine, item: dat.GUIController) {
   let prev: string;
@@ -88,9 +88,9 @@ export function getUpdateFunction(plotLine: PlotLine, item: dat.GUIController) {
 
 /**
  * 正しい入力とそうでないときで入力欄の色を変えたい
- * @param plotLine 
- * @param succeeded 
- * @returns 
+ * @param plotLine
+ * @param succeeded
+ * @returns
  */
 export function updateFolder(plotLine: PlotLine, succeeded: boolean) {
   if (succeeded) {

@@ -1,10 +1,10 @@
 /** This program contains definitions of hydat.
-  * This also defines functions that save/load a hydat (file).
-  *
-  * ~Raw クラスは、JSON.parse の結果受け取りと saveFile への引数渡し用のクラスと見られる
-  * webHydLa 用に整形したもの（Map object）が、Raw が取れたクラス
-  *
-*/
+ * This also defines functions that save/load a hydat (file).
+ *
+ * ~Raw クラスは、JSON.parse の結果受け取りと saveFile への引数渡し用のクラスと見られる
+ * webHydLa 用に整形したもの（Map object）が、Raw が取れたクラス
+ *
+ */
 
 /* eslint-disable @typescript-eslint/naming-convention */
 // hydatのkeyがsnake_caseのため，Rawのプロパティもsnake_case
@@ -73,10 +73,10 @@ const isHydatTimePPRaw = (raw: HydatTimeRaw): raw is HydatTimePPRaw => {
   return (raw as HydatTimePPRaw).time_point !== undefined;
 };
 
-/** JSON 形式 map から JavaScript 形式 map への変換 
+/** JSON 形式 map から JavaScript 形式 map への変換
  * TODO : else if節とelse節がどちらも必要なものなのかの確認
-*/
-const translateParameterMap = (parameterMap: { [key: string]: HydatParameterRaw; }) => {
+ */
+const translateParameterMap = (parameterMap: { [key: string]: HydatParameterRaw }) => {
   const map = new Map<string, HydatParameter>();
   for (const key in parameterMap) {
     const p = parameterMap[key];
@@ -114,7 +114,7 @@ export class Hydat {
     this.raw = hydat;
     this.name = hydat.name;
     this.variables = hydat.variables;
-    this.firstPhases = hydat.first_phases.map(ph => new HydatPhase(ph));
+    this.firstPhases = hydat.first_phases.map((ph) => new HydatPhase(ph));
     this.parameters = translateParameterMap(hydat.parameters);
   }
 }
@@ -123,7 +123,7 @@ export interface HydatRaw {
   name: string;
   first_phases: HydatPhaseRaw[];
   /** Mapにしない（JSON.parseの結果を格納するため）*/
-  parameters: { [key: string]: HydatParameterRaw; };
+  parameters: { [key: string]: HydatParameterRaw };
   variables: string[];
 }
 
@@ -155,7 +155,7 @@ export class HydatPhase {
     }
 
     this.parameterMaps = phase.parameter_maps.map(translateParameterMap);
-    this.children = phase.children.map(c => new HydatPhase(c));
+    this.children = phase.children.map((c) => new HydatPhase(c));
   }
 }
 
@@ -163,9 +163,9 @@ interface HydatPhaseRaw {
   type: string;
   time: HydatTimeRaw;
   /** Mapにしない（JSON.parseの結果を格納するため）*/
-  variable_map: { [key: string]: HydatVariableRaw; };
+  variable_map: { [key: string]: HydatVariableRaw };
   /** Mapにしない（JSON.parseの結果を格納するため）*/
-  parameter_maps: { [key: string]: HydatParameterRaw; }[];
+  parameter_maps: { [key: string]: HydatParameterRaw }[];
   children: HydatPhaseRaw[];
   simulation_state: string;
 }
@@ -180,13 +180,13 @@ export class HydatParameterPoint {
 }
 
 /** Hydat の lowerBounds/upperBounds は歴史的理由から配列となっているが、要素数は必ず 1 個以下である */
-type Bound = { value: Construct; };
+type Bound = { value: Construct };
 
 export class HydatParameterInterval {
   lowerBound: Bound;
   upperBound: Bound;
 
-  constructor(lowerBounds: { value: string; }[], upperBounds: { value: string; }[]) {
+  constructor(lowerBounds: { value: string }[], upperBounds: { value: string }[]) {
     switch (lowerBounds.length) {
       case 0:
         this.lowerBound = { value: new Constant(-Infinity) };
@@ -219,13 +219,13 @@ interface HydatParameterPointRaw {
 }
 
 interface HydatParameterIntervalRaw {
-  lower_bounds: { value: string; }[];
-  upper_bounds: { value: string; }[];
+  lower_bounds: { value: string }[];
+  upper_bounds: { value: string }[];
 }
 
 interface HydatParameterIntervalRaw2 {
-  lower_bound: { value: string; };
-  upper_bound: { value: string; };
+  lower_bound: { value: string };
+  upper_bound: { value: string };
 }
 
 type HydatTime = HydatTimePP | HydatTimeIP;
