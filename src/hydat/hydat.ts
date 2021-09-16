@@ -1,8 +1,10 @@
-// This program contains definitions of hydat.
-// This also defines functions that save/load a hydat (file).
-
-// ~Rawクラスは、JSON.parseの結果受け取りとsaveFileへの引数渡し用のクラスと見られる
-// webHydLa用に整形したものが、Rawが取れたクラス
+/** This program contains definitions of hydat.
+  * This also defines functions that save/load a hydat (file).
+  *
+  * ~Rawクラスは、JSON.parseの結果受け取りとsaveFileへの引数渡し用のクラスと見られる
+  * webHydLa用に整形したものが、Rawが取れたクラス
+  *
+*/
 
 /* eslint-disable @typescript-eslint/naming-convention */
 // hydatのkeyがsnake_caseのため，Rawのプロパティもsnake_case
