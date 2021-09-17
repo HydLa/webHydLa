@@ -34,7 +34,7 @@ async function getFilenames() {
   const json = await res.json();
 
   // 例題ディレクトリからHydLaプログラムのファイル名を取得
-  return [...json].map(f => f.name).filter(isHydlaFile);
+  return [...json].map((f) => f.name).filter(isHydlaFile);
 }
 
 async function loadContents() {

@@ -167,7 +167,6 @@ export function updateRotate(autoRotate: boolean) {
   graphState.controls.autoRotate = autoRotate;
 }
 
-
 // x-y mode が変更されたときに呼ばれる
 export function update2DMode(twoDimensional: boolean) {
   graphState.controls.enableRotate = !twoDimensional;
@@ -211,7 +210,7 @@ export function clearPlot() {
   graphState.scene = new THREE.Scene();
   // TODO: 複数のプロットが存在するときの描画範囲について考える
   // TODO: 設定を変更した時に動的に変更が反映されるようにする
-  // TODO: directionalLight が生成されていない。 
+  // TODO: directionalLight が生成されていない。
 }
 
 export function replotAll() {

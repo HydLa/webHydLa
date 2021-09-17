@@ -1,6 +1,6 @@
 /**
-  * control "zoom in/out" of graph area
-*/
+ * control "zoom in/out" of graph area
+ */
 
 import $ from 'jquery';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';

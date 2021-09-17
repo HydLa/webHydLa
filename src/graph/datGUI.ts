@@ -126,9 +126,9 @@ export function initDatGUIState(plotSettings: PlotSettings) {
 }
 
 /**
- * 
+ *
  * @param pars パラメタ群
- * @returns 
+ * @returns
  */
 export function parameterSetting(pars: Map<string, HydatParameter>) {
   for (const item of DatGUIState.parameterItems) {
@@ -164,7 +164,10 @@ export function parameterSetting(pars: Map<string, HydatParameter>) {
     });
     parameterItem.step(step);
 
-    const modeItemFixed = DatGUIState.parameterFolder.add(DatGUIState.plotSettings.parameterCondition.get(key)!, 'fixed');
+    const modeItemFixed = DatGUIState.parameterFolder.add(
+      DatGUIState.plotSettings.parameterCondition.get(key)!,
+      'fixed'
+    );
     const modeItemRange = DatGUIState.parameterFolder.add(
       DatGUIState.plotSettings.parameterCondition.get(key)!,
       'range'

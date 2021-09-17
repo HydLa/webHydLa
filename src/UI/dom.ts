@@ -1,16 +1,10 @@
 /**
-  * functions of buttons and load effect
-*/
+ * functions of buttons and load effect
+ */
 
 import Materialize from 'materialize-css';
 import { resizeGraphRenderer } from '../graph/graph';
-import {
-  setEditorFontSize,
-  setEditorTheme,
-  setEditorKeyBinding,
-  loadFile,
-  saveHydla,
-} from '../editor/editor';
+import { setEditorFontSize, setEditorTheme, setEditorKeyBinding, loadFile, saveHydla } from '../editor/editor';
 import { execHyLaGI } from '../editor/hylagi';
 import { saveHydat } from '../hydat/hydat';
 import { saveThemeToStorage, saveKeyBindingToStorage } from '../storage';
