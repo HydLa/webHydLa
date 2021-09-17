@@ -1,25 +1,17 @@
-export function isAlpha(c: string) {
-  const regex = new RegExp('^[A-Za-z]$');
-  return regex.test(c);
-}
+const isAlpha = (c: string) => /^[A-Za-z]$/.test(c);
+const isDigit = (c: string) => /^[0-9]$/.test(c);
 
-export function isDigit(c: string) {
-  const regex = new RegExp('^[0-9]$');
-  return regex.test(c);
-}
+const isAlDig = (c: string) => isAlpha(c) || isDigit(c);
 
-export function isAlDig(c: string) {
-  return isAlpha(c) || isDigit(c);
-}
-
-/*
- * <expression> ::= <term> { +<term> | -<term> }
- * <term> ::= <term2> { *<term2> | /<term2> }
- * <term2> ::= <factor> { ^<factor> }
+/* 
+ * <expression> ::= <term> { + <term> | - <term> }
+ * <term> ::= <term2> { * <term2> | / <term2> }
+ * <term2> ::= <factor> { ^ <factor> }
  * <factor> ::= (<expression>) | Func[<expression>] | <negative>
  * <negative> ::= { - } <leaf>
  * <leaf> ::= 'Infinity' | parameter | constant | variable | number
  */
+
 
 export function number(s: string, index: number): [Constant, number] {
   let n = 0;
