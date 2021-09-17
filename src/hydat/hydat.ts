@@ -46,6 +46,7 @@ export function saveHydat() {
 export function loadHydat(hydat: HydatRaw) {
   try {
     saveHydatToStorage(hydat);
+    // HydatException を投げる可能性がある
     HydatState.currentHydat = new Hydat(hydat);
     parameterSetting(HydatState.currentHydat.parameters);
     modifyNameLabel(HydatState.currentHydat.name);
@@ -94,12 +95,8 @@ const translateParameterMap = (parameterMap: { [key: string]: HydatParameterRaw 
 export class HydatException extends Error {
   constructor(message: string) {
     super();
-    Object.defineProperty(this, 'name', {
-      get: () => this.constructor.name,
-    });
-    Object.defineProperty(this, 'message', {
-      get: () => message,
-    });
+    this.name = this.constructor.name;
+    this.message = message;
   }
 }
 
