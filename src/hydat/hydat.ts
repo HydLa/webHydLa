@@ -11,7 +11,7 @@
 
 import { parse, Env, Construct, Constant, Plus } from './parse';
 import { saveHydatToStorage } from '../storage';
-import { modifyNameLabel, clearPlot } from '../graph/graph';
+import { clearPlot } from '../graph/graph';
 import { initVariableSelector } from '../graph/plotLineMap';
 import { parameterSetting } from '../graph/datGUI';
 import { updateAxes } from '../graph/plot';
@@ -49,7 +49,6 @@ export function loadHydat(hydat: HydatRaw) {
     // HydatException を投げる可能性がある
     HydatState.currentHydat = new Hydat(hydat);
     parameterSetting(HydatState.currentHydat.parameters);
-    modifyNameLabel(HydatState.currentHydat.name);
   } catch (e) {
     console.log(e);
     console.log(e.stack);

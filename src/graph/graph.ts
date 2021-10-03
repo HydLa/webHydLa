@@ -102,17 +102,6 @@ export function resizeGraphRenderer() {
   }
 }
 
-/**
- * 座標画面の左下部に現在動かしているファイル名を表示
- * TODO: example のソースコードを読み込んだときにファイル名が表示されていない（bouncing_ball になる）
- */
-export function modifyNameLabel(name: string | undefined) {
-  const fileNameElement = <HTMLElement>document.getElementById('file-name');
-  if (name !== undefined) {
-    fileNameElement.innerText = name;
-  }
-}
-
 export function renderGraph() {
   requestAnimationFrame(() => {
     renderGraph();
