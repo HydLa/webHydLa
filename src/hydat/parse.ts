@@ -3,7 +3,7 @@ const isDigit = (c: string) => /^[0-9]$/.test(c);
 
 const isAlDig = (c: string) => isAlpha(c) || isDigit(c);
 
-/* 
+/*
  * <expression> ::= <term> { + <term> | - <term> }
  * <term> ::= <term2> { * <term2> | / <term2> }
  * <term2> ::= <factor> { ^ <factor> }
@@ -11,7 +11,6 @@ const isAlDig = (c: string) => isAlpha(c) || isDigit(c);
  * <negative> ::= { - } <leaf>
  * <leaf> ::= 'Infinity' | parameter | constant | variable | number
  */
-
 
 export function number(s: string, index: number): [Constant, number] {
   let n = 0;
