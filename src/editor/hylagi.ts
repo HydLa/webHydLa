@@ -86,10 +86,10 @@ export function sendToHyLaGI(hydla: string) {
   xmlhr.send(form);
 }
 
-/* timeout オプションは空でなければそのまま代入してしまうため、数字以外の文字が入っても通ってしまう */
+/* 数字が入っている場合のみ timeout オプションの値を返す */
 export function getTimeoutOption(): string {
   const timeoutOption = <HTMLInputElement>document.getElementById('timeout_option');
-  if (timeoutOption.value !== '') return timeoutOption.value;
+  if (!isNaN(parseInt(timeoutOption.value))) return timeoutOption.value;
   else return '30';
 }
 
@@ -101,9 +101,9 @@ export function getOptionsValue(): string {
   const ndModeCheckBox = <HTMLInputElement>document.getElementById('nd_mode_check_box');
   const otherOptions = <HTMLInputElement>document.getElementById('other_options');
 
-  if (phaseNum.value !== '') optionsValue += ` -p ${phaseNum.value}`;
-  if (simulationTime.value !== '') optionsValue += ` -t ${simulationTime.value}`;
-  if (phaseNum.value === '' && simulationTime.value === '') optionsValue += ' -p10';
+  if (!isNaN(parseInt(phaseNum.value))) optionsValue += ` -p ${phaseNum.value}`;
+  if (!isNaN(parseInt(simulationTime.value))) optionsValue += ` -t ${simulationTime.value}`;
+  if (isNaN(parseInt(phaseNum.value)) && isNaN(parseInt(simulationTime.value))) optionsValue += ' -p10';
   if (htmlModeCheckBox.checked) optionsValue += ' -d --fhtml ';
   if (ndModeCheckBox.checked) optionsValue += ' --fnd ';
   else optionsValue += ' --fno-nd ';
