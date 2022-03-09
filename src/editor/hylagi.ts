@@ -101,12 +101,8 @@ export function getOptionsValue(): string {
   const ndModeCheckBox = <HTMLInputElement>document.getElementById('nd_mode_check_box');
   const otherOptions = <HTMLInputElement>document.getElementById('other_options');
 
-  if (!isNaN(parseInt(phaseNum.value))) {
-    if (parseInt(phaseNum.value) >= 0) optionsValue += ` -p ${phaseNum.value}`;
-  }
-  if (!isNaN(parseInt(simulationTime.value))) {
-    if (parseInt(simulationTime.value) >= 0) optionsValue += ` -t ${simulationTime.value}`;
-  }
+  if (!isNaN(parseInt(phaseNum.value))) optionsValue += ` -p ${phaseNum.value}`;
+  if (!isNaN(parseInt(simulationTime.value))) optionsValue += ` -t ${simulationTime.value}`;
   if (isNaN(parseInt(phaseNum.value)) && isNaN(parseInt(simulationTime.value))) optionsValue += ' -p10';
   if (htmlModeCheckBox.checked) optionsValue += ' -d --fhtml ';
   if (ndModeCheckBox.checked) optionsValue += ' --fnd ';
