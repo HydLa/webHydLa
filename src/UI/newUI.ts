@@ -34,7 +34,7 @@ export class NewUI {
 
     document.addEventListener('keydown', (e) => {
       if (!e) return;
-      if (e.keyCode === keyShift || e.keyCode === keyCtr || e.keyCode === keyAlt || e.keyCode === keyMetaL) {
+      if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) {
         this.enableZoom(controls);
         $('#scroll-message').css('opacity', '0');
       }
@@ -42,7 +42,7 @@ export class NewUI {
 
     document.addEventListener('keyup', (e) => {
       if (!e) return;
-      if (e.keyCode === keyShift || e.keyCode === keyCtr || e.keyCode === keyAlt || e.keyCode === keyMetaL) {
+      if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) {
         this.disableZoom(controls);
       }
     });
