@@ -63,7 +63,7 @@ def gen_hydat():
 
     hylagi_args = ["hylagi"]
 
-    hylagi_args.extend(shlex.split(shlex.quote(form["hylagi_option"])))
+    hylagi_args.extend(shlex.split(form["hylagi_option"]))
     hylagi_args.append("-o")
     hylagi_args.append(save_file_hydat)
 
