@@ -1,11 +1,14 @@
+/**
+ * control "zoom in/out" of graph area
+ */
+
 import $ from 'jquery';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-
-// below are functions added for new UI
 
 const keyShift = 16;
 const keyCtr = 17;
 const keyAlt = 18;
+/** Windos の場合は windows button */
 const keyMetaL = 91;
 
 export class NewUI {
@@ -52,11 +55,13 @@ export class NewUI {
 
   static enableZoom(controls: OrbitControls) {
     controls.enableZoom = true;
+    // set side scroll bar hidden
     $('body').css('overflow-y', 'hidden');
   }
 
   static disableZoom(controls: OrbitControls) {
     controls.enableZoom = false;
+    // set side scroll bar visible
     $('body').css('overflow-y', 'visible');
   }
 
