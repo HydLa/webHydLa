@@ -56,13 +56,13 @@ export class NewUI {
   static enableZoom(controls: OrbitControls) {
     controls.enableZoom = true;
     // set side scroll bar hidden
-    $('body').css('overflow-y', 'hidden');
+    // $('body').css('overflow-y', 'hidden');
   }
 
   static disableZoom(controls: OrbitControls) {
     controls.enableZoom = false;
     // set side scroll bar visible
-    $('body').css('overflow-y', 'visible');
+    // $('body').css('overflow-y', 'visible');
   }
 
   static initScrollZoom(controls: OrbitControls) {
