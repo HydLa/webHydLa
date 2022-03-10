@@ -87,8 +87,10 @@ function addPlot(line: PlotLine) {
     axes = new Triplet<Construct>(parse(line.settings.x), parse(line.settings.y), parse(line.settings.z));
     updateFolder(line, true);
   } catch (e) {
-    console.log(e);
-    console.log(e.stack);
+    if (e instanceof TypeError) {
+      console.log(e);
+      console.log(e.stack);
+    }
     updateFolder(line, false);
     return;
   }
@@ -191,7 +193,7 @@ function addLine(
   animationState.indexArrayMultibimap.set(line.index, animationState.array);
 
   const lines: THREE.Vector3[] = [];
-  const linesGeometry = new THREE.Geometry();
+  const linesGeometry = new THREE.BufferGeometry();
   const scaledWidth = (0.5 * width) / graphState.camera.zoom;
   const dottedLength = 10.0 / graphState.camera.zoom;
   const material = useLine
@@ -245,7 +247,7 @@ function addLineEachPhase(
   dottedLength: number,
   useLine: boolean,
   lines: THREE.Vector3[],
-  linesGeometry: THREE.Geometry,
+  linesGeometry: THREE.BufferGeometry,
   tmpDynamicLine: any[],
   material: THREE.Material
 ) {
@@ -254,7 +256,7 @@ function addLineEachPhase(
     const lineLength = directionVec.length();
     directionVec.normalize();
     const numOfDots = lineLength / dottedLength;
-    const tmpGeometry = new THREE.Geometry();
+    const tmpGeometry = new THREE.BufferGeometry();
     for (let j = 1; j + 1 < numOfDots; j += 2) {
       // 点線の各点を追加
       const tmpBegin = posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength));
@@ -263,8 +265,8 @@ function addLineEachPhase(
         lines.push(tmpBegin, tmpEnd);
       } else {
         const l = makeCylinder(tmpBegin, tmpEnd, scaledWidth, material);
-        if (PlotSettingsControl.plotSettings.dynamicDraw) tmpGeometry.merge(<any>l.geometry.clone(), l.matrix.clone());
-        linesGeometry.merge(<any>l.geometry, l.matrix);
+        if (PlotSettingsControl.plotSettings.dynamicDraw) tmpGeometry.merge(<any>l.geometry.clone());
+        linesGeometry.merge(<any>l.geometry);
       }
     }
     if (PlotSettingsControl.plotSettings.dynamicDraw) {
@@ -287,7 +289,7 @@ function addLineEachPhase(
     } else {
       const l = makeCylinder(posBegin, posEnd, scaledWidth, material);
       if (PlotSettingsControl.plotSettings.dynamicDraw) tmpDynamicLine.push(l);
-      linesGeometry.merge(<any>l.geometry, l.matrix);
+      linesGeometry.merge(<any>l.geometry);
     }
   }
 }
@@ -369,9 +371,11 @@ export function dfsEachLine(
       if (finished) return;
     }
   } catch (ex) {
-    console.log(ex);
-    console.log(ex.stack);
-    showToast(`Plot failed: ${ex.name}(${ex.message})`, 3000, 'red darken-4');
+    if (ex instanceof TypeError) {
+      console.log(ex);
+      console.log(ex.stack);
+      showToast(`Plot failed: ${ex.name}(${ex.message})`, 3000, 'red darken-4');
+    }
     line.plotting = false;
     checkAndStopPreloader();
   }
@@ -514,7 +518,8 @@ export function makeRanges() {
   faces = [];
   if (animationState.animationLine.length != 0) {
     for (let j = 0; j < animationState.animationLine.length - 1; j++) {
-      const faceGeometry = new THREE.Geometry();
+      const points = new Array<THREE.Vector3>();
+      const faceGeometry = new THREE.BufferGeometry();
       let timeR = 0;
       for (let i = 0; i < animationState.maxlen; i++) {
         if (animationState.animationLine[j].vecs[timeR] == undefined) {
@@ -522,17 +527,16 @@ export function makeRanges() {
         } else if (animationState.animationLine[j + 1].vecs[timeR] == undefined) {
           break;
         } else {
-          faceGeometry.vertices.push(
+          points.push(
             animationState.animationLine[j].vecs[timeR].clone(),
             animationState.animationLine[j + 1].vecs[timeR].clone()
           );
         }
         timeR++;
       }
-      for (let k = 0; k < faceGeometry.vertices.length - 2; k++) {
-        faceGeometry.faces.push(new THREE.Face3(k, k + 1, k + 2));
+      for (let k = 0; k < points.length - 2; k++) {
+        faceGeometry.setFromPoints([points[k], points[k + 1], points[k + 2]]);
       }
-      faceGeometry.computeFaceNormals();
       faceGeometry.computeVertexNormals();
       const faceMesh = new THREE.Mesh(
         faceGeometry,
