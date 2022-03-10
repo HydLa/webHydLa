@@ -57,39 +57,39 @@ export function updateHyLaGIExecIcon() {
 }
 
 /* function to submit hydla code to server */
-export function sendHydla(hydla: string) {
+export async function sendHydla(hydla: string) {
   startPreloader();
   HyLaGIControllerState.running = true;
   updateHyLaGIExecIcon();
 
-  const hr = new XMLHttpRequest();
-  hr.open('GET', 'start_session');
-  hr.send(null);
-
-  hr.onload = () => {
-    sendToHyLaGI(hydla);
-  };
+  const response = await fetch('start_session', {
+    method: 'GET',
+  });
+  const text = await response.text();
+  console.log(text);
+  sendToHyLaGI(hydla);
 }
 
-export function sendToHyLaGI(hydla: string) {
+export async function sendToHyLaGI(hydla: string) {
   /* build form data */
   const form = new FormData();
   form.append('hydla_code', hydla);
   form.append('hylagi_option', getOptionsValue());
   form.append('timeout_option', getTimeoutOption());
 
-  const xmlhr = new XMLHttpRequest();
-  xmlhr.open('POST', 'hydat.cgi');
-  xmlhr.onload = () => {
-    responseHyLaGI(JSON.parse(xmlhr.responseText));
-  };
-  xmlhr.send(form);
+  const response = await fetch('hydat.cgi', {
+    method: 'POST',
+    body: form,
+  });
+  const responseText = await response.text();
+  console.log(responseText);
+  responseHyLaGI(JSON.parse(responseText));
 }
 
-/* timeout オプションは空でなければそのまま代入してしまうため、数字以外の文字が入っても通ってしまう */
+/* 数字が入っている場合のみ timeout オプションの値を返す */
 export function getTimeoutOption(): string {
   const timeoutOption = <HTMLInputElement>document.getElementById('timeout_option');
-  if (timeoutOption.value !== '') return timeoutOption.value;
+  if (!isNaN(parseInt(timeoutOption.value))) return timeoutOption.value;
   else return '30';
 }
 
@@ -101,9 +101,9 @@ export function getOptionsValue(): string {
   const ndModeCheckBox = <HTMLInputElement>document.getElementById('nd_mode_check_box');
   const otherOptions = <HTMLInputElement>document.getElementById('other_options');
 
-  if (phaseNum.value !== '') optionsValue += ` -p ${phaseNum.value}`;
-  if (simulationTime.value !== '') optionsValue += ` -t ${simulationTime.value}`;
-  if (phaseNum.value === '' && simulationTime.value === '') optionsValue += ' -p10';
+  if (!isNaN(parseInt(phaseNum.value))) optionsValue += ` -p ${phaseNum.value}`;
+  if (!isNaN(parseInt(simulationTime.value))) optionsValue += ` -t ${simulationTime.value}`;
+  if (isNaN(parseInt(phaseNum.value)) && isNaN(parseInt(simulationTime.value))) optionsValue += ' -p10';
   if (htmlModeCheckBox.checked) optionsValue += ' -d --fhtml ';
   if (ndModeCheckBox.checked) optionsValue += ' --fnd ';
   else optionsValue += ' --fno-nd ';
@@ -180,11 +180,13 @@ export function renderOutput(response: ResponseBody) {
   }
 }
 
-export function killHyLaGI() {
+export async function killHyLaGI() {
   /* build form data */
-  const xmlhr = new XMLHttpRequest();
-  xmlhr.open('GET', 'killer');
-  xmlhr.send(null);
+  const response = await fetch('killer', {
+    method: 'GET',
+  });
+  const responseText = await response.text();
+  console.log(responseText);
   HyLaGIControllerState.running = false;
   updateHyLaGIExecIcon();
 }
