@@ -17,7 +17,7 @@ extends:
   - plugin:@typescript-eslint/recommended
   - plugin:jest/recommended
   - prettier
-  - prettier/@typescript-eslint
+  # - prettier/@typescript-eslint
 globals:
   dat: true
   THREE: true
