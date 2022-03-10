@@ -35,7 +35,7 @@ export function initEditorState(savedHydla: string | null) {
   EditorState.editor = ace.edit('editor');
 
   /* 諸々の設定 */
-  setEditorTheme('ace/theme/sqlserver');
+  setEditorTheme('sqlserver');
   ace.config.setModuleUrl('ace/mode/hydla', './mode-hydla.js');
   EditorState.editor.getSession().setMode('ace/mode/hydla');
   EditorState.editor.getSession().setTabSize(4);
