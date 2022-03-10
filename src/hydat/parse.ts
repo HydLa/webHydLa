@@ -262,7 +262,7 @@ class Subtract implements BinaryConstruct {
 class Multiply implements BinaryConstruct {
   constructor(public lhs: Construct, public rhs: Construct) {}
   toString() {
-    return `${this.lhs.toString()} * ${this.rhs.toString()}`;
+    return `(${this.lhs.toString()} * ${this.rhs.toString()})`;
   }
   getValue(env: Env) {
     return this.lhs.getValue(env) * this.rhs.getValue(env);
@@ -272,7 +272,7 @@ class Multiply implements BinaryConstruct {
 class Divide implements BinaryConstruct {
   constructor(public lhs: Construct, public rhs: Construct) {}
   toString() {
-    return `${this.lhs.toString()} / ${this.rhs.toString()}`;
+    return `(${this.lhs.toString()} / ${this.rhs.toString()})`;
   }
   getValue(env: Env) {
     return this.lhs.getValue(env) / this.rhs.getValue(env);

@@ -55,11 +55,11 @@ export class PlotLine {
     this.folder.add(this.settings, 'remove');
 
     this.xItem = this.folder.add(this.settings, 'x');
-    this.xItem.onChange(getUpdateFunction(this, this.xItem));
+    this.xItem.onFinishChange(getUpdateFunction(this, this.xItem));
     this.yItem = this.folder.add(this.settings, 'y');
-    this.yItem.onChange(getUpdateFunction(this, this.yItem));
+    this.yItem.onFinishChange(getUpdateFunction(this, this.yItem));
     this.zItem = this.folder.add(this.settings, 'z');
-    this.zItem.onChange(getUpdateFunction(this, this.zItem));
+    this.zItem.onFinishChange(getUpdateFunction(this, this.zItem));
   }
 }
 
