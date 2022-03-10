@@ -310,10 +310,10 @@ function expandTwoPlanesOfFrustum(plane1: THREE.Plane, plane2: THREE.Plane) {
 }
 
 function makeAxis(range: Range, delta: number, color: THREE.Color) {
-  const geometry = new THREE.Geometry();
+  const geometry = new THREE.BufferGeometry();
   const material = new THREE.LineBasicMaterial({ vertexColors: true });
-  geometry.vertices.push(new THREE.Vector3(0, 0, range.min), new THREE.Vector3(0, 0, range.max));
-  geometry.colors.push(color, color);
+  geometry.setFromPoints([new THREE.Vector3(0, 0, range.min), new THREE.Vector3(0, 0, range.max)]);
+  geometry.setAttribute('color', new THREE.BufferAttribute([...color.toArray(), ...color.toArray()], 3));
   const gridObj = new THREE.Object3D();
   gridObj.add(new THREE.LineSegments(geometry, material));
   return gridObj;
