@@ -11,7 +11,7 @@
     "build": "webpack",
     "watch": "webpack -w",
     "test": "jest",
-    "doc": "typedoc --out doc src",
+    "doc": "typedoc --out doc src/main.ts",
     "lint": "eslint src",
     "format": "eslint --fix src && prettier --write src",
     "cypress:open": "cypress open",
