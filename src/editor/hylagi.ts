@@ -57,33 +57,33 @@ export function updateHyLaGIExecIcon() {
 }
 
 /* function to submit hydla code to server */
-export function sendHydla(hydla: string) {
+export async function sendHydla(hydla: string) {
   startPreloader();
   HyLaGIControllerState.running = true;
   updateHyLaGIExecIcon();
 
-  const hr = new XMLHttpRequest();
-  hr.open('GET', 'start_session');
-  hr.send(null);
-
-  hr.onload = () => {
-    sendToHyLaGI(hydla);
-  };
+  const response = await fetch('start_session', {
+    method: 'GET',
+  });
+  const text = await response.text();
+  console.log(text);
+  sendToHyLaGI(hydla);
 }
 
-export function sendToHyLaGI(hydla: string) {
+export async function sendToHyLaGI(hydla: string) {
   /* build form data */
   const form = new FormData();
   form.append('hydla_code', hydla);
   form.append('hylagi_option', getOptionsValue());
   form.append('timeout_option', getTimeoutOption());
 
-  const xmlhr = new XMLHttpRequest();
-  xmlhr.open('POST', 'hydat.cgi');
-  xmlhr.onload = () => {
-    responseHyLaGI(JSON.parse(xmlhr.responseText));
-  };
-  xmlhr.send(form);
+  const response = await fetch('hydat.cgi', {
+    method: 'POST',
+    body: form,
+  });
+  const responseText = await response.text();
+  console.log(responseText);
+  responseHyLaGI(JSON.parse(responseText));
 }
 
 /* timeout オプションは空でなければそのまま代入してしまうため、数字以外の文字が入っても通ってしまう */
@@ -180,11 +180,13 @@ export function renderOutput(response: ResponseBody) {
   }
 }
 
-export function killHyLaGI() {
+export async function killHyLaGI() {
   /* build form data */
-  const xmlhr = new XMLHttpRequest();
-  xmlhr.open('GET', 'killer');
-  xmlhr.send(null);
+  const response = await fetch('killer', {
+    method: 'GET',
+  });
+  const responseText = await response.text();
+  console.log(responseText);
   HyLaGIControllerState.running = false;
   updateHyLaGIExecIcon();
 }
