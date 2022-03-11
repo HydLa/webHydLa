@@ -50,9 +50,11 @@ export function loadHydat(hydat: HydatRaw) {
     HydatState.currentHydat = new Hydat(hydat);
     parameterSetting(HydatState.currentHydat.parameters);
   } catch (e) {
-    console.log(e);
-    console.log(e.stack);
-    showToast(`Failed to load hydat: ${e.name}(${e.message})`, 3000, 'red darken-4');
+    if (e instanceof TypeError) {
+      console.log(e);
+      console.log(e.stack);
+      showToast(`Failed to load hydat: ${e.name}(${e.message})`, 3000, 'red darken-4');
+    }
   }
   clearPlot();
   if (HydatState.currentHydat !== undefined) {

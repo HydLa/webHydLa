@@ -7,6 +7,7 @@ import { PlotSettingsControl } from './plotSettings';
 import { showToast, stopPreloader } from '../UI/dom';
 import { HydatPhase, HydatTimePP, HydatException } from '../hydat/hydat';
 import { ParamCond, Construct, Constant } from '../hydat/parse';
+import { range } from 'lodash';
 
 const axisColorBases = new Triplet<RGB>(new RGB(1.0, 0.3, 0.3), new RGB(0.3, 1.0, 0.3), new RGB(0.3, 0.3, 1.0));
 
@@ -211,7 +212,6 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet
 
   graphState.camera.updateMatrix(); // make sure camera's local matrix is updated
   graphState.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
-  graphState.camera.matrixWorldInverse.getInverse(graphState.camera.matrixWorld);
 
   let frustum = new THREE.Frustum();
   frustum.setFromProjectionMatrix(
@@ -250,6 +250,18 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet
       ranges.z.min = Math.min(ranges.z.min, ic.z);
       ranges.z.max = Math.max(ranges.z.max, ic.z);
     }
+  }
+  if (ranges.x.equals(Range.getEmpty())) {
+    ranges.x.min = 0;
+    ranges.x.max = 0;
+  }
+  if (ranges.y.equals(Range.getEmpty())) {
+    ranges.y.min = 0;
+    ranges.y.max = 0;
+  }
+  if (ranges.z.equals(Range.getEmpty())) {
+    ranges.z.min = 0;
+    ranges.z.max = 0;
   }
   return ranges;
 }
@@ -310,10 +322,13 @@ function expandTwoPlanesOfFrustum(plane1: THREE.Plane, plane2: THREE.Plane) {
 }
 
 function makeAxis(range: Range, delta: number, color: THREE.Color) {
-  const geometry = new THREE.Geometry();
+  const geometry = new THREE.BufferGeometry();
   const material = new THREE.LineBasicMaterial({ vertexColors: true });
-  geometry.vertices.push(new THREE.Vector3(0, 0, range.min), new THREE.Vector3(0, 0, range.max));
-  geometry.colors.push(color, color);
+  geometry.setFromPoints([new THREE.Vector3(0, 0, range.min), new THREE.Vector3(0, 0, range.max)]);
+  geometry.setAttribute(
+    'color',
+    new THREE.BufferAttribute(new Float32Array([...color.toArray(), ...color.toArray()]), 3)
+  );
   const gridObj = new THREE.Object3D();
   gridObj.add(new THREE.LineSegments(geometry, material));
   return gridObj;
@@ -330,9 +345,15 @@ function updateAxisScaleLabel(ranges: ComparableTriplet<Range>) {
   if (!PlotSettingsControl.plotSettings.scaleLabelVisible) return;
   ctx.font = "20px 'Arial'";
 
-  updateEachAxis(ctx, ranges.x, plotState.axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
-  updateEachAxis(ctx, ranges.y, plotState.axisColors.y, (arg) => new THREE.Vector3(0, arg, 0));
-  updateEachAxis(ctx, ranges.z, plotState.axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
+  if (ranges.x.min !== 0 || ranges.x.max !== 0) {
+    updateEachAxis(ctx, ranges.x, plotState.axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
+  }
+  if (ranges.y.min !== 0 || ranges.y.max !== 0) {
+    updateEachAxis(ctx, ranges.y, plotState.axisColors.y, (arg) => new THREE.Vector3(0, arg, 0));
+  }
+  if (ranges.z.min !== 0 || ranges.z.max !== 0) {
+    updateEachAxis(ctx, ranges.z, plotState.axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
+  }
 }
 
 function updateEachAxis(
