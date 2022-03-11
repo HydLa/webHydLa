@@ -144,6 +144,8 @@ export function parameterSetting(pars: Map<string, HydatParameter>) {
     const lower = par.lowerBound.value.getValue(new Map());
     const upper = par.upperBound.value.getValue(new Map());
 
+    // パラメタの上下限がどちらも設定されていなければ, それぞれ 100, -100 で決め打ち
+    // 決め打ちの値を変更したくば, ここをいじるべし！
     let minParValue = -100;
     let maxParValue = 100;
     if (isFinite(lower) || isFinite(upper)) {
