@@ -81,7 +81,17 @@ export async function sendToHyLaGI(hydla: string) {
     method: 'POST',
     body: form,
   });
-  const responseText = await response.text();
+
+  const res = await response;
+  if (res.status !== 200) {
+    const errorMessage = `Looks like there was a problem. Status Code: ${response.status}`;
+    showToast(errorMessage, 3000, 'red darken-4');
+    selectLogTab();
+    console.log(errorMessage);
+    return;
+  }
+
+  const responseText = await res.text();
   console.log(responseText);
   responseHyLaGI(JSON.parse(responseText));
 }
