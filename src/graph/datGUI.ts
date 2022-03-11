@@ -144,14 +144,13 @@ export function parameterSetting(pars: Map<string, HydatParameter>) {
     const lower = par.lowerBound.value.getValue(new Map());
     const upper = par.upperBound.value.getValue(new Map());
 
-    // パラメタの下限と上限の少なくとも1つは有限な値であること
-    if (!isFinite(lower) && !isFinite(upper)) {
-      throw new Error('Error: at least one of lowerBound and upperBound must be finite.');
+    let minParValue = -100;
+    let maxParValue = 100;
+    if (isFinite(lower) || isFinite(upper)) {
+      // 下限値が有限でなければ, 上限値-100を下限値とする(上限値も然り)
+      minParValue = isFinite(lower) ? lower : upper - 100;
+      maxParValue = isFinite(upper) ? upper : lower + 100;
     }
-
-    // 下限値が有限でなければ, 上限値-100を下限値とする(上限値も然り)
-    const minParValue = isFinite(lower) ? lower : upper - 100;
-    const maxParValue = isFinite(upper) ? upper : lower + 100;
     const step = (maxParValue - minParValue) / 100;
 
     DatGUIState.plotSettings.parameterCondition.set(key, new ParameterCondition(minParValue, maxParValue));
