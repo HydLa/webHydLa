@@ -10,7 +10,7 @@ import { initExample } from './editor/example';
 import { initHydatState } from './hydat/hydat';
 import { initStorage, loadHydlaFromStorage, loadHydatFromStorage } from './storage';
 
-$(document).ready(() => {
+$(() => {
   const savedHydla = loadHydlaFromStorage();
   const savedHydat = loadHydatFromStorage();
 

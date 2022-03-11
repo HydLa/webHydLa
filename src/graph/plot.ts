@@ -212,7 +212,6 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet
 
   graphState.camera.updateMatrix(); // make sure camera's local matrix is updated
   graphState.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
-  graphState.camera.matrixWorldInverse.getInverse(graphState.camera.matrixWorld);
 
   let frustum = new THREE.Frustum();
   frustum.setFromProjectionMatrix(
@@ -346,9 +345,15 @@ function updateAxisScaleLabel(ranges: ComparableTriplet<Range>) {
   if (!PlotSettingsControl.plotSettings.scaleLabelVisible) return;
   ctx.font = "20px 'Arial'";
 
-  updateEachAxis(ctx, ranges.x, plotState.axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
-  updateEachAxis(ctx, ranges.y, plotState.axisColors.y, (arg) => new THREE.Vector3(0, arg, 0));
-  updateEachAxis(ctx, ranges.z, plotState.axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
+  if (ranges.x.min !== 0 || ranges.x.max !== 0) {
+    updateEachAxis(ctx, ranges.x, plotState.axisColors.x, (arg) => new THREE.Vector3(arg, 0, 0));
+  }
+  if (ranges.y.min !== 0 || ranges.y.max !== 0) {
+    updateEachAxis(ctx, ranges.y, plotState.axisColors.y, (arg) => new THREE.Vector3(0, arg, 0));
+  }
+  if (ranges.z.min !== 0 || ranges.z.max !== 0) {
+    updateEachAxis(ctx, ranges.z, plotState.axisColors.z, (arg) => new THREE.Vector3(0, 0, arg));
+  }
 }
 
 function updateEachAxis(
