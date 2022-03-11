@@ -212,7 +212,6 @@ function getRangesOfFrustum(camera: THREE.OrthographicCamera): ComparableTriplet
 
   graphState.camera.updateMatrix(); // make sure camera's local matrix is updated
   graphState.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
-  graphState.camera.matrixWorldInverse.getInverse(graphState.camera.matrixWorld);
 
   let frustum = new THREE.Frustum();
   frustum.setFromProjectionMatrix(
