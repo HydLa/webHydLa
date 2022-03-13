@@ -1,82 +1,70 @@
 <!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>webHydLa</title><meta name="description" content="Documentation for webHydLa"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">webHydLa</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1> webHydLa</h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
-<a href="#webhydla---web-ide-of-hydla" id="webhydla---web-ide-of-hydla" style="color: inherit; text-decoration: none;">
-  <h1>webHydla - Web IDE of HydLa</h1>
+<a href="#クライアントサイドのモジュール" id="クライアントサイドのモジュール" style="color: inherit; text-decoration: none;">
+  <h1>クライアントサイドのモジュール</h1>
 </a>
-<p><img src="https://img.shields.io/badge/node-%3E=15.0.0-brightgreen" alt="">
-<img src="https://img.shields.io/badge/python-%3E=3.3-blue" alt="">
-<a href="https://github.com/HydLa/webHydLa/actions?query=workflow:CI"><img src="https://github.com/HydLa/webHydLa/workflows/CI/badge.svg" alt="CI"></a>
-<img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square" alt="code style: prettier">
-<img src="https://img.shields.io/badge/license-MIT-blue" alt="license: MIT"></p>
-<p><a href="http://webhydla.ueda.info.waseda.ac.jp">View Demo</a></p>
-<p><a href="http://webhydla.ueda.info.waseda.ac.jp"><img src="https://user-images.githubusercontent.com/39757050/101180365-d3b45980-368e-11eb-8590-e4fb5bef7aae.png" alt="Editor"></a>
-<a href="http://webhydla.ueda.info.waseda.ac.jp"><img src="https://user-images.githubusercontent.com/39757050/101180368-d57e1d00-368e-11eb-970f-5f6fd012c1f5.png" alt="3D visualization"></a></p>
+<blockquote>
+<p>ドキュメント作成は「口伝」の作業量を減らすために重要だと思っています．
+現状とりあえず README を作ったくらいなので，
+手の空いている時に改善してもらえると良いと思います．</p>
+</blockquote>
+<p>web 上のエディタで hydla コードを入力させ，
+run ボタンを押されると server.py（サーバサイド）と通信して
+サーバサイドで hylagi を実行する．
+hylagi の実行が終わると，結果（hydat）を受信し，グラフとして描画する．</p>
 
-<a href="#build-by-yourself" id="build-by-yourself" style="color: inherit; text-decoration: none;">
-  <h2>Build by yourself</h2>
+<a href="#モジュール構成の概要" id="モジュール構成の概要" style="color: inherit; text-decoration: none;">
+  <h2>モジュール構成の概要</h2>
 </a>
-<pre><code class="language-sh"><span class="hl-0">git clone https://github.com/HydLa/webHydLa.git</span><br/><span class="hl-1">cd</span><span class="hl-0"> webHydLa</span>
+<p>エントリポイントは main.ts</p>
+<pre><code class="language-sh"><span class="hl-0">├── UI</span><br/><span class="hl-0">│   ├── dom.ts </span><span class="hl-1"># dom 操作のための補助的モジュール</span><br/><span class="hl-0">│   └── newUI.ts </span><span class="hl-1"># （昔は古い方の UI もあったらしい）</span><br/><span class="hl-0">├── __tests__ </span><span class="hl-1"># Jest を用いたテスト</span><br/><span class="hl-0">│   └── parse.test.ts </span><span class="hl-1"># parse のテスト（現在これしかないので要拡充）</span><br/><span class="hl-0">├── editor</span><br/><span class="hl-0">│   ├── editor.ts </span><span class="hl-1"># エディタの操作</span><br/><span class="hl-0">│   ├── example.ts </span><span class="hl-1"># 例題の読み込み</span><br/><span class="hl-0">│   └── hylagi.ts </span><span class="hl-1"># サーバサイドの hylagi との通信を行う</span><br/><span class="hl-0">├── graph </span><span class="hl-1"># グラフの描画や設定など</span><br/><span class="hl-0">│   ├── animation.ts</span><br/><span class="hl-0">│   ├── animationUtils.ts</span><br/><span class="hl-0">│   ├── datGUI.ts</span><br/><span class="hl-0">│   ├── graph.ts</span><br/><span class="hl-0">│   ├── plot.ts</span><br/><span class="hl-0">│   ├── plotLine.ts</span><br/><span class="hl-0">│   ├── plotLineMap.ts</span><br/><span class="hl-0">│   ├── plotSettings.ts</span><br/><span class="hl-0">│   └── plotUtils.ts</span><br/><span class="hl-0">├── hydat </span><span class="hl-1"># hydat (= hylagi の実行結果) に関連する操作を行う</span><br/><span class="hl-0">│   ├── hydat.ts</span><br/><span class="hl-0">│   └── parse.ts </span><span class="hl-1"># hydat の parse 用モジュール</span><br/><span class="hl-0">├── main.ts </span><span class="hl-1"># エントリーポイント</span><br/><span class="hl-0">└── storage.ts </span><span class="hl-1"># localStorage の操作</span>
 </code></pre>
+<hr>
+<p>以下，過去のスライドから引っ張ってきたもの
+（少し古いが，これを参考に上に追記してください）</p>
+<ul>
+<li>main.ts：エントリーポイント</li>
+<li>dom_control.ts：画面全般の操作</li>
+<li>editor_control.ts：エディタの操作</li>
+<li>example_loader.ts：例題の読み込み</li>
+<li>hylagi.ts：HyLaGI の呼び出し</li>
+<li>hydat.ts：hydat</li>
+<li>parse.ts：hydat のパース</li>
+<li>hydat_control.ts：hydat の保存，読み込み</li>
+<li>storage_control.ts：localStorage の操作</li>
+<li>graph_control.ts：3D 描画全般の操作</li>
+<li>animation_control.ts：3D オブジェクトの操作</li>
+<li>plot_control.ts：背景や軸</li>
+<li>plot_line.ts：3D の線</li>
+<li>plot_line_map_control.ts：3D の線の操作</li>
+<li>dat_gui_control.ts：描画パラメータ GUI</li>
+</ul>
+<hr>
+<p>html や css などの静的ファイルは webHydLa/static/ 内に存在している．</p>
+<ul>
+<li>この構成は正しいのか？<ul>
+<li>public みたいなものと，
+生成されたファイルを管理する build みたいなもので分けて使うべきでは</li>
+</ul>
+</li>
+</ul>
 
-<a href="#on-docker" id="on-docker" style="color: inherit; text-decoration: none;">
-  <h3>On Docker</h3>
-</a>
-<p>Execute <code>docker-compose up</code> and open <a href="http://0.0.0.0:5000/">http://0.0.0.0:5000/</a></p>
-
-<a href="#locally" id="locally" style="color: inherit; text-decoration: none;">
-  <h3>Locally</h3>
-</a>
-
-<a href="#system-requirements" id="system-requirements" style="color: inherit; text-decoration: none;">
-  <h4>System Requirements</h4>
+<a href="#依存しているパッケージに関する補足" id="依存しているパッケージに関する補足" style="color: inherit; text-decoration: none;">
+  <h2>依存しているパッケージに関する補足</h2>
 </a>
 <ul>
-<li>Operating System: Linux</li>
-<li>Software:<ul>
-<li>node 15 or later, and npm 7 or later</li>
-<li>Python 3.3 or later</li>
-</ul>
-</li>
+<li>datGUI はパラメータの調整などを行うための GUI を提供するパッケージ</li>
+<li>グラフの描画には，three.js を用いている．</li>
+<li>Jest は単体テストのためのパッケージ．</li>
 </ul>
 
-<a href="#build-and-start-the-server" id="build-and-start-the-server" style="color: inherit; text-decoration: none;">
-  <h4>Build and Start the Server</h4>
+<a href="#discussion" id="discussion" style="color: inherit; text-decoration: none;">
+  <h2>Discussion</h2>
 </a>
-<ol>
-<li>Install packages and build from source with following commands.<pre><code class="language-sh"><span class="hl-0">pip3 install -r requirements.txt</span><br/><span class="hl-0">npm install</span><br/><span class="hl-0">npm run build</span>
-</code></pre>
-</li>
-<li>The session of webHydLa is encrypted with a secret key.
-To set the key, run a command such as,<pre><code class="language-sh"><span class="hl-0">cat /dev/urandom | LC_CTYPE=C tr -dc </span><span class="hl-2">&#39;a-zA-Z0-9&#39;</span><span class="hl-0"> | fold -w 10 | head -1 &gt; secret_key</span>
-</code></pre>
-</li>
-<li>Execute <code>server.py</code>, then webHydLa will start on <a href="http://0.0.0.0:5000/">http://0.0.0.0:5000/</a>.
-(If the port has been already in use, it will use another port.)<pre><code class="language-sh"><span class="hl-0">python3 serve.py</span>
-</code></pre>
-</li>
-</ol>
-
-<a href="#lint" id="lint" style="color: inherit; text-decoration: none;">
-  <h2>Lint</h2>
-</a>
-<pre><code class="language-sh"><span class="hl-0">npm run lint</span>
-</code></pre>
-
-<a href="#format" id="format" style="color: inherit; text-decoration: none;">
-  <h2>Format</h2>
-</a>
-<pre><code class="language-sh"><span class="hl-0">npm run format</span>
-</code></pre>
-
-<a href="#test" id="test" style="color: inherit; text-decoration: none;">
-  <h2>Test</h2>
-</a>
-<pre><code class="language-sh"><span class="hl-0">npm t</span>
-</code></pre>
-
-<a href="#generate-document" id="generate-document" style="color: inherit; text-decoration: none;">
-  <h2>Generate Document</h2>
-</a>
-<pre><code class="language-sh"><span class="hl-0">npm run doc</span>
-</code></pre>
-<p><a href="https://hydla.github.io/webHydLa/">Here is the generated document</a></p>
+<ul>
+<li>graph directory に datGUI によるプロット設定と，
+グラフの描画ためのコードが両方入っていて，
+少し大きいのが気になる．</li>
+<li>react とか vue とか入れたい．</li>
+<li>（個人的には elm architecture っぽい感じにしたい）</li>
+</ul>
 </div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>
