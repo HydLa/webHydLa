@@ -371,7 +371,7 @@ export function dfsEachLine(
       if (finished) return;
     }
   } catch (ex) {
-    if (ex instanceof TypeError) {
+    if (ex instanceof Error) {
       console.log(ex);
       console.log(ex.stack);
       showToast(`Plot failed: ${ex.name}(${ex.message})`, 3000, 'red darken-4');
