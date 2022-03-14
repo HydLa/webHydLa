@@ -8,6 +8,7 @@ import { checkAndStopPreloader, phaseToLineVectors, resetPlotStartTime } from '.
 import { startPreloader, showToast } from '../UI/dom';
 import { HydatState, HydatParameter, HydatParameterInterval, HydatPhase } from '../hydat/hydat';
 import { parse, ParamCond, Construct, Constant } from '../hydat/parse';
+import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils';
 
 let faces: THREE.Mesh[];
 
@@ -156,29 +157,32 @@ function divideParameter(parameterMap: Map<string, HydatParameter>) {
 }
 
 /**
- * startPosからendPosまで幅scaledWidthの線をcylinderMeshで作る<br>
+ * startPosからendPosまで幅scaledWidthの線をcylinderGeometryで作る<br>
  * Lineを使わないのはLineの太さが変わらないバグがあるため<br>
  * https://threejs.org/docs/#api/en/materials/LineBasicMaterial.linewidth
  */
-function makeCylinder(startPos: THREE.Vector3, endPos: THREE.Vector3, scaledWidth: number, material: THREE.Material) {
+function makeCylinder(startPos: THREE.Vector3, endPos: THREE.Vector3, scaledWidth: number) {
   const directionVec = endPos.clone().sub(startPos);
   const height = directionVec.length();
   directionVec.normalize();
-  const cylinderMesh = new THREE.Mesh(
-    new THREE.CylinderGeometry(scaledWidth, scaledWidth, height + scaledWidth, 8, 1),
-    material
-  );
+  const cylinder = new THREE.CylinderGeometry(scaledWidth, scaledWidth, height + scaledWidth, 8, 1);
 
-  const upVec = new THREE.Vector3(0, 1, 0);
-  const rotationAxis = upVec.clone().cross(directionVec).normalize();
-  const rotationAngle = Math.acos(upVec.dot(directionVec));
+  const yVec = new THREE.Vector3(0, 1, 0);
+  const xRotationAngle = Math.acos(yVec.dot(directionVec));
+  const yVerticalAngle = directionVec.x > 0 ? Math.PI / 2 : -Math.PI / 2;
+  const yRotationAngle = directionVec.z === 0 ? yVerticalAngle : Math.atan(directionVec.x / directionVec.z);
 
   const newpos = startPos.clone().lerp(endPos, 0.5);
-  cylinderMesh.position.set(newpos.x, newpos.y, newpos.z);
-  cylinderMesh.setRotationFromAxisAngle(rotationAxis, rotationAngle);
+  cylinder.rotateX(xRotationAngle);
+  cylinder.rotateY(directionVec.z < 0 ? yRotationAngle + Math.PI : yRotationAngle);
+  cylinder.translate(...newpos.toArray());
 
-  cylinderMesh.updateMatrix();
-  return cylinderMesh;
+  return cylinder;
+}
+
+interface Lines {
+  thinLines: THREE.Vector3[];
+  thickLines: THREE.BufferGeometry | null;
 }
 
 function addLine(
@@ -192,8 +196,7 @@ function addLine(
 
   animationState.indexArrayMultibimap.set(line.index, animationState.array);
 
-  const lines: THREE.Vector3[] = [];
-  const linesGeometry = new THREE.BufferGeometry();
+  const lines = { thinLines: [], thickLines: null };
   const scaledWidth = (0.5 * width) / graphState.camera.zoom;
   const dottedLength = 10.0 / graphState.camera.zoom;
   const material = useLine
@@ -215,14 +218,13 @@ function addLine(
       dottedLength,
       useLine,
       lines,
-      linesGeometry,
       tmpDynamicLine,
       material
     );
   }
   if (PlotSettingsControl.plotSettings.dynamicDraw) animationState.dynamicLines[animationState.array] = tmpDynamicLine;
 
-  const threeLine = useLine ? makeLine(lines, material, true) : new THREE.Mesh(linesGeometry, material);
+  const threeLine = useLine ? makeLine(lines.thinLines, material, true) : new THREE.Mesh(lines.thickLines!, material);
   if (!PlotSettingsControl.plotSettings.dynamicDraw) graphState.scene.add(threeLine);
 
   if (!line.plot) {
@@ -246,8 +248,7 @@ function addLineEachPhase(
   scaledWidth: number,
   dottedLength: number,
   useLine: boolean,
-  lines: THREE.Vector3[],
-  linesGeometry: THREE.BufferGeometry,
+  lines: Lines,
   tmpDynamicLine: any[],
   material: THREE.Material
 ) {
@@ -256,26 +257,36 @@ function addLineEachPhase(
     const lineLength = directionVec.length();
     directionVec.normalize();
     const numOfDots = lineLength / dottedLength;
-    const tmpGeometry = new THREE.BufferGeometry();
+    const tmpGeometry = [];
     for (let j = 1; j + 1 < numOfDots; j += 2) {
       // 点線の各点を追加
       const tmpBegin = posBegin.clone().add(directionVec.clone().multiplyScalar(j * dottedLength));
       const tmpEnd = posBegin.clone().add(directionVec.clone().multiplyScalar((j + 1) * dottedLength));
       if (useLine) {
-        lines.push(tmpBegin, tmpEnd);
+        lines.thinLines.push(tmpBegin, tmpEnd);
       } else {
-        const l = makeCylinder(tmpBegin, tmpEnd, scaledWidth, material);
-        if (PlotSettingsControl.plotSettings.dynamicDraw) tmpGeometry.merge(<any>l.geometry.clone());
-        linesGeometry.merge(<any>l.geometry);
+        const l = makeCylinder(tmpBegin, tmpEnd, scaledWidth);
+        if (PlotSettingsControl.plotSettings.dynamicDraw) {
+          tmpGeometry.push(l.clone());
+        }
+        if (lines.thickLines) {
+          lines.thickLines = mergeBufferGeometries([lines.thickLines, l]);
+        } else {
+          lines.thickLines = l;
+        }
       }
     }
     if (PlotSettingsControl.plotSettings.dynamicDraw) {
-      const l: any = useLine ? makeLine([posBegin, posEnd], material) : new THREE.Mesh(tmpGeometry, material);
+      const l: any = useLine
+        ? makeLine([posBegin, posEnd], material)
+        : new THREE.Mesh(!tmpGeometry ? mergeBufferGeometries(tmpGeometry) : new THREE.BufferGeometry(), material);
       l.isPP = true;
       tmpDynamicLine.push(l);
 
       animationState.accumulativeMergedLines[animationState.array].push(
-        useLine ? makeLine(lines.concat(), material, true) : new THREE.Mesh(linesGeometry.clone(), material)
+        useLine
+          ? makeLine(lines.thinLines.concat(), material, true)
+          : new THREE.Mesh(lines.thickLines!.clone(), material)
       );
     }
   } else if (!posBegin.equals(posEnd)) {
@@ -285,11 +296,17 @@ function addLineEachPhase(
         const l = makeLine([posBegin, posEnd], material);
         tmpDynamicLine.push(l);
       }
-      lines.push(posBegin, posEnd);
+      lines.thinLines.push(posBegin, posEnd);
     } else {
-      const l = makeCylinder(posBegin, posEnd, scaledWidth, material);
-      if (PlotSettingsControl.plotSettings.dynamicDraw) tmpDynamicLine.push(l);
-      linesGeometry.merge(<any>l.geometry);
+      const l = makeCylinder(posBegin, posEnd, scaledWidth);
+      if (PlotSettingsControl.plotSettings.dynamicDraw) {
+        tmpDynamicLine.push(new THREE.Mesh(l, material));
+      }
+      if (lines.thickLines) {
+        lines.thickLines = mergeBufferGeometries([lines.thickLines, l]);
+      } else {
+        lines.thickLines = l;
+      }
     }
   }
 }
