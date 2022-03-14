@@ -78,6 +78,9 @@ npm run doc
 
 [Here is the generated document](https://hydla.github.io/webHydLa/)
 
+> そのままだと怒られる（いまいち理由はよくわかっていない）ので，
+> typedoc-plugin-missing-exports を用いている．
+
 ## System overview
 
 ### architecture
