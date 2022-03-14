@@ -1,14 +1,19 @@
+/**
+ * webHydLa の下部のグラフの描画を行う
+ */
 import * as THREE from 'three';
-import { updateFolder, plotReady, PlotLine } from './plotLine';
-import { graphState, renderGraphThreeJs } from './graph';
-import { RGB, Triplet } from './plotUtils';
-import { MultiBiMap } from './animationUtils';
-import { PlotSettingsControl } from './plotSettings';
-import { checkAndStopPreloader, phaseToLineVectors, resetPlotStartTime } from './plot';
-import { startPreloader, showToast } from '../UI/dom';
-import { HydatState, HydatParameter, HydatParameterInterval, HydatPhase } from '../hydat/hydat';
-import { parse, ParamCond, Construct, Constant } from '../hydat/parse';
 import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils';
+
+import { HydatParameter, HydatParameterInterval, HydatPhase, HydatState } from '../hydat/hydat';
+import { Constant, Construct, ParamCond, parse } from '../hydat/parse';
+import { showToast, startPreloader } from '../UI/dom';
+
+import { MultiBiMap } from './animationUtils';
+import { graphState, renderGraphThreeJs } from './graph';
+import { checkAndStopPreloader, phaseToLineVectors, resetPlotStartTime } from './plot';
+import { PlotLine, plotReady, updateFolder } from './plotLine';
+import { PlotSettingsControl } from './plotSettings';
+import { RGB, Triplet } from './plotUtils';
 
 let faces: THREE.Mesh[];
 
@@ -39,7 +44,8 @@ interface AnimationState {
 
   /**
    * 最適化のために各PPまでの線を累積マージして格納しておく<br>
-   * accumulativeMergedLines[i][j]: i本目の線について2j+1フェーズ目までの線をマージした線
+   * accumulativeMergedLines[i][j]:
+   * i本目の線について2j+1フェーズ目までの線をマージした線
    */
   accumulativeMergedLines: any[][];
   /** accumulativeMergedLinesをどこまで追加したか */
@@ -79,6 +85,9 @@ function getColors(colorNum: number, colorAngle: number) {
   return retColors;
 }
 
+/**
+ * animationState に line を追加する
+ */
 function addPlot(line: PlotLine) {
   let axes: Triplet<Construct>;
   if (line.settings.x == '' || line.settings.y == '' || line.settings.z == '') {
@@ -121,15 +130,18 @@ function addPlot(line: PlotLine) {
     });
 }
 
+/**
+ * ???
+ */
 function divideParameter(parameterMap: Map<string, HydatParameter>) {
   let nowParameterConditionList: ParamCond[] = [new Map()];
 
   for (const parameterName of parameterMap.keys()) {
     const setting = PlotSettingsControl.plotSettings.parameterCondition!.get(parameterName)!;
     if (setting.fixed) {
-      for (let i = 0; i < nowParameterConditionList.length; i++) {
+      for (const nowParamCond of nowParameterConditionList) {
         const parameterValue = setting.value;
-        nowParameterConditionList[i].set(parameterName, new Constant(parameterValue));
+        nowParamCond.set(parameterName, new Constant(parameterValue));
       }
     } else {
       const lb = setting.minValue;
@@ -142,10 +154,10 @@ function divideParameter(parameterMap: Map<string, HydatParameter>) {
       } else {
         deltaP = (ub - lb) / (div - 1);
       }
-      for (let i = 0; i < nowParameterConditionList.length; i++) {
+      for (const nowParamCond of nowParameterConditionList) {
         for (let j = 0; j < div; j++) {
           const parameterValue = lb + j * deltaP;
-          const tmpObj = new Map([...nowParameterConditionList[i]]);
+          const tmpObj = new Map([...nowParamCond]);
           tmpObj.set(parameterName, new Constant(parameterValue));
           nextParameterConditionList.push(tmpObj);
         }
@@ -157,20 +169,25 @@ function divideParameter(parameterMap: Map<string, HydatParameter>) {
 }
 
 /**
- * startPosからendPosまで幅scaledWidthの線をcylinderGeometryで作る<br>
- * Lineを使わないのはLineの太さが変わらないバグがあるため<br>
+ * startPos から endPos まで幅 scaledWidth の線を cylinderGeometry で作って返す，
+ * makeLine に対応する関数．
+ * makeLine と違って，Line を使わないのは Line の太さが変わらないバグがあるため．
  * https://threejs.org/docs/#api/en/materials/LineBasicMaterial.linewidth
  */
 function makeCylinder(startPos: THREE.Vector3, endPos: THREE.Vector3, scaledWidth: number) {
+  // startPos から endPos へ向かうベクタ
   const directionVec = endPos.clone().sub(startPos);
   const height = directionVec.length();
-  directionVec.normalize();
+
+  // 長さ height + scaledWidth，上下の半径が scaledWidth の正八角柱を作る
+  // 初期状態で y 軸正方向を向いている
   const cylinder = new THREE.CylinderGeometry(scaledWidth, scaledWidth, height + scaledWidth, 8, 1);
 
   // y 軸正から z 軸正へ向けて xRotationAngle だけ回転し、
   // その後 z 軸正から x 軸正 へ向けて yRotationAngle だけ回転させたい
   // ここで 0 <= acosθ <= π,  -π < atanθ < π に注意
-  // xRotationAngle は acosθ の範囲で充分だが、yRotationAngle は 1 周分必要だから補う必要がある
+  // xRotationAngle は acosθ の範囲で充分だが、yRotationAngle は 1
+  // 周分必要だから補う必要がある
   //   - directionVec.z >  0 のときはそのままの値を使えば良い
   //   - directionVec.z <  0 のときは π を足すことで向こう半周分を補足
   //   - directionVec.z == 0 のときは
@@ -178,35 +195,47 @@ function makeCylinder(startPos: THREE.Vector3, endPos: THREE.Vector3, scaledWidt
   // とすることで 1 周分を確保した
   // あとは三項演算子が煩雑にならないよう適宜分けて記述してある
   const yVec = new THREE.Vector3(0, 1, 0);
+  directionVec.normalize();
   const xRotationAngle = Math.acos(yVec.dot(directionVec));
   const yVerticalAngle = directionVec.x > 0 ? Math.PI / 2 : -Math.PI / 2;
   const yRotationAngle = directionVec.z === 0 ? yVerticalAngle : Math.atan(directionVec.x / directionVec.z);
 
-  const newpos = startPos.clone().lerp(endPos, 0.5);
   cylinder.rotateX(xRotationAngle);
   cylinder.rotateY(directionVec.z < 0 ? yRotationAngle + Math.PI : yRotationAngle);
+
+  // startPos と endPos の間の中間地点へ cylinder を平行移動する
+  const newpos = startPos.clone().lerp(endPos, 0.5);
   cylinder.translate(...newpos.toArray());
 
   return cylinder;
 }
 
+/**
+ * グラフを描画する際の線．
+ * 太さが 1 の場合は，thinLines を用いて，
+ * そうでない場合は thickLines を用いる．
+ * - TODO: これらを両方用いることはないので variant type っぽくしたい
+ */
 interface Lines {
   thinLines: THREE.Vector3[];
   thickLines: THREE.BufferGeometry | null;
 }
 
+/**
+ * animationState に線を追加する．
+ */
 function addLine(
   currentLineVec: { vec: THREE.Vector3; isPP: boolean }[],
   color: number,
   line: PlotLine,
   width: number
 ) {
+  // width が 1 の場合は Lines.thinLines を用いることになる．
   const useLine = width === 1;
   animationState.array += 1;
 
   animationState.indexArrayMultibimap.set(line.index, animationState.array);
 
-  const lines = { thinLines: [], thickLines: null };
   const scaledWidth = (0.5 * width) / graphState.camera.zoom;
   const dottedLength = 10.0 / graphState.camera.zoom;
   const material = useLine
@@ -215,10 +244,15 @@ function addLine(
 
   const tmpDynamicLine: any[] = [];
   if (PlotSettingsControl.plotSettings.dynamicDraw) {
-    if (animationState.accumulativeMergedLines.length - 1 < animationState.array)
+    if (animationState.accumulativeMergedLines.length - 1 < animationState.array) {
       animationState.accumulativeMergedLines.push([]);
-    if (animationState.dynamicLines.length - 1 < animationState.array) animationState.dynamicLines.push([]);
+    }
+    if (animationState.dynamicLines.length - 1 < animationState.array) {
+      animationState.dynamicLines.push([]);
+    }
   }
+  const lines = { thinLines: [], thickLines: null };
+  // グラフの曲線を細切れの直線に分割してそれらを繋げ合わせていく
   for (let i = 0; i + 1 < currentLineVec.length; i++) {
     addLineEachPhase(
       currentLineVec[i].vec,
@@ -232,10 +266,13 @@ function addLine(
       material
     );
   }
-  if (PlotSettingsControl.plotSettings.dynamicDraw) animationState.dynamicLines[animationState.array] = tmpDynamicLine;
-
+  if (PlotSettingsControl.plotSettings.dynamicDraw) {
+    animationState.dynamicLines[animationState.array] = tmpDynamicLine;
+  }
   const threeLine = useLine ? makeLine(lines.thinLines, material, true) : new THREE.Mesh(lines.thickLines!, material);
-  if (!PlotSettingsControl.plotSettings.dynamicDraw) graphState.scene.add(threeLine);
+  if (!PlotSettingsControl.plotSettings.dynamicDraw) {
+    graphState.scene.add(threeLine);
+  }
 
   if (!line.plot) {
     throw new Error('unexpected: line.plot is undefined');
@@ -251,6 +288,9 @@ function addLine(
   }
 }
 
+/**
+ * animationState に PP や IP それぞれのための線を追加する
+ */
 function addLineEachPhase(
   posBegin: THREE.Vector3,
   posEnd: THREE.Vector3,
@@ -315,6 +355,7 @@ function addLineEachPhase(
       if (lines.thickLines) {
         lines.thickLines = mergeBufferGeometries([lines.thickLines, l]);
       } else {
+        // lines.thickLines は最初は null なので，ここでまずは初期化してやる
         lines.thickLines = l;
       }
     }
@@ -322,7 +363,7 @@ function addLineEachPhase(
 }
 
 /**
- * 太さが変わらないバグはあるものの，軽量なので太さが1で良い時はLineを使う
+ * 太さが変わらないバグはあるものの，軽量なので太さが 1 で良い時は Line を使う
  */
 function makeLine(points: THREE.Vector3[], material: THREE.Material, segments = false) {
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
@@ -330,6 +371,9 @@ function makeLine(points: THREE.Vector3[], material: THREE.Material, segments = 
   else return new THREE.Line(geometry, material);
 }
 
+/**
+ * animationState に球を追加する
+ */
 function addSphere(currentParamIdx: number, color: number[]) {
   const sGeometry = new THREE.SphereBufferGeometry(0.1);
   const sphere = new THREE.Mesh(sGeometry, new THREE.MeshBasicMaterial({ color: color[currentParamIdx] }));
@@ -365,7 +409,8 @@ export function dfsEachLine(
       const vec = phaseToLineVectors(phase, parameterConditionList[currentParamIdx], axes, dt);
       currentLineVec = currentLineVec.concat(vec);
       const vecAnimation = phaseToLineVectors(phase, parameterConditionList[currentParamIdx], axes, 0.01); // tを0.01刻みで点を取る -> time = t * 100
-      // animationState.currentLineVecAnimation = animationState.currentLineVecAnimation.concat(vecAnimation);
+      // animationState.currentLineVecAnimation =
+      // animationState.currentLineVecAnimation.concat(vecAnimation);
       for (const v of vecAnimation) {
         animationState.currentLineVecAnimation.push(v.vec);
       }
