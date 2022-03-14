@@ -167,6 +167,16 @@ function makeCylinder(startPos: THREE.Vector3, endPos: THREE.Vector3, scaledWidt
   directionVec.normalize();
   const cylinder = new THREE.CylinderGeometry(scaledWidth, scaledWidth, height + scaledWidth, 8, 1);
 
+  // y 軸正から z 軸正へ向けて xRotationAngle だけ回転し、
+  // その後 z 軸正から x 軸正 へ向けて yRotationAngle だけ回転させたい
+  // ここで 0 <= acosθ <= π,  -π < atanθ < π に注意
+  // xRotationAngle は acosθ の範囲で充分だが、yRotationAngle は 1 周分必要だから補う必要がある
+  //   - directionVec.z >  0 のときはそのままの値を使えば良い
+  //   - directionVec.z <  0 のときは π を足すことで向こう半周分を補足
+  //   - directionVec.z == 0 のときは
+  //     - directionVec.x > 0 ならば π/2 、さもなくば -π/2
+  // とすることで 1 周分を確保した
+  // あとは三項演算子が煩雑にならないよう適宜分けて記述してある
   const yVec = new THREE.Vector3(0, 1, 0);
   const xRotationAngle = Math.acos(yVec.dot(directionVec));
   const yVerticalAngle = directionVec.x > 0 ? Math.PI / 2 : -Math.PI / 2;
