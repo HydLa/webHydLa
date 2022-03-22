@@ -110,8 +110,8 @@ export function initDatGUIState(plotSettings: PlotSettings) {
   // フォルダの追加
   DatGUIState.parameterFolder = datGUI.addFolder('parameters');
   DatGUIState.parameterFolderSeek = datGUIAnimate.addFolder('seek');
-  datGUI.add(addLineObj, 'add').name('add new line');
   DatGUIState.variableFolder = datGUI.addFolder('variables');
+  datGUI.add(addLineObj, 'add').name('add new line');
 
   // 上
   const datContainer = document.getElementById('dat-gui')!;
