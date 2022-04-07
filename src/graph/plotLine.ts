@@ -95,11 +95,10 @@ export function getUpdateFunction(plotLine: PlotLine, item: dat.GUIController) {
 export function updateFolder(plotLine: PlotLine, succeeded: boolean) {
   if (succeeded) {
     const colorOnCorrect = '#303030';
-    (<HTMLInputElement>plotLine.xItem.domElement.firstChild).style.backgroundColor = (<HTMLInputElement>(
-      plotLine.yItem.domElement.firstChild
-    )).style.backgroundColor = (<HTMLInputElement>(
-      plotLine.zItem.domElement.firstChild
-    )).style.backgroundColor = colorOnCorrect;
+    (<HTMLInputElement>plotLine.xItem.domElement.firstChild).style.backgroundColor =
+      (<HTMLInputElement>plotLine.yItem.domElement.firstChild).style.backgroundColor =
+      (<HTMLInputElement>plotLine.zItem.domElement.firstChild).style.backgroundColor =
+        colorOnCorrect;
   } else {
     const elm = plotLine.lastEditedInput;
     if (elm === undefined) return;

@@ -165,7 +165,7 @@ export function parameterSetting(pars: Map<string, HydatParameter>) {
       .add(DatGUIState.plotSettings.parameterCondition.get(key)!, 'value', minParValue, maxParValue)
       .name(key);
     parameterItem.onChange(() => {
-      if(!DatGUIState.fixedChange){
+      if (!DatGUIState.fixedChange) {
         replotAll();
       }
     });
