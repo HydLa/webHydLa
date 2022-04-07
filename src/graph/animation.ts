@@ -607,9 +607,7 @@ export function makeRanges() {
         }
         timeR++;
       }
-      for (let k = 0; k < points.length - 2; k++) {
-        faceGeometry.setFromPoints([points[k], points[k + 1], points[k + 2]]);
-      }
+      faceGeometry.setFromPoints(points);
       faceGeometry.computeVertexNormals();
       const faceMesh = new THREE.Mesh(
         faceGeometry,
