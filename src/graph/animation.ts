@@ -1,6 +1,7 @@
 /**
  * webHydLa の下部のグラフの描画を行う
  */
+import { Console } from 'console';
 import * as THREE from 'three';
 import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils';
 
@@ -131,7 +132,7 @@ function addPlot(line: PlotLine) {
 }
 
 /**
- * ???
+ * fixed が false の時に指定された本数（= n）のグラフを生成するために, 各パラメタの値を n 分割して各グラフに割り当てる
  */
 function divideParameter(parameterMap: Map<string, HydatParameter>) {
   let nowParameterConditionList: ParamCond[] = [new Map()];
@@ -374,10 +375,10 @@ function makeLine(points: THREE.Vector3[], material: THREE.Material, segments = 
 /**
  * animationState に球を追加する
  */
-function addSphere(currentParamIdx: number, color: number[]) {
+function addSphere(color: number) {
   const sGeometry = new THREE.SphereBufferGeometry(0.1);
-  const sphere = new THREE.Mesh(sGeometry, new THREE.MeshBasicMaterial({ color: color[currentParamIdx] }));
-  sphere.position.set(0, 0, 0);
+  const sphere = new THREE.Mesh(sGeometry, new THREE.MeshBasicMaterial({ color: color }));
+  sphere.position.set(0, animationState.array, 0);
   graphState.scene.add(sphere);
   animationState.plotAnimate[animationState.array] = sphere;
 }
@@ -417,7 +418,7 @@ export function dfsEachLine(
       if (phase.children.length == 0) {
         // on leaves
         addLine(currentLineVec, color[currentParamIdx], line, width);
-        addSphere(currentParamIdx, color);
+        addSphere(color[currentParamIdx]);
 
         currentLineVec = [];
         animationState.currentLineVecAnimation = [];
@@ -537,12 +538,12 @@ export function removePlot(line: PlotLine) {
   line.plot = [];
 }
 
-function removeMesh(line: THREE.Mesh[] | undefined) {
-  if (line !== undefined) {
-    for (let i = 0; i < line.length; i++) {
-      graphState.scene.remove(line[i]);
+function removeMesh(spheres: THREE.Mesh[] | undefined) {
+  if (spheres !== undefined) {
+    for (let i = 0; i < spheres.length; i++) {
+      graphState.scene.remove(spheres[i]);
     }
-    line = [];
+    spheres = [];
   }
 }
 
@@ -731,6 +732,7 @@ export function animate() {
         sphere.material.color.set(animationState.animationLine[arr].color);
       }
       if (animationState.time > animationState.animationLine[arr].vecs.length - 1) {
+        animationState.plotAnimate[arr] = sphere;
         arr++;
         continue;
       }

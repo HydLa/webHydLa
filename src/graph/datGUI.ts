@@ -22,6 +22,9 @@ export class DatGUIState {
 
   /** 描画設定用のデータ構造 */
   static plotSettings: PlotSettings;
+
+  /** fixed の直前と現在の状態 */
+  static fixedChange: boolean;
 }
 
 /**
@@ -122,6 +125,7 @@ export function initDatGUIState(plotSettings: PlotSettings) {
   datContainerB.style.height = heightArea;
   datContainerB.appendChild(datGUIAnimate.domElement);
 
+  DatGUIState.fixedChange = false;
   fixLayout();
 }
 
@@ -161,7 +165,9 @@ export function parameterSetting(pars: Map<string, HydatParameter>) {
       .add(DatGUIState.plotSettings.parameterCondition.get(key)!, 'value', minParValue, maxParValue)
       .name(key);
     parameterItem.onChange(() => {
-      replotAll();
+      if(!DatGUIState.fixedChange){
+        replotAll();
+      }
     });
     parameterItem.step(step);
 
@@ -177,8 +183,9 @@ export function parameterSetting(pars: Map<string, HydatParameter>) {
     DatGUIState.parameterItems.push(modeItemRange);
     DatGUIState.parameterItems.push(parameterItem);
 
-    // パラメタのfixedのチェックボックス
+    // パラメタの fixed のチェックボックス. 値が変化した時は parameterItem の onChange は呼び出さないようにする
     modeItemFixed.onChange(() => {
+      DatGUIState.fixedChange = true;
       if (!DatGUIState.plotSettings.parameterCondition!.get(key)!.fixed) {
         parameterItem.min(1).max(100).step(1).setValue(5);
       } else {
@@ -188,6 +195,7 @@ export function parameterSetting(pars: Map<string, HydatParameter>) {
           .step(step)
           .setValue((minParValue + maxParValue) / 2);
       }
+      DatGUIState.fixedChange = false;
       replotAll();
     });
     // パラメタのrangeのチェックボックス
