@@ -66,7 +66,6 @@ export async function sendHydla(hydla: string) {
     method: 'GET',
   });
   const text = await response.text();
-  console.log(text);
   sendToHyLaGI(hydla);
 }
 
@@ -92,7 +91,6 @@ export async function sendToHyLaGI(hydla: string) {
   }
 
   const responseText = await res.text();
-  console.log(responseText);
   responseHyLaGI(JSON.parse(responseText));
 }
 
