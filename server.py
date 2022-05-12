@@ -210,9 +210,6 @@ if __name__ == "__main__":
         try:
             app.run(debug=False, host="0.0.0.0", port=flask_port, threaded=True)
             break
-        except OSError as e:
-            if not e.errno == 98:
-                raise
-            print(e.strerror)
+        except SystemExit as e:
             flask_port += 1
             continue
