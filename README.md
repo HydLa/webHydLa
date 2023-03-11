@@ -26,7 +26,6 @@ Execute `docker-compose up` and open <http://0.0.0.0:5000/>
 
 #### System Requirements
 
-- Operating System: Linux
 - Software:
   - node 15 or later, and npm 7 or later
   - Python 3.3 or later
