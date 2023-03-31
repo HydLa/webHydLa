@@ -83,14 +83,19 @@ def gen_hydat():
     ) as f_stderr:
         if shutil.which("hylagi") is not None:
             hylagi_args.append(save_file_hydla)
+            subprocess.call('ps -aux | grep hylagi', shell=True)
+            print(hylagi_args[2:])
             hylagi_proc = subprocess.Popen(
                 hylagi_args, stdout=f_stdout, stderr=f_stderr
             )
+            subprocess.call('ps -aux | grep hylagi', shell=True)
             hylagi_processes[session_id] = hylagi_proc
             try:
                 hylagi_retcode = hylagi_proc.wait(timeout=time_out)
             except subprocess.TimeoutExpired:
-                hylagi_proc.kill()
+                hylagi_processes[session_id].kill()
+                subprocess.call('sleep 1', shell=True) # kill が完了するまで十分な時間待つ (ゾンビ対策)
+                hylagi_processes.pop(session_id, None)
                 return jsonify(sid=session_id, error=4, message="TimeOut")
         else:
             # hylagiがないときは、apiサーバーに投げる
