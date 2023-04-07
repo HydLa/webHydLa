@@ -30,6 +30,22 @@ Execute `docker-compose up` and open <http://0.0.0.0:5000/>
   - node 15 or later, and npm 7 or later
   - Python 3.3 or later
 
+To install `node` (Node.js), you should use some version manager of Node.js such as `nvm`, `n`, and so on.
+The `node` command from apt or other OS-standard package managers may often be outdated.
+1. [Install nvm (node version manager)](https://github.com/nvm-sh/nvm).
+   ```sh
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+   ```
+2. Install the latest version of node.
+   ```sh
+   nvm install node
+   ```
+3. Check that you can use `node` and `npm` commands.
+   ```sh
+   node --version
+   npm --version
+   ```
+
 #### Build and Start the Server
 
 1. Install packages and build from source with following commands.
