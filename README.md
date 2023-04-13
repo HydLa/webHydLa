@@ -62,7 +62,7 @@ The `node` command from apt or other OS-standard package managers may often be o
 3. Execute `server.py`, then webHydLa will start on <http://0.0.0.0:5000/>.
    (If the port has been already in use, it will use another port.)
    ```sh
-   python3 serve.py
+   python3 server.py
    ```
 
 ## Development
