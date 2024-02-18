@@ -62,8 +62,18 @@ The `node` command from apt or other OS-standard package managers may often be o
 3. Execute `server.py`, then webHydLa will start on <http://0.0.0.0:5000/>.
    (If the port has been already in use, it will use another port.)
    ```sh
-   python3 serve.py
+   python3 server.py
    ```
+
+If you want to specify which `hylagi` to use, put a file named `hylagi_path` containing the absolute path to `hylagi`.
+```sh
+echo "/path/to/hylagi" > hylagi_path
+```
+When webHydLa needs to execute HyLaGI, it will try in the following order:  
+1. If `hylagi_path` file exists, it will execute the HyLaGI specified in the file.
+2. If `hylagi` command can be found in `PATH`, it will execute the command.
+3. Otherwise, it will POST a request to the API server.
+
 
 ## Development
 
@@ -111,17 +121,17 @@ server side
 ### sequence
 
 ```
-client (src/ and static/)    server.py            chaurose (???)
+client (src/ and static/)    server.py            chaource (API server)
 |                                |                    |
 write down hydla code            |                    |
 press button "run"               |                    |
 ----------------------> if the local machine          |
-|                       has mathematica               |
+|                       has hylagi                    |
 |                       then                          |
 |                  <----- run on the machine          |
 |                       else                          |
-|                         run with chaurose (???) --->
-|                                                    run
+|                         run with chaource  -------->
+|                                                 run hylagi
 render the result  <----------------------------------
 as a graph
 ```
