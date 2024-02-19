@@ -3,7 +3,7 @@
  */
 import { Console } from 'console';
 import * as THREE from 'three';
-import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils';
 
 import { HydatParameter, HydatParameterInterval, HydatPhase, HydatState } from '../hydat/hydat';
 import { Constant, Construct, ParamCond, parse } from '../hydat/parse';
@@ -321,7 +321,7 @@ function addLineEachPhase(
           tmpGeometry.push(l.clone());
         }
         if (lines.thickLines) {
-          lines.thickLines = mergeBufferGeometries([lines.thickLines, l]);
+          lines.thickLines = mergeGeometries([lines.thickLines, l]);
         } else {
           lines.thickLines = l;
         }
@@ -330,7 +330,7 @@ function addLineEachPhase(
     if (PlotSettingsControl.plotSettings.dynamicDraw) {
       const l: any = useLine
         ? makeLine([posBegin, posEnd], material)
-        : new THREE.Mesh(!tmpGeometry ? mergeBufferGeometries(tmpGeometry) : new THREE.BufferGeometry(), material);
+        : new THREE.Mesh(!tmpGeometry ? mergeGeometries(tmpGeometry) : new THREE.BufferGeometry(), material);
       l.isPP = true;
       tmpDynamicLine.push(l);
 
@@ -354,7 +354,7 @@ function addLineEachPhase(
         tmpDynamicLine.push(new THREE.Mesh(l, material));
       }
       if (lines.thickLines) {
-        lines.thickLines = mergeBufferGeometries([lines.thickLines, l]);
+        lines.thickLines = mergeGeometries([lines.thickLines, l]);
       } else {
         // lines.thickLines は最初は null なので，ここでまずは初期化してやる
         lines.thickLines = l;
@@ -376,7 +376,7 @@ function makeLine(points: THREE.Vector3[], material: THREE.Material, segments = 
  * animationState に球を追加する
  */
 function addSphere(color: number) {
-  const sGeometry = new THREE.SphereBufferGeometry(0.1);
+  const sGeometry = new THREE.SphereGeometry(0.1);
   const sphere = new THREE.Mesh(sGeometry, new THREE.MeshBasicMaterial({ color: color }));
   sphere.position.set(0, animationState.array, 0);
   graphState.scene.add(sphere);
@@ -725,7 +725,7 @@ export function animate() {
         console.error('unexpected: !(sphere.material instanceof THREE.MeshBasicMaterial)');
         continue;
       }
-      if (!(sphere.geometry instanceof THREE.SphereBufferGeometry)) continue;
+      if (!(sphere.geometry instanceof THREE.SphereGeometry)) continue;
       if (animationState.time === 0) {
         sphere.material.color.set(animationState.animationLine[arr].color);
       }
