@@ -17,9 +17,13 @@ app = Flask(__name__, static_url_path="")
 app.secret_key = key_file.read()
 key_file.close()
 
+hylagi_path = "hylagi"
+if os.path.isfile("hylagi_path"):
+    hylagi_path_file = open("hylagi_path")
+    hylagi_path = hylagi_path_file.read().strip()
+
+
 # defining redirection from '/' to '/index.html'
-
-
 @app.route("/")
 def root():
     return app.send_static_file("index.html")
@@ -61,7 +65,7 @@ def gen_hydat():
     if "timeout_option" not in form:
         return jsonify(sid=session_id, error=3, message="No TimeOut")
 
-    hylagi_args = ["hylagi"]
+    hylagi_args = [hylagi_path]
 
     hylagi_args.extend(shlex.split(form["hylagi_option"]))
     hylagi_args.append("-o")
@@ -81,14 +85,19 @@ def gen_hydat():
     with open(save_file_stdout, "w") as f_stdout, open(
         save_file_stderr, "w"
     ) as f_stderr:
-        if shutil.which("hylagi") is not None:
+        if (hylagi_path != "hylagi") or (shutil.which("hylagi") is not None):
+            if hylagi_path != "hylagi":
+                print("[hydat.cgi] Executing HyLaGI at " + hylagi_path)
+            else:
+                print("[hydat.cgi] Executing HyLaGI at " + shutil.which("hylagi"))
+
             hylagi_args.append(save_file_hydla)
-            subprocess.call('ps -aux | grep hylagi', shell=True)
-            print(hylagi_args[2:])
+            # subprocess.call('ps -aux | grep hylagi', shell=True)
+            print("Executing: "+" ".join(hylagi_args))
             hylagi_proc = subprocess.Popen(
                 hylagi_args, stdout=f_stdout, stderr=f_stderr
             )
-            subprocess.call('ps -aux | grep hylagi', shell=True)
+            # subprocess.call('ps -aux | grep hylagi', shell=True)
             hylagi_processes[session_id] = hylagi_proc
             try:
                 hylagi_retcode = hylagi_proc.wait(timeout=time_out)
@@ -98,6 +107,8 @@ def gen_hydat():
                 hylagi_processes.pop(session_id, None)
                 return jsonify(sid=session_id, error=4, message="TimeOut")
         else:
+            print("[hydat.cgi] Posting request to the API server")
+            print("Executing: "+" ".join(hylagi_args))
             # hylagiがないときは、apiサーバーに投げる
             param_tuple = (
                 ("code", form["hydla_code"]),
