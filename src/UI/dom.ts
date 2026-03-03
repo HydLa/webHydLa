@@ -2,7 +2,7 @@
  * functions of buttons and load effect
  */
 
-import Materialize from 'materialize-css';
+import * as Materialize from '@materializecss/materialize';
 import { resizeGraphRenderer } from '../graph/graph';
 import { setEditorFontSize, setEditorTheme, setEditorKeyBinding, loadFile, saveHydla } from '../editor/editor';
 import { execHyLaGI } from '../editor/hylagi';
@@ -57,7 +57,7 @@ export function initDOMState() {
 }
 
 export function showToast(message: string, duration: number, classes: string) {
-  Materialize.toast({ html: message, displayLength: duration, classes: classes });
+  new Materialize.Toast({ text: message, displayLength: duration, classes: classes });
   const toastContainer = document.getElementById('toast-container')!;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const MAX_CHILDREN_NUM = 5;

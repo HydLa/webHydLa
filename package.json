@@ -33,7 +33,6 @@
     "@types/jest": "^29.5.12",
     "@types/jquery": "^3.5.29",
     "@types/lodash": "^4.14.202",
-    "@types/materialize-css": "^1.0.14",
     "@types/node": "^20.11.19",
     "@types/three": "^0.161.2",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
@@ -53,12 +52,12 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "@materializecss/materialize": "^2.3.2",
     "ace-builds": "^1.32.6",
     "dat.gui": "^0.7.9",
     "file-loader": "^6.2.0",
     "jquery": "^3.7.1",
     "lodash": "^4.17.21",
-    "materialize-css": "^1.0.0",
     "three": "^0.161.0"
   }
 }
