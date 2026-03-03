@@ -240,7 +240,10 @@ interface BinaryConstruct extends Construct {
 }
 
 export class Plus implements BinaryConstruct {
-  constructor(public lhs: Construct, public rhs: Construct) {}
+  constructor(
+    public lhs: Construct,
+    public rhs: Construct
+  ) {}
   toString() {
     return `(${this.lhs.toString()} + ${this.rhs.toString()})`;
   }
@@ -250,7 +253,10 @@ export class Plus implements BinaryConstruct {
 }
 
 class Subtract implements BinaryConstruct {
-  constructor(public lhs: Construct, public rhs: Construct) {}
+  constructor(
+    public lhs: Construct,
+    public rhs: Construct
+  ) {}
   toString() {
     return `(${this.lhs.toString()} - ${this.rhs.toString()})`;
   }
@@ -260,7 +266,10 @@ class Subtract implements BinaryConstruct {
 }
 
 class Multiply implements BinaryConstruct {
-  constructor(public lhs: Construct, public rhs: Construct) {}
+  constructor(
+    public lhs: Construct,
+    public rhs: Construct
+  ) {}
   toString() {
     return `(${this.lhs.toString()} * ${this.rhs.toString()})`;
   }
@@ -270,7 +279,10 @@ class Multiply implements BinaryConstruct {
 }
 
 class Divide implements BinaryConstruct {
-  constructor(public lhs: Construct, public rhs: Construct) {}
+  constructor(
+    public lhs: Construct,
+    public rhs: Construct
+  ) {}
   toString() {
     return `(${this.lhs.toString()} / ${this.rhs.toString()})`;
   }
@@ -280,7 +292,10 @@ class Divide implements BinaryConstruct {
 }
 
 class Power implements BinaryConstruct {
-  constructor(public lhs: Construct, public rhs: Construct) {}
+  constructor(
+    public lhs: Construct,
+    public rhs: Construct
+  ) {}
   toString() {
     return `${this.lhs.toString()} ^ ${this.rhs.toString()}`;
   }
@@ -294,7 +309,7 @@ export class Constant implements Construct {
   toString() {
     return this.val.toString();
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   getValue(env: Env) {
     return this.val;
   }

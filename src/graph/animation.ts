@@ -543,7 +543,7 @@ function removeMesh(spheres: THREE.Mesh[] | undefined) {
     for (let i = 0; i < spheres.length; i++) {
       graphState.scene.remove(spheres[i]);
     }
-    spheres = [];
+    spheres.length = 0;
   }
 }
 

@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedHydla = loadHydlaFromStorage();
   const savedHydat = loadHydatFromStorage();
 
-  document.documentElement.setAttribute("theme", "dark");
+  document.documentElement.setAttribute('theme', 'dark');
   initExample();
 
   PlotSettingsControl.init();

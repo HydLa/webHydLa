@@ -13,7 +13,6 @@ class DOMState {
   static tabs: Materialize.Tabs;
 }
 
-// eslint-disable-next-line max-lines-per-function
 export function initDOMState() {
   $(window).resize(function () {
     resizeGraphRenderer();
@@ -24,15 +23,14 @@ export function initDOMState() {
     constrainWidth: true,
     hover: false,
   });
-  document.querySelectorAll<HTMLElement>('.modal')
-    .forEach((e)=>console.log(Materialize.Modal.init(e)));
+  document.querySelectorAll<HTMLElement>('.modal').forEach((e) => console.log(Materialize.Modal.init(e)));
   document.querySelectorAll<HTMLElement>('a[popovertarget]').forEach((e) => {
     const t = e.getAttribute('popovertarget')!;
     const popover = document.getElementById(t)!;
     e.addEventListener('click', () => {
       popover.togglePopover();
     });
-  })
+  });
   DOMState.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
 
   document.getElementById('editor_font_size')?.addEventListener('change', (e) => {
