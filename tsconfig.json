@@ -3,13 +3,14 @@
     "target": "es2017",
     "module": "es2015",
     "moduleResolution": "node",
-    "lib": [
-      "DOM"
-    ],
+    "lib": ["DOM", "ES2017"],
     "sourceMap": true,
     "declaration": false,
     "strict": true,
     "esModuleInterop": true,
-    "experimentalDecorators": true
-  }
+    "experimentalDecorators": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }
