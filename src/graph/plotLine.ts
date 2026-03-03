@@ -7,6 +7,7 @@ import { setPlotStartTimeIfUnset } from './plot';
 import { saveHydatSettingsToStorage } from '../storage';
 import { HydatState, HydatPhase } from '../hydat/hydat';
 import { parse, ParamCond, Construct } from '../hydat/parse';
+import * as THREE from 'three';
 
 /** variablesフォルダの中身のパネルのためのクラス */
 export class PlotLine {

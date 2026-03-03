@@ -100,8 +100,8 @@ export function updateAxes(force: boolean) {
       graphState.scene.remove(plotState.axisLines.y);
       graphState.scene.remove(plotState.axisLines.z);
     }
-    let interval = Math.pow(10, Math.floor(Math.log(maxInterval) / Math.log(10)));
-    interval = 1;
+    // let interval = Math.pow(10, Math.floor(Math.log(maxInterval) / Math.log(10)));
+    const interval = 1;
     plotState.axisLines = new Triplet<Object3D>(
       makeAxis(ranges.x, interval, new THREE.Color(plotState.axisColors.x)),
       makeAxis(ranges.y, interval, new THREE.Color(plotState.axisColors.y)),

@@ -10,10 +10,11 @@ import { initExample } from './editor/example';
 import { initHydatState } from './hydat/hydat';
 import { initStorage, loadHydlaFromStorage, loadHydatFromStorage } from './storage';
 
-$(() => {
+document.addEventListener('DOMContentLoaded', () => {
   const savedHydla = loadHydlaFromStorage();
   const savedHydat = loadHydatFromStorage();
 
+  document.documentElement.setAttribute('theme', 'dark');
   initExample();
 
   PlotSettingsControl.init();
@@ -24,10 +25,10 @@ $(() => {
   initHyLaGIControllerState();
 
   NewUI.init(graphState.controls);
-  initDOMState();
 
   initEditorState(savedHydla);
   initStorage();
+  initDOMState();
 
   update2DMode(PlotSettingsControl.plotSettings.twoDimensional);
   PlotSettingsControl.timeStop();

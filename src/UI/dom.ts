@@ -2,7 +2,7 @@
  * functions of buttons and load effect
  */
 
-import Materialize from 'materialize-css';
+import * as Materialize from '@materializecss/materialize';
 import { resizeGraphRenderer } from '../graph/graph';
 import { setEditorFontSize, setEditorTheme, setEditorKeyBinding, loadFile, saveHydla } from '../editor/editor';
 import { execHyLaGI } from '../editor/hylagi';
@@ -13,9 +13,7 @@ class DOMState {
   static tabs: Materialize.Tabs;
 }
 
-// eslint-disable-next-line max-lines-per-function
 export function initDOMState() {
-  Materialize.FormSelect.init(document.querySelectorAll('select'));
   $(window).resize(function () {
     resizeGraphRenderer();
   });
@@ -25,7 +23,14 @@ export function initDOMState() {
     constrainWidth: true,
     hover: false,
   });
-  Materialize.Modal.init(document.querySelectorAll('.modal'));
+  document.querySelectorAll<HTMLElement>('.modal').forEach((e) => console.log(Materialize.Modal.init(e)));
+  document.querySelectorAll<HTMLElement>('a[popovertarget]').forEach((e) => {
+    const t = e.getAttribute('popovertarget')!;
+    const popover = document.getElementById(t)!;
+    e.addEventListener('click', () => {
+      popover.togglePopover();
+    });
+  });
   DOMState.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
 
   document.getElementById('editor_font_size')?.addEventListener('change', (e) => {
@@ -54,10 +59,14 @@ export function initDOMState() {
   document.getElementById('run_button')?.addEventListener('click', () => {
     execHyLaGI();
   });
+  document.querySelectorAll('select').forEach((e) => {
+    if (e.id === 'example_selector') return;
+    Materialize.FormSelect.init(e);
+  });
 }
 
 export function showToast(message: string, duration: number, classes: string) {
-  Materialize.toast({ html: message, displayLength: duration, classes: classes });
+  new Materialize.Toast({ text: message, displayLength: duration, classes: classes });
   const toastContainer = document.getElementById('toast-container')!;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const MAX_CHILDREN_NUM = 5;

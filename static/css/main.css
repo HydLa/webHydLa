@@ -51,6 +51,14 @@ html, body{
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 }
+#menu_bar a {
+	line-height: 1em;
+	font-size: 15px;
+}
+#menu_bar i {
+	margin-left: 5px;
+	font-size: 20px;
+}
 #input-pane {
 	height: 400px;
 }
@@ -326,7 +334,6 @@ input[type="checkbox"] {
 	box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.2);
 }
 
-
 #dropdown-file {
   background-color: #fff;
   margin: 0;
@@ -362,6 +369,9 @@ input[type="checkbox"] {
 #modal_examples {
 	width: 50%;
   height: 40%;
+}
+.modal {
+	padding: 20px 10px;
 }
 
 
