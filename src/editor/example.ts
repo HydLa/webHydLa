@@ -1,3 +1,4 @@
+import * as Materialize from '@materializecss/materialize';
 import { setEditorHydla } from '../editor/editor';
 
 /**
@@ -12,16 +13,17 @@ export function initExample() {
 
 async function loadExamples() {
   const filenames = await getFilenames();
+  console.log(filenames);
 
   // 選択可能な例題に取得したファイル名を追加
+  const select = <HTMLSelectElement>document.getElementById('example_selector');
   for (const name of filenames) {
-    const select = <HTMLElement>document.getElementById('example_selector');
     const option = document.createElement('option');
     option.text = name;
     option.value = name;
     select.appendChild(option);
   }
-  (<any>$('#example_selector')).formSelect();
+  Materialize.FormSelect.init(select);
 
   document.getElementById('load-examples-button')?.addEventListener('click', () => {
     loadContents();

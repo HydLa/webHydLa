@@ -107,7 +107,7 @@ def gen_hydat():
                 hylagi_processes.pop(session_id, None)
                 return jsonify(sid=session_id, error=4, message="TimeOut")
         else:
-            return jsonify(sid=session_id, error=5, message="Internal server error")
+            return jsonify(sid=session_id, error=5, message="HyLaGI not found")
             # print("[hydat.cgi] Posting request to the API server")
             # print("Executing: "+" ".join(hylagi_args))
             # # hylagiがないときは、apiサーバーに投げる

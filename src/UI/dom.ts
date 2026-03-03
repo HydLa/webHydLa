@@ -15,7 +15,6 @@ class DOMState {
 
 // eslint-disable-next-line max-lines-per-function
 export function initDOMState() {
-  Materialize.FormSelect.init(document.querySelectorAll('select'));
   $(window).resize(function () {
     resizeGraphRenderer();
   });
@@ -25,7 +24,15 @@ export function initDOMState() {
     constrainWidth: true,
     hover: false,
   });
-  Materialize.Modal.init(document.querySelectorAll('.modal'));
+  document.querySelectorAll<HTMLElement>('.modal')
+    .forEach((e)=>console.log(Materialize.Modal.init(e)));
+  document.querySelectorAll<HTMLElement>('a[popovertarget]').forEach((e) => {
+    const t = e.getAttribute('popovertarget')!;
+    const popover = document.getElementById(t)!;
+    e.addEventListener('click', () => {
+      popover.togglePopover();
+    });
+  })
   DOMState.tabs = Materialize.Tabs.init(document.getElementById('tabs')!);
 
   document.getElementById('editor_font_size')?.addEventListener('change', (e) => {
@@ -53,6 +60,10 @@ export function initDOMState() {
   });
   document.getElementById('run_button')?.addEventListener('click', () => {
     execHyLaGI();
+  });
+  document.querySelectorAll('select').forEach((e) => {
+    if (e.id === 'example_selector') return;
+    Materialize.FormSelect.init(e);
   });
 }
 

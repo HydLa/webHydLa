@@ -7,7 +7,7 @@
 	<!--import Google Icon Font-->
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<!--import materialize.css-->
-	<link type="text/css" rel="stylesheet" href="./css/materialize.min.css" media="screen,projection">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@materializecss/materialize@2.2.2/dist/css/materialize.min.css">
 	<!--import self-edited css-->
 	<link type="text/css" rel="stylesheet" href="./css/main.css">
 </head>
@@ -32,14 +32,13 @@
 				<div id="menu_bar">
 
 					<!-- blue "Editor Settings" button -->
-					<a class="waves-effect waves-light btn modal-trigger indigo darken-4" href="#modal_options">Editor Settings<i
+					<a class="waves-effect waves-light btn modal-trigger indigo darken-4" popovertarget="modal_options">Editor Settings<i
 							class="material-icons right">settings</i></a>
 
 					<!-- content of "Editor Settings" -->
-					<div id="modal_options" class="modal">
-						<div class="row">
-
-							<div class="modal-content">
+					<div id="modal_options" class="modal" popover>
+						<div class="modal-content">
+							<div class="row">
 								<div class="col s12">
 									<h4>Editor Settings</h4>
 									<form>
@@ -49,19 +48,20 @@
 										</p>
 									</form>
 								</div>
+							</div>
+							<div class="row">
 								<div class="col s6">
-									<h6>theme</h6>
 									<div class="input-field">
+										<label for="theme_selector">Theme</label>
 										<select id="theme_selector" name="theme_selector">
-											<option value="monokai" selected="true">Dark</option>
+											<option value="monokai">Dark</option>
 											<option value="sqlserver">Bright</option>
 										</select>
-										<label>Materialize Select</label>
 									</div>
 								</div>
 								<div class="col s6">
-									<h6>key binding</h6>
 									<div class="input-field">
+										<label for="key_binding_selector">Key Binding</label>
 										<select id="key_binding_selector" name="key_binding_selector">
 											<option value="ace/keyboard/emacs">Emacs</option>
 											<option value="ace/keyboard/vim">Vim</option>
@@ -69,14 +69,13 @@
 										</select>
 									</div>
 								</div>
-
-							</div> <!-- end of class="modal-content" -->
-
-							<div class="modal-footer">
-								<a href="#" class="waves-effect btn-flat modal-close">Close</a>
 							</div>
 
-						</div> <!-- end of class="row" -->
+						</div> <!-- end of class="modal-content" -->
+
+						<div class="modal-footer">
+							<a popovertarget="modal_options" class="waves-effect btn-flat modal-close">Close</a>
+						</div>
 					</div> <!-- end of id="modal_options" class="modal" -->
 
 
@@ -84,37 +83,43 @@
 					<a class="waves-effect waves-light btn dropdown-button indigo darken-4" id="file-dropdown-button"
 						data-target="dropdown-file">Save/Load<i class="material-icons right">attachment</i></a>
 					<ul id="dropdown-file" class="dropdown-content indigo darken-4">
-						<li><a id="load-examples" class="modal-trigger" href="#modal_examples">Examples</a></li>
+						<li><a id="load-examples" class="modal-trigger" popovertarget="modal_examples">Examples</a></li>
 						<li><a id="load-file" href="#">Load File</a></li>
 						<li><a id="save-hydla" href="#">Save HydLa</a></li>
 						<li><a id="save-hydat" href="#">Save Hydat</a></li>
 					</ul>
 					<!-- content of "Examples" -->
-					<div id="modal_examples" class="modal">
-						<select id="example_selector" name="example_selector">
-						</select>
+					<div id="modal_examples" class="modal" popover>
+						<div class="modal-content">
+							<div class="input-field">
+								<label for="example_selector">Select an example</label>
+								<select id="example_selector" name="example_selector">
+								</select>
+							</div>
+						</div>
 						<div class="modal-footer">
-							<a href="#" class="waves-effect btn-flat modal-close" id="load-examples-button">Load</a>
-							<a href="#" class="waves-effect btn-flat modal-close">Close</a>
+							<a popovertarget="modal_examples" class="waves-effect btn-flat modal-close" id="load-examples-button">Load</a>
+							<a popovertarget="modal_examples" class="waves-effect btn-flat modal-close">Close</a>
 						</div>
 					</div> <!-- end of id="modal_examples" class="modal" -->
 
 					<!-- content of "Help" -->
-					<a class="waves-effect waves-light btn modal-trigger indigo darken-4" href="#modal_about">Help<i
+					<a class="waves-effect waves-light btn modal-trigger indigo darken-4" popovertarget="modal_about">Help<i
 							class="material-icons right">help</i></a>
-					<div id="modal_about" class="modal">
+					<div id="modal_about" class="modal" popover>
 						<div class="modal-content">
-							<h3>What is webHydLa...?</h3>
+							<h4>What is webHydLa...?</h4>
 							<p>webHydLa is the IDE for <a href="http://www.uedalab.jp/hydla/" target="_blank">HydLa</a>,
 								the language to describe hybrid systems.</p>
 							<small>Copyright (c) 2015 <a href="http://www.uedalab.jp/" target="_blank">Ueda Laboratory,
 									Department of Computer Science and Communications Engineering, Waseda University</a></small>
+							<hr/>
 							<h5>solver:</h5>
 							<p>webHydLa uses Mathematica as an external constraint solver.</p>
 							<a href="http://www.wolfram.com/webmathematica/sitelink" target="_blank"><img src="webm-white.gif" /></a>
 						</div>
 						<div class="modal-footer">
-							<a href="#" class="waves-effect btn-flat modal-close">Close</a>
+							<a popovertarget="modal_about" class="waves-effect btn-flat modal-close">Close</a>
 						</div>
 					</div>
 
