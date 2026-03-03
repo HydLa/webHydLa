@@ -107,37 +107,38 @@ def gen_hydat():
                 hylagi_processes.pop(session_id, None)
                 return jsonify(sid=session_id, error=4, message="TimeOut")
         else:
-            print("[hydat.cgi] Posting request to the API server")
-            print("Executing: "+" ".join(hylagi_args))
-            # hylagiがないときは、apiサーバーに投げる
-            param_tuple = (
-                ("code", form["hydla_code"]),
-                ("args", hylagi_args),
-                ("hydat_path", save_file_hydat),
-            )
-            encoded_param = urllib.parse.urlencode(param_tuple)
-            url = "http://webhydla.ueda.info.waseda.ac.jp:8080?" + encoded_param
-            try:
-                res = urllib.request.urlopen(url, timeout=time_out)
-            except OSError:
-                return jsonify(sid=session_id, error=4, message="Timeout")
-            except urllib.error.HTTPError:
-                return jsonify(sid=session_id, error=5, message="Internal server error")
-            response_json_encoded = res.read().decode("utf-8")
-            res.close()
-            response_json = json.loads(response_json_encoded)
-            response_stdout = response_json["stdout"]
-            response_stderr = response_json["stderr"]
-            response_hydat = response_json["hydat"]
-            hylagi_retcode = int(response_json["retcode"])
+            return jsonify(sid=session_id, error=5, message="Internal server error")
+            # print("[hydat.cgi] Posting request to the API server")
+            # print("Executing: "+" ".join(hylagi_args))
+            # # hylagiがないときは、apiサーバーに投げる
+            # param_tuple = (
+            #     ("code", form["hydla_code"]),
+            #     ("args", hylagi_args),
+            #     ("hydat_path", save_file_hydat),
+            # )
+            # encoded_param = urllib.parse.urlencode(param_tuple)
+            # url = "http://webhydla.ueda.info.waseda.ac.jp:8080?" + encoded_param
+            # try:
+            #     res = urllib.request.urlopen(url, timeout=time_out)
+            # except OSError:
+            #     return jsonify(sid=session_id, error=4, message="Timeout")
+            # except urllib.error.HTTPError:
+            #     return jsonify(sid=session_id, error=5, message="Internal server error")
+            # response_json_encoded = res.read().decode("utf-8")
+            # res.close()
+            # response_json = json.loads(response_json_encoded)
+            # response_stdout = response_json["stdout"]
+            # response_stderr = response_json["stderr"]
+            # response_hydat = response_json["hydat"]
+            # hylagi_retcode = int(response_json["retcode"])
 
-            try:
-                f_stdout.write(response_stdout)
-                f_stderr.write(response_stderr)
-                with open(save_file_hydat, "w") as f_hydat:
-                    f_hydat.write(response_hydat)
-            except IOError:
-                return jsonify(sid=session_id, error=3, message="OSError")
+            # try:
+            #     f_stdout.write(response_stdout)
+            #     f_stderr.write(response_stderr)
+            #     with open(save_file_hydat, "w") as f_hydat:
+            #         f_hydat.write(response_hydat)
+            # except IOError:
+            #     return jsonify(sid=session_id, error=3, message="OSError")
         f_stdout.flush()
         f_stderr.flush()
 

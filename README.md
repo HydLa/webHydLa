@@ -6,10 +6,10 @@
 ![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)
 ![license: MIT](https://img.shields.io/badge/license-MIT-blue)
 
-[View Demo](http://webhydla.ueda.info.waseda.ac.jp)
+<!-- [View Demo](http://webhydla.ueda.info.waseda.ac.jp) -->
 
-[![Editor](https://user-images.githubusercontent.com/39757050/101180365-d3b45980-368e-11eb-8590-e4fb5bef7aae.png)](http://webhydla.ueda.info.waseda.ac.jp)
-[![3D visualization](https://user-images.githubusercontent.com/39757050/101180368-d57e1d00-368e-11eb-970f-5f6fd012c1f5.png)](http://webhydla.ueda.info.waseda.ac.jp)
+[![Editor](https://user-images.githubusercontent.com/39757050/101180365-d3b45980-368e-11eb-8590-e4fb5bef7aae.png)](https://www.uedalab.jp/hydla)
+[![3D visualization](https://user-images.githubusercontent.com/39757050/101180368-d57e1d00-368e-11eb-970f-5f6fd012c1f5.png)](https://www.uedalab.jp/hydla)
 
 ## Build by yourself
 
@@ -72,8 +72,6 @@ echo "/path/to/hylagi" > hylagi_path
 When webHydLa needs to execute HyLaGI, it will try in the following order:  
 1. If `hylagi_path` file exists, it will execute the HyLaGI specified in the file.
 2. If `hylagi` command can be found in `PATH`, it will execute the command.
-3. Otherwise, it will POST a request to the API server.
-
 
 ## Development
 
@@ -120,19 +118,15 @@ server side
 
 ### sequence
 
-```
-client (src/ and static/)    server.py            chaource (API server)
-|                                |                    |
-write down hydla code            |                    |
-press button "run"               |                    |
-----------------------> if the local machine          |
-|                       has hylagi                    |
-|                       then                          |
-|                  <----- run on the machine          |
-|                       else                          |
-|                         run with chaource  -------->
-|                                                 run hylagi
-render the result  <----------------------------------
+```plain
+client (src/ and static/)    server.py
+|                                |
+write down hydla code            |
+press button "run"               |
+----------------------> if the local machine
+|                       has hylagi, then
+|                <----- run on the machine
+render the result
 as a graph
 ```
 
