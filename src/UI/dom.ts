@@ -23,7 +23,7 @@ export function initDOMState() {
     constrainWidth: true,
     hover: false,
   });
-  document.querySelectorAll<HTMLElement>('.modal').forEach((e) => console.log(Materialize.Modal.init(e)));
+  document.querySelectorAll<HTMLElement>('.modal').forEach((e) => Materialize.Modal.init(e));
   document.querySelectorAll<HTMLElement>('a[popovertarget]').forEach((e) => {
     const t = e.getAttribute('popovertarget')!;
     const popover = document.getElementById(t)!;
