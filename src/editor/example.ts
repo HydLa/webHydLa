@@ -13,7 +13,7 @@ export function initExample() {
 
 async function loadExamples() {
   const filenames = await getFilenames();
-  console.log(filenames);
+  // console.log(filenames);
 
   // 選択可能な例題に取得したファイル名を追加
   const select = <HTMLSelectElement>document.getElementById('example_selector');
